@@ -36,7 +36,7 @@
 
         //errorLabel.hide();
         formLogin.initForm({
-            url: common.baseURL("/app_auth/verify"),
+            url: common.baseURL("app_auth/verify"),
             initEasyui: false,
             beforeSubmit: function(form, opt){
                 errorLabel.text(null);
