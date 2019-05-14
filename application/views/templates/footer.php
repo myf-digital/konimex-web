@@ -1,0 +1,1 @@
+<script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.footer.js'); ?>"></script>
