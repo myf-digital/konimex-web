@@ -42,8 +42,8 @@
             columns: [[
 				//{field:'id_rdg', title:'ID RDG', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'nama_rdg', title:'MATERI RDG', halign: 'center', align: 'left', sortable:"true", width:500},
-				{field:'tanggal', title:'TANGGAL', halign: 'center', align: 'left', sortable:"true", width:120},
-				{field:'id_satker', title:'SATKER', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'reformat_tanggal', title:'TANGGAL', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'kode_satker', title:'SATKER', halign: 'center', align: 'left', sortable:"true", width:150},
 				{field:'keterangan', title:'KETERANGAN', halign: 'center', align: 'left', sortable:"true", width:300},
 				//{field:'created_by', title:'CREATED BY', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'created_date', title:'CREATED DATE', halign: 'center', align: 'left', sortable:"true", width:200},

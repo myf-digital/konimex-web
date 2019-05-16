@@ -40,6 +40,10 @@
 								 </select>
 							</div>
 							<div class="form-group">
+								<label for="aspek">Aspek</label>
+								 <select id="id-aspek" name="id_aspek[]" class="form-control" multiple = "multiple" ></select>
+							</div>
+							<div class="form-group">
 								<label for="keterangan">Keterangan</label>
 								<input name="keterangan" class="form-control" placeholder="Keterangan">
 							</div>
