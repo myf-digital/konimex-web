@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version 5.5.5-10.1.13-MariaDB)
-# Date: 2019-05-17 04:34:03
+# Date: 2019-05-23 01:02:43
 # Generator: MySQL-Front 6.1  (Build 1.26)
 
 
@@ -246,7 +246,7 @@ CREATE TABLE `ref_map_rdg` (
   `id_rdg` int(11) NOT NULL DEFAULT '0',
   `id_aspek` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_map`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 
 #
 # Data for table "ref_map_rdg"
@@ -272,7 +272,7 @@ CREATE TABLE `ref_rdg` (
   `modified_by` varchar(100) DEFAULT NULL,
   `modified_date` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id_rdg`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 #
 # Data for table "ref_rdg"
@@ -313,6 +313,7 @@ INSERT INTO `ref_satuan_kerja` VALUES (4,'Ab','KPw PROVINSI MALUKU','admin','201
 DROP TABLE IF EXISTS `trx_hasil_penilaian`;
 CREATE TABLE `trx_hasil_penilaian` (
   `id_penilaian` int(11) NOT NULL AUTO_INCREMENT,
+  `nip` varchar(15) DEFAULT NULL,
   `id_rdg` int(11) NOT NULL DEFAULT '0',
   `id_aspek` int(11) NOT NULL DEFAULT '0',
   `nilai` int(11) DEFAULT NULL,
@@ -328,6 +329,9 @@ CREATE TABLE `trx_hasil_penilaian` (
 # Data for table "trx_hasil_penilaian"
 #
 
+/*!40000 ALTER TABLE `trx_hasil_penilaian` DISABLE KEYS */;
+INSERT INTO `trx_hasil_penilaian` VALUES (113,'09860',3,1,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(114,'09860',3,2,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(115,'09860',3,3,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(116,'09860',3,4,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(117,'09860',3,5,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(118,'09860',3,6,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(119,'09860',3,7,3,NULL,'','0000-00-00 00:00:00',NULL,NULL);
+/*!40000 ALTER TABLE `trx_hasil_penilaian` ENABLE KEYS */;
 
 #
 # Structure for table "trx_saran"
@@ -336,6 +340,7 @@ CREATE TABLE `trx_hasil_penilaian` (
 DROP TABLE IF EXISTS `trx_saran`;
 CREATE TABLE `trx_saran` (
   `id_saran` int(11) NOT NULL AUTO_INCREMENT,
+  `nip` varchar(15) DEFAULT NULL,
   `id_rdg` int(11) NOT NULL DEFAULT '0',
   `saran` varchar(255) DEFAULT NULL,
   `created_by` varchar(50) NOT NULL,
@@ -349,3 +354,6 @@ CREATE TABLE `trx_saran` (
 # Data for table "trx_saran"
 #
 
+/*!40000 ALTER TABLE `trx_saran` DISABLE KEYS */;
+INSERT INTO `trx_saran` VALUES (15,'09860',3,'saran','','0000-00-00 00:00:00',NULL,NULL);
+/*!40000 ALTER TABLE `trx_saran` ENABLE KEYS */;
