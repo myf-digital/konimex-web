@@ -40,15 +40,15 @@
                 }
             ]],
             columns: [[
-				{field:'id_aspek', title:'ID ASPEK', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'aspek', title:'ASPEK', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nourut', title:'NOURUT', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'keterangan', title:'KETERANGAN', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'status', title:'STATUS', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'created_by', title:'CREATED BY', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'created_date', title:'CREATED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'modified_by', title:'MODIFIED BY', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'modified_date', title:'MODIFIED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'id_aspek', title:'ID ASPEK', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'aspek', title:'ASPEK', halign: 'center', align: 'left', sortable:"true", width:500},
+				{field:'nourut', title:'NOURUT', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'keterangan', title:'KETERANGAN', halign: 'center', align: 'left', sortable:"true", width:300},
+				//{field:'status', title:'STATUS', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'created_by', title:'CREATED BY', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'created_date', title:'CREATED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'modified_by', title:'MODIFIED BY', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'modified_date', title:'MODIFIED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
             ]],
             onBeforeLoad: function (param) {
                 

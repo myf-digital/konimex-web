@@ -15,26 +15,33 @@
         <div class="col-xs-12 col-sm-12 col-md-6">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Rdg</h3>
+                    <h3 class="box-title">Materi Rapat Dewan Gubernur</h3>
                 </div>
 
                 <form id="fm-rdg" role="form" method="post">
                     <div class="box-body">
 							<div class="form-group">
-								<label for="id_rdg">Id Rdg</label>
-								<input name="id_rdg" class="form-control" placeholder="Id Rdg">
-							</div>
-							<div class="form-group">
-								<label for="nama_rdg">Nama Rdg</label>
-								<input name="nama_rdg" class="form-control" placeholder="Nama Rdg">
+								<label for="nama_rdg">Materi</label>
+								<input name="nama_rdg" class="form-control" placeholder="Materi Rapat Dewan Gubernur">
 							</div>
 							<div class="form-group">
 								<label for="tanggal">Tanggal</label>
-								<input name="tanggal" class="form-control" placeholder="Tanggal">
+								<div class="input-group date">
+									  <div class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									  </div>
+									  <input name="tanggal" type="text" class="form-control pull-right" id="id-tanggal" placeholder="Tanggal pelaksanaan">
+								</div>
 							</div>
 							<div class="form-group">
-								<label for="id_satker">Id Satker</label>
-								<input name="id_satker" class="form-control" placeholder="Id Satker">
+								<label for="id_satker">Satuan Kerja</label>
+								 <select id="id-satker" name="id_satker" class="form-control" placeholder="Pilih Satker">
+								 <option value="">Pilih Satker</option>
+								 </select>
+							</div>
+							<div class="form-group">
+								<label for="aspek">Aspek</label>
+								 <select id="id-aspek" name="id_aspek[]" class="form-control" multiple = "multiple" ></select>
 							</div>
 							<div class="form-group">
 								<label for="keterangan">Keterangan</label>
