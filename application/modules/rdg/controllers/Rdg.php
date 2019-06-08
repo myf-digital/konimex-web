@@ -1,47 +1,52 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ref_rdg extends BaseController
+class Rdg extends BaseController
 {
 
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('rdg_model', 'rdg_home');
+        $this->load->model('aspek_model', 'aspek');
     }
 
     public function index()
     {
-        $this->template->show($this, 'content');
+        $this->load->view('index');
     }
 
-    public function form()
+    public function materi()
     {
-        $this->template->show($this, 'form');
+        $this->load->view('materi');
+    }
+
+    public function question()
+    {
+        $this->load->view('question');
     }
 
     public function create()
     {
         $data = param_input();
-        response($this->rdg->create($data));
+        response($this->aspek->create($data));
     }
 
     public function update()
     {
         $data = param_input();
-        response($this->rdg->update($data));
+        response($this->aspek->update($data));
     }
 
     public function delete()
     {
         $data = param_input();
-        response($this->rdg->delete($data));
+        response($this->aspek->delete($data));
     }
 
     public function load()
     {
         $data = param_input();
-        responseJSON($this->rdg->load($data));
+        responseJSON($this->aspek->load($data));
     }
 
 }
