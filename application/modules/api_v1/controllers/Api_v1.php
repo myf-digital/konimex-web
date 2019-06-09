@@ -46,30 +46,29 @@ class Api_v1 extends CI_Controller
     function synchronize_penilaian()
     {
 		$param = param_input();
-		$today = date("Y-m-d h:i:sa");
-
+		$now = date("Y-m-d h:i:sa");
         // jawaban
-        if (validArrayValue($param, "jawaban")) {
-			
-            foreach ($param["jawaban"] as $key => $value) {
-				$this->db->where('nip', $value["nip"]);
-				$this->db->where('id_rdg', $value["id_rdg"]);
-				$this->db->delete("trx_hasil_penilaian");
+        if (isset($param["options"]) && isset($param["saran"])) {
+            $options = json_decode($param["options"]);
+            foreach ($options as $key => $value) {
+                $this->db->where('nip', $value->nip);
+                $this->db->where('id_rdg', $value->id_rdg);
+                $this->db->delete("trx_hasil_penilaian");
             }
-			$return = $this->api_v1->insert_batch_table("trx_hasil_penilaian", $param["jawaban"]);
-
-            foreach ($param["saran"] as $key => $value) {
-				$this->db->where('nip', $value["nip"]);
-				$this->db->where('id_rdg', $value["id_rdg"]);
-				$this->db->delete("trx_saran");
-            }
-            $returnsaran = $this->api_v1->insert_batch_table("trx_saran", $param["saran"]);
-            if ($return) {
+            $return = $this->api_v1->insert_batch_table("trx_hasil_penilaian", $options);
+            $saran = json_decode($param["saran"]);
+            $this->db->where('nip', $saran->nip);
+            $this->db->where('id_rdg', $saran->id_rdg);
+            $this->db->delete("trx_saran");
+            $return_saran = $this->db->insert("trx_saran", $saran);
+            if ($return && $return_saran) {
 				return response("success");
 			} else {
 				return response("error", "401", "failed");
 			}
-
+            return response("success");
+        } else {
+            return response(new stdClass(), 400, "Parameter not allowed");
         }
     }
 	

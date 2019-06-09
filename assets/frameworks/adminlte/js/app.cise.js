@@ -144,6 +144,14 @@
         $.post(url, JSON.stringify(data), callback, "json");
     };
 
+    Common.prototype.post = function (url, data, callback, serialize) {
+        if (serialize) {
+            $.post(url, JSON.stringify(data), callback, "json");
+        } else {
+            $.post(url, data, callback, "json");
+        }
+    };
+
     Common.prototype.removeFilter = function (names) {
         names.forEach(function (value, index, arr) {
             $("input[name='" + value + "'].datagrid-filter").remove();

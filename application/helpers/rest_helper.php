@@ -45,6 +45,11 @@ function validArrayValue($value, $key)
     return (isset($value[$key]) && !(is_null($value[$key]) || empty($value[$key])) && is_array($value[$key]));
 }
 
+function validKeyValue($value, $key)
+{
+    return (property_exists($value, $key)); //&& !(is_null($value->$key) || empty($value->$key))
+}
+
 function excludeValueForCreate($values, $index)
 {
     foreach ($values[$index] as $key => $value) {

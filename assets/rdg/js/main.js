@@ -1,54 +1,69 @@
-$(document).ready(function ($) {
-    $.fn.menumaker = function (options) {
-        var flexmenu = $(this), settings = $.extend({
-                format: 'dropdown',
-                sticky: false
-            }, options);
-        return this.each(function () {
-            $(this).find('.button').on('click', function () {
-                $(this).toggleClass('menu-opened');
-                var mainmenu = $(this).next('ul');
-                if (mainmenu.hasClass('open')) {
-                    mainmenu.slideToggle().removeClass('open');
-                } else {
-                    mainmenu.slideToggle().addClass('open');
-                    if (settings.format === 'dropdown') {
-                        mainmenu.find('ul').show();
-                    }
-                }
-            });
-            flexmenu.find('li ul').parent().addClass('has-sub');
-            subToggle = function () {
-                flexmenu.find('.has-sub').prepend('<span class="submenu-button"></span>');
-                flexmenu.find('.submenu-button').on('click', function () {
-                    $(this).toggleClass('submenu-opened');
-                    if ($(this).siblings('ul').hasClass('open')) {
-                        $(this).siblings('ul').removeClass('open').slideToggle();
-                    } else {
-                        $(this).siblings('ul').addClass('open').slideToggle();
-                    }
-                });
-            };
-            if (settings.format === 'multitoggle')
-                subToggle();
-            else
-                flexmenu.addClass('dropdown');
-            if (settings.sticky === true)
-                flexmenu.css('position', 'fixed');
-            resizeFix = function () {
-                var mediasize = 768;
-                if ($(window).width() > mediasize) {
-                    flexmenu.find('ul').show();
-                }
-                if ($(window).width() <= mediasize) {
-                    flexmenu.find('ul').hide().removeClass('open');
-                }
-            };
-            resizeFix();
-            return $(window).on('resize', resizeFix);
-        });
-    };
 
-   $('#flexmenu').menumaker({ format: 'multitoggle' });
-  
-}(jQuery));
+$(window).on("load", function () {
+  setTimeout(function(){
+      $('#loading').fadeOut('slow', function () {});
+  },1000);
+});
+
+
+var nav = $('.navbar');
+var navHeight = nav.outerHeight();
+
+$(document).ready(function(){
+  $('a[href*="#"]:not([href="#"])').on("click", function () {
+    var href = this.hash;
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var hash = $(this.hash);
+      var target = hash.length ? hash : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: (target.offset().top - navHeight + 5)
+        }, 850, function(){
+          $('.navbar-collapse').collapse('hide');
+        });
+        return false;
+      }
+    }
+  });
+  // Back to top button
+  $(window).scroll(function() {
+    if ($(this).scrollTop() > 100) {
+      $('.back-to-top').fadeIn('slow');
+    } else {
+      $('.back-to-top').fadeOut('slow');
+    }
+  });
+  $('.back-to-top').click(function(){
+    $('html, body').animate({scrollTop : 0},1500, function(){
+      // window.location.hash = href;
+    });
+    return false;
+  });
+});
+
+// Alert
+function message() {
+  swal({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, Confirm'
+  }).then(function() {
+    swal(
+      'Success!',
+      'Your Sugestion have been submit.',
+      'success'
+    )
+  })
+}
+
+function showLoading() {
+  $('#loading').fadeIn('slow', function () {});
+}
+
+function hideLoading() {
+  $('#loading').fadeOut('slow', function () {});
+}
