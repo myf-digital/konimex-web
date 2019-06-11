@@ -31,7 +31,7 @@ class Api_v1_model extends CI_Model
 		{
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
-            $sql = "select a.id_rdg, b.nama_rdg, b.tanggal, a.id_aspek, c.aspek, c.nourut, d.nilai
+            $sql = "select a.id_rdg, b.nama_rdg, b.tanggal, a.id_aspek, c.aspek, c.id_tipe tipe_soal, c.listjawaban, c.nourut, d.value nilai
 					from 
 					ref_map_rdg a left join ref_rdg b on a.id_rdg=b.id_rdg
 					left join ref_aspek c on a.id_aspek=c.id_aspek

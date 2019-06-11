@@ -16,6 +16,7 @@ class Aspek_model extends CI_Model
 			unset($data['listjawaban']);
 		}else{
 			$arrlist = implode('|',$data['listjawaban']);
+			$data['listjawaban'] = $arrlist;
 		}
         return $this->db->insert('ref_aspek', $data);
     }

@@ -21,11 +21,8 @@
                 <form id="fm-aspek" role="form" method="post">
                     <div class="box-body">
 							<div class="form-group">
-								<label for="id_aspek">Id Aspek</label>
-								<input name="id_aspek" class="form-control" placeholder="Id Aspek">
-							</div>
-							<div class="form-group">
 								<label for="aspek">Aspek</label>
+								<input name="id_aspek" type="hidden" class="form-control" placeholder="Id Aspek">
 								<input name="aspek" class="form-control" placeholder="Aspek">
 							</div>
 							<div class="form-group">
@@ -48,7 +45,7 @@
 										<i class="fa fa-plus">Tambah Jawaban</i>
 									</a>
 								</label>
-								<br>
+								<!--<input id="listjawaban" type="text" name="listjawaban[]" class="form-control" style="height:30px; width:350px; margin:5px 0 0 0; padding-top:5px;" value="" autocomplete="off" /> -->
 							</div>
                     </div>
 
