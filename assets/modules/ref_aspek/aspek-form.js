@@ -101,6 +101,30 @@
 				e.preventDefault(); $(this).parent('div').remove(); x--;
 			}
 			return false;
-		})
+		});
+		
+		if (isUpdate){
+			if(uiSelectTipePertanyaan.val(param.id_tipe)!= 3){
+				var listjawaban = param.listjawaban;
+				var listArr = listjawaban.split('|');
+				for(let i = 0; i < listArr.length; i++){
+
+					x++; //text box increment
+					$(wrapper).append('<input id="id_listjawaban_'+x+'" type="hidden" name="id_listjawaban[]"  value="NA" autocomplete="off" />\
+								<input id="flag_'+x+'" type="hidden" name="flag[]"  value="2" autocomplete="off" />\
+								<label class="input"><input id="listjawaban_'+x+'" type="text" name="listjawaban[]" class="form-control" value="'+listArr[i]+'" autocomplete="off" style="height:30px; width:350px; margin:5px 0 0 0; padding-top:5px;"/> </label>\
+							<a href="#" class="remove_field"><i class="fa fa-lg fa-fw fa-times" style="padding-top:10px; color:red;"></i></a>\
+						'); //add input box
+					$(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+						if (confirm('Apakah Anda Ingin Menghapus Jawaban ?')) {
+							// Save it!
+							e.preventDefault(); $(this).parent('div').remove(); x--;
+						}
+						return false;
+					});
+					
+				}
+			}
+		}
 
 })();

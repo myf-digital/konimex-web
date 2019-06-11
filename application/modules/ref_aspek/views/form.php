@@ -48,7 +48,7 @@
 										<i class="fa fa-plus">Tambah Jawaban</i>
 									</a>
 								</label>
-								<input id="listjawaban" type="text" name="listjawaban[]" class="form-control" style="height:30px; width:350px; margin:5px 0 0 0; padding-top:5px;" value="" autocomplete="off" />
+								<br>
 							</div>
                     </div>
 
