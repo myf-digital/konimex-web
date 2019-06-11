@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version 5.5.5-10.1.13-MariaDB)
-# Date: 2019-05-23 01:02:43
+# Date: 2019-06-11 09:28:12
 # Generator: MySQL-Front 6.1  (Build 1.26)
 
 
@@ -186,7 +186,9 @@ DROP TABLE IF EXISTS `ref_aspek`;
 CREATE TABLE `ref_aspek` (
   `id_aspek` int(11) NOT NULL AUTO_INCREMENT,
   `aspek` varchar(255) DEFAULT NULL,
+  `id_tipe` int(11) DEFAULT NULL COMMENT '1-> Multiple Choice; 2-> Select Box; 3-> Text input',
   `nourut` int(11) DEFAULT NULL,
+  `listjawaban` varchar(1000) DEFAULT NULL,
   `keterangan` varchar(255) DEFAULT NULL,
   `status` char(1) DEFAULT NULL,
   `created_by` varchar(100) NOT NULL,
@@ -194,14 +196,14 @@ CREATE TABLE `ref_aspek` (
   `modified_by` varchar(100) DEFAULT NULL,
   `modified_date` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id_aspek`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 #
 # Data for table "ref_aspek"
 #
 
 /*!40000 ALTER TABLE `ref_aspek` DISABLE KEYS */;
-INSERT INTO `ref_aspek` VALUES (1,'Kedalaman dan kelengkapan materi',1,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(2,'Ketepatan proyeksi',2,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(3,'Kelengkapan data/informasi',3,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(4,'Keterkinian data/informasi',4,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(5,'Rekomendasi implementable',5,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(6,'Bahasa yang mudah dipahami',6,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(7,'Kualitas materi secara keseluruhan',7,'Footer',NULL,'','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `ref_aspek` VALUES (1,'Kedalaman dan kelengkapan materi',1,1,'a|b|c|d','dfsdf',NULL,'','0000-00-00 00:00:00',NULL,NULL),(2,'Ketepatan proyeksi',1,2,NULL,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(3,'Kelengkapan data/informasi',1,3,NULL,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(4,'Keterkinian data/informasi',1,4,NULL,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(5,'Rekomendasi implementable',1,5,NULL,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(6,'Bahasa yang mudah dipahami',1,6,NULL,'',NULL,'','0000-00-00 00:00:00',NULL,NULL),(7,'Kualitas materi secara keseluruhan',1,7,NULL,'Footer',NULL,'','0000-00-00 00:00:00',NULL,NULL),(8,'testt',3,7,'','r',NULL,'','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `ref_aspek` ENABLE KEYS */;
 
 #
@@ -307,6 +309,25 @@ INSERT INTO `ref_satuan_kerja` VALUES (4,'Ab','KPw PROVINSI MALUKU','admin','201
 /*!40000 ALTER TABLE `ref_satuan_kerja` ENABLE KEYS */;
 
 #
+# Structure for table "ref_tipe_pertanyaan"
+#
+
+DROP TABLE IF EXISTS `ref_tipe_pertanyaan`;
+CREATE TABLE `ref_tipe_pertanyaan` (
+  `id_tipe` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(50) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_tipe`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+#
+# Data for table "ref_tipe_pertanyaan"
+#
+
+INSERT INTO `ref_tipe_pertanyaan` VALUES (1,'Multiple Choice','2019-06-10 12:44:29','2019-06-10 12:44:29'),(2,'Select box','2019-06-10 12:44:29','2019-06-10 12:44:29'),(3,'Text Input','2019-06-10 12:44:29','2019-06-10 12:44:29');
+
+#
 # Structure for table "trx_hasil_penilaian"
 #
 
@@ -323,14 +344,14 @@ CREATE TABLE `trx_hasil_penilaian` (
   `modified_by` varchar(50) DEFAULT NULL,
   `modified_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id_penilaian`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=120 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 #
 # Data for table "trx_hasil_penilaian"
 #
 
 /*!40000 ALTER TABLE `trx_hasil_penilaian` DISABLE KEYS */;
-INSERT INTO `trx_hasil_penilaian` VALUES (113,'09860',3,1,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(114,'09860',3,2,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(115,'09860',3,3,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(116,'09860',3,4,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(117,'09860',3,5,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(118,'09860',3,6,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(119,'09860',3,7,3,NULL,'','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `trx_hasil_penilaian` VALUES (113,'09860',3,1,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(114,'09860',3,2,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(115,'09860',3,3,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(116,'09860',3,4,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(117,'09860',3,5,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(118,'09860',3,6,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(119,'09860',3,7,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(120,'09860',1,1,2,NULL,'','0000-00-00 00:00:00',NULL,NULL),(121,'09860',1,2,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(122,'09860',1,3,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(123,'09860',1,4,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(124,'09860',1,5,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(125,'09860',1,6,3,NULL,'','0000-00-00 00:00:00',NULL,NULL),(126,'09860',1,7,3,NULL,'','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `trx_hasil_penilaian` ENABLE KEYS */;
 
 #
@@ -348,12 +369,12 @@ CREATE TABLE `trx_saran` (
   `modified_by` varchar(50) DEFAULT NULL,
   `modified_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id_saran`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 #
 # Data for table "trx_saran"
 #
 
 /*!40000 ALTER TABLE `trx_saran` DISABLE KEYS */;
-INSERT INTO `trx_saran` VALUES (15,'09860',3,'saran','','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `trx_saran` VALUES (15,'09860',3,'saran','','0000-00-00 00:00:00',NULL,NULL),(16,'09860',1,'','','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `trx_saran` ENABLE KEYS */;
