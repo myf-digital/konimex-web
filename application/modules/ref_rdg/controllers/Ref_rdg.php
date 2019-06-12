@@ -23,25 +23,25 @@ class Ref_rdg extends BaseController
     public function create()
     {
         $data = param_input();
-        response($this->rdg->create($data));
+        response($this->rdg_home->create($data));
     }
 
     public function update()
     {
         $data = param_input();
-        response($this->rdg->update($data));
+        response($this->rdg_home->update($data));
     }
 
     public function delete()
     {
         $data = param_input();
-        response($this->rdg->delete($data));
+        response($this->rdg_home->delete($data));
     }
 
     public function load()
     {
         $data = param_input();
-        responseJSON($this->rdg->load($data));
+        responseJSON($this->rdg_home->load($data));
     }
 
 }
