@@ -59,6 +59,41 @@ $(document).ready(function () {
         tmp = tmp.replace("?3", value.nourut);
         tmp = tmp.replace("?4", value.nourut);
         tmp = tmp.replace("?5", value.nourut);
+
+        tmp = '<div class="row">\n' +
+            '                            <div class="col-md-6">\n' +
+            '                                <div class="form-group row">\n' +
+            '                                    <label class="col-sm-3 col-form-label">Group/Dept</label>\n' +
+            '                                    <div class="col-sm-9">\n' +
+            '                                        <input type="text" class="form-control" th:field="*{documentName}">\n' +
+            '                                    </div>\n' +
+            '                                    <span class="col-sm-3 col-form-label" ></span>\n' +
+            '                                    <span class="col-sm-9 error error-field text-danger"></span>\n' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                        </div>\n' +
+            '                        <div class="row cm-field">\n' +
+            '                            <div class="col-md-9">\n' +
+            '                                <div class="form-group row">\n' +
+            '                                    <label class="col-sm-2 col-form-label">Head</label>\n' +
+            '                                    <div class="col-sm-10">\n' +
+            '                                        <select class="form-control" name="documentTypeId" required="true">\n' +
+            '                                            <option value="" selected disabled>Menu</option>\n' +
+            '                                        </select>\n' +
+            '                                    </div>\n' +
+            '                                    <span class="col-sm-3 col-form-label"></span>\n' +
+            '                                    <span class="col-sm-9 error error-field text-danger"></span>\n' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                            <div class="col-md-3">\n' +
+            '                                <a href="javascript:void(0)" onclick="appendField(this)" class="btn btn-warning mr-2 btn-option-dynamic">\n' +
+            '                                    <i class="fa fa-edit"></i>\n' +
+            '                                </a>\n' +
+            '                                <a href="javascript:void(0)" onclick="removeField(this)" class="btn btn-danger btn-option-dynamic">\n' +
+            '                                    <i class="fa fa-window-close"></i>\n' +
+            '                                </a>\n' +
+            '                            </div>\n' +
+            '                        </div>';
         return tmp;
     }
 
