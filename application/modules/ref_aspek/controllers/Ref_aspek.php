@@ -44,4 +44,10 @@ class Ref_aspek extends BaseController
         responseJSON($this->aspek->load($data));
     }
 
+    public function load_tipe_pertanyaan()
+    {
+        $data = param_input();
+        responseJSON($this->aspek->load_tipe_pertanyaan($data));
+    }
+
 }
