@@ -9,7 +9,14 @@ $(document).ready(function () {
     if (param !== undefined) {
         var tmp = "";
         $.each(param, function (i, v) {
-            tmp += templateAspek(v);
+            console.log("tipe soal : " + v.tipe_soal);
+            if (1 == v.tipe_soal) {
+                tmp += templateAspekType1(v);
+            } else if (2 == v.tipe_soal) {
+                tmp += templateAspekType2(v);
+            }  else if (3 == v.tipe_soal) {
+                tmp += templateAspekType3(v);
+            }
         });
         $('#aspek-list').html(tmp);
 
@@ -28,7 +35,7 @@ $(document).ready(function () {
         common.direct("rdg/materi");
     }
 
-    function templateAspek(value) {
+    function templateAspekType1(value) {
         var tmp = '' +
             '                       <div class="ask-list">\n' +
             '                            <div class="list-group">\n' +
@@ -40,60 +47,105 @@ $(document).ready(function () {
             '                                </div>\n' +
             '                            </div>\n' +
             '                            <div class="pilihan">\n' +
-            '                                <label class="checkbox">One\n' +
-            '                                    <input type="radio" name="radio-?3" value="1">\n' +
+            '                                <label class="checkbox">?9\n' +
+            '                                    <input type="radio" name="radio-?3" value="?6">\n' +
             '                                    <span class="checkmark"></span>\n' +
             '                                </label>\n' +
-            '                                <label class="checkbox">Two\n' +
-            '                                    <input type="radio" name="radio-?4" value="2">\n' +
+            '                                <label class="checkbox">?10\n' +
+            '                                    <input type="radio" name="radio-?4" value="?7">\n' +
             '                                    <span class="checkmark"></span>\n' +
             '                                </label>\n' +
-            '                                <label class="checkbox">Three\n' +
-            '                                    <input type="radio" name="radio-?5" value="3">\n' +
+            '                                <label class="checkbox">?11\n' +
+            '                                    <input type="radio" name="radio-?5" value="?8">\n' +
             '                                    <span class="checkmark"></span>\n' +
             '                                </label>\n' +
             '                            </div>\n' +
             '                        </div>';
+
+
+        if (value.listjawaban != undefined) {
+            var jawaban = value.listjawaban.split('|');
+            tmp = tmp.replace("?9", jawaban[0]);
+            tmp = tmp.replace("?10", jawaban[1]);
+            tmp = tmp.replace("?11", jawaban[2]);
+            tmp = tmp.replace("?6", jawaban[0]);
+            tmp = tmp.replace("?7", jawaban[1]);
+            tmp = tmp.replace("?8", jawaban[2]);
+        } else {
+            tmp = tmp.replace("?9", 1);
+            tmp = tmp.replace("?10", 2);
+            tmp = tmp.replace("?11", 3);
+            tmp = tmp.replace("?6", 1);
+            tmp = tmp.replace("?7", 2);
+            tmp = tmp.replace("?8", 3);
+        }
+
         tmp = tmp.replace("?1", value.nourut);
         tmp = tmp.replace("?2", value.aspek);
         tmp = tmp.replace("?3", value.nourut);
         tmp = tmp.replace("?4", value.nourut);
         tmp = tmp.replace("?5", value.nourut);
 
-        tmp = '<div class="row">\n' +
-            '                            <div class="col-md-6">\n' +
-            '                                <div class="form-group row">\n' +
-            '                                    <label class="col-sm-3 col-form-label">Group/Dept</label>\n' +
-            '                                    <div class="col-sm-9">\n' +
-            '                                        <input type="text" class="form-control" th:field="*{documentName}">\n' +
-            '                                    </div>\n' +
-            '                                    <span class="col-sm-3 col-form-label" ></span>\n' +
-            '                                    <span class="col-sm-9 error error-field text-danger"></span>\n' +
+        return tmp;
+    }
+
+    function templateAspekType2(value) {
+        var tmp = '' +
+            '                       <div class="ask-list">\n' +
+            '                            <div class="list-group">\n' +
+            '                                <div class="nomor">\n' +
+            '                                    <span>?1.</span>\n' +
+            '                                </div>\n' +
+            '                                <div class="pertanyaan">\n' +
+            '                                    <span>?2</span>\n' +
             '                                </div>\n' +
             '                            </div>\n' +
-            '                        </div>\n' +
-            '                        <div class="row cm-field">\n' +
-            '                            <div class="col-md-9">\n' +
-            '                                <div class="form-group row">\n' +
-            '                                    <label class="col-sm-2 col-form-label">Head</label>\n' +
-            '                                    <div class="col-sm-10">\n' +
-            '                                        <select class="form-control" name="documentTypeId" required="true">\n' +
-            '                                            <option value="" selected disabled>Menu</option>\n' +
-            '                                        </select>\n' +
-            '                                    </div>\n' +
-            '                                    <span class="col-sm-3 col-form-label"></span>\n' +
-            '                                    <span class="col-sm-9 error error-field text-danger"></span>\n' +
-            '                                </div>\n' +
-            '                            </div>\n' +
-            '                            <div class="col-md-3">\n' +
-            '                                <a href="javascript:void(0)" onclick="appendField(this)" class="btn btn-warning mr-2 btn-option-dynamic">\n' +
-            '                                    <i class="fa fa-edit"></i>\n' +
-            '                                </a>\n' +
-            '                                <a href="javascript:void(0)" onclick="removeField(this)" class="btn btn-danger btn-option-dynamic">\n' +
-            '                                    <i class="fa fa-window-close"></i>\n' +
-            '                                </a>\n' +
+            '                            <div class="pilihan">\n' +
+            '                                <select name="?3">\n' +
+            '                                    <option disabled selected> -- Pilih Jawaban -- </option>\n' +
+            '                                    ?4\n' +
+            '                                </select>\n' +
             '                            </div>\n' +
             '                        </div>';
+
+
+        if (value.listjawaban != undefined) {
+            var jawaban = value.listjawaban.split('|');
+            var valueOption = "";
+            $.each(jawaban, function (i, v) {
+                var option = "<option value='" + v + "'>" + v + "</option>";
+                valueOption = valueOption + option;
+            });
+            console.log(valueOption);
+            tmp = tmp.replace("?4", valueOption);
+        }
+        tmp = tmp.replace("?1", value.nourut);
+        tmp = tmp.replace("?2", value.aspek);
+        tmp = tmp.replace("?3", value.nourut);
+
+        return tmp;
+    }
+
+    function templateAspekType3(value) {
+        var tmp = '' +
+            '                       <div class="ask-list">\n' +
+            '                            <div class="list-group">\n' +
+            '                                <div class="nomor">\n' +
+            '                                    <span>?1.</span>\n' +
+            '                                </div>\n' +
+            '                                <div class="pertanyaan">\n' +
+            '                                    <span>?2</span>\n' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                            <div class="pilihan col-md-12">\n' +
+            '                                <input type="text" name="?3">\n' +
+            '                                </input>\n' +
+            '                            </div>\n' +
+            '                        </div>';
+        tmp = tmp.replace("?1", value.nourut);
+        tmp = tmp.replace("?2", value.aspek);
+        tmp = tmp.replace("?3", value.nourut);
+
         return tmp;
     }
 
