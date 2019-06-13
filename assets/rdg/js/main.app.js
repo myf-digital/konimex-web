@@ -30,9 +30,9 @@ function processJson(responseText, statusText, xhr, $form) {
             console.log(statusText);
             console.log(responseText);
             if (responseText.result.length > 0) {
-                common.setCookie("user.nip", responseText.result[0].nip);
+                sessionStorage.setItem("user.nip", JSON.stringify(responseText.result[0]));
             }
-            common.setCookie("review.list", responseText.result);
+            sessionStorage.setItem("review.list", JSON.stringify(responseText.result));
             common.direct("rdg/materi");
         } else {
             console.log(responseText);

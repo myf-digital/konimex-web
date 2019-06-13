@@ -128,7 +128,7 @@
     Common.prototype.baseURL = function (path = "") {
         let base_url = window.location.origin;
         let pathArray = window.location.pathname.split("/");
-        return base_url + "/" + pathArray[1] + "/" + path;
+        return base_url + "/" + pathArray[1] + "/" + path + "/";
     };
 
     Common.prototype.direct = function (path = "") {
@@ -158,10 +158,10 @@
         });
     };
 
-    Common.prototype.replaceFormValue = function (form = [], kv =[]) {
+    Common.prototype.replaceFormValue = function (form = [], kv = []) {
         form.forEach(function (value, index, arr) {
             kv.forEach(function (rv, rindex, rarr) {
-                if(value.name===rv.key) {
+                if (value.name === rv.key) {
                     form[index].value = rv.value;
                 }
             });

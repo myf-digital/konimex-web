@@ -33,7 +33,7 @@
         <div class="container-fluid vh-100 bg-primary">
             <div class="h-100 w-100 d-flex align-items-center">
                 <div class="container text-center z-index-1">
-                    <h2 class="first-text">LIST REVIEW</h2>
+                    <h6 class="first-text">LIST REVIEW</h6>
                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
                     <p class="date">14 Juni 2019</p>
                     <ul id="review-list"></ul>

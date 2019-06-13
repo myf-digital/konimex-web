@@ -4,9 +4,10 @@ const common = new Common();
 
 $(document).ready(function () {
 
-    let param = common.getCookie("review.list.aspek");
-
-    if (param !== undefined) {
+    let param = sessionStorage.getItem("review.list.aspek");
+    console.log(param);
+    if (param !== null) {
+        param = JSON.parse(param);
         var tmp = "";
         $.each(param, function (i, v) {
             console.log("tipe soal : " + v.tipe_soal);
@@ -14,7 +15,7 @@ $(document).ready(function () {
                 tmp += templateAspekType1(v);
             } else if (2 == v.tipe_soal) {
                 tmp += templateAspekType2(v);
-            }  else if (3 == v.tipe_soal) {
+            } else if (3 == v.tipe_soal) {
                 tmp += templateAspekType3(v);
             }
         });
@@ -37,27 +38,21 @@ $(document).ready(function () {
 
     function templateAspekType1(value) {
         var tmp = '' +
-            '                       <div class="ask-list">\n' +
-            '                            <div class="list-group">\n' +
-            '                                <div class="nomor">\n' +
-            '                                    <span>?1.</span>\n' +
-            '                                </div>\n' +
-            '                                <div class="pertanyaan">\n' +
-            '                                    <span>?2</span>\n' +
-            '                                </div>\n' +
+            '                       <div class="form-group">\n' +
+            '                            <label>?1. ?2</label>\n' +
+            '                            <div class="radio">\n' +
+            '                                <label>\n' +
+            '                                    <input type="radio" name="radio-?3" value="?6">&nbsp;&nbsp;?9\n' +
+            '                                </label>\n' +
             '                            </div>\n' +
-            '                            <div class="pilihan">\n' +
-            '                                <label class="checkbox">?9\n' +
-            '                                    <input type="radio" name="radio-?3" value="?6">\n' +
-            '                                    <span class="checkmark"></span>\n' +
+            '                            <div class="radio">\n' +
+            '                                <label>\n' +
+            '                                    <input type="radio" name="radio-?4" value="?7">&nbsp;&nbsp;?10\n' +
             '                                </label>\n' +
-            '                                <label class="checkbox">?10\n' +
-            '                                    <input type="radio" name="radio-?4" value="?7">\n' +
-            '                                    <span class="checkmark"></span>\n' +
-            '                                </label>\n' +
-            '                                <label class="checkbox">?11\n' +
-            '                                    <input type="radio" name="radio-?5" value="?8">\n' +
-            '                                    <span class="checkmark"></span>\n' +
+            '                            </div>\n' +
+            '                            <div class="radio">\n' +
+            '                                <label>\n' +
+            '                                    <input type="radio" name="radio-?5" value="?8">&nbsp;&nbsp;?11\n' +
             '                                </label>\n' +
             '                            </div>\n' +
             '                        </div>';
@@ -91,21 +86,12 @@ $(document).ready(function () {
 
     function templateAspekType2(value) {
         var tmp = '' +
-            '                       <div class="ask-list">\n' +
-            '                            <div class="list-group">\n' +
-            '                                <div class="nomor">\n' +
-            '                                    <span>?1.</span>\n' +
-            '                                </div>\n' +
-            '                                <div class="pertanyaan">\n' +
-            '                                    <span>?2</span>\n' +
-            '                                </div>\n' +
-            '                            </div>\n' +
-            '                            <div class="pilihan">\n' +
-            '                                <select name="?3">\n' +
-            '                                    <option disabled selected> -- Pilih Jawaban -- </option>\n' +
+            '                       <div class="form-group">\n' +
+            '                            <label>?1. ?2</label>\n' +
+            '                                <select class="form-control" name="?3">\n' +
+            '                                    <option class="form-control" value="" disabled selected> -- Pilih Jawaban -- </option>\n' +
             '                                    ?4\n' +
             '                                </select>\n' +
-            '                            </div>\n' +
             '                        </div>';
 
 
@@ -128,19 +114,9 @@ $(document).ready(function () {
 
     function templateAspekType3(value) {
         var tmp = '' +
-            '                       <div class="ask-list">\n' +
-            '                            <div class="list-group">\n' +
-            '                                <div class="nomor">\n' +
-            '                                    <span>?1.</span>\n' +
-            '                                </div>\n' +
-            '                                <div class="pertanyaan">\n' +
-            '                                    <span>?2</span>\n' +
-            '                                </div>\n' +
-            '                            </div>\n' +
-            '                            <div class="pilihan col-md-12">\n' +
-            '                                <input type="text" name="?3">\n' +
-            '                                </input>\n' +
-            '                            </div>\n' +
+            '                       <div class="form-group">\n' +
+            '                            <label>?1. ?2</label>\n' +
+            '                            <input class="form-control" type="text" name="?3">\n' +
             '                        </div>';
         tmp = tmp.replace("?1", value.nourut);
         tmp = tmp.replace("?2", value.aspek);
@@ -176,22 +152,44 @@ function validate(formData, jqForm, options) {
     console.log("validate");
     var isvalidForm = true;
     var optionValue = [];
-    let param = common.getCookie("review.list.aspek");
-    let user = common.getCookie("review.nip");
+    let param = JSON.parse(sessionStorage.getItem("review.list.aspek"));
+    let user = JSON.parse(sessionStorage.getItem("review.nip"));
     $.each(param, function (i, v) {
-        if ($("input[name=radio-" + v.nourut + "]:checked").length === 0) {
-            hideLoading();
-            Swal.fire({
-                type: 'warning',
-                title: 'Oops... please select',
-                text: "" + v.nourut + ". " + v.aspek
-            });
-            isvalidForm = false;
-            return false;
-        } else {
-            let nilai = $("input[name=radio-" + v.nourut + "]:checked").val();
-            optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, nilai: nilai});
+        console.log("validate : " + v.tipe_soal);
+        if (1 == v.tipe_soal) {
+            if ($("input[name=radio-" + v.nourut + "]:checked").length === 0) {
+                isvalidForm = false;
+                showValidate(v);
+                return false;
+            } else {
+                let nilai = $("input[name=radio-" + v.nourut + "]:checked").val();
+                optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
+            }
+        } else if (2 == v.tipe_soal) {
+            console.log("validation selection");
+            let nilai = $("select[name=" + v.nourut + "] option:selected").val();
+            console.log(nilai);
+            if ("" !== nilai) {
+                optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
+            } else {
+                isvalidForm = false;
+                showValidate(v);
+                return false;
+            }
+
+        } else if (3 == v.tipe_soal) {
+            let nilai = $("input[name=" + v.nourut + "]").val();
+            console.log(nilai);
+            if ("" !== nilai) {
+                optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
+            } else {
+                isvalidForm = false;
+                showValidate(v);
+                return false;
+            }
         }
+
+
     });
     if (isvalidForm) {
         showLoading();
@@ -200,7 +198,17 @@ function validate(formData, jqForm, options) {
     let saran = {nip: user.nip, id_rdg: user.id_rdg, saran: saranValue};
     formData.push({name: "options", value: JSON.stringify(optionValue), type: "text", required: false});
     formData.push({name: "saran", value: JSON.stringify(saran), type: "text", required: false});
+    hideLoading();
     return isvalidForm;
+}
+
+function showValidate(v) {
+    hideLoading();
+    Swal.fire({
+        type: 'warning',
+        title: 'Oops... please select',
+        text: "" + v.nourut + ". " + v.aspek
+    });
 }
 
 // post-submit callback
@@ -209,7 +217,7 @@ function processJson(responseText, statusText, xhr, $form) {
     hideLoading();
     if ("success" === statusText) {
         if (200 === responseText.code) {
-            common.removeCookie("review.list.aspek");
+            sessionStorage.removeItem("review.list.aspek");
             common.direct("rdg/materi");
         } else {
             Swal.fire({
@@ -217,9 +225,6 @@ function processJson(responseText, statusText, xhr, $form) {
                 title: 'Oops...',
                 text: responseText.message
             });
-            // common.removeCookie("review.list.aspek");
-            // common.direct("rdg/materi");
         }
     }
-
 }

@@ -33,7 +33,7 @@
         <div id="home" class="container-fluid parallax bg-primary">
             <div class="h-100 w-100 d-flex align-items-center">
                 <div class="container p-100">
-                    <h2 class="first-text mb-5 mt-5 text-center">LIST REVIEW</h2>
+                    <h6 class="first-text mb-3 text-center">LIST REVIEW</h6>
                     <!-- <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p> -->
                     <!-- <p class="date">14 Juni 2019</p> -->
                     <form id="form-question" action="<?php echo base_url('api_v1/synchronize_penilaian') ?>" method="post">

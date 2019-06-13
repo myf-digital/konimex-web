@@ -4,9 +4,10 @@ const common = new Common();
 
 $(document).ready(function () {
 
-    let param = common.getCookie("review.list");
+    let param = sessionStorage.getItem("review.list");
 
-    if (param !== undefined) {
+    if (param !== null) {
+        param = JSON.parse(param);
         var tmp = "";
         $.each(param, function (i, v) {
             console.log(i);
@@ -40,8 +41,8 @@ function review(rdg) {
         hideLoading();
         if (200 === res.code) {
             var aspek = res.result;
-            common.setCookie("review.nip", {nip: nip, id_rdg: idRgd});
-            common.setCookie("review.list.aspek", aspek);
+            sessionStorage.setItem("review.nip", JSON.stringify({nip: nip, id_rdg: idRgd}));
+            sessionStorage.setItem("review.list.aspek", JSON.stringify(aspek));
             common.direct("rdg/question");
         } else {
             Swal.fire({
