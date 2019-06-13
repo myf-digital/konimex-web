@@ -20,10 +20,21 @@ class Api_v1 extends CI_Controller
 
     }
 
-    function login()
+   function login()
     {
         $data = param_input();
         $result = $this->api_v1->login($data);
+        if (200 == $result->code) {
+            return response($result->result);
+        } else {
+            return response($result->result, $result->code, $result->message);
+        }
+    }
+
+    function materi()
+    {
+        $data = param_input();
+        $result = $this->api_v1->materi($data);
         if (200 == $result->code) {
             return response($result->result);
         } else {

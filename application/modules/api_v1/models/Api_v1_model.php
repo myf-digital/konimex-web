@@ -2,14 +2,35 @@
 
 class Api_v1_model extends CI_Model
 {
-
     function login($data)
+    {
+        if (is_null($data["nip"]) or is_null($data["password"])) 
+		{
+            return result(new stdClass(), 400, "Parameter not allowed");
+        } else {
+            $sql = "select a.nip,a.nama_karyawan,a.id_satker,b.kode_satker,b.satker
+					  from ref_karyawan a left join ref_satuan_kerja b on a.id_satker=b.id_satker
+					where a.nip=?";
+            $res_ss = $this->db->query($sql, array($data["nip"]));
+			if (count($res_ss->result_array()) > 0) {
+                    $response = new stdClass();
+                    $response = $res_ss->result_array();
+                    //parsing to result
+                    return result($response);
+            } else {
+                return result(new stdClass(), 201, "NIP not found!");
+            }
+        }
+    }	
+
+    function materi($data)
     {
         if (is_null($data["nip"])) 
 		{
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
-            $sql = "select a.nip,a.nama_karyawan,a.id_satker,b.kode_satker,b.satker, c.id_rdg, c.nama_rdg, c.tanggal
+            $sql = "select a.nip,a.nama_karyawan,a.id_satker,b.kode_satker,b.satker, c.id_rdg, c.nama_rdg, c.tanggal, 
+					  (select count(1) from trx_hasil_penilaian where nip=a.nip and id_rdg=c.id_rdg) as review
 					  from ref_karyawan a left join ref_satuan_kerja b on a.id_satker=b.id_satker
 					  left join ref_rdg c on a.id_satker=c.id_satker
 					where a.nip=?";
