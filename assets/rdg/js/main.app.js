@@ -1,7 +1,12 @@
+const common = new Common();
+
+let userTmp = localStorage.getItem("user.login");
+
+if (userTmp !== null) {
+    common.direct("rdg/materi");
+}
+
 $(document).ready(function () {
-
-    const common = new Common();
-
     const options = {
         type: 'post',
         beforeSubmit: showRequest,
@@ -23,22 +28,16 @@ function showRequest(formData, jqForm, options) {
 
 // post-submit callback
 function processJson(responseText, statusText, xhr, $form) {
-    const common = new Common();
     hideLoading();
+    console.log("OK");
     if ("success" === statusText) {
-        if (200 === responseText.code) {
-            console.log(statusText);
-            console.log(responseText);
-            if (responseText.result.length > 0) {
-                sessionStorage.setItem("user.nip", JSON.stringify(responseText.result[0]));
-            }
-            sessionStorage.setItem("review.list", JSON.stringify(responseText.result));
+        if (200 === responseText.code && responseText.result) {
+            localStorage.setItem("user.login", JSON.stringify(responseText.result));
             common.direct("rdg/materi");
         } else {
-            console.log(responseText);
             Swal.fire({
                 type: 'error',
-                title: 'Oops...',
+                title: 'Oops... Invalid username or password',
                 text: responseText.message
             });
         }

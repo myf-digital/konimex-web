@@ -145,6 +145,7 @@
     };
 
     Common.prototype.post = function (url, data, callback, serialize) {
+        console.log("post");
         if (serialize) {
             $.post(url, JSON.stringify(data), callback, "json");
         } else {

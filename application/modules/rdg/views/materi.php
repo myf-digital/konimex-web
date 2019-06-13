@@ -36,10 +36,12 @@
                     <h6 class="first-text">LIST REVIEW</h6>
                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
                     <p class="date">14 Juni 2019</p>
-                    <ul id="review-list"></ul>
+                    <ul id="review-list" style="padding-inline-start: 0px!important;"></ul>
+                    <button class="btn-start" onclick="logout()">Logout <i class="fa fa-arrow-right"></i></button>
                 </div>
                 <div class="bg-overlay bg-primary"></div>
             </div>
+
         </div>
 
         <span class="back-to-top bg-primary text-white text-center shadow-sm">

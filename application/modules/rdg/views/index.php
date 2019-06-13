@@ -37,6 +37,7 @@
                     <p class="date">14 Juni 2019</p>
                     <form id="login-form" class="home-input" action="<?php echo base_url('api_v1/login') ?>" method="post">
                         <input type="text" name="nip" class="form-control text-center" placeholder="NIP">
+                        <input type="password" name="password" class="form-control text-center" placeholder="Password" style="margin-top: 24px">
                         <button type="submit" class="fifth-text btn-start">Mulai Review <i class="fa fa-arrow-right"></i></button>
                     </form>
                 </div>

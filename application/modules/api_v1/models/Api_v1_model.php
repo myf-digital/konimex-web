@@ -14,7 +14,7 @@ class Api_v1_model extends CI_Model
             $res_ss = $this->db->query($sql, array($data["nip"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
-                    $response = $res_ss->result_array();
+                    $response = $res_ss->result_array()[0];
                     //parsing to result
                     return result($response);
             } else {
