@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version 5.5.5-10.1.13-MariaDB)
-# Date: 2019-06-13 00:26:54
+# Date: 2019-06-14 15:11:56
 # Generator: MySQL-Front 6.1  (Build 1.26)
 
 
@@ -202,7 +202,7 @@ CREATE TABLE `ref_aspek` (
 #
 
 /*!40000 ALTER TABLE `ref_aspek` DISABLE KEYS */;
-INSERT INTO `ref_aspek` VALUES (1,'Kedalaman dan kelengkapan materi',1,1,'a|b|c','dfsdf','','0000-00-00 00:00:00',NULL,NULL),(2,'Ketepatan proyeksi',1,2,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(3,'Kelengkapan data/informasi',1,3,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(4,'Keterkinian data/informasi',1,4,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(5,'Rekomendasi implementable',1,5,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(6,'Bahasa yang mudah dipahami',1,6,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(7,'Kualitas materi secara keseluruhan',1,7,NULL,'Footer','','0000-00-00 00:00:00',NULL,NULL),(8,'testt',2,7,'1|2|3','r','','0000-00-00 00:00:00',NULL,NULL),(9,'Kualitas materi secara keseluruhan 1',1,8,'1|2|3|4','','','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `ref_aspek` VALUES (1,'Kedalaman dan kelengkapan materi',1,1,'Kurang|Cukup|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(2,'Ketepatan proyeksi',1,2,'Kurang|Cukup|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(3,'Kelengkapan data/informasi',1,3,'25|50|75|100','','','0000-00-00 00:00:00',NULL,NULL),(4,'Keterkinian data/informasi',1,4,'Kurang|Cukup Baik|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(5,'Rekomendasi implementable',2,5,'Kurang|Cukup Baik|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(6,'Bahasa yang mudah dipahami',2,6,'Bagus|Kurang','','','0000-00-00 00:00:00',NULL,NULL),(7,'Kualitas materi secara keseluruhan',3,7,NULL,'','','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `ref_aspek` ENABLE KEYS */;
 
 #
@@ -254,7 +254,7 @@ CREATE TABLE `ref_map_rdg` (
 #
 
 /*!40000 ALTER TABLE `ref_map_rdg` DISABLE KEYS */;
-INSERT INTO `ref_map_rdg` VALUES (1,3,1),(2,3,2),(3,3,3),(4,3,4),(5,3,5),(6,3,6),(7,3,7),(22,2,1),(23,2,2),(24,2,3),(25,2,4),(26,2,5),(27,2,6),(28,1,1),(29,1,2),(30,1,3),(31,1,4),(32,1,5),(33,1,6);
+INSERT INTO `ref_map_rdg` VALUES (1,3,1),(2,3,2),(3,3,3),(4,3,4),(5,3,5),(6,3,6),(7,3,7),(22,2,1),(23,2,2),(24,2,3),(25,2,4),(26,2,5),(27,2,6),(34,1,1),(35,1,2),(36,1,3),(37,1,4),(38,1,5),(39,1,6),(40,1,7);
 /*!40000 ALTER TABLE `ref_map_rdg` ENABLE KEYS */;
 
 #
@@ -366,6 +366,7 @@ CREATE TABLE `trx_hasil_penilaian` (
   `nip` varchar(15) DEFAULT NULL,
   `id_rdg` int(11) NOT NULL DEFAULT '0',
   `id_aspek` int(11) NOT NULL DEFAULT '0',
+  `id_satker` int(11) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   `keterangan` varchar(255) DEFAULT NULL,
   `created_by` varchar(50) NOT NULL,
@@ -380,7 +381,7 @@ CREATE TABLE `trx_hasil_penilaian` (
 #
 
 /*!40000 ALTER TABLE `trx_hasil_penilaian` DISABLE KEYS */;
-INSERT INTO `trx_hasil_penilaian` VALUES (113,'09860',3,1,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(114,'09860',3,2,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(115,'09860',3,3,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(116,'09860',3,4,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(117,'09860',3,5,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(118,'09860',3,6,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(119,'09860',3,7,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(120,'09860',1,1,'2',NULL,'','0000-00-00 00:00:00',NULL,NULL),(121,'09860',1,2,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(122,'09860',1,3,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(123,'09860',1,4,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(124,'09860',1,5,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(125,'09860',1,6,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(126,'09860',1,7,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `trx_hasil_penilaian` VALUES (134,'09860',3,1,NULL,'Cukup',NULL,'','0000-00-00 00:00:00',NULL,NULL),(135,'09860',3,2,NULL,'Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(136,'09860',3,3,NULL,'75',NULL,'','0000-00-00 00:00:00',NULL,NULL),(137,'09860',3,4,NULL,'Cukup Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(138,'09860',3,5,NULL,'Memuaskan',NULL,'','0000-00-00 00:00:00',NULL,NULL),(139,'09860',3,6,NULL,'Bagus',NULL,'','0000-00-00 00:00:00',NULL,NULL),(140,'09860',3,7,NULL,'ok',NULL,'','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `trx_hasil_penilaian` ENABLE KEYS */;
 
 #
@@ -405,5 +406,5 @@ CREATE TABLE `trx_saran` (
 #
 
 /*!40000 ALTER TABLE `trx_saran` DISABLE KEYS */;
-INSERT INTO `trx_saran` VALUES (15,'09860',3,'saran','','0000-00-00 00:00:00',NULL,NULL),(16,'09860',1,'','','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `trx_saran` VALUES (17,'09860',1,'saran aja','','0000-00-00 00:00:00',NULL,NULL),(18,'09860',3,'saran aja','','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `trx_saran` ENABLE KEYS */;

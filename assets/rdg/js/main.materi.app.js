@@ -43,9 +43,8 @@ $(document).ready(function () {
     function templateReview(value) {
         console.log(value);
         var tmp = '' +
-            '<div>' +
             '   <span> ?1 / ?2</span>' +
-            '<div>' +
+			'<div style="margin-top: 20px; margin-bottom: 20px;">' +
             '   <a data-rdg="?3" data-nip="?4" data-materi="?5 href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
             '</div>' +
             '</li>';
