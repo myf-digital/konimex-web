@@ -35,7 +35,8 @@
 							</div>
 							<div class="form-group">
 								<label for="id_satker">Satuan Kerja</label>
-								 <select id="id-satker" name="id_satker" class="form-control" placeholder="Pilih Satker">
+								 <!--<select id="id-satker" name="id_satker" class="form-control" placeholder="Pilih Satker">-->
+								 <select id="id-satker" name="id_satker[]" class="form-control" multiple = "multiple" ></select>
 								 <option value="">Pilih Satker</option>
 								 </select>
 							</div>

@@ -58,7 +58,8 @@
     }
 	
     function setupFormUI() {
-        uiSelectSatker.select2({multiple: false, placeholder: 'Select value...'});
+        //uiSelectSatker.select2({multiple: false, placeholder: 'Select value...'});
+        uiSelectSatker.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiSelectAspek.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiTanggalPicker.datepicker({
             format: 'dd MM yyyy'
@@ -67,13 +68,7 @@
 
     function setupFormSatker(r1, r2) {
         let rows = [];
-        //rows.push({id_satker: "", kode_satker:"", satker: "Pilih Satuan Kerja"});
         rows = rows.concat(r1.rows);
-        /*if (isUpdate) { // update
-            rows = rows.filter(function (val) {
-                return val.id_satker !== param.id_satker;
-            })
-        }*/
         uiSelectSatker.select2({
             data: $.map(rows, function (o) {
                 o.id = o.id_satker; // replace name with the property used for the text
