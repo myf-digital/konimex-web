@@ -18,9 +18,7 @@
 	function show_jawaban () 
 	{
 		var tipe_pert = uiSelectTipe.val();
-			if (tipe_pert==1) {
-				$('#show_type_soal_mc').show();
-			}else if (tipe_pert==2) {
+			if (tipe_pert==1 || tipe_pert==2 || tipe_pert==4) {
 				$('#show_type_soal_mc').show();
 			} else{
 				$('#show_type_soal_mc').hide();
