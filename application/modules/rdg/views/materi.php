@@ -34,7 +34,7 @@
             <div class="h-100 w-100 d-flex align-items-center">
                 <div class="container text-center z-index-1">
                     <h6 class="first-text">LIST REVIEW</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+                    <p></p>
                     <p class="date">14 Juni 2019</p>
                     <ul id="review-list" style="padding-inline-start: 0px!important;"></ul>
                     <button class="btn-start" onclick="logout()">Logout <i class="fa fa-arrow-right"></i></button>

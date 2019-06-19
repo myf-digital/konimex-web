@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version 5.5.5-10.1.13-MariaDB)
-# Date: 2019-06-13 00:26:54
+# Date: 2019-06-19 02:14:54
 # Generator: MySQL-Front 6.1  (Build 1.26)
 
 
@@ -202,7 +202,7 @@ CREATE TABLE `ref_aspek` (
 #
 
 /*!40000 ALTER TABLE `ref_aspek` DISABLE KEYS */;
-INSERT INTO `ref_aspek` VALUES (1,'Kedalaman dan kelengkapan materi',1,1,'a|b|c','dfsdf','','0000-00-00 00:00:00',NULL,NULL),(2,'Ketepatan proyeksi',1,2,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(3,'Kelengkapan data/informasi',1,3,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(4,'Keterkinian data/informasi',1,4,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(5,'Rekomendasi implementable',1,5,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(6,'Bahasa yang mudah dipahami',1,6,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(7,'Kualitas materi secara keseluruhan',1,7,NULL,'Footer','','0000-00-00 00:00:00',NULL,NULL),(8,'testt',2,7,'1|2|3','r','','0000-00-00 00:00:00',NULL,NULL),(9,'Kualitas materi secara keseluruhan 1',1,8,'1|2|3|4','','','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `ref_aspek` VALUES (1,'Kedalaman dan kelengkapan materi',1,1,'Kurang|Cukup|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(2,'Ketepatan proyeksi',1,2,'Kurang|Cukup|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(3,'Kelengkapan data/informasi',1,3,'25|50|75|100','','','0000-00-00 00:00:00',NULL,NULL),(4,'Keterkinian data/informasi',1,4,'Kurang|Cukup Baik|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(5,'Rekomendasi implementable',2,5,'Kurang|Cukup Baik|Baik|Memuaskan','','','0000-00-00 00:00:00',NULL,NULL),(6,'Bahasa yang mudah dipahami',2,6,'Bagus|Kurang','','','0000-00-00 00:00:00',NULL,NULL),(7,'Kualitas materi secara keseluruhan',3,7,NULL,'','','0000-00-00 00:00:00',NULL,NULL),(11,'Kualitas Data',4,1,'#','','','0000-00-00 00:00:00',NULL,NULL),(12,'a. Lengkap dan utuh',4,2,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik','','','0000-00-00 00:00:00',NULL,NULL),(13,'b. Terkini',4,3,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik','','','0000-00-00 00:00:00',NULL,NULL),(14,'c. Akurat',4,4,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik','','','0000-00-00 00:00:00',NULL,NULL),(16,'Kualitas Analisis/Asesmen/Kajian/Riset',4,5,'#',NULL,'','0000-00-00 00:00:00',NULL,NULL),(17,'a. Komprehensif',4,6,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(18,'b. Kedalaman analisis',4,7,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(19,'c. Metodologi yang sistematis',4,8,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(20,'d. Mempertimbangkan harmonisasi dgn ketentuan lain',4,9,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(21,'Kualitas Rekomendasi',4,10,'#',NULL,'','0000-00-00 00:00:00',NULL,NULL),(22,'a. Memperhatikan bauran kebijakan',4,11,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(23,'b. Dapat diimplementasikan',4,12,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(24,'c. Mempertimbangkan risiko',4,13,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(25,'d. Memperhatikan alignment internal dan eksternal',4,14,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(26,'Bahasa yang mudah dipahami',4,15,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(27,'Kesepakatan yang ditindaklanjuti (tracking pelaksanaan keputusan RDG bulanan)',4,16,'#',NULL,'','0000-00-00 00:00:00',NULL,NULL),(28,'KUALITAS SECARA KESELURUHAN',4,17,'Sangat Tidak Baik|Tidak Baik|Kurang Baik|Cukup Baik|Baik|Sangat Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `ref_aspek` ENABLE KEYS */;
 
 #
@@ -247,14 +247,14 @@ CREATE TABLE `ref_map_rdg` (
   `id_rdg` int(11) NOT NULL DEFAULT '0',
   `id_aspek` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_map`)
-) ENGINE=MyISAM AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 
 #
 # Data for table "ref_map_rdg"
 #
 
 /*!40000 ALTER TABLE `ref_map_rdg` DISABLE KEYS */;
-INSERT INTO `ref_map_rdg` VALUES (1,3,1),(2,3,2),(3,3,3),(4,3,4),(5,3,5),(6,3,6),(7,3,7),(22,2,1),(23,2,2),(24,2,3),(25,2,4),(26,2,5),(27,2,6),(28,1,1),(29,1,2),(30,1,3),(31,1,4),(32,1,5),(33,1,6);
+INSERT INTO `ref_map_rdg` VALUES (1,3,1),(2,3,2),(3,3,3),(4,3,4),(5,3,5),(6,3,6),(7,3,7),(22,2,1),(23,2,2),(24,2,3),(25,2,4),(26,2,5),(27,2,6),(34,1,1),(35,1,2),(36,1,3),(37,1,4),(38,1,5),(39,1,6),(40,1,7),(66,4,11),(67,4,12),(68,4,13),(69,4,14);
 /*!40000 ALTER TABLE `ref_map_rdg` ENABLE KEYS */;
 
 #
@@ -295,7 +295,6 @@ CREATE TABLE `ref_rdg` (
   `id_rdg` int(11) NOT NULL AUTO_INCREMENT,
   `nama_rdg` varchar(255) DEFAULT NULL COMMENT 'nama materi rapat dewan gubernur',
   `tanggal` date DEFAULT NULL,
-  `id_satker` int(11) NOT NULL DEFAULT '0',
   `keterangan` varchar(255) DEFAULT NULL,
   `publish` varchar(1) DEFAULT NULL,
   `created_by` varchar(100) NOT NULL,
@@ -303,15 +302,34 @@ CREATE TABLE `ref_rdg` (
   `modified_by` varchar(100) DEFAULT NULL,
   `modified_date` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id_rdg`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 #
 # Data for table "ref_rdg"
 #
 
 /*!40000 ALTER TABLE `ref_rdg` DISABLE KEYS */;
-INSERT INTO `ref_rdg` VALUES (1,'Materi 1','2019-05-18',4,'Main',NULL,'','0000-00-00 00:00:00',NULL,NULL),(2,'Materi 2','2019-05-25',5,'Footer',NULL,'','0000-00-00 00:00:00',NULL,NULL),(3,'Materi 3','2019-05-31',4,'',NULL,'','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `ref_rdg` VALUES (1,'Materi 1','2019-05-18','Main',NULL,'','0000-00-00 00:00:00',NULL,NULL),(2,'Materi 2','2019-05-25','Footer',NULL,'','0000-00-00 00:00:00',NULL,NULL),(3,'Materi 3','2019-05-31','',NULL,'','0000-00-00 00:00:00',NULL,NULL),(4,'Materi Matrix Soal','2019-06-18','',NULL,'','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `ref_rdg` ENABLE KEYS */;
+
+#
+# Structure for table "ref_rdg_satker"
+#
+
+DROP TABLE IF EXISTS `ref_rdg_satker`;
+CREATE TABLE `ref_rdg_satker` (
+  `id_rdg` int(11) NOT NULL AUTO_INCREMENT,
+  `id_satker` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_rdg`,`id_satker`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+#
+# Data for table "ref_rdg_satker"
+#
+
+/*!40000 ALTER TABLE `ref_rdg_satker` DISABLE KEYS */;
+INSERT INTO `ref_rdg_satker` VALUES (4,4),(4,5),(4,6);
+/*!40000 ALTER TABLE `ref_rdg_satker` ENABLE KEYS */;
 
 #
 # Structure for table "ref_satuan_kerja"
@@ -354,7 +372,7 @@ CREATE TABLE `ref_tipe_pertanyaan` (
 # Data for table "ref_tipe_pertanyaan"
 #
 
-INSERT INTO `ref_tipe_pertanyaan` VALUES (1,'Multiple Choice','2019-06-10 12:44:29','2019-06-10 12:44:29'),(2,'Select box','2019-06-10 12:44:29','2019-06-10 12:44:29'),(3,'Text Input','2019-06-10 12:44:29','2019-06-10 12:44:29');
+INSERT INTO `ref_tipe_pertanyaan` VALUES (1,'Multiple Choice','2019-06-10 12:44:29','2019-06-10 12:44:29'),(2,'Select box','2019-06-10 12:44:29','2019-06-10 12:44:29'),(3,'Text Input','2019-06-10 12:44:29','2019-06-10 12:44:29'),(4,'Matrix ','2019-06-18 09:29:03','2019-06-18 09:29:03');
 
 #
 # Structure for table "trx_hasil_penilaian"
@@ -373,14 +391,14 @@ CREATE TABLE `trx_hasil_penilaian` (
   `modified_by` varchar(50) DEFAULT NULL,
   `modified_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id_penilaian`)
-) ENGINE=MyISAM AUTO_INCREMENT=127 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=141 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 #
 # Data for table "trx_hasil_penilaian"
 #
 
 /*!40000 ALTER TABLE `trx_hasil_penilaian` DISABLE KEYS */;
-INSERT INTO `trx_hasil_penilaian` VALUES (113,'09860',3,1,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(114,'09860',3,2,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(115,'09860',3,3,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(116,'09860',3,4,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(117,'09860',3,5,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(118,'09860',3,6,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(119,'09860',3,7,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(120,'09860',1,1,'2',NULL,'','0000-00-00 00:00:00',NULL,NULL),(121,'09860',1,2,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(122,'09860',1,3,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(123,'09860',1,4,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(124,'09860',1,5,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(125,'09860',1,6,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL),(126,'09860',1,7,'3',NULL,'','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `trx_hasil_penilaian` VALUES (134,'09860',3,1,'Cukup',NULL,'','0000-00-00 00:00:00',NULL,NULL),(135,'09860',3,2,'Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(136,'09860',3,3,'75',NULL,'','0000-00-00 00:00:00',NULL,NULL),(137,'09860',3,4,'Cukup Baik',NULL,'','0000-00-00 00:00:00',NULL,NULL),(138,'09860',3,5,'Memuaskan',NULL,'','0000-00-00 00:00:00',NULL,NULL),(139,'09860',3,6,'Bagus',NULL,'','0000-00-00 00:00:00',NULL,NULL),(140,'09860',3,7,'ok',NULL,'','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `trx_hasil_penilaian` ENABLE KEYS */;
 
 #
@@ -398,12 +416,12 @@ CREATE TABLE `trx_saran` (
   `modified_by` varchar(50) DEFAULT NULL,
   `modified_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id_saran`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 #
 # Data for table "trx_saran"
 #
 
 /*!40000 ALTER TABLE `trx_saran` DISABLE KEYS */;
-INSERT INTO `trx_saran` VALUES (15,'09860',3,'saran','','0000-00-00 00:00:00',NULL,NULL),(16,'09860',1,'','','0000-00-00 00:00:00',NULL,NULL);
+INSERT INTO `trx_saran` VALUES (17,'09860',1,'saran aja','','0000-00-00 00:00:00',NULL,NULL),(18,'09860',3,'saran aja','','0000-00-00 00:00:00',NULL,NULL);
 /*!40000 ALTER TABLE `trx_saran` ENABLE KEYS */;

@@ -14,7 +14,7 @@ class Api_v1_model extends CI_Model
             $res_ss = $this->db->query($sql, array($data["nip"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
-                    $response = $res_ss->result_array()[0];
+                    $response = $res_ss->result_array();
                     //parsing to result
                     return result($response);
             } else {
@@ -58,6 +58,31 @@ class Api_v1_model extends CI_Model
 					left join ref_aspek c on a.id_aspek=c.id_aspek
 					left join trx_hasil_penilaian d on a.id_rdg=d.id_rdg and a.id_aspek=d.id_aspek and d.nip = ?
 					where a.id_rdg=?
+					order by a.id_rdg, c.nourut";
+            $res_ss = $this->db->query($sql, array($data["nip"],$data["idrdg"]));
+			if (count($res_ss->result_array()) > 0) {
+                    $response = new stdClass();
+                    $response = $res_ss->result_array();
+                    //parsing to result
+                    return result($response);
+            } else {
+                return result(new stdClass(), 201, "Materi not found!");
+            }
+        }
+    }
+
+    function get_data_hasil_evaluasi($data)
+    {
+        if (is_null($data["idrdg"]) or is_null($data["satker"])) 
+		{
+            return result(new stdClass(), 400, "Parameter not allowed");
+        } else {
+            $sql = "select a.id_rdg, b.nama_rdg, b.tanggal, a.id_aspek, c.aspek, c.id_tipe tipe_soal, c.listjawaban, c.nourut, d.value nilai
+					from 
+					ref_map_rdg a left join ref_rdg b on a.id_rdg=b.id_rdg
+					left join ref_aspek c on a.id_aspek=c.id_aspek
+					left join trx_hasil_penilaian d on a.id_rdg=d.id_rdg and a.id_aspek=d.id_aspek and d.nip = ?
+					where a.id_rdg=? 
 					order by a.id_rdg, c.nourut";
             $res_ss = $this->db->query($sql, array($data["nip"],$data["idrdg"]));
 			if (count($res_ss->result_array()) > 0) {

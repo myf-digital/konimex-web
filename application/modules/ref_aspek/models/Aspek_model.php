@@ -25,8 +25,13 @@ class Aspek_model extends CI_Model
     {
 		unset($data['flag']);
 		unset($data['id_listjawaban']);
-		$arrlist = implode('|',$data['listjawaban']);
-		$data['listjawaban'] = $arrlist;
+		
+		if($data['id_tipe']=='3'){
+			unset($data['listjawaban']);
+		}else{
+			$arrlist = implode('|',$data['listjawaban']);
+			$data['listjawaban'] = $arrlist;
+		}
 		$this->db->where('id_aspek', $data['id_aspek']);
         return $this->db->update('ref_aspek', $data);
     }
