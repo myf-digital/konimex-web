@@ -63,6 +63,34 @@ $(document).ready(function () {
         tmp = tmp.replace("?3", value.id_rdg);
         tmp = tmp.replace("?4", value.nip);
         tmp = tmp.replace("?5", value.nama_rdg);
+        tml = '<div class="row">\n' +
+            '                            <div class="col-md-6">\n' +
+            '                                <div class="form-group row">\n' +
+            '                                    <label class="col-sm-4 col-form-label">Product</label>\n' +
+            '                                    <div class="col-sm-8">\n' +
+            '                                        <select id="product" class="form-control" th:field="*{productId}" th:required="true">\n' +
+            '                                            <option value="" selected disabled >Vendor</option>\n' +
+            '                                            <option th:each="i : ${products}" th:value="${i?.productId}" th:text="${i?.productName}" th:selected="${i?.productId == productId}"></option>\n' +
+            '                                        </select>\n' +
+            '                                    </div>\n' +
+            '                                    <span class="col-sm-3 col-form-label" th:if="${#fields.hasErrors(\'productId\')}"></span>\n' +
+            '                                    <span class="col-sm-9 error error-field text-danger" th:if="${#fields.hasErrors(\'productId\')}" th:errors="*{productId}"></span>\n' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                            <div class="col-md-4">\n' +
+            '                                <div class="form-group row">\n' +
+            '                                    <label class="col-sm-4 col-form-label">Qty</label>\n' +
+            '                                    <div class="col-sm-8">\n' +
+            '                                        <input type="text" class="form-control" th:field="*{qty}">\n' +
+            '                                    </div>\n' +
+            '                                    <span class="col-sm-4 col-form-label" th:if="${#fields.hasErrors(\'qty\')}"></span>\n' +
+            '                                    <span class="col-sm-8 error error-field text-danger" th:if="${#fields.hasErrors(\'qty\')}" th:errors="*{qty}"></span>\n' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                            <div class="col-md-2">\n' +
+            '                                <a class="btn btn-success mr-2" href="javascript:void(0)" onclick="addNew(this)">Add</a>\n' +
+            '                            </div>\n' +
+            '                        </div>';
         return tmp;
     }
 
