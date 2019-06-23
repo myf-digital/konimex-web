@@ -27,7 +27,7 @@
                 <a href="#">
                     <img src="<?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
                 </a>
-            </div>
+            </div>btn-
         </nav>
 
         <div class="container-fluid vh-100 bg-primary">
@@ -37,6 +37,7 @@
                     <p></p>
                     <p class="date">14 Juni 2019</p>
                     <ul id="review-list" style="padding-inline-start: 0px!important;"></ul>
+                    <button class="btn-start" onclick="showQualityAll()">Show Quality</button>
                     <button class="btn-start" onclick="logout()">Logout <i class="fa fa-arrow-right"></i></button>
                 </div>
                 <div class="bg-overlay bg-primary"></div>
