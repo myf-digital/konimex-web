@@ -5,9 +5,10 @@ const common = new Common();
 $(document).ready(function () {
 
     let param = sessionStorage.getItem("review.list.aspek");
-    console.log(param);
+
     if (param !== null) {
         param = JSON.parse(param);
+        var matrixQuestion = [];
         var tmp = "";
         $.each(param, function (i, v) {
             console.log("tipe soal : " + v.tipe_soal);
@@ -17,9 +18,79 @@ $(document).ready(function () {
                 tmp += templateAspekType2(v);
             } else if (3 == v.tipe_soal) {
                 tmp += templateAspekType3(v);
+            } else if (4 == v.tipe_soal) {
+                // tmp += templateAspekType4(v);
+                matrixQuestion.push(v);
             }
         });
-        $('#aspek-list').html(tmp);
+        let tmpTable = templateTable();
+        let tmpTableRow = '';
+        // generated header
+        let maxColumn = 0;
+        $.each(matrixQuestion, function (i, v) {
+            if (i == 0 && '#' == v.listjawaban && matrixQuestion.length > 0) {
+                let answer = matrixQuestion[i + 1].listjawaban.split('|');
+                let ansCount = answer.length;
+                let tmpHeader = '';
+                maxColumn = ansCount;
+                tmpTableRow = tmpTableRow + '<tr>';
+                for (let x = 0; x <= ansCount; x++) {
+                    tmpHeader = tmpHeader + templateTableHeader();
+                    if (x == 0) {
+                        tmpHeader = tmpHeader.replace("?1", "");
+                        tmpTableRow = tmpTableRow + '<th scope="row"></th>';
+                    } else {
+                        tmpHeader = tmpHeader.replace("?1", 'style="width: 13%"');
+                        tmpTableRow = tmpTableRow + templateTableRow(answer[x - 1]);
+                    }
+                }
+                tmpTable = tmpTable.replace("?1", tmpHeader);
+                tmpTableRow = tmpTableRow + '</tr>';
+            } else if ('#' == v.listjawaban && matrixQuestion.length > 0) { // generated header
+                let answer = v.listjawaban.split('|');
+                let ansCount = answer.length;
+                let tmpHeader = '';
+                maxColumn = ansCount;
+                tmpTableRow = tmpTableRow + '<tr>';
+                for (let x = 0; x <= ansCount; x++) {
+                    tmpHeader = tmpHeader + templateTableHeader();
+                    if (x == 0) {
+                        tmpHeader = tmpHeader.replace("?1", "");
+                        tmpTableRow = tmpTableRow + '<th scope="row"></th>';
+                    } else {
+                        tmpHeader = tmpHeader.replace("?1", 'style="width: 13%"');
+                        tmpTableRow = tmpTableRow + templateTableRow(answer[x]);
+                    }
+                }
+                tmpTable = tmpTable.replace("?1", tmpHeader);
+                tmpTableRow = tmpTableRow + '</tr>';
+            }
+            return false; // break
+        });
+        // generated row
+        $.each(matrixQuestion, function (i, v) {
+            if ('#' == v.listjawaban) {
+                tmpTableRow = tmpTableRow + '<tr>';
+                tmpTableRow = tmpTableRow + templateTableRowHeadQuestion(v, maxColumn);
+                tmpTableRow = tmpTableRow + '</tr>';
+            } else {
+                let answer = v.listjawaban.split('|');
+                let ansCount = answer.length;
+                tmpTableRow = tmpTableRow + '<tr>';
+                for (let x = 0; x < ansCount; x++) {
+                    if (x == 0) {
+                        tmpTableRow = tmpTableRow + templateTableRowQuestion(true, (x + 1), v);
+                        tmpTableRow = tmpTableRow + templateTableRowQuestion(false, (x + 1), v);
+                    } else {
+                        tmpTableRow = tmpTableRow + templateTableRowQuestion(false, (x + 1), v);
+                    }
+                }
+                tmpTableRow = tmpTableRow + '</tr>';
+            }
+
+        });
+        tmpTable = tmpTable.replace("?2", tmpTableRow);
+        $('#aspek-list').html(tmpTable + tmp);
 
         const options = {
             type: 'post',
@@ -125,6 +196,89 @@ $(document).ready(function () {
         return tmp;
     }
 
+    function templateAspekType4(value) {
+        var tmp = '';
+        if ("#" == value.listjawaban) { // header
+            tmp = '' +
+                '                       <div class="form-group">\n' +
+                '                            <label>?1. ?2</label>\n' +
+                '                        </div>';
+            tmp = tmp.replace("?1", value.nourut);
+            tmp = tmp.replace("?2", value.aspek);
+            tmp = tmp.replace("?3", value.nourut);
+        } else {
+            tmp = '' +
+                '                       <div class="form-group">\n' +
+                '                           <label class="col-sm-5 col-md-5 control-label">?1. ?2</label>\n' +
+                '                           <div class="col-md-7">\n' +
+                '                               <div class="form-inline">\n' +
+                '                                   <div class="form-group">\n' +
+                '                                       <input class="form-control" type="radio" name="radio-?3" value="?6">&nbsp;&nbsp;?9\n' +
+                '                                   </div>\n' +
+                '                                   <div class="form-group">\n' +
+                '                                       <input class="form-control" type="radio" name="radio-?4" value="?7">&nbsp;&nbsp;?10\n' +
+                '                                   </div>\n' +
+                '                                   <div class="form-group">\n' +
+                '                                       <input class="form-control" type="radio" name="radio-?5" value="?8">&nbsp;&nbsp;?11\n' +
+                '                                   </div>\n' +
+                '                               </div>\n' +
+                '                           </div>\n' +
+                '                        </div>';
+            tmp = tmp.replace("?1", value.nourut);
+            tmp = tmp.replace("?2", value.aspek);
+            tmp = tmp.replace("?3", value.nourut);
+        }
+        return tmp;
+    }
+
+    function templateTable() {
+        return '<table class="table table-light"><thead><tr>?1</tr></thead><tbody>?2</tbody></table>'
+    }
+
+    function templateTableHeader(colspan) {
+        var tmp = '<th scope="col" ?1 ></th>';
+        return tmp;
+    }
+
+    function templateTableRow(v) {
+        var tmp = '' +
+            '                                <td scope="col" class="align-middle">\n' +
+            '                                    <div class="d-flex justify-content-center align-self-center">\n' +
+            '                                        ?1' +
+            '                                    </div>\n' +
+            '                                </td>\n';
+        tmp = tmp.replace("?1", v);
+        return tmp;
+    }
+
+    function templateTableRowHeadQuestion(value, colspan) {
+        var tmp = '';
+        tmp = '<th scope="row" colspan="' + colspan + '">?1</th>\n';
+        tmp = tmp.replace('?1', value.aspek);
+        return tmp;
+    }
+
+    function templateTableRowQuestion(isHeader, index, value) {
+        console.log(value);
+        var tmp = '';
+        if (isHeader) {
+            tmp = '<td scope="row">?1</td>\n';
+            tmp = tmp.replace('?1', value.aspek);
+        } else {
+            tmp = '' +
+                '                                <td>\n' +
+                '                                    <div class="form-check d-flex justify-content-center">\n' +
+                '                                        <input class="form-check-input position-static" type="radio" name="?1"\n' +
+                '                                               value="?2" aria-label="...">\n' +
+                '                                    </div>\n' +
+                '                                </td>';
+            tmp = tmp.replace('?1', 'radio-' + value.nourut);
+            tmp = tmp.replace('?2', index);
+        }
+        return tmp;
+
+    }
+
 });
 
 function review(rdg) {
@@ -176,7 +330,6 @@ function validate(formData, jqForm, options) {
                 showValidate(v);
                 return false;
             }
-
         } else if (3 == v.tipe_soal) {
             let nilai = $("input[name=" + v.nourut + "]").val();
             console.log(nilai);
@@ -186,6 +339,15 @@ function validate(formData, jqForm, options) {
                 isvalidForm = false;
                 showValidate(v);
                 return false;
+            }
+        } else if (4 == v.tipe_soal && v.listjawaban != '#') {
+            if ($("input[name=radio-" + v.nourut + "]:checked").length === 0) {
+                isvalidForm = false;
+                showValidateNoNumber(v);
+                return false;
+            } else {
+                let nilai = $("input[name=radio-" + v.nourut + "]:checked").val();
+                optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
             }
         }
 
@@ -208,6 +370,15 @@ function showValidate(v) {
         type: 'warning',
         title: 'Oops... please select',
         text: "" + v.nourut + ". " + v.aspek
+    });
+}
+
+function showValidateNoNumber(v) {
+    hideLoading();
+    Swal.fire({
+        type: 'warning',
+        title: 'Oops... please select',
+        text: v.aspek
     });
 }
 

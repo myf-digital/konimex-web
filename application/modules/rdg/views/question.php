@@ -36,13 +36,110 @@
                     <h6 class="first-text mb-3 mt-5 mt-lg-1 text-center">LIST REVIEW</h6>
                     <!-- <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p> -->
                     <!-- <p class="date">14 Juni 2019</p> -->
-                    <form id="form-question" action="<?php echo base_url('api_v1/synchronize_penilaian') ?>" method="post">
-                        <div id="aspek-list"></div>
-                        <div class="ask-list">
+                    <form id="form-question"
+                          action="<?php echo base_url('api_v1/synchronize_penilaian') ?>" method="post">
+                        <!--
+                        <table class="table table-light">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col" style="width: 13%"></th>
+                                    <th scope="col" style="width: 13%"></th>
+                                    <th scope="col" style="width: 13%"></th>
+                                    <th scope="col" style="width: 13%"></th>
+                                    <th scope="col" style="width: 13%"></th>
+                                    <th scope="col" style="width: 13%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th scope="row">
+                                    Kualitas Data
+                                </th>
+                                <td scope="col" class="align-middle">
+                                    <div class="d-flex justify-content-center align-self-center">
+                                        Sangat Tidak Baik
+                                    </div>
+                                </td>
+                                <td scope="col" class="align-middle">
+                                    <div class="d-flex justify-content-center align-self-center">
+                                        Sangat Tidak Baik
+                                    </div>
+                                </td>
+                                <td scope="col" class="align-middle">
+                                    <div class="d-flex justify-content-center align-self-center">
+                                        Sangat Tidak Baik
+                                    </div>
+                                </td>
+                                <td scope="col" class="align-middle">
+                                    <div class="d-flex justify-content-center align-self-center">
+                                        Sangat Tidak Baik
+                                    </div>
+                                </td>
+                                <td scope="col" class="align-middle">
+                                    <div class="d-flex justify-content-center align-self-center">
+                                        Sangat Tidak Baik
+                                    </div>
+                                </td>
+                                <td scope="col" class="align-middle">
+                                    <div class="d-flex justify-content-center align-self-center">
+                                        Sangat Tidak Baik
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td scope="col">a. Lengkap dan utuh</td>
+                                <td>
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input position-static" type="radio" name="blankRadio"
+                                               id="blankRadio1" value="option1" aria-label="...">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input position-static" type="radio" name="blankRadio"
+                                               id="blankRadio1" value="option1" aria-label="...">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input position-static" type="radio" name="blankRadio"
+                                               id="blankRadio1" value="option1" aria-label="...">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input position-static" type="radio" name="blankRadio"
+                                               id="blankRadio1" value="option1" aria-label="...">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input position-static" type="radio" name="blankRadio"
+                                               id="blankRadio1" value="option1" aria-label="...">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input position-static" type="radio" name="blankRadio"
+                                               id="blankRadio1" value="option1" aria-label="...">
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        -->
+                        <section id="aspek-list">
+
+                        </section>
+                        <section class="ask-list">
                             <div class="list-group">
-                                <textarea name="sarandesc" class="form-control mt-3" placeholder="Saran untuk Peningkatan Kualitas" rows="3"></textarea>
+                                <textarea name="sarandesc" class="form-control mt-3"
+                                          placeholder="Saran untuk Peningkatan Kualitas" rows="3"></textarea>
                             </div>
-                        </div>
+                        </section>
                         <button class="btn-start ml-0">Save And Close <i class="fa fa-arrow-right"></i></button>
                     </form>
                 </div>
