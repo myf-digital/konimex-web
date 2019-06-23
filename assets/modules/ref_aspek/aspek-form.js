@@ -7,12 +7,14 @@
 	let uiSelectTipePertanyaan = $("#id-tipe_pertanyaan");
     let uiBtnCancel = $("#btn-cancel-form");
     let uiSelectTipe = $("#id-tipe_pertanyaan");
+    let uiSelectHeader = $("#id-parent");
     // define from *-content.js
     let param = common.getCookie("module.aspek.update");
 	let isUpdate = param !== undefined; // flag create update
 
     initialize();
 	initializeParamTipePertanyaan();
+	initializeParamHeader();
 	show_jawaban();
 	
 	function show_jawaban () 
@@ -119,5 +121,32 @@
 			return false;
 		});
 		
+    function setupFormHeader(r1, r2) {
+        let rows = [];
+        rows = rows.concat(r1.rows);
+        uiSelectHeader.select2({
+            data: $.map(rows, function (o) {
+                o.id = o.id_aspek; // replace name with the property used for the text
+                o.text = o.aspek; // replace name with the property used for the text
+                return o;
+            }),
+        });
+        if (isUpdate) uiSelectHeader.val(param.id_parent).trigger('change');
 
+    }
+
+    function initializeParamHeader() {
+        common.loading();
+        let resolver = new HttpResolver();
+        let param = new Filter();
+        $.when(
+            $.post(common.baseURL("ref_aspek/load"), param.build()),
+        ).done(function (data, textStatus, jqXHR) {
+            console.log("done");
+        }).then(function (r1, r2) {
+            common.loadingClose();
+            setupFormHeader(r1);
+        }).fail(resolver.fail);
+    }
+	
 })();

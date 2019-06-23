@@ -32,8 +32,8 @@ class Api_v1_model extends CI_Model
             $sql = "select a.nip,a.nama_karyawan,a.id_satker,b.kode_satker,b.satker, c.id_rdg, c.nama_rdg, c.tanggal, 
 					  (select count(1) from trx_hasil_penilaian where nip=a.nip and id_rdg=c.id_rdg) as review
 					  from ref_karyawan a left join ref_satuan_kerja b on a.id_satker=b.id_satker
-					  left join ref_rdg c on a.id_satker=c.id_satker
-					where a.nip=?";
+					  left join ref_rdg c on c.id_satker=a.id_satker
+					where a.nip=?"; // and c.tanggal=?
             $res_ss = $this->db->query($sql, array($data["nip"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
@@ -52,11 +52,11 @@ class Api_v1_model extends CI_Model
 		{
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
-            $sql = "select a.id_rdg, b.nama_rdg, b.tanggal, a.id_aspek, c.aspek, c.id_tipe tipe_soal, c.listjawaban, c.nourut, d.value nilai
+            $sql = "select a.id_rdg, a.nama_rdg, a.tanggal, b.id_aspek, c.id_parent, c.aspek, c.id_tipe tipe_soal, c.listjawaban, c.nourut, d.value nilai
 					from 
-					ref_map_rdg a left join ref_rdg b on a.id_rdg=b.id_rdg
-					left join ref_aspek c on a.id_aspek=c.id_aspek
-					left join trx_hasil_penilaian d on a.id_rdg=d.id_rdg and a.id_aspek=d.id_aspek and d.nip = ?
+					ref_rdg a left join ref_matrix_aspek b on a.id_matrix=b.id_matrix
+					left join ref_aspek c on c.id_aspek=b.id_aspek
+					left join trx_hasil_penilaian d on a.id_rdg=d.id_rdg and b.id_aspek=d.id_aspek and d.nip = ?
 					where a.id_rdg=?
 					order by a.id_rdg, c.nourut";
             $res_ss = $this->db->query($sql, array($data["nip"],$data["idrdg"]));

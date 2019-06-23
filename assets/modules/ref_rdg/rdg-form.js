@@ -6,7 +6,7 @@
     let uiForm = $("#fm-rdg");
     let uiBtnCancel = $("#btn-cancel-form");
     let uiSelectSatker = $("#id-satker");
-	let uiSelectAspek = $("#id-aspek");
+	let uiSelectMatrix = $("#id-matrix");
 	let uiTanggalPicker = $("#id-tanggal");
 	// define from *-content.js
     let param = common.getCookie("module.rdg.update");
@@ -15,7 +15,7 @@
 	setupFormUI();
     initialize();
 	initializeParamSatker();
-	initializeParamAspek();
+	initializeParamMatrix();
 
     function initialize() {
         let url = param === undefined ? common.baseURL("ref_rdg/create") : common.baseURL("ref_rdg/update");
@@ -44,7 +44,7 @@
                 id_satker: {
                     required: true
                 },
-                id_aspek: {
+                id_Matrix: {
                     required: true
                 }
             }
@@ -58,9 +58,10 @@
     }
 	
     function setupFormUI() {
-        //uiSelectSatker.select2({multiple: false, placeholder: 'Select value...'});
-        uiSelectSatker.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
-        uiSelectAspek.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
+        uiSelectSatker.select2({multiple: false, placeholder: 'Select value...'});
+        //uiSelectSatker.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
+        //uiSelectAspek.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
+        uiSelectMatrix.select2({multiple: false, placeholder: 'Select value...'});
         uiTanggalPicker.datepicker({
             format: 'dd MM yyyy'
         });
@@ -94,30 +95,30 @@
         }).fail(resolver.fail);
     }
 
-    function setupFormAspek(r1, r2) {
+    function setupFormMatrix(r1, r2) {
         let rows = [];
         rows = rows.concat(r1.rows);
-        uiSelectAspek.select2({
+        uiSelectMatrix.select2({
             data: $.map(rows, function (o) {
-                o.id = o.id_aspek; // replace name with the property used for the text
-                o.text = o.aspek; // replace name with the property used for the text
+                o.id = o.id_matrix; // replace name with the property used for the text
+                o.text = o.matrix_table; // replace name with the property used for the text
                 return o;
             }),
         });
-        if (isUpdate) uiSelectAspek.val(param.id_aspek).trigger('change');
+        if (isUpdate) uiSelectMatrix.val(param.id_matrix).trigger('change');
     }
 
-    function initializeParamAspek() {
+    function initializeParamMatrix() {
         common.loading();
         let resolver = new HttpResolver();
         let param = new Filter();
         $.when(
-            $.post(common.baseURL("ref_aspek/load"), param.build()),
+            $.post(common.baseURL("ref_matrix_table/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
             console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
-            setupFormAspek(r1);
+            setupFormMatrix(r1);
         }).fail(resolver.fail);
     }
 	
