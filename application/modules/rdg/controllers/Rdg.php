@@ -25,6 +25,11 @@ class Rdg extends BaseController
         $this->load->view('question');
     }
 
+    public function quality()
+    {
+        $this->load->view('quality');
+    }
+
     public function create()
     {
         $data = param_input();
