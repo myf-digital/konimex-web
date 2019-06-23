@@ -58,6 +58,8 @@ class Api_v1 extends CI_Controller
     {
 		$param = param_input();
 		$now = date("Y-m-d h:i:sa");
+		$eventpublish = $this->api_v1->get_event_id();
+     
         // jawaban
         if (isset($param["options"]) && isset($param["saran"])) {
             $options = json_decode($param["options"]);
@@ -65,7 +67,9 @@ class Api_v1 extends CI_Controller
                 $this->db->where('nip', $value->nip);
                 $this->db->where('id_rdg', $value->id_rdg);
                 $this->db->delete("trx_hasil_penilaian");
+				$value->id_event = $eventpublish["id_event"];
             }
+			
             $return = $this->api_v1->insert_batch_table("trx_hasil_penilaian", $options);
             $saran = json_decode($param["saran"]);
             $this->db->where('nip', $saran->nip);
@@ -81,6 +85,52 @@ class Api_v1 extends CI_Controller
         } else {
             return response(new stdClass(), 400, "Parameter not allowed");
         }
+    }
+	
+    function grafik_per_event()
+    {
+		$param = param_input();
+		$now = date("Y-m-d h:i:sa");
+        // jawaban
+        if (isset($param["id_event"])) {
+			$result = $this->api_v1->get_data_hasil_evaluasi_grafik_event($param);
+			if (200 == $result->code) {
+				return response($result->result);
+			} else {
+				return response($result->result, $result->code, $result->message);
+			}
+		}else{
+			$param["id_event"] = null;
+			$result = $this->api_v1->get_data_hasil_evaluasi_grafik_event($param);
+			if (200 == $result->code) {
+				return response($result->result);
+			} else {
+				return response($result->result, $result->code, $result->message);
+			}
+		}
+    }
+
+    function grafik_per_materi()
+    {
+		$param = param_input();
+		$now = date("Y-m-d h:i:sa");
+        // jawaban
+        if (isset($param["id_event"])) {
+			$result = $this->api_v1->get_data_hasil_evaluasi_grafik($param);
+			if (200 == $result->code) {
+				return response($result->result);
+			} else {
+				return response($result->result, $result->code, $result->message);
+			}
+		}else{
+			$param["id_event"] = null;
+			$result = $this->api_v1->get_data_hasil_evaluasi_grafik($param);
+			if (200 == $result->code) {
+				return response($result->result);
+			} else {
+				return response($result->result, $result->code, $result->message);
+			}
+		}
     }
 	
     function writeLog($json, $res)
