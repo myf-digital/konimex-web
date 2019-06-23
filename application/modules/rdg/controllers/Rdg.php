@@ -30,6 +30,11 @@ class Rdg extends BaseController
         $this->load->view('quality');
     }
 
+    public function quality_materi()
+    {
+        $this->load->view('quality_materi');
+    }
+
     public function create()
     {
         $data = param_input();

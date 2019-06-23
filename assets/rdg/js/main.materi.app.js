@@ -56,7 +56,7 @@ $(document).ready(function () {
                 '   <a data-rdg="?3" data-nip="?4" data-materi="?5" href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Done</a>' +
                 '</div>' +
                 '<div style="margin-top: 20px; margin-bottom: 20px;">' +
-                '   <a data-rdg="?3" data-nip="?4" data-materi="?5" href="javascript:void(0)" onclick="showQuality(this)" class="btn-warning">View Quality</a>' +
+                '   <a data-rdg="?6" data-nip="?7" data-materi="?8" href="javascript:void(0)" onclick="showQuality(this)" class="btn-warning">View Quality</a>' +
                 '</div>' +
                 '</li>';
         }
@@ -64,6 +64,10 @@ $(document).ready(function () {
         tmp = tmp.replace("?2", value.satker);
         tmp = tmp.replace("?3", value.id_rdg);
         tmp = tmp.replace("?4", value.nip);
+        tmp = tmp.replace("?5", '#');
+        tmp = tmp.replace("?6", value.id_rdg);
+        tmp = tmp.replace("?7", value.nip);
+        tmp = tmp.replace("?8", '#');
         tmp = tmp.replace("?5", value.nama_rdg);
         return tmp;
     }
@@ -75,7 +79,10 @@ function showQualityAll(rdg) {
 }
 
 function showQuality(rdg) {
-
+    let nip = rdg.getAttribute("data-nip");
+    let idRgd = rdg.getAttribute("data-rdg");
+    sessionStorage.setItem("quality.materi", JSON.stringify({nip: nip, idrdg: idRgd}));
+    common.direct("rdg/quality_materi");
 }
 
 function reviewConfirm(rdg) {
