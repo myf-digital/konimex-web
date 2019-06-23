@@ -27,7 +27,7 @@
                 <a href="#">
                     <img src="<?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
                 </a>
-            </div>btn-
+            </div>
         </nav>
 
         <div class="container-fluid vh-100 bg-primary">
