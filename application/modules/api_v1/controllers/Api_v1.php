@@ -115,16 +115,23 @@ class Api_v1 extends CI_Controller
 		$param = param_input();
 		$now = date("Y-m-d h:i:sa");
         // jawaban
-        if (isset($param["id_event"])) {
-			$result = $this->api_v1->get_data_hasil_evaluasi_grafik($param);
+        if (isset($param["id_event"]) and isset($param["id_rdg"])) {
+			$result = $this->api_v1->get_data_hasil_evaluasi_grafik_materi($param);
+			if (200 == $result->code) {
+				return response($result->result);
+			} else {
+				return response($result->result, $result->code, $result->message);
+			}
+		}else if (!isset($param["id_event"]) and isset($param["id_rdg"])) {
+			$param["id_event"] = null;
+			$result = $this->api_v1->get_data_hasil_evaluasi_grafik_materi($param);
 			if (200 == $result->code) {
 				return response($result->result);
 			} else {
 				return response($result->result, $result->code, $result->message);
 			}
 		}else{
-			$param["id_event"] = null;
-			$result = $this->api_v1->get_data_hasil_evaluasi_grafik($param);
+			$result = $this->api_v1->get_data_hasil_evaluasi_grafik_materi($param);
 			if (200 == $result->code) {
 				return response($result->result);
 			} else {

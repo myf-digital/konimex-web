@@ -200,69 +200,77 @@ class Api_v1_model extends CI_Model
 
     function get_data_hasil_evaluasi_grafik_materi($data)
     {
-        if (is_null($data["id_event"]))
+        if (is_null($data["id_event"]) and $data["id_rdg"])
 		{
-            $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker,avg(z.value) as value_avg
-						from
-						(
-						select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-							   f.id_aspek,g.id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
-						 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
-							  left join ref_rdg c on b.id_rdg=c.id_rdg
-							  left join ref_satuan_kerja d on c.id_satker=d.id_satker
-							  left join ref_matrix_table e on c.id_matrix=e.id_matrix
-							  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
-							  left join ref_aspek g on f.id_aspek=g.id_aspek
-							  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-						 where cast(h.value as int) > 0 and a.publish = 1
-						 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
-							   f.id_aspek,g.id_parent,g.aspek
-						 order by g.nourut
-						 ) z group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker
-						 ;";
+            $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek, x.aspek,
+						   avg(z.value) as value_avg
+					from
+					(
+					select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
+						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
+						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
+					 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+						  left join ref_rdg c on b.id_rdg=c.id_rdg
+						  left join ref_satuan_kerja d on c.id_satker=d.id_satker
+						  left join ref_matrix_table e on c.id_matrix=e.id_matrix
+						  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
+						  left join ref_aspek g on f.id_aspek=g.id_aspek
+						  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
+					 where cast(h.value as int) > 0 and a.publish = 1 and c.id_rdg=?
+					 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
+						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
+						   f.id_aspek,g.id_parent,g.aspek
+					 order by g.nourut
+					 ) z join ref_matrix_grafik y on z.id_matrix=y.id_matrix  and z.id_parent=y.id_aspek
+					 left join ref_aspek x on z.id_parent=x.id_aspek
+					 group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek
+					;";
 
-            $res_ss = $this->db->query($sql);
+            $res_ss = $this->db->query($sql,array($data["id_rdg"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
                     $response = $res_ss->result_array();
                     //parsing to result
                     return result($response);
             } else {
-                return result(new stdClass(), 201, "Materi not found!");				 
+                return result(new stdClass(), 201, "Grafik Materi not found!");				 
             }
-        }else {
-            $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker,avg(z.value) as value_avg
-						from
-						(
-						select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-							   f.id_aspek,g.id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
-						 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
-							  left join ref_rdg c on b.id_rdg=c.id_rdg
-							  left join ref_satuan_kerja d on c.id_satker=d.id_satker
-							  left join ref_matrix_table e on c.id_matrix=e.id_matrix
-							  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
-							  left join ref_aspek g on f.id_aspek=g.id_aspek
-							  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-						 where cast(h.value as int) > 0 and a.id_event=?
-						 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
-							   f.id_aspek,g.id_parent,g.aspek
-						 order by g.nourut
-						 ) z group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker
-						 ;";
+        }else if ($data["id_event"] and $data["id_rdg"]) {
+            $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek, x.aspek,
+						   avg(z.value) as value_avg
+					from
+					(
+					select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
+						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
+						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
+					 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+						  left join ref_rdg c on b.id_rdg=c.id_rdg
+						  left join ref_satuan_kerja d on c.id_satker=d.id_satker
+						  left join ref_matrix_table e on c.id_matrix=e.id_matrix
+						  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
+						  left join ref_aspek g on f.id_aspek=g.id_aspek
+						  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
+					 where cast(h.value as int) > 0 and a.id_event=? and c.id_rdg=?
+					 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
+						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
+						   f.id_aspek,g.id_parent,g.aspek
+					 order by g.nourut
+					 ) z join ref_matrix_grafik y on z.id_matrix=y.id_matrix  and z.id_parent=y.id_aspek
+					 left join ref_aspek x on z.id_parent=x.id_aspek
+					 group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek
+					;";
 
-            $res_ss = $this->db->query($sql, array($data["id_event"]));
+            $res_ss = $this->db->query($sql, array($data["id_event"],$data["id_rdg"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
                     $response = $res_ss->result_array();
                     //parsing to result
                     return result($response);
             } else {
-                return result(new stdClass(), 201, "Materi not found!");				 
+                return result(new stdClass(), 201, "Grafik Materi not found!");				 
             }
+		}else{
+			return result(new stdClass(), 201, "Grafik Materi not found!");				 
 		}
     }
 
