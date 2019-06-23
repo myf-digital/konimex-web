@@ -32,7 +32,7 @@ $(document).ready(function () {
                     if (result.value) {
                         location.reload();
                     }
-                })
+                });
 
             }
         });
