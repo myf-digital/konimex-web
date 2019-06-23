@@ -35,14 +35,17 @@
 							</div>
 							<div class="form-group">
 								<label for="id_satker">Satuan Kerja</label>
-								 <!--<select id="id-satker" name="id_satker" class="form-control" placeholder="Pilih Satker">-->
-								 <select id="id-satker" name="id_satker[]" class="form-control" multiple = "multiple" ></select>
+								 <select id="id-satker" name="id_satker" class="form-control" placeholder="Pilih Satker">
+								 <!--<select id="id-satker" name="id_satker[]" class="form-control" multiple = "multiple" ></select>-->
 								 <option value="">Pilih Satker</option>
 								 </select>
 							</div>
 							<div class="form-group">
-								<label for="aspek">Aspek</label>
-								 <select id="id-aspek" name="id_aspek[]" class="form-control" multiple = "multiple" ></select>
+								<label for="id_matrix">Pilih Jenis Pertanyaan</label>
+								<select id="id-matrix" name="id_matrix" class="form-control" placeholder="Pilih Pertanyaan">
+								<!--<select id="id-matrix" name="id_matrix" class="form-control" multiple = "multiple" ></select>-->
+								 <option value="">Pilih Pertanyaan</option>
+								 </select>
 							</div>
 							<div class="form-group">
 								<label for="keterangan">Keterangan</label>

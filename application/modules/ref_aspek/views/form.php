@@ -40,11 +40,17 @@
 								<input name="keterangan" class="form-control" placeholder="Keterangan">
 							</div>
 							<div id="show_type_soal_mc" class="input_fields_wrap">
-								<label for="listjawaban_add" >
-									<a id ="add_button" class="btn btn-primary" href="javascript:void(0);" style="height:30px; width:150px; margin:5px 0 0 0; padding-top:5px; ">
-										<i class="fa fa-plus">Tambah Jawaban</i>
-									</a>
-								</label>
+								<div class="form-group">
+									<label for="id_parent">Aspek Header</label>
+									 <select id="id-parent" name="id_parent" class="form-control" >
+									 <option value="">Pilih Pertanyaan</option>
+									 </select>
+									<label for="listjawaban_add" >
+										<a id ="add_button" class="btn btn-primary" href="javascript:void(0);" style="height:30px; width:150px; margin:5px 0 0 0; padding-top:5px; ">
+											<i class="fa fa-plus">Tambah Jawaban</i>
+										</a>
+									</label>
+								</div>
 								<!--<input id="listjawaban" type="text" name="listjawaban[]" class="form-control" style="height:30px; width:350px; margin:5px 0 0 0; padding-top:5px;" value="" autocomplete="off" /> -->
 							</div>
                     </div>
