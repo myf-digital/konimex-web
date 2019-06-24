@@ -28,18 +28,28 @@ $(document).ready(function(){
   // Back to top button
   $(window).scroll(function() {
     if ($(this).scrollTop() > 100) {
-      $('.back-to-top').fadeIn('slow');
+        $('.back-to-top').fadeIn('slow');
     } else {
-      $('.back-to-top').fadeOut('slow');
+        $('.back-to-top').fadeOut('slow');
     }
   });
   $('.back-to-top').click(function(){
-    $('html, body').animate({scrollTop : 0},1500, function(){
-      // window.location.hash = href;
-    });
+      $('html, body').animate({scrollTop : 0},1500, function(){
+        // window.location.hash = href;
+      });
     return false;
   });
+
 });
+
+function resizeContentToMin() {
+    var mHeight = window.innerHeight;
+    var cHeight = $(".overflow-container").height();
+
+    if (cHeight < mHeight) {
+        $(".overflow-container").height(mHeight-160);
+    }
+}
 
 // Alert
 function message() {

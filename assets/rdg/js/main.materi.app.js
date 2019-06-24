@@ -6,18 +6,31 @@ $(document).ready(function () {
 
     let userTmp = localStorage.getItem("user.login");
 
+    setInterval(function () {
+        let date = new Date();
+        let options = {
+            weekday: "long", year: "numeric", month: "short",
+            day: "numeric", hour: "2-digit", minute: "2-digit"
+        };
+        $('#event-date').text(date.toLocaleDateString("in-ID", options));
+    }, 1000);
+
     if (userTmp !== null) {
         let user = JSON.parse(userTmp);
-        console.log("request materi : " + user.nip);
         common.post(common.baseURL('api_v1/materi'), {nip: user.nip}, function (res) {
             if (200 === res.code && res.result.length > 0) {
                 sessionStorage.setItem("review.list", res.result);
                 let param = res.result;
                 var tmp = "";
+                var titles = "";
                 $.each(param, function (i, v) {
                     tmp += templateReview(v);
+                    titles = v.event;
                 });
+                $('#title-event').text(titles);
+
                 $('#review-list').html(tmp);
+                resizeContentToMin();
             } else if (200 === res.code && res.result.length === 0) {
                 // no action
             } else {
@@ -41,7 +54,7 @@ $(document).ready(function () {
     }
 
     function templateReview(value) {
-        console.log(value);
+        // console.log(value);
         var tmp = '' +
             '   <span> ?1 / ?2</span>' +
 			'<div style="margin-top: 20px; margin-bottom: 20px;">' +
@@ -52,19 +65,19 @@ $(document).ready(function () {
             tmp = '' +
                 '<li>' +
                 '   <span> ?1 / ?2</span>' +
-                '<div style="margin-top: 20px; margin-bottom: 20px;">' +
+
                 '   <a data-rdg="?3" data-nip="?4" data-materi="?5" href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Done</a>' +
-                '</div>' +
-                '<div style="margin-top: 20px; margin-bottom: 20px;">' +
-                '   <a data-rdg="?6" data-nip="?7" data-materi="?8" href="javascript:void(0)" onclick="showQuality(this)" class="btn-warning">View Quality</a>' +
-                '</div>' +
+
+
+                '   <a data-rdg="?6" data-nip="?7" data-materi="?8" href="javascript:void(0)" onclick="showQuality(this)" class="btn-view">View Quality</a>' +
+
                 '</li>';
         }
         tmp = tmp.replace("?1", value.nama_rdg);
         tmp = tmp.replace("?2", value.satker);
         tmp = tmp.replace("?3", value.id_rdg);
         tmp = tmp.replace("?4", value.nip);
-        tmp = tmp.replace("?5", '#');
+        tmp = tmp.replace("?5", value.nama_rdg);
         tmp = tmp.replace("?6", value.id_rdg);
         tmp = tmp.replace("?7", value.nip);
         tmp = tmp.replace("?8", '#');

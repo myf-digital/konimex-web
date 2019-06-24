@@ -20,11 +20,41 @@
         <span class="loading" data-name="Loading">Loading</span>
     </div>
 </div>
+<div class="main-container">
+    <div class="fixed-container bg-white">
+        <div class="containe-fluid">
+            <a href="#">
+                <img src="<?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
+            </a>
+        </div>
+    </div>
+    <div class="content-wrapper bg-primary">
+        <!-- ...more content here -->
+        <div class="overflow-container">
+            <!-- ...and more content here -->
+            <div class="overflow-content bg-primary">
+                <div class="container text-center z-index-1">
+                    <h2 id="title-satker" class="mt-5 mb-5">RDG A NAMA SATKER</h2>
+                    <div class="chart-container">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    <button id="btn-back" class="btn-start">Back <i class="fa fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <span class="back-to-top bg-primary text-white text-center shadow-sm">
+                <i class="fa fa-chevron-up"></i>
+            </span>
+
+        </div>
+    </div>
+</div>
+<!--
 <div class="container-fluid">
     <main class="row">
         <nav class="navbar navbar-expand-md fixed-top bg-white shadow-sm">
             <div class="containe-fluid">
-                <img src="<?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
+                <img src="< ?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
             </div>
         </nav>
 
@@ -47,6 +77,7 @@
 
     </main>
 </div>
+-->
 <footer>
     <div class="container-fluid">
         <div class="w-100">

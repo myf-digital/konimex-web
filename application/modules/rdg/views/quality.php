@@ -20,16 +20,19 @@
         <span class="loading" data-name="Loading">Loading</span>
     </div>
 </div>
-<div class="container-fluid">
-    <main class="row">
-        <nav class="navbar navbar-expand-md fixed-top bg-white shadow-sm">
-            <div class="containe-fluid">
+<div class="main-container">
+    <div class="fixed-container bg-white">
+        <div class="containe-fluid">
+            <a href="#">
                 <img src="<?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
-            </div>
-        </nav>
-
-        <div class="container-fluid vh-100 bg-primary">
-            <div class="h-100 w-100 d-flex align-items-center">
+            </a>
+        </div>
+    </div>
+    <div class="content-wrapper bg-primary">
+        <!-- ...more content here -->
+        <div class="overflow-container">
+            <!-- ...and more content here -->
+            <div class="overflow-content bg-primary">
                 <div class="container text-center z-index-1">
                     <h2 id="title-satker" class="mt-5 mb-5">RDG A NAMA SATKER</h2>
                     <div class="chart-container">
@@ -37,15 +40,14 @@
                     </div>
                     <button id="btn-back" class="btn-start">Back <i class="fa fa-arrow-right"></i></button>
                 </div>
-                <div class="bg-overlay bg-primary"></div>
             </div>
+
+            <span class="back-to-top bg-primary text-white text-center shadow-sm">
+                <i class="fa fa-chevron-up"></i>
+            </span>
+
         </div>
-
-        <span class="back-to-top bg-primary text-white text-center shadow-sm">
-          <i class="fa fa-chevron-up"></i>
-        </span>
-
-    </main>
+    </div>
 </div>
 <footer>
     <div class="container-fluid">

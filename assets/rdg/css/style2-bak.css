@@ -1,69 +1,4 @@
-*,
-*:before,
-*:after {
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  box-sizing: border-box;
-}
-#legend li {
-  list-style-type: none;
-}
 
-#legend .label {
-  margin-left: 15px;
-  font-family: 'Source Sans Pro', sans-serif;
-  color: black;
-  font-size: 14px;
-}
-
-.legendValue {
-  float: left;
-  height: 25px;  
-  text-align: left;
-}
-
-.0-legend {
-  text-align: left;
-}
-
-#legend .clear {
-  clear: both
-}
-.main-container {
-  height: 100%; /* or position:absolute; height:100%; */
-  display: flex;
-  flex-direction: column;
-}
-
-/* an arbitrary container of fixed height */
-.fixed-container {
-  height: 80px;
-  padding: 15px 30px;
-}
-.fixed-container img {
-  width: 280px; 
-  height: 45px;
-}
-/* this is the flex container that will take the rest of the height */
-.content-wrapper {
-  display: flex;
-  flex: 1;
-  min-height: 0px; /* IMPORTANT: you need this for non-chrome browsers */
-}
-
-/* the container for our overflowed content */
-.overflow-container {
-  flex: 1;
-  overflow: auto;
-}
-
-/* the overflow content itself */
-.overflow-content {
-  height: 100%;
-  color: black;
-  background-color: #ddd;
-  padding: 20px;
-}
 .navbar {
     height: 80px;
 }
@@ -388,7 +323,7 @@ ul li {
 }
 .btn-sucess {
     outline: none;
-    padding: 10px 50px;
+    padding: 10px 20px;
     margin: 20px;
     background: #19d895;
     border: none;
@@ -398,16 +333,6 @@ ul li {
     font-size: 16px;
     cursor: pointer;
     color: #fff;
-}
-.btn-view {
-  background: #ffb200ed;
-  padding: 10px 20px;
-  border: none;
-  font-family: 'lato', sans-serif;
-  font-weight: 700;
-  border-radius: 25px;
-  cursor: pointer;
-  color: #fff;
 }
 .ml-0 {
   margin-left: 0px;
@@ -731,8 +656,10 @@ ul li {
   }
 }
 @keyframes shadow {
-  100% {
-    bottom: -18px;
-    width: 100px;
-  }
+    100% {
+        bottom: -18px;
+        width: 100px;
+    }
 }
+
+

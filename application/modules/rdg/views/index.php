@@ -34,7 +34,7 @@
                 <div class="container text-center z-index-1">
                     <h2 class="first-text">WRITE REVIEW</h2>
                     <p>Penilaian Kualitas Materi Rapat Dewan Gubernur dan High Level Event</p>
-                    <p class="date">14 Juni 2019</p>
+                    <p id="event-date" class="date"></p>
                     <form id="login-form" class="home-input" action="<?php echo base_url('api_v1/login') ?>" method="post">
                         <input type="text" name="nip" class="form-control text-center" placeholder="NIP">
                         <input type="password" name="password" class="form-control text-center" placeholder="Password" style="margin-top: 24px">
@@ -60,6 +60,17 @@
         </div>
     </div>
 </footer>
+
+<script>
+    setInterval(function () {
+        let date = new Date();
+        let options = {
+            weekday: "long", year: "numeric", month: "short",
+            day: "numeric", hour: "2-digit", minute: "2-digit"
+        };
+        $('#event-date').text(date.toLocaleDateString("in-ID", options));
+    }, 1000);
+</script>
 
 <!-- javascript -->
 <script src="<?php echo base_url('assets/rdg/lib/jquery/jquery.min.js'); ?>"></script>

@@ -11,7 +11,7 @@ $(document).ready(function () {
         var matrixQuestion = [];
         var tmp = "";
         $.each(param, function (i, v) {
-            console.log("tipe soal : " + v.tipe_soal);
+            // console.log("tipe soal : " + v.tipe_soal);
             if (1 == v.tipe_soal) {
                 tmp += templateAspekType1(v);
             } else if (2 == v.tipe_soal) {
@@ -173,7 +173,7 @@ $(document).ready(function () {
                 var option = "<option value='" + v + "'>" + v + "</option>";
                 valueOption = valueOption + option;
             });
-            console.log(valueOption);
+            // console.log(valueOption);
             tmp = tmp.replace("?4", valueOption);
         }
         tmp = tmp.replace("?1", value.nourut);
@@ -259,7 +259,7 @@ $(document).ready(function () {
     }
 
     function templateTableRowQuestion(isHeader, index, value) {
-        console.log(value);
+        // console.log(value);
         var tmp = '';
         if (isHeader) {
             tmp = '<td scope="row">?1</td>\n';
@@ -303,13 +303,13 @@ function review(rdg) {
 
 // pre-submit callback
 function validate(formData, jqForm, options) {
-    console.log("validate");
+    // console.log("validate");
     var isvalidForm = true;
     var optionValue = [];
     let param = JSON.parse(sessionStorage.getItem("review.list.aspek"));
     let user = JSON.parse(sessionStorage.getItem("review.nip"));
     $.each(param, function (i, v) {
-        console.log("validate : " + v.tipe_soal);
+        // console.log("validate : " + v.tipe_soal);
         if (1 == v.tipe_soal) {
             if ($("input[name=radio-" + v.nourut + "]:checked").length === 0) {
                 isvalidForm = false;
@@ -320,9 +320,9 @@ function validate(formData, jqForm, options) {
                 optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
             }
         } else if (2 == v.tipe_soal) {
-            console.log("validation selection");
+            // console.log("validation selection");
             let nilai = $("select[name=" + v.nourut + "] option:selected").val();
-            console.log(nilai);
+            // console.log(nilai);
             if ("" !== nilai) {
                 optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
             } else {
@@ -332,7 +332,7 @@ function validate(formData, jqForm, options) {
             }
         } else if (3 == v.tipe_soal) {
             let nilai = $("input[name=" + v.nourut + "]").val();
-            console.log(nilai);
+            // console.log(nilai);
             if ("" !== nilai) {
                 optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
             } else {

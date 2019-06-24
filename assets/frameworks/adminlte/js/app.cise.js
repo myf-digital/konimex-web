@@ -146,10 +146,10 @@
 
     Common.prototype.post = function (url, data, callback, serialize) {
         if (serialize) {
-            console.log("post serialize");
+            // console.log("post serialize");
             $.post(url, JSON.stringify(data), callback, "json");
         } else {
-            console.log("post original");
+            // console.log("post original");
             $.post(url, data, callback, "json");
         }
     };
