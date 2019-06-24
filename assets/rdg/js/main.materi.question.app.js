@@ -4,10 +4,15 @@ const common = new Common();
 
 $(document).ready(function () {
 
+    let reviewer = sessionStorage.getItem("review.nip");
     let param = sessionStorage.getItem("review.list.aspek");
 
     if (param !== null) {
         param = JSON.parse(param);
+        if (reviewer!==null) {
+            reviewer = JSON.parse(reviewer);
+            $("#title-rdg").text(reviewer.rdgname);
+        }
         var matrixQuestion = [];
         var tmp = "";
         $.each(param, function (i, v) {

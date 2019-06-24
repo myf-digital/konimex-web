@@ -54,28 +54,29 @@ $(document).ready(function () {
     }
 
     function templateReview(value) {
-        // console.log(value);
+        console.log(value);
         var tmp = '' +
             '   <span> ?1 / ?2</span>' +
-            '   <a data-rdg="?3" data-nip="?4" data-materi="?5 href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
+            '   <a data-rdg="?3" data-nip="?4" data-materi="?5 data-rdgname="?6 href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
             '</li>';
         if (0 < value.review) {
             tmp = '' +
                 '<li>' +
                 '   <span> ?1 / ?2</span>' +
-                '   <a data-rdg="?3" data-nip="?4" data-materi="?5" href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Done</a>' +
-                '   <a data-rdg="?6" data-nip="?7" data-materi="?8" href="javascript:void(0)" onclick="showQuality(this)" class="btn-view">View Quality</a>' +
+                '   <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6 href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Done</a>' +
+                '   <a data-rdg="?7" data-nip="?8" data-materi="?9" data-rdgname="?10 href="javascript:void(0)" onclick="showQuality(this)" class="btn-view">View Quality</a>' +
                 '</li>';
         }
-        tmp = tmp.replace("?1", value.nama_rdg);
+        tmp = tmp.replace("?10", value.nama_rdg);
+        tmp = tmp.replace("?11", value.nama_rdg);
         tmp = tmp.replace("?2", value.satker);
         tmp = tmp.replace("?3", value.id_rdg);
         tmp = tmp.replace("?4", value.nip);
         tmp = tmp.replace("?5", value.nama_rdg);
-        tmp = tmp.replace("?6", value.id_rdg);
-        tmp = tmp.replace("?7", value.nip);
-        tmp = tmp.replace("?8", '#');
-        tmp = tmp.replace("?5", value.nama_rdg);
+        tmp = tmp.replace("?6", value.nama_rdg);
+        tmp = tmp.replace("?7", value.id_rdg);
+        tmp = tmp.replace("?8", value.nip);
+        tmp = tmp.replace("?9", '#');
         return tmp;
     }
 
@@ -88,7 +89,8 @@ function showQualityAll(rdg) {
 function showQuality(rdg) {
     let nip = rdg.getAttribute("data-nip");
     let idRgd = rdg.getAttribute("data-rdg");
-    sessionStorage.setItem("quality.materi", JSON.stringify({nip: nip, idrdg: idRgd}));
+    let rdgname = rdg.getAttribute("data-rdgname");
+    sessionStorage.setItem("quality.materi", JSON.stringify({nip: nip, idrdg: idRgd, rdgname: rdgname}));
     common.direct("rdg/quality_materi");
 }
 
@@ -112,12 +114,13 @@ function reviewConfirm(rdg) {
 function review(rdg) {
     let idRgd = rdg.getAttribute("data-rdg");
     let nip = rdg.getAttribute("data-nip");
+    let rdgname = rdg.getAttribute("data-rdgname");
     showLoading();
     common.post(common.baseURL('api_v1/aspek'), {nip: nip, idrdg: idRgd}, function (res) {
         hideLoading();
         if (200 === res.code) {
             var aspek = res.result;
-            sessionStorage.setItem("review.nip", JSON.stringify({nip: nip, id_rdg: idRgd}));
+            sessionStorage.setItem("review.nip", JSON.stringify({nip: nip, id_rdg: idRgd, rdgname: rdgname}));
             sessionStorage.setItem("review.list.aspek", JSON.stringify(aspek));
             common.direct("rdg/question");
         } else {
