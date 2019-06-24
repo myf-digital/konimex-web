@@ -57,20 +57,14 @@ $(document).ready(function () {
         // console.log(value);
         var tmp = '' +
             '   <span> ?1 / ?2</span>' +
-			'<div style="margin-top: 20px; margin-bottom: 20px;">' +
             '   <a data-rdg="?3" data-nip="?4" data-materi="?5 href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
-            '</div>' +
             '</li>';
         if (0 < value.review) {
             tmp = '' +
                 '<li>' +
                 '   <span> ?1 / ?2</span>' +
-
                 '   <a data-rdg="?3" data-nip="?4" data-materi="?5" href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Done</a>' +
-
-
                 '   <a data-rdg="?6" data-nip="?7" data-materi="?8" href="javascript:void(0)" onclick="showQuality(this)" class="btn-view">View Quality</a>' +
-
                 '</li>';
         }
         tmp = tmp.replace("?1", value.nama_rdg);
