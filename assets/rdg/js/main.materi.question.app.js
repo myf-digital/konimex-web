@@ -394,6 +394,7 @@ function processJson(responseText, statusText, xhr, $form) {
     if ("success" === statusText) {
         if (200 === responseText.code) {
             sessionStorage.removeItem("review.list.aspek");
+            sessionStorage.removeItem("review.nip");
             common.direct("rdg/materi");
         } else {
             Swal.fire({
