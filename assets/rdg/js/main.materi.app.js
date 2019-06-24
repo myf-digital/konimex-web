@@ -57,14 +57,14 @@ $(document).ready(function () {
         console.log(value);
         var tmp = '' +
             '   <span> ?1 / ?2</span>' +
-            '   <a data-rdg="?3" data-nip="?4" data-materi="?5 data-rdgname="?6 href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
+            '   <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
             '</li>';
         if (0 < value.review) {
             tmp = '' +
                 '<li>' +
                 '   <span> ?1 / ?2</span>' +
-                '   <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6 href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Done</a>' +
-                '   <a data-rdg="?7" data-nip="?8" data-materi="?9" data-rdgname="?10 href="javascript:void(0)" onclick="showQuality(this)" class="btn-view">View Quality</a>' +
+                '   <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Done</a>' +
+                '   <a data-rdg="?7" data-nip="?8" data-materi="?9" data-rdgname="?10" href="javascript:void(0)" onclick="showQuality(this)" class="btn-view">View Quality</a>' +
                 '</li>';
         }
         tmp = tmp.replace("?10", value.nama_rdg);
