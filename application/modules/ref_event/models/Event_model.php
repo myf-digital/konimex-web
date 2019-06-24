@@ -97,7 +97,7 @@ class Event_model extends CI_Model
 
     public function load($data)
     {
-        $field = "a.*, date_format(a.tanggal, '%d %M %Y') reformat_tanggal ";
+        $field = "a.*, date_format(a.tanggal, '%d %M %Y') start_reformat_tanggal, date_format(a.end_periode, '%d %M %Y') end_reformat_tanggal ";
         $table = 'ref_event a';
         return easy_pagging($data, $field, $table);
     }

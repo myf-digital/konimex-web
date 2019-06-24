@@ -8,6 +8,7 @@
 	let uiSelectRdg = $("#id-rdg");
     let uiSelectPeserta = $("#id-karyawan");
 	let uiTanggalPicker = $("#id-tanggal");
+	let uiEndPicker = $("#id-end_periode");
 	
     // define from *-content.js
     let param = common.getCookie("module.event.update");
@@ -29,8 +30,10 @@
                     form.push({name: 'id_event', value: param.id_event});
                 }
                 let tanggal = moment(uiTanggalPicker.datepicker('getDate'));
+                let end_periode = moment(uiEndPicker.datepicker('getDate'));
                 form = common.replaceFormValue(form, [
-                    {key:"tanggal",value:tanggal.format("YYYY-MM-DD")}
+                    {key:"tanggal",value:tanggal.format("YYYY-MM-DD")},
+                    {key:"end_periode",value:end_periode.format("YYYY-MM-DD")}
                 ]);
 				
                 return true; // MANDATORY!
@@ -38,6 +41,7 @@
         });
         if (isUpdate) {
             uiTanggalPicker.datepicker('update', new Date(moment(param.tanggal, "YYYY-MM-DD")));
+            uiEndPicker.datepicker('update', new Date(moment(param.end_periode, "YYYY-MM-DD")));
         }
         uiBtnCancel.click(function () {
             common.direct("ref_event");
@@ -48,7 +52,10 @@
         uiSelectRdg.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiSelectPeserta.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiTanggalPicker.datepicker({
-            format: 'dd MM yyyy'
+            format: 'mm/dd/yyyy'
+        });
+        uiEndPicker.datepicker({
+            format: 'mm/dd/yyyy'
         });
     }
 

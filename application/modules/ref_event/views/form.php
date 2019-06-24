@@ -25,12 +25,21 @@
 								<input name="event" class="form-control" placeholder="Event">
 							</div>
 							<div class="form-group">
-								<label for="tanggal">Tanggal</label>
+								<label for="tanggal">Start Periode</label>
 								<div class="input-group date">
 									  <div class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									  </div>
-									  <input name="tanggal" type="text" class="form-control pull-right" id="id-tanggal" placeholder="Tanggal pelaksanaan">
+									  <input name="tanggal" type="text" class="form-control pull-right" id="id-tanggal" placeholder="Mulai pelaksanaan">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="end_periode">End Periode</label>
+								<div class="input-group date">
+									  <div class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									  </div>
+									  <input name="end_periode" type="text" class="form-control pull-right" id="id-end_periode" placeholder="Selsai pelaksanaan">
 								</div>
 							</div>
 							<div class="form-group">

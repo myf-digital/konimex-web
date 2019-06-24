@@ -22,10 +22,13 @@ class Api_v1_model extends CI_Model
 		{
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
-            $sql = "select a.nip,a.nama_karyawan,a.id_satker,b.kode_satker,b.satker
-					  from ref_karyawan a left join ref_satuan_kerja b on a.id_satker=b.id_satker
-					where a.nip=?";
-            $res_ss = $this->db->query($sql, array($data["nip"]));
+            $sql = "select a.id_event,d.event,d.tanggal start_periode,d.end_periode,b.nip,b.nama_karyawan,b.id_satker,c.kode_satker,c.satker,d.password
+						from ref_event_peserta a left join ref_karyawan b on a.id_karyawan = b.id_karyawan
+						left join ref_satuan_kerja c on b.id_satker=c.id_satker
+						left join ref_event d on d.id_event = a.id_event
+					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
+						and (b.nip=? or replace(b.nama_karyawan,' ','')=replace(?,' ','')) and d.password = md5(?)";
+            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"],$data["password"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
                     $response = $res_ss->result_array()[0];
@@ -43,13 +46,16 @@ class Api_v1_model extends CI_Model
 		{
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
-            $sql = "select a.nip,a.nama_karyawan,a.id_satker,b.kode_satker,b.satker, c.id_rdg, c.nama_rdg, c.tanggal, 
-					  (select count(1) from trx_hasil_penilaian where nip=a.nip and id_rdg=c.id_rdg) as review
-					  from ref_karyawan a left join ref_satuan_kerja b on a.id_satker=b.id_satker
-					  left join ref_rdg c on c.id_satker=a.id_satker
-					  left join ref_event_rdg d on c.id_rdg=d.id_rdg
-					where a.nip=? and d.id_event=1"; // and c.tanggal=?
-            $res_ss = $this->db->query($sql, array($data["nip"]));
+            $sql = "select a.nip,a.nama_karyawan,e.id_satker,f.kode_satker,f.satker, e.id_rdg, e.nama_rdg, e.tanggal,g.id_event,g.event, 
+						(select count(1) from trx_hasil_penilaian where id_rdg=e.id_rdg) as review
+						from ref_karyawan a left join ref_satuan_kerja b on a.id_satker=b.id_satker
+						left join ref_event_peserta c on c.id_karyawan=a.id_karyawan
+						left join ref_event_rdg d on c.id_event=d.id_event
+						left join ref_rdg e on d.id_rdg=e.id_rdg
+						left join ref_satuan_kerja f on e.id_satker=f.id_satker
+						left join ref_event g on g.id_event = c.id_event
+					where (a.nip=? or replace(a.nama_karyawan,' ','')=replace(?,' ','')) and d.id_event=(select id_event from ref_event where now() between tanggal and end_periode)"; // and c.tanggal=?
+            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
                     $response = $res_ss->result_array();
@@ -139,7 +145,7 @@ class Api_v1_model extends CI_Model
 						(
 						select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-							   f.id_aspek,g.id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
+							   f.id_aspek,g.id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
 						 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 							  left join ref_rdg c on b.id_rdg=c.id_rdg
 							  left join ref_satuan_kerja d on c.id_satker=d.id_satker
@@ -147,7 +153,7 @@ class Api_v1_model extends CI_Model
 							  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
 							  left join ref_aspek g on f.id_aspek=g.id_aspek
 							  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-						 where cast(h.value as int) > 0 and a.publish = 1
+						 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event = (select id_event from ref_event where now() between tanggal and end_periode)
 						 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
 							   f.id_aspek,g.id_parent,g.aspek
@@ -170,7 +176,7 @@ class Api_v1_model extends CI_Model
 						(
 						select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-							   f.id_aspek,g.id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
+							   f.id_aspek,g.id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
 						 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 							  left join ref_rdg c on b.id_rdg=c.id_rdg
 							  left join ref_satuan_kerja d on c.id_satker=d.id_satker
@@ -178,7 +184,7 @@ class Api_v1_model extends CI_Model
 							  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
 							  left join ref_aspek g on f.id_aspek=g.id_aspek
 							  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-						 where cast(h.value as int) > 0 and a.id_event=?
+						 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event=?
 						 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
 							   f.id_aspek,g.id_parent,g.aspek
@@ -208,7 +214,7 @@ class Api_v1_model extends CI_Model
 					(
 					select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
+						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
 					 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 						  left join ref_rdg c on b.id_rdg=c.id_rdg
 						  left join ref_satuan_kerja d on c.id_satker=d.id_satker
@@ -216,7 +222,8 @@ class Api_v1_model extends CI_Model
 						  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
 						  left join ref_aspek g on f.id_aspek=g.id_aspek
 						  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-					 where cast(h.value as int) > 0 and a.publish = 1 and c.id_rdg=?
+					 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event = (select id_event from ref_event where now() between tanggal and end_periode) 
+							and c.id_rdg=?
 					 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
 						   f.id_aspek,g.id_parent,g.aspek
@@ -242,7 +249,7 @@ class Api_v1_model extends CI_Model
 					(
 					select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(h.value as int),0)) as value
+						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
 					 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 						  left join ref_rdg c on b.id_rdg=c.id_rdg
 						  left join ref_satuan_kerja d on c.id_satker=d.id_satker
@@ -250,7 +257,7 @@ class Api_v1_model extends CI_Model
 						  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
 						  left join ref_aspek g on f.id_aspek=g.id_aspek
 						  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-					 where cast(h.value as int) > 0 and a.id_event=? and c.id_rdg=?
+					 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event=? and c.id_rdg=?
 					 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
 						   f.id_aspek,g.id_parent,g.aspek
@@ -270,7 +277,7 @@ class Api_v1_model extends CI_Model
                 return result(new stdClass(), 201, "Grafik Materi not found!");				 
             }
 		}else{
-			return result(new stdClass(), 201, "Grafik Materi not found!");				 
+			return result(new stdClass(), 201, "Grafik Materi not found!");
 		}
     }
 
