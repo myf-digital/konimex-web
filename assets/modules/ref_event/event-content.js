@@ -42,7 +42,8 @@
             columns: [[
 				//{field:'id_event', title:'ID EVENT', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'event', title:'EVENT', halign: 'center', align: 'left', sortable:"true", width:500},
-				{field:'reformat_tanggal', title:'TANGGAL', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'start_reformat_tanggal', title:'Start Periode', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'end_reformat_tanggal', title:'End Periode', halign: 'center', align: 'left', sortable:"true", width:120},
 				//{field:'tanggal', title:'TANGGAL', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'id_rdg', title:'ID RDG', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'id_satker', title:'ID SATKER', halign: 'center', align: 'left', sortable:"true", width:200},
