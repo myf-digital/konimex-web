@@ -56,6 +56,7 @@ $(document).ready(function () {
     function templateReview(value) {
         console.log(value);
         var tmp = '' +
+            '<li>' +
             '   <span> ?1 / ?2</span>' +
             '   <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
             '</li>';
