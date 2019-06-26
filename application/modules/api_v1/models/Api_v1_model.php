@@ -7,7 +7,7 @@ class Api_v1_model extends CI_Model
     {
             $sql = "select *
 					  from ref_event
-					where publish=1;";
+					where now() between tanggal and end_periode;";
             $res_ss = $this->db->query($sql);
 			if (count($res_ss->result_array()) > 0) {
                     return $res_ss->result_array()[0];
