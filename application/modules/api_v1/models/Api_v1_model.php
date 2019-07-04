@@ -18,20 +18,45 @@ class Api_v1_model extends CI_Model
 	
     function login($data)
     {
-        if (is_null($data["nip"]) or is_null($data["password"])) 
+        if (is_null($data["nip"])) 
 		{
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
-            $sql = "select a.id_event,d.event,d.tanggal start_periode,d.end_periode,b.nip,b.nama_karyawan,b.id_satker,c.kode_satker,c.satker,d.password
-						from ref_event_peserta a left join ref_karyawan b on a.id_karyawan = b.id_karyawan
-						left join ref_satuan_kerja c on b.id_satker=c.id_satker
-						left join ref_event d on d.id_event = a.id_event
+            $sql = "select a.id_event,e.event,e.tanggal start_periode,e.end_periode,c.nip,c.nama_karyawan,c.id_satker,d.kode_satker,d.satker,e.password
+						from ref_event_peserta a left join ref_group_mapping b on a.id_group=b.id_group
+						left join ref_karyawan c on c.id_karyawan = b.id_karyawan left join ref_satuan_kerja d on d.id_satker=c.id_satker
+						left join ref_event e on a.id_event = e.id_event
 					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
-						and (b.nip=? or replace(b.nama_karyawan,' ','')=replace(?,' ','')) and d.password = md5(?)";
+						and (c.nip=? or replace(c.nama_karyawan,' ','')=replace(?,' ',''))";
+            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"]));
+			if (count($res_ss->result_array()) > 0) {
+                    $response = new stdClass();
+                    $response = $res_ss->result_array();
+                    //parsing to result
+                    return result($response);
+            } else {
+                return result(new stdClass(), 201, "NIP not found!");
+            }
+        }
+    }	
+
+    function select_event($data)
+    {
+        if (is_null($data["nip"]) or is_null($data["id_event"]) or is_null($data["password"])) 
+		{
+            return result(new stdClass(), 400, "Parameter not allowed");
+        } else {
+            $sql = "select a.id_event,e.event,e.tanggal start_periode,e.end_periode,c.nip,c.nama_karyawan,c.id_satker,d.kode_satker,d.satker,e.password
+						from ref_event_peserta a left join ref_group_mapping b on a.id_group=b.id_group
+						left join ref_karyawan c on c.id_karyawan = b.id_karyawan
+						left join ref_satuan_kerja d on d.id_satker=c.id_satker
+						left join ref_event e on a.id_event = e.id_event
+					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
+						and (c.nip=? or replace(c.nama_karyawan,' ','')=replace(?,' ','')) and e.password = md5(?)";
             $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"],$data["password"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
-                    $response = $res_ss->result_array()[0];
+                    $response = $res_ss->result_array();
                     //parsing to result
                     return result($response);
             } else {
@@ -42,27 +67,29 @@ class Api_v1_model extends CI_Model
 
     function materi($data)
     {
-        if (is_null($data["nip"])) 
+        if (is_null($data["nip"]) or is_null($data["id_event"]) or is_null($data["password"])) 
 		{
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
             $sql = "select a.nip,a.nama_karyawan,e.id_satker,f.kode_satker,f.satker, e.id_rdg, e.nama_rdg, e.tanggal,g.id_event,g.event, 
 						(select count(1) from trx_hasil_penilaian where id_rdg=e.id_rdg) as review
-						from ref_karyawan a left join ref_satuan_kerja b on a.id_satker=b.id_satker
-						left join ref_event_peserta c on c.id_karyawan=a.id_karyawan
+						from ref_karyawan a left join ref_group_mapping z on a.id_karyawan = z.id_karyawan
+						left join ref_satuan_kerja b on a.id_satker=b.id_satker
+						left join ref_event_peserta c on c.id_group=z.id_group
 						left join ref_event_rdg d on c.id_event=d.id_event
 						left join ref_rdg e on d.id_rdg=e.id_rdg
 						left join ref_satuan_kerja f on e.id_satker=f.id_satker
 						left join ref_event g on g.id_event = c.id_event
-					where (a.nip=? or replace(a.nama_karyawan,' ','')=replace(?,' ','')) and d.id_event=(select id_event from ref_event where now() between tanggal and end_periode)"; // and c.tanggal=?
-            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"]));
+					where (a.nip=? or replace(a.nama_karyawan,' ','')=replace(?,' ','')) 
+						  and d.id_event=? and g.password = md5(?); "; // (select id_event from ref_event where now() between tanggal and end_periode) and c.tanggal=?
+            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"],$data["id_event"],$data["password"]));
 			if (count($res_ss->result_array()) > 0) {
                     $response = new stdClass();
                     $response = $res_ss->result_array();
                     //parsing to result
                     return result($response);
             } else {
-                return result(new stdClass(), 201, "NIP not found!");
+                return result(new stdClass(), 201, "NIP or Password invalid !");
             }
         }
     }
