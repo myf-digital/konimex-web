@@ -48,8 +48,8 @@
 								 </select>
 							</div>
 							<div class="form-group">
-								<label for="id_karyawan">Peserta</label>
-								 <select id="id-karyawan" name="id_karyawan[]" class="form-control" multiple = "multiple" >
+								<label for="id_group">Group Responden</label>
+								 <select id="id-group" name="id_group[]" class="form-control" multiple = "multiple" >
 								 </select>
 							</div>
 							<div class="form-group">

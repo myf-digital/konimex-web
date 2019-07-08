@@ -13,7 +13,7 @@ class Event_model extends CI_Model
 			$data_rdg = array();
 			$data_peserta = array();
 			if(isset($data['id_rdg'])){ $data_rdg = $data['id_rdg']; unset($data['id_rdg']); }
-			if(isset($data['id_karyawan'])){ $data_peserta = $data['id_karyawan']; unset($data['id_karyawan']); }
+			if(isset($data['id_group'])){ $data_peserta = $data['id_group']; unset($data['id_group']); }
 
 			$data['password'] = md5($data['password']);
 			$this->db->insert('ref_event', $data);
@@ -29,7 +29,7 @@ class Event_model extends CI_Model
 			for($i=0;$i<count($data_peserta);$i++){
 				$data_array = array(
 					"id_event" => (int) $idevent,
-					"id_karyawan" => (int) $data_peserta[$i]
+					"id_group" => (int) $data_peserta[$i]
 				);
 				$this->db->insert("ref_event_peserta", $data_array);
 			}
@@ -61,18 +61,18 @@ class Event_model extends CI_Model
 			}
 		}
 		
-		if (isset($data["id_karyawan"])){
+		if (isset($data["id_group"])){
 
 			$data_peserta = array();
-			$data_peserta = $data['id_karyawan'];
-			unset($data["id_karyawan"]);
+			$data_peserta = $data['id_group'];
+			unset($data["id_group"]);
 			$this->db->where("id_event", $idevent);
 			$this->db->delete("ref_event_peserta");
 			
 			for($i=0;$i<count($data_peserta);$i++){
 				$data_array = array(
 					"id_event" => (int) $idevent,
-					"id_karyawan" => (int) $data_peserta[$i]
+					"id_group" => (int) $data_peserta[$i]
 				);
 				$this->db->insert("ref_event_peserta", $data_array);
 			}
