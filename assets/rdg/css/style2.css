@@ -1,3 +1,39 @@
+@media only screen and (max-width: 320px) {
+
+    body {
+        font-size: 2em !important;
+    }
+
+    #title-rdg {
+        font-size: 7px;
+    }
+
+    .table-condensed {
+        font-size: 7px;
+    }
+
+}
+
+@media only screen and (max-width: 767px) {
+
+    #title-rdg {
+        font-size: 23px;
+    }
+
+    .table-condensed {
+        font-size: 7px;
+    }
+
+    .form-control {
+        font-size: 7px;
+    }
+
+}
+
+.button-group-list {
+    margin-top: 20px;
+}
+
 *,
 *:before,
 *:after {
@@ -22,7 +58,7 @@
   text-align: left;
 }
 
-.0-legend {
+.legend {
   text-align: left;
 }
 

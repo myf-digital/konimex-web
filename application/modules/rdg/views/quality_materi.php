@@ -35,8 +35,16 @@
             <div class="overflow-content bg-primary">
                 <div class="container text-center z-index-1">
                     <h2 id="title-satker" class="mt-5 mb-5">RDG A NAMA SATKER</h2>
-                    <div class="chart-container">
-                        <canvas id="myChart"></canvas>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="myChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <button id="btn-back" class="btn-start">Back <i class="fa fa-arrow-right"></i></button>
                 </div>
@@ -49,35 +57,6 @@
         </div>
     </div>
 </div>
-<!--
-<div class="container-fluid">
-    <main class="row">
-        <nav class="navbar navbar-expand-md fixed-top bg-white shadow-sm">
-            <div class="containe-fluid">
-                <img src="< ?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
-            </div>
-        </nav>
-
-        <div class="container-fluid vh-100 bg-primary">
-            <div class="h-100 w-100 d-flex align-items-center">
-                <div class="container text-center z-index-1">
-                    <h2 id="title-satker" class="mt-5 mb-5">RDG A NAMA SATKER</h2>
-                    <div class="chart-container">
-                        <canvas id="myChart"></canvas>
-                    </div>
-                    <button id="btn-back" class="btn-start">Back <i class="fa fa-arrow-right"></i></button>
-                </div>
-                <div class="bg-overlay bg-primary"></div>
-            </div>
-        </div>
-
-        <span class="back-to-top bg-primary text-white text-center shadow-sm">
-          <i class="fa fa-chevron-up"></i>
-        </span>
-
-    </main>
-</div>
--->
 <footer>
     <div class="container-fluid">
         <div class="w-100">

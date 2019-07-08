@@ -99,7 +99,7 @@ $(document).ready(function () {
 
         var option = {
             legend: {
-                position: 'bottom',
+                position: 'right',
                 onHover: function (event, legendItem) {
                     // console.log(event);
                     // $(this).css('cursor','hand');

@@ -45,7 +45,7 @@ $(document).ready(function () {
                         tmpHeader = tmpHeader.replace("?1", "");
                         tmpTableRow = tmpTableRow + '<th scope="row"></th>';
                     } else {
-                        tmpHeader = tmpHeader.replace("?1", 'style="width: 13%"');
+                        tmpHeader = tmpHeader.replace("?1", 'style="width: 10%"');
                         tmpTableRow = tmpTableRow + templateTableRow(answer[x - 1]);
                     }
                 }
@@ -58,12 +58,12 @@ $(document).ready(function () {
                 maxColumn = ansCount;
                 tmpTableRow = tmpTableRow + '<tr>';
                 for (let x = 0; x <= ansCount; x++) {
-                    tmpHeader = tmpHeader + templateTableHeader();
-                    if (x == 0) {
+                    tmpHeader = tmpHeader + templateTableHeader(x);
+                    if (x === 0) {
                         tmpHeader = tmpHeader.replace("?1", "");
                         tmpTableRow = tmpTableRow + '<th scope="row"></th>';
                     } else {
-                        tmpHeader = tmpHeader.replace("?1", 'style="width: 13%"');
+                        tmpHeader = tmpHeader.replace("?1", 'style="width: 10%"');
                         tmpTableRow = tmpTableRow + templateTableRow(answer[x]);
                     }
                 }
@@ -237,11 +237,14 @@ $(document).ready(function () {
     }
 
     function templateTable() {
-        return '<table class="table table-light"><thead><tr>?1</tr></thead><tbody>?2</tbody></table>'
+        return '<div class="table-responsive"><table class="table table-light table-sm table-condensed"><thead><tr>?1</tr></thead><tbody>?2</tbody></table></div>'
     }
 
-    function templateTableHeader(colspan) {
-        var tmp = '<th scope="col" ?1 ></th>';
+    function templateTableHeader(index) {
+        var tmp = '<th scope="col-sm-1" ?1 ></th>';
+        if (index == 0) {
+            // tmp = '<th scope="col-sm-5" ?1 ></th>';
+        }
         return tmp;
     }
 
