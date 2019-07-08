@@ -58,7 +58,13 @@ class Api_v1 extends CI_Controller
     {
 		$param = param_input();
 		$now = date("Y-m-d h:i:sa");
-		$eventpublish = $this->api_v1->get_event_id();
+		if (isset($param["id_event"]){
+			//$eventpublish = $this->api_v1->get_event_id();
+			$eventpublish = $param["id_event"];
+		}else{
+            return response(new stdClass(), 400, "Parameter not allowed");
+			die();
+		}
      
         // jawaban
         if (isset($param["options"]) && isset($param["saran"])) {
@@ -67,7 +73,7 @@ class Api_v1 extends CI_Controller
                 $this->db->where('nip', $value->nip);
                 $this->db->where('id_rdg', $value->id_rdg);
                 $this->db->delete("trx_hasil_penilaian");
-				$value->id_event = $eventpublish["id_event"];
+				$value->id_event = $eventpublish;
             }
 			
             $return = $this->api_v1->insert_batch_table("trx_hasil_penilaian", $options);
