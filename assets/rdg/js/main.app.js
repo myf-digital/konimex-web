@@ -3,7 +3,7 @@ const common = new Common();
 let userTmp = localStorage.getItem("user.login");
 
 if (userTmp !== null) {
-    common.direct("rdg/materi");
+    // common.direct("rdg/event");
 }
 
 $(document).ready(function () {
@@ -32,8 +32,11 @@ function processJson(responseText, statusText, xhr, $form) {
     console.log("OK");
     if ("success" === statusText) {
         if (200 === responseText.code && responseText.result) {
-            localStorage.setItem("user.login", JSON.stringify(responseText.result));
-            common.direct("rdg/materi");
+            if (responseText.result.length  > 0) {
+                localStorage.setItem("user.login", JSON.stringify({nip: responseText.result[0].nip}));
+                localStorage.setItem("user.events", JSON.stringify(responseText.result));
+                common.direct("rdg/event");
+            }
         } else {
             Swal.fire({
                 type: 'error',

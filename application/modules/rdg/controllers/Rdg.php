@@ -15,6 +15,11 @@ class Rdg extends BaseController
         $this->load->view('index');
     }
 
+    public function event()
+    {
+        $this->load->view('event');
+    }
+
     public function materi()
     {
         $this->load->view('materi');

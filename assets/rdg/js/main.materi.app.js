@@ -5,6 +5,7 @@ const common = new Common();
 $(document).ready(function () {
 
     let userTmp = localStorage.getItem("user.login");
+    let eventTmp = localStorage.getItem("user.event");
 
     setInterval(function () {
         let date = new Date();
@@ -17,7 +18,8 @@ $(document).ready(function () {
 
     if (userTmp !== null) {
         let user = JSON.parse(userTmp);
-        common.post(common.baseURL('api_v1/materi'), {nip: user.nip}, function (res) {
+        let event = JSON.parse(eventTmp);
+        common.post(common.baseURL('api_v1/materi'), {nip: user.nip, id_event: event.event_id}, function (res) {
             if (200 === res.code && res.result.length > 0) {
                 sessionStorage.setItem("review.list", res.result);
                 let param = res.result;
