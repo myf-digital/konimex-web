@@ -4,7 +4,7 @@ const common = new Common();
 
 $(document).ready(function () {
 
-    let eventTmp = localStorage.getItem("user.event");
+    let event = JSON.parse(localStorage.getItem("user.event"));
 
     $("#btn-back").on('click', function () {
         backToMateri();
@@ -13,7 +13,8 @@ $(document).ready(function () {
     initChartDashboard();
 
     function initChartDashboard() {
-        $.getJSON(common.baseURL("api_v1/grafik_per_event"), function (res, text) {
+        // $.getJSON(common.baseURL("api_v1/grafik_per_event"), function (res, text) {
+        common.post(common.baseURL('api_v1/grafik_per_event'), {id_event: event.event_id}, function (res, text) {
             if (res.code === 200) {
                 console.log(res.result);
                 initChart(res.result);
@@ -138,7 +139,8 @@ $(document).ready(function () {
         });
 
         window.setInterval(function () {
-            $.getJSON(common.baseURL("api_v1/grafik_per_event"), function (res1, text) {
+            common.post(common.baseURL('api_v1/grafik_per_event'), {id_event: event.event_id}, function (res1, text) {
+            // $.getJSON(common.baseURL("api_v1/grafik_per_event"), function (res1, text) {
                 if (res1.code === 200) {
                     if (parseInt(lengthOfArray) !== parseInt(res1.result.length)) {
                         location.reload(true);
@@ -165,40 +167,7 @@ $(document).ready(function () {
             });
         }, 5000);
 
-        /*
-        var ctx = document.getElementById("myChart");
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: datas,
-                    backgroundColor: colorsBackground,
-                    borderColor: colors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            callback: function (value, index, values) {
-                                return yLabels[value];
-                            }
-                        }
-                    }]
-                },
-                title: {
-                    display: true,
-                    text: titles
-                }
-            }
-        });
-        */
+
     }
 
 });

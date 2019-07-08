@@ -4,7 +4,7 @@ const common = new Common();
 
 $(document).ready(function () {
 
-    let eventTmp = localStorage.getItem("user.event");
+    let event = JSON.parse(localStorage.getItem("user.event"));
     let reviewer = sessionStorage.getItem("review.nip");
     let param = sessionStorage.getItem("review.list.aspek");
 
@@ -369,6 +369,7 @@ function validate(formData, jqForm, options) {
     let saran = {nip: user.nip, id_rdg: user.id_rdg, saran: saranValue};
     formData.push({name: "options", value: JSON.stringify(optionValue), type: "text", required: false});
     formData.push({name: "saran", value: JSON.stringify(saran), type: "text", required: false});
+    formData.push({name: "id_event", value: event.event_id, type: "text", required: false});
     hideLoading();
     return isvalidForm;
 }

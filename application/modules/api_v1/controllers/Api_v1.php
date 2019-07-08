@@ -58,10 +58,10 @@ class Api_v1 extends CI_Controller
     {
 		$param = param_input();
 		$now = date("Y-m-d h:i:sa");
-		if (isset($param["id_event"]){
-			//$eventpublish = $this->api_v1->get_event_id();
+		if (isset($param["id_event"])){
+			// $eventpublish = $this->api_v1->get_event_id();
 			$eventpublish = $param["id_event"];
-		}else{
+		} else {
             return response(new stdClass(), 400, "Parameter not allowed");
 			die();
 		}
