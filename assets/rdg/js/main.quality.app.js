@@ -4,6 +4,8 @@ const common = new Common();
 
 $(document).ready(function () {
 
+    let eventTmp = localStorage.getItem("user.event");
+
     $("#btn-back").on('click', function () {
         backToMateri();
     });

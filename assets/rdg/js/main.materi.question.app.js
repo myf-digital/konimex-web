@@ -4,6 +4,7 @@ const common = new Common();
 
 $(document).ready(function () {
 
+    let eventTmp = localStorage.getItem("user.event");
     let reviewer = sessionStorage.getItem("review.nip");
     let param = sessionStorage.getItem("review.list.aspek");
 

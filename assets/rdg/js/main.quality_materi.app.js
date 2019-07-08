@@ -4,6 +4,7 @@ const common = new Common();
 
 $(document).ready(function () {
 
+    let eventTmp = localStorage.getItem("user.event");
     let materiTmp = sessionStorage.getItem("quality.materi");
 
     $("#btn-back").on('click', function () {
@@ -12,7 +13,8 @@ $(document).ready(function () {
 
     if (materiTmp !== null) {
         let materi = JSON.parse(materiTmp);
-        common.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: materi.idrdg}, function (res, text) {
+        let event = JSON.parse(eventTmp);
+        common.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: materi.idrdg, id_event: event.event_id}, function (res, text) {
             if (res.code === 200) {
                 initChart(res.result);
             } else {
