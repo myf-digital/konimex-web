@@ -77,7 +77,7 @@ $(document).ready(function () {
         $.each(matrixQuestion, function (i, v) {
             if ('#' == v.listjawaban) {
                 tmpTableRow = tmpTableRow + '<tr>';
-                tmpTableRow = tmpTableRow + templateTableRowHeadQuestion(v, maxColumn);
+                tmpTableRow = tmpTableRow + templateTableRowHeadQuestion(v, (maxColumn + 1));
                 tmpTableRow = tmpTableRow + '</tr>';
             } else {
                 let answer = v.listjawaban.split('|');
@@ -238,7 +238,7 @@ $(document).ready(function () {
     }
 
     function templateTable() {
-        return '<div class="table-responsive"><table class="table table-light table-sm table-condensed"><thead><tr>?1</tr></thead><tbody>?2</tbody></table></div>'
+        return '<div class="table-responsive"><table class="table table-bordered table-light table-sm table-condensed"><thead><tr>?1</tr></thead><tbody>?2</tbody></table></div>'
     }
 
     function templateTableHeader(index) {

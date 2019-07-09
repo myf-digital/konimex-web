@@ -95,3 +95,7 @@ div.form-group-login {
 .login-page, .register-page {
     background: #214E77;!important;
 }
+
+.table-light tbody+tbody, .table-light td, .table-light th, .table-light thead th {
+    border-color: #343a40;!important;
+}
