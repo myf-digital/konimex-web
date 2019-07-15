@@ -3,144 +3,434 @@
     // import commons
     const common = new Common();
     const commonGrid = new CommonGrid();
-    // update title
+    //
     common.setTitle("Dashboard");
     // ui components
     let uiLabelRiset = $("#labelriset")
-	let uiSelectSatker = $("#satker");
-    let uiSelectRiset = $("#riset");
+	let uiSelectEvent = $("#satker");
+    let uiSelectRDG = $("#riset");
     let uiChart = $("#chart");
 
     let session = common.getCookie("session");
 
+    var eventSelected;
+
     initialize();
 
     function initialize() {
-        console.log(session);
-        uiSelectSatker.select2({
-            placeholder: "Select Satker",
+        uiSelectEvent.select2({
+            placeholder: "Select Event",
         });
-        uiSelectRiset.select2({
-            placeholder: "Select Riset",
+        uiSelectRDG.select2({
+            placeholder: "Select Aspek(RDB)",
         });
         if (session.role_id == 1) {
             common.loading();
             let resolver = new HttpResolver();
             let param = new Filter();
             $.when(
-                $.post(common.baseURL("ref_satker/load"), param.build()),
+                $.post(common.baseURL("api_v1/load_all_event"), param.build()),
             ).done(function (data, textStatus, jqXHR) {
 
-            }).then(function (res1, res2) {
+            }).then(function (res) {
                 common.loadingClose();
-                uiSelectSatker.select2({
-                    placeholder: "Select Satker",
+                uiSelectEvent.select2({
+                    placeholder: "Select Event",
                     //allowClear: true,
-                    data: $.map(res1.rows, function (o) {
-                        o.id = o.id_satker; // replace name with the property used for the text
-                        o.text = o.satker + " (" + o.kode_satker + ")"; // replace name with the property used for the text
+                    data: $.map(res.result, function (o) {
+                        o.id = o.id_event; // replace name with the property used for the text
+                        o.text = o.event + " (" + o.end_periode + ")"; // replace name with the property used for the text
                         return o;
                     }),
                 });
-                uiSelectSatker.val(null).trigger('change')
+                uiSelectEvent.val(null).trigger('change')
             }).fail(resolver.fail);
-        } else {
-            let row = [{
-                id_satker: session.id_satker,
-                kode_satker: session.kode_satker,
-                satker: session.satker
-            }];
-            uiSelectSatker.select2({
-                placeholder: "Select Satker",
-                //allowClear: true,
-                data: $.map(row, function (o) {
-                    o.id = o.id_satker; // replace name with the property used for the text
-                    o.text = o.satker + " (" + o.kode_satker + ")"; // replace name with the property used for the text
-                    return o;
-                }),
-            });
-            loadDataRiset(row[0]);
         }
-        uiSelectSatker.on('select2:select', function (e) {
-            var data = e.params.data;
-            console.log(data);
-            loadDataRiset(data);
-
+        uiSelectEvent.on('select2:select', function (e) {
+            eventSelected = e.params.data;
+            buildChartEvent(eventSelected);
+            loadRDG(eventSelected);
         });
-        uiSelectRiset.on('select2:select', function (e) {
+        uiSelectRDG.on('select2:select', function (e) {
             common.loading();
-            var data = e.params.data;
-            initializeChart(data);
+            buildChartRDG(eventSelected, e.params.data)
         });
     }
 
-    function loadDataRiset(data) {
+    function loadRDG(data) {
         common.loading();
-        let paramRiset = new Filter();
-        paramRiset.add("a.kode_satker", 'contains', data.kode_satker);
-        $.post(common.baseURL("ref_riset/load"), paramRiset.build(), function (res) {
-            console.log(res);
-            uiSelectRiset.empty();
-            uiSelectRiset.select2({
+        $.post(common.baseURL("api_v1/load_aspek"), {id_event : data.id_event}, function (res) {
+            uiSelectRDG.empty();
+            uiSelectRDG.select2({
                 placeholder: "Select Riset",
-                data: $.map(res.rows, function (o) {
-                    o.id = o.id_riset; // replace name with the property used for the text
-                    o.text = o.riset;
+                data: $.map(res.result, function (o) {
+                    o.id = o.id_rdg; // replace name with the property used for the text
+                    o.text = o.nama_rdg;
                     return o;
                 }),
             });
-            uiSelectRiset.val(null).trigger('change');
+            uiSelectRDG.val(null).trigger('change');
             common.loadingClose();
         });
     }
 
-    function initializeChart(param) {
+    function buildChartEvent(param) {
         common.loading();
         let resolver = new HttpResolver();
-        let filter = new Filter();
-        filter.add("a.id_riset", "equal", param.id_riset);
-        filter.sortOrder("a.id_riset_kegiatan", "asc");
         $.when(
-            $.post(common.baseURL("input_riset_data/load_kegiatan"), filter.build()),
+            $.post(common.baseURL('api_v1/grafik_per_event'), {id_event: param.id_event}),
         ).done(function (data, textStatus, jqXHR) {
-            //console.log("done");
-        }).then(function (r1, r2) {
-            common.loadingClose();
-            var template = "";
-			var totalprog = 0;
-            for (value of r1.rows) {
-                console.log(value);
-                template = template + templateChart(value);
-				totalprog = totalprog + Number(value.progress_kegiatan);
-			}
-            uiChart.html(template);
-			var vlabel = '';
-				vlabel += '<p class="text-center"><strong>Progress Riset ('+totalprog+'%)</strong></p>';
-			uiLabelRiset.html(vlabel);
+        }).then(function (res) {
+            if (res.code === 200) {
+                initChartEvent(param, res.result);
+            }
         }).fail(resolver.fail);
     }
 
-    function templateChart(value) {
-        var colorValue = "green";
-        if (value.progress < 60) {
-            colorValue = "yellow";
-        }
+    function buildChartRDG(event, param) {
+        common.loading();
+        let resolver = new HttpResolver();
+        $.when(
+            $.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: param.id_rdg, id_event: event.id_event}),
+        ).done(function (data, textStatus, jqXHR) {
+        }).then(function (res) {
+            if (res.code === 200) {
+                initChartRDG(event, param, res.result);
+            }
+            common.loadingClose();
+        }).fail(resolver.fail);
+    }
 
-        if (value.finish_riset > value.finish_date_kegiatan) {
-            colorValue = "red";
-        }
-        // finish_date_kegiatan: "2019-12-31"
-        // finish_riset: "2018-01-01"
-        var template = '';
-        template += '<div class="progress-group">';
-        template += '    <span class="progress-text">' + value.kegiatan + ' ('+ value.progress +'%)</span>';
-        template += '    <span class="progress-number"><b>' + value.progress + '</b>/100</span>';
-        template += '    <div class="progress sm">';
-        template += '        <div class="progress-bar progress-bar-' + colorValue + '" style="width: ' + value.progress + '%"></div>';
-        template += '     </div>';
-        template += '</div>';
-        return template;
+    // commons charts
+    function randomColor() {
+        return 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+    }
 
+    // commons charts
+    function generateValue(index, length, value) {
+        var tmp = [];
+        for (var i = 0; i < length; i++) {
+            if (index === i) {
+                tmp.push(value);
+            } else {
+                tmp.push(0);
+            }
+        }
+        return tmp;
+    }
+
+    // commons charts
+    function replaceMaxLength(text, max) {
+        var name = text;
+        if (name.length > max) {
+            return name.substring(0, max) + " ...";
+        }
+        return text;
+    }
+
+    isArray = Array.isArray ?
+        function (obj) {
+            return Array.isArray(obj);
+        } :
+        function (obj) {
+            return Object.prototype.toString.call(obj) === '[object Array]';
+        };
+
+    var chartV1;
+
+    function initChartEvent(param, result) {
+        var satker = '';
+        var labels = [];
+        var titles = '';
+        var datas = [];
+        var colors = [];
+        var colorsBackground = [];
+        var dataset = [];
+        var lengthOfArray = result.length;
+
+        $.each(result, function (i, v) {
+            labels.push(v.nama_rdg + " - " + v.kode_satker);
+            datas.push(v.value_avg);
+            titles = v.event;
+            satker = v.satker;
+            colors.push(randomColor());
+            colorsBackground.push(randomColor());
+            const color = randomColor();
+            dataset.push({
+                label: v.nama_rdg + " - " + v.satker,
+                backgroundColor: color,
+                borderColor: color,
+                hoverBackgroundColor: color,
+                hoverBorderColor: color,
+                borderWidth: 2,
+                data: generateValue(i, lengthOfArray, v.value_avg)
+            });
+        });
+
+        var data = {
+            labels: labels,
+            datasets: dataset
+        };
+
+        var option = {
+            title: {
+                display: false,
+                text: titles
+            },
+            legend: {
+                display: true,
+                fullWidth: true,
+                position: 'left',
+                labels : {
+                    useLineStyle: true,
+                    /*generateLabels:  function (chart) {
+                        chart.legend.afterFit = function () {
+                            var width = this.width;
+                            this.lineWidths = this.lineWidths.map(() => width - 12);
+                            this.options.labels.padding = 30;
+                            this.options.labels.boxWidth = 15;
+                        };
+                        var data = chart.data;
+                        if (data.labels.length && data.datasets.length) {
+                            return data.labels.map((label, i) => {
+                                var meta = chart.getDatasetMeta(i);
+                                var ds = data.datasets[i];
+                                var arc = meta.data[i];
+                                var custom = arc && arc.custom || {};
+                                var getValueAtIndexOrDefault = function(value, index, defaultValue){
+                                        if (value === undefined || value === null) {
+                                            return defaultValue;
+                                        }
+                                        if (this.isArray(value)) {
+                                            return index < value.length ? value[index] : defaultValue;
+                                        }
+                                        return value;
+                                    };
+
+                                var arcOpts = chart.options.elements.arc;
+                                var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+                                return {
+                                    text: label,
+                                    fillStyle: fill,
+                                    strokeStyle: stroke,
+                                    lineWidth: bw,
+                                    hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                    index: i
+                                };
+                            });
+                        }
+                        return [];
+                    }*/
+                },
+                onHover: function(event, legendItem) {
+                },
+                onLeave: function(event, legendItem) {
+                },
+                onClick: function(event, legendItem) {
+                }
+            },
+            scales: {
+                yAxes: [{
+                    stacked: true,
+                    gridLines: {
+                        display: true,
+                        color: "rgba(255,99,132,0.2)"
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }]
+            }
+        };
+
+        if (chartV1 !== undefined) {
+            chartV1.destroy();
+        }
+        chartV1 = new Chart('chart-1', {
+            type: 'bar',
+            data: data,
+            options: option
+        });
+        window.setInterval(function () {
+            common.post(common.baseURL('api_v1/grafik_per_event'), {id_event: param.id_event}, function (res1, text) {
+                if (res1.code === 200) {
+                    if (parseInt(lengthOfArray) !== parseInt(res1.result.length)) {
+                        location.reload(true);
+                    }
+                    $.each(res1.result, function (i, v) {
+                        data.datasets[i].data = generateValue(i, lengthOfArray, v.value_avg);
+
+                    });
+                    chartV1.update();
+                } else {
+                    swal.fire({
+                        title: 'muat ulang halaman ini?',
+                        text: "Terjadi kesalahan",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Confirm'
+                    }).then((result) => {
+                        if (result.value) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        }, 5000);
+    }
+
+    var chartV2;
+
+    function initChartRDG(event, param, result) {
+        var satker = '';
+        var labels = [];
+        var titles = '';
+        var datas = [];
+        var colors = [];
+        var colorsBackground = [];
+        var dataset = [];
+        var lengthOfArray = result.length;
+        $.each(result, function (i, v) {
+            labels.push(replaceMaxLength(v.aspek, 10));
+            datas.push(v.value_avg);
+            titles = v.nama_rdg;
+            satker = v.satker;
+            colors.push(randomColor());
+            colorsBackground.push(randomColor());
+            const color = randomColor();
+            dataset.push({
+                label: v.aspek,
+                backgroundColor: color,
+                borderColor: color,
+                hoverBackgroundColor: color,
+                hoverBorderColor: color,
+                borderWidth: 2,
+                data: generateValue(i, lengthOfArray, v.value_avg)
+            });
+        });
+
+        $("#title-satker").text(titles);
+
+        var data = {
+            labels: labels,
+            datasets: dataset
+        };
+
+        var option = {
+            legend: {
+                position: 'right',
+                labels : {
+                    useLineStyle: true,
+                    /*
+                    generateLabels:  function (chart) {
+                        chart.legend.afterFit = function () {
+                            var width = this.width;
+                            this.lineWidths = this.lineWidths.map(() => width + 12);
+                            this.options.labels.padding = 30;
+                            this.options.labels.boxWidth = 15;
+                        };
+                        var data = chart.data;
+                        if (data.labels.length && data.datasets.length) {
+                            return data.labels.map((label, i) => {
+                                var meta = chart.getDatasetMeta(i);
+                                var ds = data.datasets[i];
+                                var arc = meta.data[i];
+                                var custom = arc && arc.custom || {};
+                                var getValueAtIndexOrDefault = function(value, index, defaultValue){
+                                    if (value === undefined || value === null) {
+                                        return defaultValue;
+                                    }
+
+                                    if (this.isArray(value)) {
+                                        return index < value.length ? value[index] : defaultValue;
+                                    }
+
+                                    return value;
+                                };
+                                var arcOpts = chart.options.elements.arc;
+                                var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+                                return {
+                                    text: label,
+                                    fillStyle: fill,
+                                    strokeStyle: stroke,
+                                    lineWidth: bw,
+                                    hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                    index: i
+                                };
+                            });
+                        }
+                        return [];
+                    }
+                    */
+                },
+                onHover: function (event, legendItem) {
+
+                },
+                onLeave: function (event, legendItem) {
+
+                },
+                onClick: function (event, legendItem) {
+
+                }
+            },
+            scales: {
+                yAxes: [{
+                    stacked: true,
+                    gridLines: {
+                        display: true,
+                        color: "rgba(255,99,132,0.2)"
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }]
+            }
+        };
+
+        if (chartV2 !== undefined) {
+            chartV2.destroy();
+        }
+        chartV2 = new Chart('chart-2', {
+            type: 'bar',
+            data: data,
+            options: option
+        });
+
+        window.setInterval(function () {
+            common.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: param.id_rdg, id_event: event.id_event}, function (res1, text) {
+                if (res1.code === 200) {
+                    if (parseInt(lengthOfArray) !== parseInt(res1.result.length)) {
+                        location.reload(true);
+                    }
+                    $.each(res1.result, function (idx, v) {
+                        data.datasets[idx].data = generateValue(idx, lengthOfArray, v.value_avg);
+                    });
+                    chartV2.update();
+                } else {
+                    swal.fire({
+                        title: 'muat ulang halaman ini?',
+                        text: "Terjadi kesalahan",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Confirm'
+                    }).then((result) => {
+                        if (result.value) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        }, 3000);
     }
 
 

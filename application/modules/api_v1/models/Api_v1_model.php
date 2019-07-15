@@ -2,24 +2,23 @@
 
 class Api_v1_model extends CI_Model
 {
-	
+
     function get_event_id()
     {
-            $sql = "select *
+        $sql = "select *
 					  from ref_event
 					where now() between tanggal and end_periode;";
-            $res_ss = $this->db->query($sql);
-			if (count($res_ss->result_array()) > 0) {
-                    return $res_ss->result_array()[0];
-            } else {
-                return result(new stdClass(), 201, "Event not found!");
-            }
+        $res_ss = $this->db->query($sql);
+        if (count($res_ss->result_array()) > 0) {
+            return $res_ss->result_array()[0];
+        } else {
+            return result(new stdClass(), 201, "Event not found!");
+        }
     }
-	
+
     function login($data)
     {
-        if (is_null($data["nip"]) or is_null($data["password"])) 
-		{
+        if (is_null($data["nip"]) or is_null($data["password"])) {
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
             $sql = "select a.id_event,e.event,e.tanggal start_periode,e.end_periode,c.nip,c.nama_karyawan,c.id_satker,d.kode_satker,d.satker,e.password
@@ -29,22 +28,21 @@ class Api_v1_model extends CI_Model
 					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
 						and (c.nip=? or replace(c.nama_karyawan,' ','')=replace(?,' ',''))
 						and  e.password in (md5(?)) ";
-            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"],$data["password"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
+            $res_ss = $this->db->query($sql, array($data["nip"], $data["nip"], $data["password"]));
+            if (count($res_ss->result_array()) > 0) {
+                $response = new stdClass();
+                $response = $res_ss->result_array();
+                //parsing to result
+                return result($response);
             } else {
                 return result(new stdClass(), 201, "NIP or Password Invalid!");
             }
         }
-    }	
+    }
 
     function select_event($data)
     {
-        if (is_null($data["nip"]) or is_null($data["id_event"]) or is_null($data["password"])) 
-		{
+        if (is_null($data["nip"]) or is_null($data["id_event"]) or is_null($data["password"])) {
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
             $sql = "select a.id_event,e.event,e.tanggal start_periode,e.end_periode,c.nip,c.nama_karyawan,c.id_satker,d.kode_satker,d.satker,e.password
@@ -54,22 +52,21 @@ class Api_v1_model extends CI_Model
 						left join ref_event e on a.id_event = e.id_event
 					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
 						and (c.nip=? or replace(c.nama_karyawan,' ','')=replace(?,' ','')) and e.password = md5(?)";
-            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"],$data["password"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
+            $res_ss = $this->db->query($sql, array($data["nip"], $data["nip"], $data["password"]));
+            if (count($res_ss->result_array()) > 0) {
+                $response = new stdClass();
+                $response = $res_ss->result_array();
+                //parsing to result
+                return result($response);
             } else {
                 return result(new stdClass(), 201, "NIP not found!");
             }
         }
-    }	
+    }
 
     function materi($data)
     {
-        if (is_null($data["nip"]) or is_null($data["id_event"])) 
-		{
+        if (is_null($data["nip"]) or is_null($data["id_event"])) {
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
             $sql = "select a.nip,a.nama_karyawan,e.id_satker,f.kode_satker,f.satker, e.id_rdg, e.nama_rdg, e.tanggal,g.id_event,g.event, 
@@ -83,12 +80,12 @@ class Api_v1_model extends CI_Model
 						left join ref_event g on g.id_event = c.id_event
 					where (a.nip=? or replace(a.nama_karyawan,' ','')=replace(?,' ','')) 
 						  and d.id_event=? ;"; // (select id_event from ref_event where now() between tanggal and end_periode) and c.tanggal=?
-            $res_ss = $this->db->query($sql, array($data["nip"],$data["nip"],$data["id_event"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
+            $res_ss = $this->db->query($sql, array($data["nip"], $data["nip"], $data["id_event"]));
+            if (count($res_ss->result_array()) > 0) {
+                $response = new stdClass();
+                $response = $res_ss->result_array();
+                //parsing to result
+                return result($response);
             } else {
                 return result(new stdClass(), 201, "NIP or Password invalid !");
             }
@@ -97,8 +94,7 @@ class Api_v1_model extends CI_Model
 
     function get_data_aspek($data)
     {
-        if (is_null($data["idrdg"]) or is_null($data["nip"])) 
-		{
+        if (is_null($data["idrdg"]) or is_null($data["nip"])) {
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
             $sql = "select a.id_rdg, a.nama_rdg, a.tanggal, b.id_aspek, c.id_parent, c.aspek, c.id_tipe tipe_soal, c.listjawaban, c.nourut, d.value nilai
@@ -108,12 +104,12 @@ class Api_v1_model extends CI_Model
 					left join trx_hasil_penilaian d on a.id_rdg=d.id_rdg and b.id_aspek=d.id_aspek and d.nip = ?
 					where a.id_rdg=?
 					order by a.id_rdg, c.nourut";
-            $res_ss = $this->db->query($sql, array($data["nip"],$data["idrdg"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
+            $res_ss = $this->db->query($sql, array($data["nip"], $data["idrdg"]));
+            if (count($res_ss->result_array()) > 0) {
+                $response = new stdClass();
+                $response = $res_ss->result_array();
+                //parsing to result
+                return result($response);
             } else {
                 return result(new stdClass(), 201, "Materi not found!");
             }
@@ -122,8 +118,7 @@ class Api_v1_model extends CI_Model
 
     function get_data_hasil_evaluasi($data)
     {
-        if (is_null($data["idrdg"]) or is_null($data["satker"])) 
-		{
+        if (is_null($data["idrdg"]) or is_null($data["satker"])) {
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
             $sql = "select a.id_rdg, b.nama_rdg, b.tanggal, a.id_aspek, c.aspek, c.id_tipe tipe_soal, c.listjawaban, c.nourut, d.value nilai
@@ -133,12 +128,12 @@ class Api_v1_model extends CI_Model
 					left join trx_hasil_penilaian d on a.id_rdg=d.id_rdg and a.id_aspek=d.id_aspek and d.nip = ?
 					where a.id_rdg=? 
 					order by a.id_rdg, c.nourut";
-            $res_ss = $this->db->query($sql, array($data["nip"],$data["idrdg"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
+            $res_ss = $this->db->query($sql, array($data["nip"], $data["idrdg"]));
+            if (count($res_ss->result_array()) > 0) {
+                $response = new stdClass();
+                $response = $res_ss->result_array();
+                //parsing to result
+                return result($response);
             } else {
                 return result(new stdClass(), 201, "Materi not found!");
             }
@@ -150,7 +145,7 @@ class Api_v1_model extends CI_Model
         return $this->db->insert_batch($table_name, $data);
     }
 
-   function delete_table($table_name, $where)
+    function delete_table($table_name, $where)
     {
         if (isset($where)) {
             $this->db->delete($table_name, $where);
@@ -166,41 +161,9 @@ class Api_v1_model extends CI_Model
 
     function get_data_hasil_evaluasi_grafik_event($data)
     {
-        if (is_null($data["id_event"]))
-		{
-			return result(new stdClass(), 201, "Event not found...!");
-			
-            /*$sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker,avg(z.value) as value_avg
-						from
-						(
-						select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-							   f.id_aspek,g.id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
-						 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
-							  left join ref_rdg c on b.id_rdg=c.id_rdg
-							  left join ref_satuan_kerja d on c.id_satker=d.id_satker
-							  left join ref_matrix_table e on c.id_matrix=e.id_matrix
-							  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
-							  left join ref_aspek g on f.id_aspek=g.id_aspek
-							  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-						 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event = (select id_event from ref_event where now() between tanggal and end_periode)
-						 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
-							   f.id_aspek,g.id_parent,g.aspek
-						 order by g.nourut
-						 ) z group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker
-						 ;";
-
-            $res_ss = $this->db->query($sql);
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
-            } else {
-                return result(new stdClass(), 201, "Materi not found!");				 
-            }*/
-        }else {
+        if (is_null($data["id_event"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
             $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker,avg(z.value) as value_avg
 						from
 						(
@@ -223,58 +186,23 @@ class Api_v1_model extends CI_Model
 						 ;";
 
             $res_ss = $this->db->query($sql, array($data["id_event"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
+            if (count($res_ss->result_array()) > 0) {
+                $response = new stdClass();
+                $response = $res_ss->result_array();
+                //parsing to result
+                return result($response);
             } else {
-                return result(new stdClass(), 201, "Event not found!");				 
+                return result(new stdClass(), 201, "Event not found!");
             }
-		}
+        }
     }
 
     function get_data_hasil_evaluasi_grafik_materi($data)
     {
-        if (is_null($data["id_event"]) and $data["id_rdg"])
-		{
-			return result(new stdClass(), 201, "Event materi not found...!");
+        if (is_null($data["id_event"]) and $data["id_rdg"]) {
+            return result(new stdClass(), 201, "Event materi not found...!");
 
-            /*$sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek, x.aspek,
-						   avg(z.value) as value_avg
-					from
-					(
-					select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
-					 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
-						  left join ref_rdg c on b.id_rdg=c.id_rdg
-						  left join ref_satuan_kerja d on c.id_satker=d.id_satker
-						  left join ref_matrix_table e on c.id_matrix=e.id_matrix
-						  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
-						  left join ref_aspek g on f.id_aspek=g.id_aspek
-						  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-					 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event = (select id_event from ref_event where now() between tanggal and end_periode) 
-							and c.id_rdg=?
-					 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
-						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
-						   f.id_aspek,g.id_parent,g.aspek
-					 order by g.nourut
-					 ) z join ref_matrix_grafik y on z.id_matrix=y.id_matrix  and z.id_parent=y.id_aspek
-					 left join ref_aspek x on z.id_parent=x.id_aspek
-					 group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek
-					;";
-
-            $res_ss = $this->db->query($sql,array($data["id_rdg"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
-            } else {
-                return result(new stdClass(), 201, "Grafik Materi not found!");				 
-            }*/
-        }else if ($data["id_event"] and $data["id_rdg"]) {
+        } else if ($data["id_event"] and $data["id_rdg"]) {
             $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek, x.aspek,
 						   avg(z.value) as value_avg
 					from
@@ -299,18 +227,49 @@ class Api_v1_model extends CI_Model
 					 group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek
 					;";
 
-            $res_ss = $this->db->query($sql, array($data["id_event"],$data["id_rdg"]));
-			if (count($res_ss->result_array()) > 0) {
-                    $response = new stdClass();
-                    $response = $res_ss->result_array();
-                    //parsing to result
-                    return result($response);
+            $res_ss = $this->db->query($sql, array($data["id_event"], $data["id_rdg"]));
+            if (count($res_ss->result_array()) > 0) {
+                $response = $res_ss->result_array();
+                return result($response);
             } else {
-                return result(new stdClass(), 201, "Event Materi not found!");				 
+                return result(new stdClass(), 201, "Event Materi not found!");
             }
-		}else{
-			return result(new stdClass(), 201, "Event Materi not found!");
-		}
+        } else {
+            return result(new stdClass(), 201, "Event Materi not found!");
+        }
+    }
+
+    function load_all_event()
+    {
+        $sql = "select * from ref_event order by id_event desc";
+        $res = $this->db->query($sql)->result_array();
+        if (count($res) > 0) {
+            $response = $res;
+            return result($response);
+        } else {
+            return result(array(), 404, "Event not found!");
+        }
+    }
+
+    function load_aspek($data)
+    {
+        $sql = "select * from ref_event_rdg where id_event=?";
+        $res = $this->db->query($sql, array($data["id_event"]))->result_array();
+        if (count($res) > 0) {
+            $param = array();
+            $flag = "";
+            foreach ($res as $value) {
+                array_push($param, $value['id_rdg']);
+                $flag .= "?, ";
+            }
+            $flag = substr($flag, 0, strlen($flag) - 2);
+            $sql = "select * from ref_rdg where id_rdg in($flag)";
+            $res = $this->db->query($sql, $param)->result_array();
+            $response = $res;
+            return result($response);
+        } else {
+            return result(array(), 404, "Aspek(RDG) not found!");
+        }
     }
 
 }

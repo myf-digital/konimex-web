@@ -13,10 +13,8 @@ $(document).ready(function () {
     initChartDashboard();
 
     function initChartDashboard() {
-        // $.getJSON(common.baseURL("api_v1/grafik_per_event"), function (res, text) {
         common.post(common.baseURL('api_v1/grafik_per_event'), {id_event: event.event_id}, function (res, text) {
             if (res.code === 200) {
-                console.log(res.result);
                 initChart(res.result);
             } else {
                 swal.fire({
@@ -101,19 +99,12 @@ $(document).ready(function () {
                 text: titles
             },
             legend: {
-                position: 'bottom',
+                position: 'right',
                 onHover: function(event, legendItem) {
-                    // console.log(event);
-                    // $(this).css('cursor','hand');
-                    // console.log('onHover: ' + legendItem.text);
                 },
                 onLeave: function(event, legendItem) {
-                    // $(this).css('cursor','auto');
-                    // console.log('onLeave: ' + legendItem.text);
                 },
                 onClick: function(event, legendItem) {
-                    // console.log(legendItem.datasetIndex);
-                    // console.log('onClick:' + legendItem.text);
                 }
             },
             scales: {
@@ -166,8 +157,6 @@ $(document).ready(function () {
                 }
             });
         }, 5000);
-
-
     }
 
 });

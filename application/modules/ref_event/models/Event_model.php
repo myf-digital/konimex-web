@@ -14,7 +14,6 @@ class Event_model extends CI_Model
 			$data_peserta = array();
 			if(isset($data['id_rdg'])){ $data_rdg = $data['id_rdg']; unset($data['id_rdg']); }
 			if(isset($data['id_group'])){ $data_peserta = $data['id_group']; unset($data['id_group']); }
-
 			$data['password'] = md5($data['password']);
 			$this->db->insert('ref_event', $data);
 			$idevent = $this->db->insert_id();

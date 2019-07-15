@@ -39,7 +39,7 @@ $(document).ready(function () {
 
 
     function randomColor() {
-        var hue = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+        const hue = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
         return hue;
     }
 
@@ -103,17 +103,13 @@ $(document).ready(function () {
             legend: {
                 position: 'right',
                 onHover: function (event, legendItem) {
-                    // console.log(event);
-                    // $(this).css('cursor','hand');
-                    // console.log('onHover: ' + legendItem.text);
+
                 },
                 onLeave: function (event, legendItem) {
-                    // $(this).css('cursor','auto');
-                    // console.log('onLeave: ' + legendItem.text);
+
                 },
                 onClick: function (event, legendItem) {
-                    // console.log(legendItem.datasetIndex);
-                    // console.log('onClick:' + legendItem.text);
+
                 }
             },
             scales: {

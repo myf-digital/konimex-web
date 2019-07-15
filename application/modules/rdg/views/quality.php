@@ -67,7 +67,7 @@
 <script src="<?php echo base_url('assets/plugins/cookies/js.cookie.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.js'); ?>"></script>
 <script src="<?php echo base_url('assets/rdg/js/main.js'); ?>"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script src="<?php echo base_url('assets/plugins/chartjs/Chart.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/rdg/js/main.quality.app.js'); ?>"></script>
 
 </body>
