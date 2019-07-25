@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class App_rekap extends BaseController
+class Rep_rekap extends BaseController
 {
 
     public function __construct()

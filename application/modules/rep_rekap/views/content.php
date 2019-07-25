@@ -28,23 +28,24 @@
                             <select id="riset" name="riset" class="form-control"></select>
 
                         </div>
-                        <div id="labelriset" class="col-md-12" style="padding-top: 20px">
+                        <div id="tblrekapevent" class="col-md-12" style="padding-top: 20px">
                             <p class="text-center">
-                                <strong>Riset</strong>
+                                <strong>Rekapitulasi Nilai per Event</strong>
                             </p>
                         </div>
-                        <div id="chart" class="col-md-12">
 
-<!--                            <div class="progress-group">-->
-<!--                                <span class="progress-text">Add Products to Cart</span>-->
-<!--                                <span class="progress-number"><b>160</b>/200</span>-->
-<!---->
-<!--                                <div class="progress sm">-->
-<!--                                    <div class="progress-bar progress-bar-aqua" style="width: 80%"></div>-->
-<!--                                </div>-->
-<!--                            </div>-->
+                        <div class="col-md-12" id="tblevent">
+						
+                        </div>
 
-                            <!-- /.progress-group -->
+                        <div id="label-rgd" class="col-md-12" style="padding-top: 20px">
+                            <p class="text-center">
+                                <strong>Rekapitulasi Nilai Detail per RDG</strong>
+                            </p>
+                        </div>
+
+                        <div class="col-md-12" id="divtbldetail">
+						 <table id='tbldetail' border=1></table>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -63,4 +64,4 @@
 </section>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/app_dashboard/dashboard-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/rep_rekap/rekap-content.js' ?>"></script>

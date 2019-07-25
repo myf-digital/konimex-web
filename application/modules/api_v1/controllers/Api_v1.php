@@ -171,5 +171,68 @@ class Api_v1 extends CI_Controller
         }
     }
 
+    function get_data_rekap_per_event()
+    {
+        $param = param_input();
+        $now = date("Y-m-d h:i:sa");
+        // jawaban
+        if (isset($param["id_event"])) {
+            $result = $this->api_v1->get_headers_rekap_hasil_evaluasi_event($param);
+            $resultrows = $this->api_v1->get_rows_rekap_hasil_evaluasi_event($param);
+			$response = new stdClass();
+            if (200 == $result->code) {
+				$response->header = $result->result;
+				$response->rows = $resultrows->result;
+                return response($response);
+            } else {
+				$response->header = $result->result;
+				$response->rows = $resultrows->result;
+                return response($response, $result->code, $result->message);
+            }
+        }
+    }
+
+    function get_data_rekap_per_rdg()
+    {
+        $param = param_input();
+        $now = date("Y-m-d h:i:sa");
+        // jawaban
+        if (isset($param["id_event"]) && isset($param["id_rdg"])) {
+            $result = $this->api_v1->get_headers_rekap_hasil_evaluasi_rdg($param);
+            $resultrows = $this->api_v1->get_rows_rekap_hasil_evaluasi_rdg($param);
+			$response = new stdClass();
+            if (200 == $result->code) {
+				$response->header = $result->result;
+				$response->rows = $resultrows->result;
+                return response($response);
+            } else {
+				$response->header = $result->result;
+				$response->rows = $resultrows->result;
+                return response($response, $result->code, $result->message);
+            }
+        }
+    }
+
+    function get_data_saran_per_rdg()
+    {
+        $param = param_input();
+        $now = date("Y-m-d h:i:sa");
+        // jawaban
+        if (isset($param["id_event"]) && isset($param["id_rdg"])) {
+            $result = $this->api_v1->get_headers_rekap_saran_rdg($param);
+            $resultrows = $this->api_v1->get_rows_rekap_saran_rdg($param);
+			$response = new stdClass();
+            if (200 == $result->code) {
+				$response->header = $result->result;
+				$response->rows = $resultrows->result;
+                return response($response);
+            } else {
+				$response->header = $result->result;
+				$response->rows = $resultrows->result;
+                return response($response, $result->code, $result->message);
+            }
+        }
+    }
+
 }
 

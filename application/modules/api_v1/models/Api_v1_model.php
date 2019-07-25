@@ -272,4 +272,381 @@ class Api_v1_model extends CI_Model
         }
     }
 
+    function get_headers_rekap_hasil_evaluasi_event($data)
+    {
+        if (is_null($data["id_event"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "
+					select @rownum:=@rownum+1 as indexno,z.id_aspek,z.title,if(z.colspan<>0,z.colspan+1,z.colspan) colspan,if(z.colspan=0,2,0) rowspan from 
+					(
+					select null id_merix, null id_aspek, null id_parent, null nourut, 'No' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Materi' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Satker' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Waktu' title, 0 colspan
+					union 
+					(select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, 
+							 ifnull(e.id_parent, (select count(1) from ref_aspek where id_parent=e.id_aspek)) as colspan
+					from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+						 left join ref_rdg c on b.id_rdg = c.id_rdg
+						 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
+						 left join ref_aspek e on d.id_aspek=e.id_aspek
+					where a.id_event=? and id_parent is null
+					order by e.nourut asc)
+					) z , (SELECT @rownum:=0) r						 
+				";
+
+            $sqlchild = "
+							select @rownum:=@rownum+1 as indexno,z.title,z.colspan,0 rowspan from 
+							(
+							(select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, 0 as colspan
+							from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+								 left join ref_rdg c on b.id_rdg = c.id_rdg
+								 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
+								 left join ref_aspek e on d.id_aspek=e.id_aspek
+							where a.id_event=? and id_parent = ?
+							order by e.nourut asc)
+							union
+							select  null id_matrix, null id_aspek, null id_parent, null nourut, 'Total' title, 0 as colspan
+							) z , (SELECT @rownum:=0) r
+						";
+
+            $res_ss = $this->db->query($sql, array($data["id_event"]));
+			$finalarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				
+				foreach ($res_ss->result_array() as $row){
+					$res_child = $this->db->query($sqlchild, array($data["id_event"],$row["id_aspek"]));
+					if($row["colspan"]!=0) 
+					{ $child = $res_child->result_array();}else{ $child=array(); }
+					$resarray = array(
+									"indexno" => $row["indexno"],
+									"title" => $row["title"],
+									"rowspan" => $row["rowspan"],
+									"colspan" => $row["colspan"],
+									"child" => $child
+									);
+					array_push($finalarray,$resarray);
+				}
+                //$response = new stdClass();
+                //$response = $res_ss->result_array();
+                //$response = $finalarray;
+				
+                //parsing to result
+                return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
+    }
+
+    function get_rows_rekap_hasil_evaluasi_event($data)
+    {
+        if (is_null($data["id_event"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "	select @rownum:=@rownum+1 as indexno, z.id_rdg, z.materi, z.satker, z.tanggal  from 
+							(
+							  select  c.id_rdg, c.nama_rdg materi, d.satker, c.tanggal
+										from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+											 left join ref_rdg c on b.id_rdg = c.id_rdg
+								 left join ref_satuan_kerja d on c.id_satker = d.id_satker
+										where a.id_event=?
+							  ) z , (SELECT @rownum:=0) r
+					";
+
+            $sqlaspek = "
+							select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, if(e.listjawaban<>'#',1,0) pertanyaan
+							from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+								 left join ref_rdg c on b.id_rdg = c.id_rdg
+								 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
+								 left join ref_aspek e on d.id_aspek=e.id_aspek
+							where a.id_event=? and if(e.listjawaban<>'#',1,0)=1
+							order by e.nourut asc
+						";
+			
+			$sqlnilai = "
+							select round(avg(value),2) nilai from trx_hasil_penilaian 
+							where id_event=? and id_rdg=? and id_aspek=?;
+						";
+
+			$sqlnilaitotal = "
+								select round(avg(value),2) nilai_total from trx_hasil_penilaian a left join ref_aspek b on a.id_aspek=b.id_aspek
+								where a.id_event=? and a.id_rdg=? and b.id_parent=?;
+							";
+
+            $res_ss = $this->db->query($sql, array($data["id_event"]));
+			$finalarray = array();
+			$aspekarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				//$finalarray = $res_ss->result_array();
+				foreach ($res_ss->result_array() as $row){
+					$res_aspek = $this->db->query($sqlaspek, array($data["id_event"]));
+					$resarray = array(
+									"indexno" => $row["indexno"],
+									//"id_rdg" => $row["id_rdg"],
+									"materi" => $row["materi"],
+									"satker" => $row["satker"],
+									"tanggal" => $row["satker"],
+									);
+					if (count($res_aspek->result_array()) > 0) 
+					{	
+						$idparent = "";
+						foreach ($res_aspek->result_array() as $rowaspek)
+						{	
+							if ($idparent!=$rowaspek["id_parent"] and $idparent!="")
+							{
+								$res_nilaitot = $this->db->query($sqlnilaitotal, array($data["id_event"],$row["id_rdg"],$idparent));
+								$vnilaitotal = $res_nilaitot->row();
+								$resarray["Total ".$idparent] = $vnilaitotal->nilai_total;
+							}
+								$res_nilai = $this->db->query($sqlnilai, array($data["id_event"],$row["id_rdg"],$rowaspek["id_aspek"]));
+								$vnilai = $res_nilai->row();
+								$resarray[$rowaspek["title"]] = $vnilai->nilai;
+								$idparent = $rowaspek["id_parent"];
+						}
+					}
+					array_push($finalarray,$resarray);
+				}
+                //$response = new stdClass();
+                //$response = $res_ss->result_array();
+                //$response = $finalarray;
+                //parsing to result
+                return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
+    }
+
+    function get_headers_rekap_hasil_evaluasi_rdg($data)
+    {
+        if (is_null($data["id_event"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "
+					select @rownum:=@rownum+1 as indexno,z.id_aspek,z.title,if(z.colspan<>0,z.colspan+1,z.colspan) colspan,if(z.colspan=0,2,0) rowspan from 
+					(
+					select null id_merix, null id_aspek, null id_parent, null nourut, 'No' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Responden' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Satker' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Waktu' title, 0 colspan
+					union 
+					(select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, 
+							 ifnull(e.id_parent, (select count(1) from ref_aspek where id_parent=e.id_aspek)) as colspan
+					from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+						 left join ref_rdg c on b.id_rdg = c.id_rdg
+						 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
+						 left join ref_aspek e on d.id_aspek=e.id_aspek
+					where a.id_event=? and id_parent is null
+					order by e.nourut asc)
+					) z , (SELECT @rownum:=0) r						 
+				";
+
+            $sqlchild = "
+							select @rownum:=@rownum+1 as indexno,z.title,z.colspan,0 rowspan from 
+							(
+							(select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, 0 as colspan
+							from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+								 left join ref_rdg c on b.id_rdg = c.id_rdg
+								 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
+								 left join ref_aspek e on d.id_aspek=e.id_aspek
+							where a.id_event=? and id_parent = ?
+							order by e.nourut asc)
+							union
+							select  null id_matrix, null id_aspek, null id_parent, null nourut, 'Total' title, 0 as colspan
+							) z , (SELECT @rownum:=0) r
+						";
+
+            $res_ss = $this->db->query($sql, array($data["id_event"]));
+			$finalarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				
+				foreach ($res_ss->result_array() as $row){
+					$res_child = $this->db->query($sqlchild, array($data["id_event"],$row["id_aspek"]));
+					if($row["colspan"]!=0) 
+					{ $child = $res_child->result_array();}else{ $child=array(); }
+					$resarray = array(
+									"indexno" => $row["indexno"],
+									"title" => $row["title"],
+									"rowspan" => $row["rowspan"],
+									"colspan" => $row["colspan"],
+									"child" => $child
+									);
+					array_push($finalarray,$resarray);
+				}
+                //$response = new stdClass();
+                //$response = $res_ss->result_array();
+                //$response = $finalarray;
+				
+                //parsing to result
+                return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
+    }
+
+    function get_rows_rekap_hasil_evaluasi_rdg($data)
+    {
+        if (is_null($data["id_event"]) or is_null($data["id_rdg"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "
+						select @rownum:=@rownum+1 as indexno, z.id_rdg, z.materi, z.nip, z.responden, z.satker, z.tanggal  from 
+						(
+						  select  a.id_rdg, d.nama_rdg materi, e.nip, e.nama_karyawan responden, f.satker, d.tanggal
+									from trx_hasil_penilaian a  left join ref_event b on a.id_event=b.id_event
+							 left join ref_event_rdg c on b.id_event=c.id_event
+										 left join ref_rdg d on a.id_rdg = d.id_rdg
+							 left join ref_karyawan e on a.nip = e.nip
+							 left join ref_satuan_kerja f on e.id_satker = f.id_satker
+									where a.id_event=? and a.id_rdg=? group by a.id_rdg, d.nama_rdg, e.nama_karyawan, f.satker, d.tanggal
+						) z , (SELECT @rownum:=0) r
+
+					";
+
+            $sqlaspek = "
+							select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, if(e.listjawaban<>'#',1,0) pertanyaan
+							from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+								 left join ref_rdg c on b.id_rdg = c.id_rdg
+								 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
+								 left join ref_aspek e on d.id_aspek=e.id_aspek
+							where a.id_event=? and if(e.listjawaban<>'#',1,0)=1
+							order by e.nourut asc
+						";
+			
+			$sqlnilai = "
+							select round(avg(value),2) nilai from trx_hasil_penilaian 
+							where id_event=? and id_rdg=? and nip=? and id_aspek=?;
+						";
+
+			$sqlnilaitotal = "
+								select round(avg(value),2) nilai_total from trx_hasil_penilaian a left join ref_aspek b on a.id_aspek=b.id_aspek
+								where a.id_event=? and a.id_rdg=? and a.nip=? and b.id_parent=?;
+							";
+
+            $res_ss = $this->db->query($sql, array($data["id_event"],$data["id_rdg"]));
+			$finalarray = array();
+			$aspekarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				//$finalarray = $res_ss->result_array();
+				foreach ($res_ss->result_array() as $row){
+					$res_aspek = $this->db->query($sqlaspek, array($data["id_event"]));
+					$resarray = array(
+									"indexno" => $row["indexno"],
+									//"id_rdg" => $row["id_rdg"],
+									"responden" => $row["responden"],
+									"satker" => $row["satker"],
+									"tanggal" => $row["tanggal"],
+									);
+					if (count($res_aspek->result_array()) > 0) 
+					{	
+						$idparent = "";
+						foreach ($res_aspek->result_array() as $rowaspek)
+						{	
+							if ($idparent!=$rowaspek["id_parent"] and $idparent!="")
+							{
+								$res_nilaitot = $this->db->query($sqlnilaitotal, array($data["id_event"],$row["id_rdg"],$row["nip"],$idparent));
+								$vnilaitotal = $res_nilaitot->row();
+								$resarray["Total ".$idparent] = $vnilaitotal->nilai_total;
+							}
+								$res_nilai = $this->db->query($sqlnilai, array($data["id_event"],$row["id_rdg"],$row["nip"],$rowaspek["id_aspek"]));
+								$vnilai = $res_nilai->row();
+								$resarray[$rowaspek["title"]] = $vnilai->nilai;
+								$idparent = $rowaspek["id_parent"];
+						}
+					}
+					array_push($finalarray,$resarray);
+				}
+                //$response = new stdClass();
+                //$response = $res_ss->result_array();
+                //$response = $finalarray;
+                //parsing to result
+                return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
+    }
+
+    function get_headers_rekap_saran_rdg($data)
+    {
+        if (is_null($data["id_event"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "
+					select @rownum:=@rownum+1 as indexno,z.title, 0 colspan,0 rowspan from 
+					(
+					select 'No' title, 0 colspan
+					union select 'Responden' title, 0 colspan
+					union select 'Satker' title, 0 colspan
+					union select 'Waktu' title, 0 colspan
+					union select 'Saran' title, 0 colspan
+					) z , (SELECT @rownum:=0) r
+				";
+
+            $res_ss = $this->db->query($sql, array($data["id_event"]));
+			$finalarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				foreach ($res_ss->result_array() as $row){
+					$resarray = array(
+									"indexno" => $row["indexno"],
+									"title" => $row["title"],
+									"rowspan" => $row["rowspan"],
+									"colspan" => $row["colspan"],
+									"child" => ""									
+									);
+					array_push($finalarray,$resarray);
+				}
+
+                return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
+    }
+
+    function get_rows_rekap_saran_rdg($data)
+    {
+        if (is_null($data["id_event"]) or is_null($data["id_rdg"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "
+						select @rownum:=@rownum+1 as indexno, z.id_rdg, z.materi, z.nip, z.responden, z.satker, z.tanggal, z.saran  from 
+						(
+						  select  a.id_rdg, d.nama_rdg materi, e.nip, e.nama_karyawan responden, f.satker, d.tanggal, a.saran
+									from trx_saran a left join ref_event b on a.id_event=b.id_event
+										 left join ref_event_rdg c on b.id_event=c.id_event
+										 left join ref_rdg d on a.id_rdg = d.id_rdg
+										 left join ref_karyawan e on a.nip = e.nip
+										 left join ref_satuan_kerja f on e.id_satker = f.id_satker
+									where a.id_event=? and a.id_rdg=? group by a.id_rdg, d.nama_rdg, e.nama_karyawan, f.satker, d.tanggal, a.saran
+						) z , (SELECT @rownum:=0) r
+
+					";
+
+            $res_ss = $this->db->query($sql, array($data["id_event"],$data["id_rdg"]));
+			$finalarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				foreach ($res_ss->result_array() as $row){
+					$resarray = array(
+									"indexno" => $row["indexno"],
+									//"id_rdg" => $row["id_rdg"],
+									"responden" => $row["responden"],
+									"satker" => $row["satker"],
+									"tanggal" => $row["tanggal"],
+									"saran" => $row["saran"]
+									);
+					array_push($finalarray,$resarray);
+				}
+				return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
+    }
+
+
+
 }
