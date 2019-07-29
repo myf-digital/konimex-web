@@ -11,7 +11,6 @@
 <!-- Main content -->
 <section id="content-main" class="content">
 
-
     <div class="row">
         <div class="col-md-12">
             <div class="box">
@@ -34,8 +33,12 @@
                             </p>
                         </div>
 
-                        <div class="col-md-12" id="tblevent">
-						
+                        <div class="col-md-12">
+                            <div class="box-primary">
+                                <div class="box-body">
+                                    <table id='dg' border=1></table>
+                                </div>
+                            </div>
                         </div>
 
                         <div id="label-rgd" class="col-md-12" style="padding-top: 20px">
@@ -44,8 +47,26 @@
                             </p>
                         </div>
 
-                        <div class="col-md-12" id="divtbldetail">
-						 <table id='tbldetail' border=1></table>
+                        <div class="col-md-12">
+                            <div class="box-primary">
+                                <div class="box-body">
+                                    <table id='dg-2' border=1></table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="label-rgd" class="col-md-12" style="padding-top: 20px">
+                            <p class="text-center">
+                                <strong>Rekapitulasi Saran RDG</strong>
+                            </p>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="box-primary">
+                                <div class="box-body">
+                                    <table id='dg-3' border=1></table>
+                                </div>
+                            </div>
                         </div>
                         <!-- /.col -->
                     </div>

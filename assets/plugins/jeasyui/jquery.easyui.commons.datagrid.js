@@ -12,7 +12,7 @@
         resizable: true,
         collapsible: true,
         fit:false,
-        fitColumn: true,
+        fitColumns: true,
         rownumbers: true,
         pagination: true,
         nowrap: true,
