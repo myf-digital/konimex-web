@@ -80,6 +80,7 @@ class Api_v1 extends CI_Controller
             $saran = json_decode($param["saran"]);
             $this->db->where('nip', $saran->nip);
             $this->db->where('id_rdg', $saran->id_rdg);
+            $this->db->where('id_event', $saran->id_event);
             $this->db->delete("trx_saran");
             $return_saran = $this->db->insert("trx_saran", $saran);
             if ($return && $return_saran) {

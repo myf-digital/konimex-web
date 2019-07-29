@@ -387,7 +387,7 @@ class Api_v1_model extends CI_Model
 									//"id_rdg" => $row["id_rdg"],
 									"materi" => $row["materi"],
 									"satker" => $row["satker"],
-									"tanggal" => $row["satker"],
+									"tanggal" => $row["tanggal"],
 									);
 					if (count($res_aspek->result_array()) > 0) 
 					{	
