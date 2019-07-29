@@ -366,8 +366,8 @@ function validate(formData, jqForm, options) {
         showLoading();
     }
     let saranValue = $("textarea[name=sarandesc]").val();
-    let saran = {nip: user.nip, id_rdg: user.id_rdg, saran: saranValue};
     let event = JSON.parse(localStorage.getItem("user.event"));
+    let saran = {nip: user.nip, id_rdg: user.id_rdg, saran: saranValue, id_event: event.event_id};
     formData.push({name: "options", value: JSON.stringify(optionValue), type: "text", required: false});
     formData.push({name: "saran", value: JSON.stringify(saran), type: "text", required: false});
     formData.push({name: "id_event", value: event.event_id, type: "text", required: false});
