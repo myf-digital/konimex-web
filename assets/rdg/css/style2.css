@@ -269,7 +269,10 @@ footer {
     padding-left: 8px;
 }
 .home-input {
-    text-align: -webkit-center;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .home-input input {
     width: 50%;
