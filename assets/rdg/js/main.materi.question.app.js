@@ -112,7 +112,7 @@ $(document).ready(function () {
     }
 
     function templateAspekType1(value) {
-        console.log("type - 1");
+        // console.log("type - 1");
         var tmp = '' +
             '                       <div class="form-group">\n' +
             '                            <label>?1. ?2</label>\n' +
@@ -303,8 +303,7 @@ $(document).ready(function () {
         } else {
             tmp = tmp.replace("?1", v);
         }
-
-        console.log(v);
+        // console.log(v);
         return tmp;
     }
 

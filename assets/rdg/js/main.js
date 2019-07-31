@@ -45,7 +45,7 @@ $(document).ready(function () {
 function resizeContentToMin() {
     var mHeight = window.innerHeight - 160;
     var cHeight = $(".overflow-container").height();
-    console.log(mHeight, cHeight);
+
     if (cHeight < mHeight) {
         $(".overflow-container").height(mHeight);
     }

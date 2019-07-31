@@ -56,7 +56,7 @@ $(document).ready(function () {
     }
 
     function templateReview(value) {
-        console.log(value);
+        // console.log(value);
         var tmp = '' +
             '<li>' +
             '   <span> ?1 / ?2</span>' +
