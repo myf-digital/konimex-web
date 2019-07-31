@@ -1,3 +1,40 @@
+
+@media only screen and (max-width: 320px) {
+
+    body {
+        font-size: 2em !important;
+    }
+
+    #title-rdg {
+        font-size: 7px;
+    }
+
+    .table-condensed {
+        font-size: 7px;
+    }
+
+}
+
+@media only screen and (max-width: 767px) {
+
+    #title-rdg {
+        font-size: 23px;
+    }
+
+    .table-condensed {
+        font-size: 7px;
+    }
+
+    .form-control {
+        font-size: 7px;
+    }
+
+}
+
+.button-group-list {
+    margin-top: 20px;
+}
+
 *,
 *:before,
 *:after {
@@ -22,7 +59,7 @@
   text-align: left;
 }
 
-.tmp-legend {
+.legend {
   text-align: left;
 }
 
@@ -35,20 +72,10 @@
   flex-direction: column;
 }
 
-.dropdown-item a {
-   color: #193783;
-   font-weight: 500;
-}
-.dropdown-item i {
-   margin-right: 10px;
-  color: #193783;
-}
 /* an arbitrary container of fixed height */
 .fixed-container {
   height: 80px;
   padding: 15px 30px;
-  position: fixed;
-  width: 100%;
 }
 .fixed-container img {
   width: 280px; 
@@ -59,23 +86,20 @@
   display: flex;
   flex: 1;
   min-height: 0px; /* IMPORTANT: you need this for non-chrome browsers */
-  padding-top: 80px;
 }
 
 /* the container for our overflowed content */
 .overflow-container {
   flex: 1;
   overflow: auto;
-  min-height: 85vh;
 }
 
 /* the overflow content itself */
 .overflow-content {
   height: 100%;
+  color: black;
+  background-color: #ddd;
   padding: 20px;
-  align-items: center;
-  justify-content: center;
-  display: flex;
 }
 .navbar {
     height: 80px;
@@ -117,6 +141,7 @@
   padding-left: 35px;
   margin-bottom: 12px;
   cursor: pointer;
+  font-size: 22px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -170,7 +195,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #ec407a;;
+  background: #007bff;
 }
 .ask-list {
   text-align: left;
@@ -243,22 +268,8 @@ footer {
 .btn-start i {
     padding-left: 8px;
 }
-#dropdownMenuLink {
-    border: none;
-    background: transparent;
-    color: #193783;
-    outline: none;
-    font-size: 16px;
-    font-weight: 500;
-}
-#dropdownMenuLink:active {
-  outline: none;
-}
-#dropdownMenuLink:focus {
-  outline: none;
-  box-shadow: none;
-}
 .home-input {
+
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -765,165 +776,7 @@ ul li {
     width: 100px;
   }
 }
-@media screen and (max-width: 768px) {
-  .btn-start {
-        display: -webkit-inline-box;
-  }
 
+#review-list{
+    padding-inline-start: 0px!important;
 }
-@media screen and (max-width: 620px) {
-  .fixed-container img {
-      width: 200px;
-      height: 32px;
-  }
-}
-@media screen and (max-width: 420px) {
-  body {
-    font-size: 15px;
-  }
-  .first-text {
-    font-size: 2rem;
-  }
-  .button-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 14px;
-  }
-  .button-group .btn-sucess {
-    width: fit-content;
-  }
-  .button-group .btn-view {
-    width: fit-content;
-    padding: 10px 30px;
-  }
-}
-
-#review-list {
-  padding-left: 0;
-}
-#review-list li {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-.button-group {
-  margin-top: 20px;
-}
-
-/*table*/
-   td {
-      border-bottom: 1px solid #ccc;
-      padding: 5px;
-      text-align: left; /* IE */
-      color: #383d41;
-    }
-    td + td {
-      border-left: 1px solid #ccc;
-    }
-    th {
-      padding: 0 5px;
-      text-align: left; /* IE */
-    }
-    .header-background {
-      border-bottom: 1px solid #ccc;
-    }
-    
-    /* above this is decorative, not part of the test */
-    
-    .fixed-table-container {
-      width: 1610px;
-      height: 350px;
-      border: 1px solid #ccc;
-      margin: 10px auto;
-      background-color: white;
-      /* above is decorative or flexible */
-      position: relative; /* could be absolute or relative */
-      padding-top: 100px; /* height of header */
-    }
-
-    .fixed-table-container-inner {
-      overflow-x: hidden;
-      overflow-y: auto;
-      height: 100%;
-    }
-     
-    .header-background {
-      background-color: blue;
-      height: 100px; /* height of header */
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-    }
-    
-    table {
-      background-color: white;
-      width: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    .th-inner {
-      position: absolute;
-      top: 0;
-      line-height: 30px; /* height of header */
-      text-align: left;
-      border-left: 1px solid #ccc !important;
-      padding-left: 5px;
-      margin-left: -5px;
-    }
-    .first .th-inner {
-        border-left: none;
-        padding-left: 6px;
-      }
-    
-  
-    
-    /* for complex headers */
-    
-    .complex.fixed-table-container {
-      padding-top: 100px; /* height of header */
-      overflow-x: hidden; /* for border */
-      font-size: 13px;
-    }
-    
-    .complex .header-background {
-      height: 100px;
-    }
-    
-    .complex-top .th-inner {
-      border-bottom: 1px solid #ccc;
-      width: 100%;
-      height: 30px;
-    }
-    
-    .complex-bottom .th-inner {
-      top: 30px;
-      width: 100%;
-      height: 69px;
-    }
-    
-    .complex-top .third .th-inner { /* double row cell */
-      height: 100px;
-      border-bottom: none;
-      background-color: blue;
-    }
-    .td-flex {
-      width: 133px !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: blue;
-    }
-    .td-rowspan {
-      width: 970px !important;
-      background: blue;
-      align-items: center;
-      justify-content: center;
-      display: flex;
-    }
-
-    ul {
-      padding-left: 0;
-    }

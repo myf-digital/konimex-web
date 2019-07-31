@@ -22,7 +22,7 @@
   text-align: left;
 }
 
-.tmp-legend {
+.a0-legend {
   text-align: left;
 }
 
@@ -117,6 +117,7 @@
   padding-left: 35px;
   margin-bottom: 12px;
   cursor: pointer;
+  font-size: 22px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -170,7 +171,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #ec407a;;
+  background: #007bff;
 }
 .ask-list {
   text-align: left;

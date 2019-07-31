@@ -38,7 +38,7 @@
                     <div class="chart-container">
                         <canvas id="myChart"></canvas>
                     </div>
-                    <button id="btn-back" class="btn-start">Back <i class="fa fa-arrow-right"></i></button>
+                    <button id="btn-back" class="btn-start"><i class="fa fa-arrow-left"></i>  Back</button>
                 </div>
             </div>
 

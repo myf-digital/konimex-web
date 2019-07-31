@@ -10,14 +10,13 @@ $(document).ready(function () {
 
     if (param !== null) {
         param = JSON.parse(param);
-        if (reviewer!==null) {
+        if (reviewer !== null) {
             reviewer = JSON.parse(reviewer);
             $("#title-rdg").text(reviewer.rdgname);
         }
         var matrixQuestion = [];
         var tmp = "";
         $.each(param, function (i, v) {
-            // console.log("tipe soal : " + v.tipe_soal);
             if (1 == v.tipe_soal) {
                 tmp += templateAspekType1(v);
             } else if (2 == v.tipe_soal) {
@@ -25,7 +24,6 @@ $(document).ready(function () {
             } else if (3 == v.tipe_soal) {
                 tmp += templateAspekType3(v);
             } else if (4 == v.tipe_soal) {
-                // tmp += templateAspekType4(v);
                 matrixQuestion.push(v);
             }
         });
@@ -114,6 +112,7 @@ $(document).ready(function () {
     }
 
     function templateAspekType1(value) {
+        console.log("type - 1");
         var tmp = '' +
             '                       <div class="form-group">\n' +
             '                            <label>?1. ?2</label>\n' +
@@ -134,9 +133,35 @@ $(document).ready(function () {
             '                            </div>\n' +
             '                        </div>';
 
+        var answer = '' +
+            '                            <div>\n' +
+            '                                <label class="checkbox">\n' +
+            '                                    <input type="radio" name="radio-?1" value="?2" ?3>&nbsp;&nbsp; ?4\n' +
+                '                                <span class="checkmark"></span>\n' +
+            '                                </label>\n' +
+            '                            </div>\n';
 
+        tmp = '' +
+            '                       <div class="form-group">\n' +
+            '                            <label>?1. ?2</label>\n' +
+            '                            ?3\n' +
+            '                        </div>';
+
+        var answerTemplate = '';
         if (value.listjawaban != undefined) {
             var jawaban = value.listjawaban.split('|');
+            $.each(jawaban, function (i, v) {
+                var newTmp = answer;
+                newTmp = newTmp.replace("?1", value.nourut);
+                newTmp = newTmp.replace("?2", v);
+                if (v == value.nilai) {
+                    newTmp = newTmp.replace("?3", "checked");
+                } else {
+                    newTmp = newTmp.replace("?3", "");
+                }
+                newTmp = newTmp.replace("?4", v);
+                answerTemplate = answerTemplate + newTmp;
+            });
             tmp = tmp.replace("?9", jawaban[0]);
             tmp = tmp.replace("?10", jawaban[1]);
             tmp = tmp.replace("?11", jawaban[2]);
@@ -154,10 +179,10 @@ $(document).ready(function () {
 
         tmp = tmp.replace("?1", value.nourut);
         tmp = tmp.replace("?2", value.aspek);
-        tmp = tmp.replace("?3", value.nourut);
+        // tmp = tmp.replace("?3", value.nourut);
+        tmp = tmp.replace("?3", answerTemplate);
         tmp = tmp.replace("?4", value.nourut);
         tmp = tmp.replace("?5", value.nourut);
-
         return tmp;
     }
 
@@ -166,7 +191,7 @@ $(document).ready(function () {
             '                       <div class="form-group">\n' +
             '                            <label>?1. ?2</label>\n' +
             '                                <select class="form-control" name="?3">\n' +
-            '                                    <option class="form-control" value="" disabled selected> -- Pilih Jawaban -- </option>\n' +
+            '                                    <option class="form-control" value="" disabled ?5> -- Pilih Jawaban -- </option>\n' +
             '                                    ?4\n' +
             '                                </select>\n' +
             '                        </div>';
@@ -177,6 +202,9 @@ $(document).ready(function () {
             var valueOption = "";
             $.each(jawaban, function (i, v) {
                 var option = "<option value='" + v + "'>" + v + "</option>";
+                if (v == value.nilai) {
+                    option = "<option value='" + v + "' selected>" + v + "</option>";
+                }
                 valueOption = valueOption + option;
             });
             // console.log(valueOption);
@@ -185,7 +213,11 @@ $(document).ready(function () {
         tmp = tmp.replace("?1", value.nourut);
         tmp = tmp.replace("?2", value.aspek);
         tmp = tmp.replace("?3", value.nourut);
-
+        if (undefined == value.nilai) {
+            tmp = tmp.replace("?5", "selected");
+        } else {
+            tmp = tmp.replace("?5", "");
+        }
         return tmp;
     }
 
@@ -193,11 +225,17 @@ $(document).ready(function () {
         var tmp = '' +
             '                       <div class="form-group">\n' +
             '                            <label>?1. ?2</label>\n' +
-            '                            <input class="form-control" type="text" name="?3">\n' +
+            '                            <input class="form-control" type="text" name="?3" value="?4">\n' +
             '                        </div>';
         tmp = tmp.replace("?1", value.nourut);
         tmp = tmp.replace("?2", value.aspek);
         tmp = tmp.replace("?3", value.nourut);
+        if (undefined == value.nilai) {
+            tmp = tmp.replace("?4", "");
+        } else {
+            tmp = tmp.replace("?4", value.nilai);
+        }
+
 
         return tmp;
     }
@@ -213,6 +251,7 @@ $(document).ready(function () {
             tmp = tmp.replace("?2", value.aspek);
             tmp = tmp.replace("?3", value.nourut);
         } else {
+            /*
             tmp = '' +
                 '                       <div class="form-group">\n' +
                 '                           <label class="col-sm-5 col-md-5 control-label">?1. ?2</label>\n' +
@@ -233,12 +272,13 @@ $(document).ready(function () {
             tmp = tmp.replace("?1", value.nourut);
             tmp = tmp.replace("?2", value.aspek);
             tmp = tmp.replace("?3", value.nourut);
+            */
         }
         return tmp;
     }
 
     function templateTable() {
-        return '<div class="table-responsive"><table class="table table-bordered table-light table-sm table-condensed"><thead><tr>?1</tr></thead><tbody>?2</tbody></table></div>'
+        return '<div class="table-responsive"><table class="table table-bordered table-light table-sm table-striped"><thead><tr>?1</tr></thead><tbody>?2</tbody></table></div>'
     }
 
     function templateTableHeader(index) {
@@ -251,12 +291,20 @@ $(document).ready(function () {
 
     function templateTableRow(v) {
         var tmp = '' +
-            '                                <td scope="col" class="align-middle">\n' +
-            '                                    <div class="d-flex justify-content-center align-self-center">\n' +
+            '                                <td align="center" scope="col">\n' +
+            '                                    <div align="center" class="d-flex justify-content-center align-self-center">\n' +
             '                                        ?1' +
             '                                    </div>\n' +
             '                                </td>\n';
-        tmp = tmp.replace("?1", v);
+        var title = v.split('(');
+        if (title.length > 1) {
+            // tmp = tmp.replace("?1", title[0] + "</br>(" + title[1]);
+            tmp = tmp.replace("?1",  "(" + title[1] + "</br>" + title[0]);
+        } else {
+            tmp = tmp.replace("?1", v);
+        }
+
+        console.log(v);
         return tmp;
     }
 
@@ -267,8 +315,14 @@ $(document).ready(function () {
         return tmp;
     }
 
+    /**
+     * radio
+     * <label class="checkbox">\n' +
+     '      <input type="radio" name="radio-?1" value="?2" ?3>&nbsp;&nbsp; ?4\n' +
+     '      <span class="checkmark"></span>\n' +
+     '</label>\n' +
+     * */
     function templateTableRowQuestion(isHeader, index, value) {
-        // console.log(value);
         var tmp = '';
         if (isHeader) {
             tmp = '<td scope="row">?1</td>\n';
@@ -278,11 +332,17 @@ $(document).ready(function () {
                 '                                <td>\n' +
                 '                                    <div class="form-check d-flex justify-content-center">\n' +
                 '                                        <input class="form-check-input position-static" type="radio" name="?1"\n' +
-                '                                               value="?2" aria-label="...">\n' +
+                '                                               value="?2" aria-label="..." ?3>\n' +
                 '                                    </div>\n' +
                 '                                </td>';
+
             tmp = tmp.replace('?1', 'radio-' + value.nourut);
             tmp = tmp.replace('?2', index);
+            if (index == value.nilai) {
+                tmp = tmp.replace('?3', "checked");
+            } else {
+                tmp = tmp.replace('?3', "");
+            }
         }
         return tmp;
 

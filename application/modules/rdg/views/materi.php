@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="content-wrapper bg-primary">
-        <!-- ...more content here -->
+        <!-- ...more content here test ada auto height-->
         <div class="overflow-container">
             <!-- ...and more content here -->
             <div class="overflow-content bg-primary">
@@ -37,7 +37,7 @@
                     <h2 id="title-event" class="first-text">LIST REVIEW</h2>
                     <p></p>
                     <p id="event-date" class="date"></p>
-                    <ul id="review-list">
+                    <ul id="review-list" class="mt-5 mb-3">
                         <li>
                             <span>Nama RDG / High Level Event (Nama Satker)</span>
                             <a href="#" class="btn-start">Evaluasi</a>
@@ -55,39 +55,7 @@
         </div>
     </div>
 </div>
-<!--
-<div class="container-fluid">
-    <main class="row">
-        <nav class="navbar navbar-expand-md fixed-top bg-white shadow-sm">
-            <div class="containe-fluid">
-                <a href="#">
-                    <img src="< ?php echo base_url('assets/rdg/img/logo.png'); ?>" style="width: 280px; height: 45px;">
-                </a>
-            </div>
-        </nav>
 
-        <div class="container-fluid vh-100 bg-primary">
-            <div class="h-100 w-100 d-flex align-items-center">
-                <div class="container text-center z-index-1">
-                    <h6 class="first-text">LIST REVIEW</h6>
-                    <p></p>
-                    <p class="date">14 Juni 2019</p>
-                    <ul id="review-list" style="padding-inline-start: 0px!important;"></ul>
-                    <button class="btn-start" onclick="showQualityAll()">Show Quality</button>
-                    <button class="btn-start" onclick="logout()">Logout <i class="fa fa-arrow-right"></i></button>
-                </div>
-                <div class="bg-overlay bg-primary"></div>
-            </div>
-
-        </div>
-
-        <span class="back-to-top bg-primary text-white text-center shadow-sm">
-          <i class="fa fa-chevron-up"></i>
-        </span>
-
-    </main>
-</div>
--->
 <footer>
     <div class="container-fluid">
         <div class="w-100">
