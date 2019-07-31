@@ -4,6 +4,8 @@ const common = new Common();
 
 $(document).ready(function () {
 
+    const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+
     let event = JSON.parse(localStorage.getItem("user.event"));
 
     $("#btn-back").on('click', function () {
@@ -93,13 +95,15 @@ $(document).ready(function () {
             datasets: dataset
         };
 
+        var pos = (isMobile ? 'bottom' : 'right');
+
         var option = {
             title: {
                 display: false,
                 text: titles
             },
             legend: {
-                position: 'right',
+                position: pos,
                 onHover: function(event, legendItem) {
                 },
                 onLeave: function(event, legendItem) {
@@ -122,6 +126,12 @@ $(document).ready(function () {
                 }]
             }
         };
+
+        if (isMobile) {
+            option.aspectRatio = 1;
+            option.responsive = true;
+            option.maintainAspectRatio = false;
+        }
 
         var chartBar = new Chart('myChart', {
             type: 'bar',

@@ -4,8 +4,12 @@ const common = new Common();
 
 $(document).ready(function () {
 
+    const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+
     let eventTmp = localStorage.getItem("user.event");
     let materiTmp = sessionStorage.getItem("quality.materi");
+
+    console.log(isMobile);
 
     $("#btn-back").on('click', function () {
         backToMateri();
@@ -14,7 +18,10 @@ $(document).ready(function () {
     if (materiTmp !== null) {
         let materi = JSON.parse(materiTmp);
         let event = JSON.parse(eventTmp);
-        common.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: materi.idrdg, id_event: event.event_id}, function (res, text) {
+        common.post(common.baseURL('api_v1/grafik_per_materi'), {
+            id_rdg: materi.idrdg,
+            id_event: event.event_id
+        }, function (res, text) {
             if (res.code === 200) {
                 initChart(res.result);
             } else {
@@ -99,9 +106,11 @@ $(document).ready(function () {
             datasets: dataset
         };
 
+        var pos = (isMobile ? 'bottom' : 'right');
+
         var option = {
             legend: {
-                position: 'right',
+                position: pos,
                 onHover: function (event, legendItem) {
 
                 },
@@ -128,6 +137,12 @@ $(document).ready(function () {
             }
         };
 
+        if (isMobile) {
+            option.aspectRatio = 1;
+            option.responsive = true;
+            option.maintainAspectRatio = false;
+        }
+
         const chartBar = new Chart('myChart', {
             type: 'bar',
             data: data,
@@ -140,7 +155,10 @@ $(document).ready(function () {
             // console.log("reload interval");
             let materi1 = JSON.parse(materiTmp);
             let event1 = JSON.parse(eventTmp);
-            common.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: materi1.idrdg, id_event: event1.event_id}, function (res1, text) {
+            common.post(common.baseURL('api_v1/grafik_per_materi'), {
+                id_rdg: materi1.idrdg,
+                id_event: event1.event_id
+            }, function (res1, text) {
                 if (res1.code === 200) {
                     if (parseInt(lengthOfArray) !== parseInt(res1.result.length)) {
                         location.reload(true);
