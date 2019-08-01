@@ -101,8 +101,13 @@ class Matrix_table_model extends CI_Model
 
     public function load($data)
     {
-        $field = "a.*,(select count(1) from ref_matrix_aspek where id_matrix=a.id_matrix) as jml_aspek ";
-        $table = 'ref_matrix_table a';
+        $field = " z.id_matrix, z.matrix_table, z.jml_aspek, z.group_aspek, count(y.id_matrix) as jml_header_grafik, GROUP_CONCAT(y.id_aspek) as group_aspek_grafik ";
+        $table = " (select a.id_matrix,a.matrix_table, count(b.id_matrix_aspek) as jml_aspek, 
+						  GROUP_CONCAT(b.id_aspek) as group_aspek
+					from ref_matrix_table a left join ref_matrix_aspek b on a.id_matrix=b.id_matrix
+					group by a.id_matrix,a.matrix_table) z 
+					left join ref_matrix_grafik y on z.id_matrix = y.id_matrix
+					group by z.id_matrix, z.matrix_table, z.jml_aspek, z.group_aspek ";
         return easy_pagging($data, $field, $table);
     }
 

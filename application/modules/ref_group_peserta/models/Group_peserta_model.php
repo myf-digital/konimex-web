@@ -68,8 +68,15 @@ class Group_peserta_model extends CI_Model
 
     public function load($data)
     {
-        $field = "a.*,(select count(1) from ref_group_mapping where id_group=a.id_group) as jml_peserta ";
-        $table = 'ref_group_peserta a';
+        $field = " a.id_group,a.nama_group,count(b.id_group) as jml_peserta, GROUP_CONCAT(id_karyawan) group_karyawan ";
+        $table = " ref_group_peserta a join ref_group_mapping b on a.id_group=b.id_group group by a.id_group,a.nama_group ";
+        return easy_pagging($data, $field, $table);
+    }
+
+    public function responden($data)
+    {
+        $field = "a.id_karyawan";
+        $table = "ref_group_mapping a where a.id_group='".$data['id_group']."'";
         return easy_pagging($data, $field, $table);
     }
 

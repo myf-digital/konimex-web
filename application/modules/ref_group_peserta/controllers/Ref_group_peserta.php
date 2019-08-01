@@ -44,4 +44,10 @@ class Ref_group_peserta extends BaseController
         responseJSON($this->group_peserta->load($data));
     }
 
+    public function get_responden()
+    {
+        $data = param_input();
+        responseJSON($this->group_peserta->responden($data));
+    }
+
 }

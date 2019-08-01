@@ -209,7 +209,7 @@ class Api_v1_model extends CI_Model
 					(
 					select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 						   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-						   f.id_aspek,ifnull(g.id_parent,g.id_aspek) id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
+						   f.id_aspek,if(g.id_parent is null or g.id_parent=0,g.id_aspek,g.id_parent) id_parent,g.aspek,sum(ifnull(cast(ifnull(h.value,0) as int),0)) as value
 					 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 						  left join ref_rdg c on b.id_rdg=c.id_rdg
 						  left join ref_satuan_kerja d on c.id_satker=d.id_satker

@@ -42,7 +42,11 @@
             }),
         });
 
-        if (isUpdate) uiSelectPeserta.val(param.id_karyawan).trigger('change');
+        if (isUpdate) {
+			var gKaryawan = param.group_karyawan;
+			var gKaryawanArr = gKaryawan.split(',');
+			uiSelectPeserta.val(gKaryawanArr).trigger('change');
+		}
     }
 
     function initializeParamPeserta() {

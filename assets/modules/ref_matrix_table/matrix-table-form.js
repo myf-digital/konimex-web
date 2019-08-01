@@ -9,6 +9,7 @@
 	let uiSelectGrafik = $("#id-aspek_grafik");
     // define from *-content.js
     let param = common.getCookie("module.matrix.table.update");
+	let isUpdate = param !== undefined; // flag create update
 
     initialize();
 	initializeParamAspek();
@@ -42,7 +43,12 @@
                 return o;
             }),
         });
-        if (isUpdate) uiSelectAspek.val(param.id_aspek).trigger('change');
+		
+        if (isUpdate) {
+			var gAspek = param.group_aspek;
+			var gAspekArr = gAspek.split(',');
+			uiSelectAspek.val(gAspekArr).trigger('change');
+		}
     }
 
     function initializeParamAspek() {
@@ -69,7 +75,13 @@
                 return o;
             }),
         });
-        if (isUpdate) uiSelectAspek.val(param.id_aspek).trigger('change');
+		
+        if (isUpdate) 
+		{
+			var gAspekGrafik = param.group_aspek_grafik;
+			var gAspekGrafikArr = gAspekGrafik.split(',');
+			uiSelectGrafik.val(gAspekGrafikArr).trigger('change');
+		}
     }
 
     function initializeParamGrafik() {

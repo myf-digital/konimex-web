@@ -96,8 +96,14 @@ class Event_model extends CI_Model
 
     public function load($data)
     {
-        $field = "a.*, date_format(a.tanggal, '%d %M %Y') start_reformat_tanggal, date_format(a.end_periode, '%d %M %Y') end_reformat_tanggal ";
-        $table = 'ref_event a';
+        $field = " z.id_event, z.event, z.tanggal, z.start_reformat_tanggal, z.end_periode, z.end_reformat_tanggal,z.group_rdg,GROUP_CONCAT(y.id_group) group_peserta ";
+        $table = " (select a.id_event, a.event, a.tanggal, date_format(a.tanggal, '%d %M %Y') start_reformat_tanggal, 
+						   a.end_periode, date_format(a.end_periode, '%d %M %Y') end_reformat_tanggal,
+						   GROUP_CONCAT(b.id_rdg) group_rdg
+					from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+					group by a.id_event, a.event, a.tanggal, a.end_periode) z
+					left join ref_event_peserta y on z.id_event = y.id_event
+					group by z.id_event, z.event, z.tanggal, z.start_reformat_tanggal, z.end_periode, z.end_reformat_tanggal,z.group_rdg ";
         return easy_pagging($data, $field, $table);
     }
 

@@ -70,7 +70,11 @@
             }),
         });
 
-        if (isUpdate) uiSelectRdg.val(param.id_rdg).trigger('change');
+        if (isUpdate) {
+			let gRdg = param.group_rdg;
+			let gRdgArr = gRdg.split(',');
+			uiSelectRdg.val(gRdgArr).trigger('change');
+		}
     }
 
     function initializeParamRdg() {
@@ -98,7 +102,11 @@
             }),
         });
 
-        if (isUpdate) uiSelectPeserta.val(param.id_group).trigger('change');
+        if (isUpdate) {
+			let gPeserta = param.group_peserta;
+			let gPesertaArr = gPeserta.split(',');
+			uiSelectPeserta.val(gPesertaArr).trigger('change');
+		}
     }
 
     function initializeParamPeserta() {
