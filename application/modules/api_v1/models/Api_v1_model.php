@@ -164,12 +164,12 @@ class Api_v1_model extends CI_Model
         if (is_null($data["id_event"])) {
             return result(new stdClass(), 201, "Event not found...!");
         } else {
-            $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker,z.value as value_avg
+            $sql = "select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker,round(avg(z.value),2) as value_avg
 						from
 						(
 						select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
-							   f.id_aspek,g.id_parent,g.aspek,avg(ifnull(cast(ifnull(h.value,0) as int),0)) as value
+							   f.id_aspek,if(g.id_parent is null or g.id_parent=0,g.id_aspek,g.id_parent) id_parent,g.aspek,cast(ifnull(h.value,0) as int) as value
 						 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 							  left join ref_rdg c on b.id_rdg=c.id_rdg
 							  left join ref_satuan_kerja d on c.id_satker=d.id_satker
@@ -177,13 +177,12 @@ class Api_v1_model extends CI_Model
 							  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
 							  left join ref_aspek g on f.id_aspek=g.id_aspek
 							  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
-						 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event=?
+						 where cast(ifnull(h.value,0) as int) >= 0 and g.id_aspek<>g.id_parent and a.id_event=?
 						 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
 							   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
 							   f.id_aspek,g.id_parent,g.aspek
 						 order by g.nourut
-						 ) z group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker
-						 ;";
+						 ) z group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker;";
 
             $res_ss = $this->db->query($sql, array($data["id_event"]));
             if (count($res_ss->result_array()) > 0) {
