@@ -647,6 +647,46 @@ class Api_v1_model extends CI_Model
                 return result(new stdClass(), 201, "Event not found!");
             }
         }
+    }    
+	
+	function get_rows_saran($data)
+    {
+        if (is_null($data["id_event"]) or is_null($data["id_rdg"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "
+						select @rownum:=@rownum+1 as indexno, z.id_rdg, z.materi, z.nip, z.responden, z.satker, z.tanggal, z.saran  from 
+						(
+						  select  a.id_rdg, d.nama_rdg materi, e.nip, e.nama_karyawan responden, f.satker, d.tanggal, a.saran
+									from trx_saran a left join ref_event b on a.id_event=b.id_event
+										 left join ref_event_rdg c on b.id_event=c.id_event
+										 left join ref_rdg d on a.id_rdg = d.id_rdg
+										 left join ref_karyawan e on a.nip = e.nip
+										 left join ref_satuan_kerja f on e.id_satker = f.id_satker
+									where a.id_event=? and a.id_rdg=? group by a.id_rdg, d.nama_rdg, e.nama_karyawan, f.satker, d.tanggal, a.saran
+						) z , (SELECT @rownum:=0) r
+
+					";
+
+            $res_ss = $this->db->query($sql, array($data["id_event"],$data["id_rdg"]));
+			$finalarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				foreach ($res_ss->result_array() as $row){
+					$resarray = array(
+									"indexno" => $row["indexno"],
+									//"id_rdg" => $row["id_rdg"],
+									"responden" => $row["responden"],
+									"satker" => $row["satker"],
+									"tanggal" => $row["tanggal"],
+									"saran" => $row["saran"]
+									);
+					array_push($finalarray,$resarray);
+				}
+				return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
     }
 
     function get_rows_jumlah_responden($data)
@@ -666,8 +706,8 @@ class Api_v1_model extends CI_Model
 					$resarray = array(
 									"id_event" => $row["id_event"],
 									"id_rdg" => $data["id_rdg"],
-									"jumlah_peserta" => $row["jumlah_peserta"],
-									"jumlah_responden" => $row["jumlah_responden"]
+									"total" => $row["jumlah_peserta"],
+									"responden" => $row["jumlah_responden"]
 									);
 					array_push($finalarray,$resarray);
 				}
