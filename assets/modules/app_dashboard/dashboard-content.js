@@ -16,6 +16,8 @@
     let uiChart = $("#chart");
     let session = common.getCookie("session");
     var eventSelected;
+    var intervalEvent;
+    var intervalRDG;
 
     initialize();
 
@@ -290,7 +292,10 @@
             data: data,
             options: option
         });
-        window.setInterval(function () {
+        if (intervalEvent != undefined) {
+            window.clearInterval(intervalEvent);
+        }
+        intervalEvent = window.setInterval(function () {
             common.post(common.baseURL('api_v1/grafik_per_event'), {id_event: param.id_event}, function (res1, text) {
                 if (res1.code === 200) {
                     if (parseInt(lengthOfArray) !== parseInt(res1.result.length)) {
@@ -440,8 +445,10 @@
             data: data,
             options: option
         });
-
-        window.setInterval(function () {
+        if (intervalRDG != undefined) {
+            window.clearInterval(intervalRDG);
+        }
+        intervalRDG = window.setInterval(function () {
             common.post(common.baseURL('api_v1/grafik_per_materi'), {
                 id_rdg: param.id_rdg,
                 id_event: event.id_event
