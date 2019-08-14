@@ -9,24 +9,17 @@
     let uiTblSaran = $("#tbl-saran tbody");
     let uiLabelRiset = $("#labelriset");
     let uiChartRiset = $("#chartriset");
-	let uiSelectEvent = $("#satker");
+    let uiSelectEvent = $("#satker");
     let uiSelectRDG = $("#riset");
+    let uiLabelResTotal = $("#res-total");
+    let uiLabelResCurrent = $("#res-total-current");
     let uiChart = $("#chart");
-
     let session = common.getCookie("session");
-
     var eventSelected;
 
     initialize();
 
     function initialize() {
-        appendRowTable();
-        appendRowTable();
-        appendRowTable();
-        appendRowTable();
-        appendRowTable();
-        appendRowTable();
-        appendRowTable();
         uiLabelRiset.hide();
         uiChartRiset.hide();
         uiSelectEvent.select2({
@@ -70,7 +63,7 @@
 
     function loadRDG(data) {
         common.loading();
-        $.post(common.baseURL("api_v1/load_aspek"), {id_event : data.id_event}, function (res) {
+        $.post(common.baseURL("api_v1/load_aspek"), {id_event: data.id_event}, function (res) {
             uiSelectRDG.empty();
             uiSelectRDG.select2({
                 placeholder: "Select Aspek RDG",
@@ -100,16 +93,46 @@
 
     function buildChartRDG(event, param) {
         common.loading();
+        /*
+        common.post(common.baseURL('api_v1/get_data_saran_per_materi'), {
+            id_rdg: param.id_rdg,
+            id_event: event.id_event
+        }, function (res1, text) {
+            if (res1.code === 200) {
+                uiTblSaran.html("");
+                $.each(res1.result, function (idx, v){
+                    appendRowTable(v);
+                });
+                console.log(res1.result);
+            }
+        });
+        */
         let resolver = new HttpResolver();
         $.when(
             $.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: param.id_rdg, id_event: event.id_event}),
+            $.post(common.baseURL('api_v1/get_data_saran_per_materi'), {id_rdg: param.id_rdg, id_event: event.id_event}),
         ).done(function (data, textStatus, jqXHR) {
-        }).then(function (res) {
-            if (res.code === 200) {
-                initChartRDG(event, param, res.result);
+        }).then(function (resMatery, resSaran) {
+            if (resMatery[0].code === 200) {
+                initChartRDG(event, param, resMatery[0].result.chart);
+                initResponden(resMatery[0].result.responden);
+            }
+            if (resSaran[0].code === 200) {
+                uiTblSaran.html("");
+                $.each(resSaran[0].result, function (idx, v){
+                    appendRowTable(v);
+                });
             }
             common.loadingClose();
         }).fail(resolver.fail);
+    }
+
+    function initResponden(responden) {
+        if (undefined != responden && responden.length > 0) {
+            var resTotal = responden[0];
+            uiLabelResTotal.text("(" + resTotal.total + ")");
+            uiLabelResCurrent.text("(" + resTotal.responden + ")");
+        }
     }
 
     // commons charts
@@ -193,7 +216,7 @@
                 display: true,
                 fullWidth: true,
                 position: 'left',
-                labels : {
+                labels: {
                     useLineStyle: true,
                     /*generateLabels:  function (chart) {
                         chart.legend.afterFit = function () {
@@ -236,11 +259,11 @@
                         return [];
                     }*/
                 },
-                onHover: function(event, legendItem) {
+                onHover: function (event, legendItem) {
                 },
-                onLeave: function(event, legendItem) {
+                onLeave: function (event, legendItem) {
                 },
-                onClick: function(event, legendItem) {
+                onClick: function (event, legendItem) {
                 }
             },
             scales: {
@@ -337,7 +360,7 @@
         var option = {
             legend: {
                 position: 'right',
-                labels : {
+                labels: {
                     useLineStyle: true,
                     /*
                     generateLabels:  function (chart) {
@@ -419,12 +442,15 @@
         });
 
         window.setInterval(function () {
-            common.post(common.baseURL('api_v1/grafik_per_materi'), {id_rdg: param.id_rdg, id_event: event.id_event}, function (res1, text) {
+            common.post(common.baseURL('api_v1/grafik_per_materi'), {
+                id_rdg: param.id_rdg,
+                id_event: event.id_event
+            }, function (res1, text) {
                 if (res1.code === 200) {
-                    if (parseInt(lengthOfArray) !== parseInt(res1.result.length)) {
+                    if (parseInt(lengthOfArray) !== parseInt(res1.result.chart.length)) {
                         location.reload(true);
                     }
-                    $.each(res1.result, function (idx, v) {
+                    $.each(res1.result.chart, function (idx, v) {
                         data.datasets[idx].data = generateValue(idx, lengthOfArray, v.value_avg);
                     });
                     chartV2.update();
@@ -443,12 +469,29 @@
                     });
                 }
             });
-        }, 3000);
+            common.post(common.baseURL('api_v1/get_data_saran_per_materi'), {
+                id_rdg: param.id_rdg,
+                id_event: event.id_event
+            }, function (res1, text) {
+                if (res1.code === 200) {
+                    uiTblSaran.html("");
+                    $.each(res1.result, function (idx, v){
+                        appendRowTable(v);
+                    });
+                }
+            });
+
+        }, 6000);
     }
 
-    function appendRowTable(){
-        var markup = "<tr><td>?1</td><td>?2</td><td>?3</td><td>?4</td><td>?5</td></tr>";
-        uiTblSaran.append(markup);
+    function appendRowTable(value) {
+        var tmp = "<tr><td>?1</td><td>?2</td><td>?3</td><td>?4</td><td>?5</td></tr>";
+        tmp = tmp.replace("?1", value.indexno);
+        tmp = tmp.replace("?2", value.responden);
+        tmp = tmp.replace("?3", value.satker);
+        tmp = tmp.replace("?4", value.tanggal);
+        tmp = tmp.replace("?5", value.saran);
+        uiTblSaran.append(tmp);
     }
 
 
