@@ -121,11 +121,16 @@ class Api_v1 extends CI_Controller
     {
         $param = param_input();
         $now = date("Y-m-d h:i:sa");
+		
         // jawaban
         if (isset($param["id_event"]) and isset($param["id_rdg"])) {
             $result = $this->api_v1->get_data_hasil_evaluasi_grafik_materi($param);
+            $resultresponden = $this->api_v1->get_rows_jumlah_responden($param);
+			$response = new stdClass();
             if (200 == $result->code) {
-                return response($result->result);
+				$response->chart = $result->result;
+				$response->responden = $resultresponden->result;
+                return response($response);
             } else {
                 return response($result->result, $result->code, $result->message);
             }
@@ -242,6 +247,24 @@ class Api_v1 extends CI_Controller
         // jawaban
         if (isset($param["id_event"]) && isset($param["id_rdg"])) {
             $result = $this->api_v1->get_rows_jumlah_responden($param);
+			$response = new stdClass();
+            if (200 == $result->code) {
+				$response = $result->result;
+                return response($response);
+            } else {
+				$response = $result->result;
+                return response($response, $result->code, $result->message);
+            }
+        }
+    }
+
+    function get_data_saran_per_materi()
+    {
+        $param = param_input();
+        $now = date("Y-m-d h:i:sa");
+        // jawaban
+        if (isset($param["id_event"]) && isset($param["id_rdg"])) {
+            $result = $this->api_v1->get_rows_saran($param);
 			$response = new stdClass();
             if (200 == $result->code) {
 				$response = $result->result;
