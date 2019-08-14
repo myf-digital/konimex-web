@@ -20,7 +20,8 @@ class Event_model extends CI_Model
 			for($i=0;$i<count($data_rdg);$i++){
 				$data_array = array(
 					"id_event" => (int) $idevent,
-					"id_rdg" => (int) $data_rdg[$i]
+					"id_rdg" => (int) $data_rdg[$i],
+					"nourut" => $i
 				);
 				$this->db->insert("ref_event_rdg", $data_array);
 			}
@@ -55,6 +56,7 @@ class Event_model extends CI_Model
 				$data_array = array(
 					"id_event" => (int) $idevent,
 					"id_rdg" => (int) $data_rdg[$i],
+					"nourut" => $i
 				);
 				$this->db->insert("ref_event_rdg", $data_array);
 			}

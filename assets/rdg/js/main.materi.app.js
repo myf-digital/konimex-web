@@ -76,7 +76,7 @@ $(document).ready(function () {
         }
         tmp = tmp.replace("?10", value.nama_rdg);
         tmp = tmp.replace("?1", value.nama_rdg);
-        tmp = tmp.replace("?2", value.satker);
+        tmp = tmp.replace("?2", value.kode_satker);
         tmp = tmp.replace("?3", value.id_rdg);
         tmp = tmp.replace("?4", value.nip);
         tmp = tmp.replace("?5", value.nama_rdg);

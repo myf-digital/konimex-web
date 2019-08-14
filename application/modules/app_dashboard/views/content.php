@@ -30,7 +30,7 @@
                         </div>
                         <div id="labelriset" class="col-md-12" style="padding-top: 20px">
                             <p class="text-center">
-                                <strong>Event</strong>
+                                <strong></strong>
                             </p>
                         </div>
 
@@ -41,7 +41,7 @@
 
                         <div id="label-rgd" class="col-md-12" style="padding-top: 20px">
                             <p class="text-center">
-                                <strong>RGD</strong>
+                                <strong></strong>
                             </p>
                         </div>
 

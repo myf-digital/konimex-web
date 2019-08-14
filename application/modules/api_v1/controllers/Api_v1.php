@@ -235,5 +235,23 @@ class Api_v1 extends CI_Controller
         }
     }
 
+    function get_data_jumlah_peserta_responden()
+    {
+        $param = param_input();
+        $now = date("Y-m-d h:i:sa");
+        // jawaban
+        if (isset($param["id_event"]) && isset($param["id_rdg"])) {
+            $result = $this->api_v1->get_rows_jumlah_responden($param);
+			$response = new stdClass();
+            if (200 == $result->code) {
+				$response = $result->result;
+                return response($response);
+            } else {
+				$response = $result->result;
+                return response($response, $result->code, $result->message);
+            }
+        }
+    }
+
 }
 

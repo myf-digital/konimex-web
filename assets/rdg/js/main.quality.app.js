@@ -70,7 +70,8 @@ $(document).ready(function () {
         var lengthOfArray = result.length;
 
         $.each(result, function (i, v) {
-            labels.push(v.nama_rdg + " - " + v.kode_satker);
+            labels.push(replaceMaxLength(v.nama_rdg + " - " + v.kode_satker, 10));
+            //labels.push("");
             datas.push(v.value_avg);
             titles = v.event;
             satker = v.satker;
@@ -78,7 +79,7 @@ $(document).ready(function () {
             colorsBackground.push(randomColor());
             const color = randomColor();
             dataset.push({
-                label: v.nama_rdg + " - " + v.satker,
+                label: v.nama_rdg + " - " + v.kode_satker,
                 backgroundColor: color,
                 borderColor: color,
                 hoverBackgroundColor: color,
@@ -170,6 +171,14 @@ $(document).ready(function () {
     }
 
 });
+
+    function replaceMaxLength(text, max) {
+        var name = text;
+        if (name.length > max) {
+            return name.substring(0, max) + " ...";
+        }
+        return text;
+    }
 
 function backToMateri() {
     common.direct("rdg/materi");

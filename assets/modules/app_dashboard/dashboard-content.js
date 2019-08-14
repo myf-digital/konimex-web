@@ -149,7 +149,8 @@
         var lengthOfArray = result.length;
 
         $.each(result, function (i, v) {
-            labels.push(v.nama_rdg + " - " + v.kode_satker);
+            //labels.push(v.nama_rdg + " - " + v.kode_satker);
+            labels.push("");
             datas.push(v.value_avg);
             titles = v.event;
             satker = v.satker;
@@ -296,7 +297,8 @@
         var dataset = [];
         var lengthOfArray = result.length;
         $.each(result, function (i, v) {
-            labels.push(replaceMaxLength(v.aspek, 10));
+            //labels.push(replaceMaxLength(v.aspek, 10));
+            labels.push("");
             datas.push(v.value_avg);
             titles = v.nama_rdg;
             satker = v.satker;

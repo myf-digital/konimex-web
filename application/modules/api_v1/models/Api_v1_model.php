@@ -27,7 +27,10 @@ class Api_v1_model extends CI_Model
 						left join ref_event e on a.id_event = e.id_event
 					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
 						and (c.nip=? or replace(c.nama_karyawan,' ','')=replace(?,' ',''))
-						and  e.password in (md5(?)) ";
+						and  e.password in (md5(?)) 
+						order by e.id_event asc
+						limit 0, 1
+						";
             $res_ss = $this->db->query($sql, array($data["nip"], $data["nip"], $data["password"]));
             if (count($res_ss->result_array()) > 0) {
                 $response = new stdClass();
@@ -79,7 +82,7 @@ class Api_v1_model extends CI_Model
 						left join ref_satuan_kerja f on e.id_satker=f.id_satker
 						left join ref_event g on g.id_event = c.id_event
 					where (a.nip=? or replace(a.nama_karyawan,' ','')=replace(?,' ','')) 
-						  and d.id_event=? ;"; // (select id_event from ref_event where now() between tanggal and end_periode) and c.tanggal=?
+						  and d.id_event=? order by d.nourut asc;"; // (select id_event from ref_event where now() between tanggal and end_periode) and c.tanggal=?
             $res_ss = $this->db->query($sql, array($data["nip"], $data["nip"], $data["id_event"]));
             if (count($res_ss->result_array()) > 0) {
                 $response = new stdClass();
@@ -646,6 +649,34 @@ class Api_v1_model extends CI_Model
         }
     }
 
+    function get_rows_jumlah_responden($data)
+    {
+        if (is_null($data["id_event"]) or is_null($data["id_rdg"])) {
+            return result(new stdClass(), 201, "Event not found...!");
+        } else {
+            $sql = "select b.id_event, count(1) as jumlah_peserta, 
+						  (select count(distinct nip,id_event,id_rdg) from trx_hasil_penilaian where id_event=b.id_event and id_rdg=?) as jumlah_responden
+					from ref_group_mapping a join ref_event_peserta b on a.id_group=b.id_group and b.id_event=?
+					group by b.id_event;";
+
+            $res_ss = $this->db->query($sql, array($data["id_rdg"],$data["id_event"]));
+			$finalarray = array();
+            if (count($res_ss->result_array()) > 0) {
+				foreach ($res_ss->result_array() as $row){
+					$resarray = array(
+									"id_event" => $row["id_event"],
+									"id_rdg" => $data["id_rdg"],
+									"jumlah_peserta" => $row["jumlah_peserta"],
+									"jumlah_responden" => $row["jumlah_responden"]
+									);
+					array_push($finalarray,$resarray);
+				}
+				return result($finalarray);
+            } else {
+                return result(new stdClass(), 201, "Event not found!");
+            }
+        }
+    }
 
 
 }
