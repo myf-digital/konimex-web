@@ -74,6 +74,19 @@ $(document).ready(function () {
                 '   </div>' +
                 '</li>';
         }
+        tmp = '<li>' +
+            '<div class="content-list">?1 / ?2</div>' +
+            '<div class="button-group"><a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a></div>' +
+            '</li>';
+        if (0 < value.review) {
+            tmp = '<li>' +
+                '<div class="content-list">?1 / ?2</div>' +
+                '<div class="button-group">' +
+                '<a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="reviewConfirm(this)" class="btn-sucess">Selesai</a>' +
+                // '<a data-rdg="?7" data-nip="?8" data-materi="?9" data-rdgname="?10" href="javascript:void(0)" onclick="showQuality(this)" class="btn-view">View Quality</a>' +
+                '</div>' +
+                '</li>';
+        }
         tmp = tmp.replace("?10", value.nama_rdg);
         tmp = tmp.replace("?1", value.nama_rdg);
         tmp = tmp.replace("?2", value.kode_satker);

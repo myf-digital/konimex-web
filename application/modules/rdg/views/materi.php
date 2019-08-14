@@ -43,8 +43,10 @@
                             <a href="#" class="btn-start">Evaluasi</a>
                         </li>
                     </ul>
+                    <!--
                     <button class="btn-start" onclick="showQualityAll()">Show Quality</button>
-                    <button class="btn-start" onclick="logout()">Logout <i class="fa fa-arrow-right"></i></button>
+                    -->
+                    <button class="btn-danger" onclick="logout()">Logout <i class="fa fa-arrow-right"></i></button>
                 </div>
             </div>
 

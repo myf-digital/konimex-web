@@ -29,13 +29,14 @@ function showRequest(formData, jqForm, options) {
 // post-submit callback
 function processJson(responseText, statusText, xhr, $form) {
     hideLoading();
-    // console.log("OK");
     if ("success" === statusText) {
         if (200 === responseText.code && responseText.result) {
             if (responseText.result.length  > 0) {
-                localStorage.setItem("user.login", JSON.stringify({nip: responseText.result[0].nip}));
-                localStorage.setItem("user.events", JSON.stringify(responseText.result));
-                common.direct("rdg/event");
+                let response = responseText.result[0];
+                localStorage.setItem("user.login", JSON.stringify({nip: response.nip}));
+                localStorage.setItem("user.event", JSON.stringify({event_id: response.id_event}));
+                // localStorage.setItem("user.events", JSON.stringify(responseText.result));
+                common.direct("rdg/materi");
             }
         } else {
             Swal.fire({

@@ -6,7 +6,9 @@
     //
     common.setTitle("Dashboard");
     // ui components
-    let uiLabelRiset = $("#labelriset")
+    let uiTblSaran = $("#tbl-saran tbody");
+    let uiLabelRiset = $("#labelriset");
+    let uiChartRiset = $("#chartriset");
 	let uiSelectEvent = $("#satker");
     let uiSelectRDG = $("#riset");
     let uiChart = $("#chart");
@@ -18,11 +20,20 @@
     initialize();
 
     function initialize() {
+        appendRowTable();
+        appendRowTable();
+        appendRowTable();
+        appendRowTable();
+        appendRowTable();
+        appendRowTable();
+        appendRowTable();
+        uiLabelRiset.hide();
+        uiChartRiset.hide();
         uiSelectEvent.select2({
             placeholder: "Select Event",
         });
         uiSelectRDG.select2({
-            placeholder: "Select Aspek(RDB)",
+            placeholder: "Select Aspek(RDG)",
         });
         if (session.role_id == 1) {
             common.loading();
@@ -48,7 +59,7 @@
         }
         uiSelectEvent.on('select2:select', function (e) {
             eventSelected = e.params.data;
-            buildChartEvent(eventSelected);
+            // buildChartEvent(eventSelected);
             loadRDG(eventSelected);
         });
         uiSelectRDG.on('select2:select', function (e) {
@@ -62,7 +73,7 @@
         $.post(common.baseURL("api_v1/load_aspek"), {id_event : data.id_event}, function (res) {
             uiSelectRDG.empty();
             uiSelectRDG.select2({
-                placeholder: "Select Riset",
+                placeholder: "Select Aspek RDG",
                 data: $.map(res.result, function (o) {
                     o.id = o.id_rdg; // replace name with the property used for the text
                     o.text = o.nama_rdg;
@@ -433,6 +444,11 @@
                 }
             });
         }, 3000);
+    }
+
+    function appendRowTable(){
+        var markup = "<tr><td>?1</td><td>?2</td><td>?3</td><td>?4</td><td>?5</td></tr>";
+        uiTblSaran.append(markup);
     }
 
 
