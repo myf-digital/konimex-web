@@ -7,7 +7,7 @@ class Api_v1_model extends CI_Model
     {
         $sql = "select *
 					  from ref_event
-					where now() between tanggal and end_periode;";
+					where now() between tanggal and end_periode+1;";
         $res_ss = $this->db->query($sql);
         if (count($res_ss->result_array()) > 0) {
             return $res_ss->result_array()[0];
@@ -25,7 +25,7 @@ class Api_v1_model extends CI_Model
 						from ref_event_peserta a left join ref_group_mapping b on a.id_group=b.id_group
 						left join ref_karyawan c on c.id_karyawan = b.id_karyawan left join ref_satuan_kerja d on d.id_satker=c.id_satker
 						left join ref_event e on a.id_event = e.id_event
-					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
+					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode+1) 
 						and (c.nip=? or replace(c.nama_karyawan,' ','')=replace(?,' ',''))
 						and  e.password in (md5(?)) 
 						order by e.id_event asc
@@ -53,7 +53,7 @@ class Api_v1_model extends CI_Model
 						left join ref_karyawan c on c.id_karyawan = b.id_karyawan
 						left join ref_satuan_kerja d on d.id_satker=c.id_satker
 						left join ref_event e on a.id_event = e.id_event
-					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode) 
+					where a.id_event in (select id_event from ref_event where now() between tanggal and end_periode+1) 
 						and (c.nip=? or replace(c.nama_karyawan,' ','')=replace(?,' ','')) and e.password = md5(?)";
             $res_ss = $this->db->query($sql, array($data["nip"], $data["nip"], $data["password"]));
             if (count($res_ss->result_array()) > 0) {
@@ -73,7 +73,7 @@ class Api_v1_model extends CI_Model
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
             $sql = "select a.nip,a.nama_karyawan,e.id_satker,f.kode_satker,f.satker, e.id_rdg, e.nama_rdg, e.tanggal,g.id_event,g.event, 
-						(select count(1) from trx_hasil_penilaian where id_rdg=e.id_rdg) as review
+						(select count(1) from trx_hasil_penilaian where id_event=d.id_event and id_rdg=e.id_rdg and nip=a.nip) as review, d.publish
 						from ref_karyawan a left join ref_group_mapping z on a.id_karyawan = z.id_karyawan
 						left join ref_satuan_kerja b on a.id_satker=b.id_satker
 						left join ref_event_peserta c on c.id_group=z.id_group
@@ -227,9 +227,35 @@ class Api_v1_model extends CI_Model
 					 ) z join ref_matrix_grafik y on z.id_matrix=y.id_matrix  and z.id_parent=y.id_aspek
 					 left join ref_aspek x on z.id_parent=x.id_aspek
 					 group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek
-					;";
+					 union all
+					select x.id_event, x.event, x.tanggal, x.id_rdg, x.nama_rdg, x.id_satker, x.kode_satker, x.satker, 0 as id_parent , 0 as id_matrix, 0 as id_aspek, 
+						   'Rata-Rata Total Keseluruhan' as aspek, avg(x.value_avg) as value_avg
+					from (
+							select z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek, x.aspek,
+								   z.value as value_avg
+							from
+							(
+							select a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
+								   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal tanggal_rdg,
+								   f.id_aspek,if(g.id_parent is null or g.id_parent=0,g.id_aspek,g.id_parent) id_parent,g.aspek,avg(ifnull(cast(ifnull(h.value,0) as int),0)) as value
+							 from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
+								  left join ref_rdg c on b.id_rdg=c.id_rdg
+								  left join ref_satuan_kerja d on c.id_satker=d.id_satker
+								  left join ref_matrix_table e on c.id_matrix=e.id_matrix
+								  left join ref_matrix_aspek f on c.id_matrix=f.id_matrix
+								  left join ref_aspek g on f.id_aspek=g.id_aspek
+								  left join trx_hasil_penilaian h on b.id_event=h.id_event and c.id_rdg=h.id_rdg and g.id_aspek=h.id_aspek
+							 where cast(ifnull(h.value,0) as int) >= 0 and a.id_event=? and c.id_rdg=?
+							 group by a.id_event,a.event,a.tanggal,a.end_periode,b.id_rdg,
+								   c.nama_rdg,c.id_satker,d.kode_satker,d.satker,c.id_matrix,e.matrix_table,c.tanggal,
+								   f.id_aspek,g.id_parent,g.aspek
+							 order by g.nourut
+							 ) z join ref_matrix_grafik y on z.id_matrix=y.id_matrix  and z.id_parent=y.id_aspek
+							 left join ref_aspek x on z.id_parent=x.id_aspek
+							 group by z.id_event,z.event,z.tanggal,z.id_rdg,z.nama_rdg,z.id_satker,z.kode_satker,z.satker, z.id_parent, z.id_matrix, y.id_aspek
+						) as x; ";
 
-            $res_ss = $this->db->query($sql, array($data["id_event"], $data["id_rdg"]));
+            $res_ss = $this->db->query($sql, array($data["id_event"], $data["id_rdg"],$data["id_event"], $data["id_rdg"]));
             if (count($res_ss->result_array()) > 0) {
                 $response = $res_ss->result_array();
                 return result($response);
@@ -286,15 +312,16 @@ class Api_v1_model extends CI_Model
 					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Materi' title, 0 colspan
 					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Satker' title, 0 colspan
 					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Waktu' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, 99 nourut, 'Rata-Rata Total' title, 0 colspan
 					union 
 					(select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, 
-							 ifnull(e.id_parent, (select count(1) from ref_aspek where id_parent=e.id_aspek)) as colspan
+							 if(e.id_parent is null or e.id_parent=0, (select count(1) from ref_aspek where id_parent=e.id_aspek),0) as colspan
 					from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 						 left join ref_rdg c on b.id_rdg = c.id_rdg
 						 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
 						 left join ref_aspek e on d.id_aspek=e.id_aspek
-					where a.id_event=? and id_parent is null
-					order by e.nourut asc)
+					where a.id_event=? and (id_parent is null or id_parent=0)
+					order by e.nourut asc) order by nourut
 					) z , (SELECT @rownum:=0) r						 
 				";
 
@@ -309,8 +336,8 @@ class Api_v1_model extends CI_Model
 							where a.id_event=? and id_parent = ?
 							order by e.nourut asc)
 							union
-							select  null id_matrix, null id_aspek, null id_parent, null nourut, 'Total' title, 0 as colspan
-							) z , (SELECT @rownum:=0) r
+							select  null id_matrix, null id_aspek, null id_parent, 101 nourut, 'Total' title, 0 as colspan
+							order by nourut) z , (SELECT @rownum:=0) r
 						";
 
             $res_ss = $this->db->query($sql, array($data["id_event"]));
@@ -394,6 +421,8 @@ class Api_v1_model extends CI_Model
 					if (count($res_aspek->result_array()) > 0) 
 					{	
 						$idparent = "";
+						$vtotalrata2 = 0;
+						$i = 0;
 						foreach ($res_aspek->result_array() as $rowaspek)
 						{	
 							if ($idparent!=$rowaspek["id_parent"] and $idparent!="")
@@ -401,12 +430,15 @@ class Api_v1_model extends CI_Model
 								$res_nilaitot = $this->db->query($sqlnilaitotal, array($data["id_event"],$row["id_rdg"],$idparent));
 								$vnilaitotal = $res_nilaitot->row();
 								$resarray["Total ".$idparent] = $vnilaitotal->nilai_total;
+								$vtotalrata2 = $vtotalrata2 + $vnilaitotal->nilai_total;
+								$i++;
 							}
 								$res_nilai = $this->db->query($sqlnilai, array($data["id_event"],$row["id_rdg"],$rowaspek["id_aspek"]));
 								$vnilai = $res_nilai->row();
 								$resarray[$rowaspek["title"]] = $vnilai->nilai;
 								$idparent = $rowaspek["id_parent"];
 						}
+							$resarray["Rata-Rata Total"] = "".round($vtotalrata2/$i,2)."";
 					}
 					array_push($finalarray,$resarray);
 				}
@@ -433,15 +465,16 @@ class Api_v1_model extends CI_Model
 					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Responden' title, 0 colspan
 					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Satker' title, 0 colspan
 					union select null id_merix, null id_aspek, null id_parent, null nourut, 'Waktu' title, 0 colspan
+					union select null id_merix, null id_aspek, null id_parent, 99 nourut, 'Rata-Rata Total' title, 0 colspan
 					union 
 					(select  distinct c.id_matrix, d.id_aspek, e.id_parent, e.nourut, e.aspek title, 
-							 ifnull(e.id_parent, (select count(1) from ref_aspek where id_parent=e.id_aspek)) as colspan
+							 if(e.id_parent is null or e.id_parent=0, (select count(1) from ref_aspek where id_parent=e.id_aspek),0) as colspan
 					from ref_event a left join ref_event_rdg b on a.id_event=b.id_event
 						 left join ref_rdg c on b.id_rdg = c.id_rdg
 						 left join ref_matrix_aspek d on c.id_matrix = d.id_matrix
 						 left join ref_aspek e on d.id_aspek=e.id_aspek
-					where a.id_event=? and id_parent is null
-					order by e.nourut asc)
+					where a.id_event=? and (id_parent is null or id_parent=0)
+					order by e.nourut asc) order by nourut
 					) z , (SELECT @rownum:=0) r						 
 				";
 
@@ -456,8 +489,8 @@ class Api_v1_model extends CI_Model
 							where a.id_event=? and id_parent = ?
 							order by e.nourut asc)
 							union
-							select  null id_matrix, null id_aspek, null id_parent, null nourut, 'Total' title, 0 as colspan
-							) z , (SELECT @rownum:=0) r
+							select  null id_matrix, null id_aspek, null id_parent, 101 nourut, 'Total' title, 0 as colspan
+							order by nourut) z , (SELECT @rownum:=0) r
 						";
 
             $res_ss = $this->db->query($sql, array($data["id_event"]));
@@ -545,6 +578,8 @@ class Api_v1_model extends CI_Model
 					if (count($res_aspek->result_array()) > 0) 
 					{	
 						$idparent = "";
+						$i=0;
+						$vtotrata2=0;
 						foreach ($res_aspek->result_array() as $rowaspek)
 						{	
 							if ($idparent!=$rowaspek["id_parent"] and $idparent!="")
@@ -552,12 +587,16 @@ class Api_v1_model extends CI_Model
 								$res_nilaitot = $this->db->query($sqlnilaitotal, array($data["id_event"],$row["id_rdg"],$row["nip"],$idparent));
 								$vnilaitotal = $res_nilaitot->row();
 								$resarray["Total ".$idparent] = $vnilaitotal->nilai_total;
+								$vtotrata2 = $vtotrata2 + $vnilaitotal->nilai_total;
+								$i++;
 							}
 								$res_nilai = $this->db->query($sqlnilai, array($data["id_event"],$row["id_rdg"],$row["nip"],$rowaspek["id_aspek"]));
 								$vnilai = $res_nilai->row();
 								$resarray[$rowaspek["title"]] = $vnilai->nilai;
 								$idparent = $rowaspek["id_parent"];
 						}
+							$resarray["Rata-Rata Total"] = "".round($vtotrata2/$i,2)."";
+						
 					}
 					array_push($finalarray,$resarray);
 				}

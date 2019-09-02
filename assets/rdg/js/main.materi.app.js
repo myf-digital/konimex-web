@@ -57,13 +57,25 @@ $(document).ready(function () {
 
     function templateReview(value) {
         // console.log(value);
-        var tmp = '' +
+        var tmp ='';
+		/*if(0 < value.publish){
+		var tmp = '' +
             '<li>' +
             '   <span> ?1 / ?2</span>' +
             '   <div class="button-group">\n' +
-            '       <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
+            '       <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="reviewNotPublish(this)" class="btn-start">Evaluasi</a>' +
             '   </div>' +
             '</li>';
+		}else {
+		var tmp = '' +
+            '<li>' +
+            '   <span> ?1 / ?2</span>' +
+            '   <div class="button-group">\n' +
+			'       <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
+            '   </div>' +
+            '</li>';
+		}*/
+		
         if (0 < value.review) {
             tmp = '' +
                 '<li>' +
@@ -74,10 +86,17 @@ $(document).ready(function () {
                 '   </div>' +
                 '</li>';
         }
+        if(0 < value.publish){
         tmp = '<li>' +
             '<div class="content-list">?1 / ?2</div>' +
             '<div class="button-group"><a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a></div>' +
             '</li>';
+		}else{
+        tmp = '<li>' +
+            '<div class="content-list">?1 / ?2</div>' +
+			'<div class="button-group"><a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="reviewNotPublish(this)" class="btn-start">Evaluasi</a></div>' +
+            '</li>';
+		}
         if (0 < value.review) {
             tmp = '<li>' +
                 '<div class="content-list">?1 / ?2</div>' +
@@ -127,6 +146,23 @@ function reviewConfirm(rdg) {
     }).then((result) => {
         if(result.value) {
             review(rdg);
+        }
+    });
+}
+
+function reviewNotPublish(rdg) {
+    let materi = rdg.getAttribute("data-materi");
+    swal.fire({
+        title: 'Materi RDG belum bisa di Evaluasi',
+        text: materi,
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ok'
+    }).then((result) => {
+        if(result.value) {
+            //review(rdg);
         }
     });
 }

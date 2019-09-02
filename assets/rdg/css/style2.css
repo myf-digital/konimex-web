@@ -839,10 +839,10 @@ ul li {
 }
 #review-list .content-list {
   text-align: left;
-  flex-basis: 80%;
+  flex-basis: 50%;
 }
 #review-list .button-group {
-  flex-basis: 20%;
+  flex-basis: 25%;
 }
 .button-group {
   margin-top: 20px;

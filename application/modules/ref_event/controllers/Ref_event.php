@@ -20,6 +20,11 @@ class Ref_event extends BaseController
         $this->template->show($this, 'form');
     }
 
+    public function form_publish()
+    {
+        $this->template->show($this, 'form_publish');
+    }
+
     public function create()
     {
         $data = param_input();
@@ -32,6 +37,12 @@ class Ref_event extends BaseController
         response($this->event->update($data));
     }
 
+    public function update_publish()
+    {
+        $data = param_input();
+        response($this->event->update_publish($data));
+    }
+
     public function delete()
     {
         $data = param_input();
@@ -42,6 +53,12 @@ class Ref_event extends BaseController
     {
         $data = param_input();
         responseJSON($this->event->load($data));
+    }
+
+    public function load_mapping_rdg()
+    {
+        $data = param_input();
+        responseJSON($this->event->load_mapping_rdg($data));
     }
 
 }
