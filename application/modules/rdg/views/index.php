@@ -29,8 +29,8 @@
                 </a>
             </div>
         </nav>
-        <div class="container-fluid vh-100 bg-primary">
-            <div class="h-100 w-100 d-flex align-items-center">
+        <div class="container-fluid vh-100 bg-primary login">
+            <div class="h-100 w-100 d-flex overlay align-items-center">
                 <div class="container text-center z-index-1">
                     <h2 class="first-text">WRITE REVIEW</h2>
                     <p>Penilaian Kualitas Materi Rapat Dewan Gubernur dan High Level Event</p>
