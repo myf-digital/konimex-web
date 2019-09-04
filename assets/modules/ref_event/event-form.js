@@ -50,6 +50,7 @@
 
     function setupFormUI() {
         uiSelectRdg.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
+        uiSelectRdgPublish.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiSelectPeserta.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiTanggalPicker.datepicker({
             format: 'mm/dd/yyyy'

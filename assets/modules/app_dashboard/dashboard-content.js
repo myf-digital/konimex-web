@@ -336,8 +336,8 @@
         var dataset = [];
         var lengthOfArray = result.length;
         $.each(result, function (i, v) {
-            //labels.push(replaceMaxLength(v.aspek, 10));
-            labels.push("");
+            labels.push(replaceMaxLength(v.aspek, 25));
+            //labels.push("");
             datas.push(v.value_avg);
             titles = v.nama_rdg;
             satker = v.satker;
@@ -365,6 +365,7 @@
         var option = {
             legend: {
                 position: 'right',
+				display : false,
                 labels: {
                     useLineStyle: true,
                     /*
