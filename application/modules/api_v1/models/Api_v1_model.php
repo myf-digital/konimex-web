@@ -82,7 +82,9 @@ class Api_v1_model extends CI_Model
 						left join ref_satuan_kerja f on e.id_satker=f.id_satker
 						left join ref_event g on g.id_event = c.id_event
 					where (a.nip=? or replace(a.nama_karyawan,' ','')=replace(?,' ','')) 
-						  and d.id_event=? order by d.nourut asc;"; // (select id_event from ref_event where now() between tanggal and end_periode) and c.tanggal=?
+						  and d.id_event=? 
+					group by a.nip,a.nama_karyawan,e.id_satker,f.kode_satker,f.satker, e.id_rdg, e.nama_rdg, e.tanggal,g.id_event,g.event
+					order by d.nourut asc;"; // (select id_event from ref_event where now() between tanggal and end_periode) and c.tanggal=?
             $res_ss = $this->db->query($sql, array($data["nip"], $data["nip"], $data["id_event"]));
             if (count($res_ss->result_array()) > 0) {
                 $response = new stdClass();
