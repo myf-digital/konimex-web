@@ -17,11 +17,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/jquery-filer-master/css/jquery.filer.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/jquery-filer-master/css/jquery.filer-dragdropbox-theme.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css'); ?>"/>
+<link rel="stylesheet" href="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.css'); ?>"/>
+<!-- key from yudi -->
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyARGDPDFdKHpzeK_96fE92NihBcWGVeUYM&sensor=false"></script>
+<!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBLV6BnTTtSvQThaQdvr2E407LXcNfp47A&sensor=false"></script>
+<!--key from yudi <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCmzAXw4YMiV30PgbYUpWwqfwUvXrSN4uc&sensor=false"></script>
+<!-- <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyDWrZMY20Vu6UgUEPS--HHPaVwGwYj4cNQ&sensor=false"></script>
+<!-- key from zuliadin <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&sensor=false"></script>
+<!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBYh2XE2CUnGQcyAzAesJRc5K5h_emhYCE&sensor=false"></script>-->
 
+<!--old 20240205 <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&sensor=false"></script>
+<!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBYh2XE2CUnGQcyAzAesJRc5K5h_emhYCE&sensor=false"></script>-->
+
+<!-- Add fancyBox CSS files --> 
+<link rel="stylesheet" href="<?php echo base_url('assets/fancybox/jquery.fancybox.css?v=2.1.5'); ?>" type="text/css" media="screen" />
+<link rel="stylesheet" href="<?php echo base_url('assets/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5'); ?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo base_url('assets/fancybox/helpers/jquery.fancybox-thumbs.css?v=1.0.7'); ?>" type="text/css"/>
+
+<!--<link rel="stylesheet" href="<?php echo base_url('assets/multiselect/css/bootstrap.min.css'); ?>" /> -->
+<link rel="stylesheet" href="<?php echo base_url('assets/multiselect/lib/google-code-prettify/prettify.css'); ?>" />
+<link rel="stylesheet" href="<?php echo base_url('assets/multiselect/css/style.css'); ?>" />
 
 <script src="<?php echo base_url('assets/frameworks/jquery/jquery.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/jquery-ui-1.11.4/jquery-ui.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/bootstrap/js/bootstrap.min.js'); ?>"></script>
+<script src="<?php echo base_url('assets/multiselect/dist/js/multiselect.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/adminlte.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jeasyui/jquery.easyui.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jeasyui/jquery.easyui.mobile.js'); ?>"></script>
@@ -30,6 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/plugins/jeasyui/extentions/datagrid-filter.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery-confirm-master/js/jquery-confirm.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'); ?>"></script>
+<script src="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/moment/moment.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/validation/jquery.form.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/validation/jquery.validate.min.js'); ?>"></script>
@@ -49,6 +70,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/frameworks/flot/jquery.flot.pie.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/flot/jquery.flot.categories.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.js'); ?>"></script>
+
+<!-- Add fancyBox main JS -->
+<script src="<?php echo base_url('assets/fancybox/jquery.mousewheel-3.0.6.pack.js'); ?>"></script>
+<script src="<?php echo base_url('assets/fancybox/jquery.fancybox.js?v=2.1.5'); ?>"></script>
+
 <script>
     const session = new Common().getCookie("session");
 </script>

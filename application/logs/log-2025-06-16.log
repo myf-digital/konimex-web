@@ -1,0 +1,2800 @@
+INFO - 2025-06-16 18:52:50 --> Config Class Initialized
+INFO - 2025-06-16 18:52:50 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:52:50 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:52:50 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:52:50 --> URI Class Initialized
+DEBUG - 2025-06-16 18:52:50 --> No URI present. Default controller set.
+INFO - 2025-06-16 18:52:50 --> Router Class Initialized
+INFO - 2025-06-16 18:52:50 --> Output Class Initialized
+INFO - 2025-06-16 18:52:50 --> Security Class Initialized
+DEBUG - 2025-06-16 18:52:50 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:52:50 --> Input Class Initialized
+INFO - 2025-06-16 18:52:50 --> Language Class Initialized
+INFO - 2025-06-16 18:52:50 --> Language Class Initialized
+INFO - 2025-06-16 18:52:50 --> Config Class Initialized
+INFO - 2025-06-16 18:52:50 --> Loader Class Initialized
+INFO - 2025-06-16 18:52:50 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:52:50 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:52:50 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:52:50 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:52:50 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:52:50 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:52:50 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:52:50 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:52:50 --> Controller Class Initialized
+DEBUG - 2025-06-16 18:52:50 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 18:52:50 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 18:52:50 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 18:52:50 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 18:52:50 --> Final output sent to browser
+DEBUG - 2025-06-16 18:52:50 --> Total execution time: 0.0759
+INFO - 2025-06-16 18:52:51 --> Config Class Initialized
+INFO - 2025-06-16 18:52:51 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:52:51 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:52:51 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:52:51 --> URI Class Initialized
+INFO - 2025-06-16 18:52:51 --> Router Class Initialized
+INFO - 2025-06-16 18:52:51 --> Output Class Initialized
+INFO - 2025-06-16 18:52:51 --> Security Class Initialized
+DEBUG - 2025-06-16 18:52:51 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:52:51 --> Input Class Initialized
+INFO - 2025-06-16 18:52:51 --> Language Class Initialized
+ERROR - 2025-06-16 18:52:51 --> 404 Page Not Found: /index
+INFO - 2025-06-16 18:53:53 --> Config Class Initialized
+INFO - 2025-06-16 18:53:53 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:53:53 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:53:53 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:53:53 --> URI Class Initialized
+INFO - 2025-06-16 18:53:53 --> Router Class Initialized
+INFO - 2025-06-16 18:53:53 --> Output Class Initialized
+INFO - 2025-06-16 18:53:53 --> Security Class Initialized
+DEBUG - 2025-06-16 18:53:53 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:53:53 --> Input Class Initialized
+INFO - 2025-06-16 18:53:53 --> Language Class Initialized
+INFO - 2025-06-16 18:53:53 --> Language Class Initialized
+INFO - 2025-06-16 18:53:53 --> Config Class Initialized
+INFO - 2025-06-16 18:53:53 --> Loader Class Initialized
+INFO - 2025-06-16 18:53:53 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:53:53 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:53:53 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:53:53 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:53:53 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:53:53 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:53:53 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:53:53 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:53:53 --> Controller Class Initialized
+INFO - 2025-06-16 18:53:53 --> Final output sent to browser
+DEBUG - 2025-06-16 18:53:53 --> Total execution time: 0.0220
+INFO - 2025-06-16 18:53:56 --> Config Class Initialized
+INFO - 2025-06-16 18:53:56 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:53:56 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:53:56 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:53:56 --> URI Class Initialized
+INFO - 2025-06-16 18:53:56 --> Router Class Initialized
+INFO - 2025-06-16 18:53:56 --> Output Class Initialized
+INFO - 2025-06-16 18:53:56 --> Security Class Initialized
+DEBUG - 2025-06-16 18:53:56 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:53:56 --> Input Class Initialized
+INFO - 2025-06-16 18:53:56 --> Language Class Initialized
+INFO - 2025-06-16 18:53:56 --> Language Class Initialized
+INFO - 2025-06-16 18:53:56 --> Config Class Initialized
+INFO - 2025-06-16 18:53:56 --> Loader Class Initialized
+INFO - 2025-06-16 18:53:56 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:53:56 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:53:56 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:53:56 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:53:56 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:53:56 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:53:56 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:53:56 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:53:56 --> Controller Class Initialized
+INFO - 2025-06-16 18:53:56 --> Final output sent to browser
+DEBUG - 2025-06-16 18:53:56 --> Total execution time: 0.0029
+INFO - 2025-06-16 18:54:10 --> Config Class Initialized
+INFO - 2025-06-16 18:54:10 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:54:10 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:54:10 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:54:10 --> URI Class Initialized
+INFO - 2025-06-16 18:54:10 --> Router Class Initialized
+INFO - 2025-06-16 18:54:10 --> Output Class Initialized
+INFO - 2025-06-16 18:54:10 --> Security Class Initialized
+DEBUG - 2025-06-16 18:54:10 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:54:10 --> Input Class Initialized
+INFO - 2025-06-16 18:54:10 --> Language Class Initialized
+INFO - 2025-06-16 18:54:10 --> Language Class Initialized
+INFO - 2025-06-16 18:54:10 --> Config Class Initialized
+INFO - 2025-06-16 18:54:10 --> Loader Class Initialized
+INFO - 2025-06-16 18:54:10 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:54:10 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:54:10 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:54:10 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:54:10 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:54:10 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:54:10 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:54:10 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:54:10 --> Controller Class Initialized
+INFO - 2025-06-16 18:54:10 --> Final output sent to browser
+DEBUG - 2025-06-16 18:54:10 --> Total execution time: 0.0052
+INFO - 2025-06-16 18:56:12 --> Config Class Initialized
+INFO - 2025-06-16 18:56:12 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:12 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:12 --> URI Class Initialized
+INFO - 2025-06-16 18:56:12 --> Router Class Initialized
+INFO - 2025-06-16 18:56:12 --> Output Class Initialized
+INFO - 2025-06-16 18:56:12 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:12 --> Input Class Initialized
+INFO - 2025-06-16 18:56:12 --> Language Class Initialized
+INFO - 2025-06-16 18:56:12 --> Language Class Initialized
+INFO - 2025-06-16 18:56:12 --> Config Class Initialized
+INFO - 2025-06-16 18:56:12 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:12 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:12 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:12 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:12 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:12 --> Total execution time: 0.0299
+INFO - 2025-06-16 18:56:12 --> Config Class Initialized
+INFO - 2025-06-16 18:56:12 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:12 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:12 --> URI Class Initialized
+INFO - 2025-06-16 18:56:12 --> Router Class Initialized
+INFO - 2025-06-16 18:56:12 --> Output Class Initialized
+INFO - 2025-06-16 18:56:12 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:12 --> Input Class Initialized
+INFO - 2025-06-16 18:56:12 --> Language Class Initialized
+INFO - 2025-06-16 18:56:12 --> Language Class Initialized
+INFO - 2025-06-16 18:56:12 --> Config Class Initialized
+INFO - 2025-06-16 18:56:12 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:12 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:12 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:12 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:12 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:12 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 18:56:12 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/modules/app_dashboard/views/content.php
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 18:56:12 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 18:56:12 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:12 --> Total execution time: 0.0535
+INFO - 2025-06-16 18:56:14 --> Config Class Initialized
+INFO - 2025-06-16 18:56:14 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:14 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:14 --> URI Class Initialized
+INFO - 2025-06-16 18:56:14 --> Router Class Initialized
+INFO - 2025-06-16 18:56:14 --> Output Class Initialized
+INFO - 2025-06-16 18:56:14 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:14 --> Input Class Initialized
+INFO - 2025-06-16 18:56:14 --> Language Class Initialized
+INFO - 2025-06-16 18:56:14 --> Language Class Initialized
+INFO - 2025-06-16 18:56:14 --> Config Class Initialized
+INFO - 2025-06-16 18:56:14 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:14 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:14 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:14 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:14 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 18:56:14 --> Model Class Initialized
+INFO - 2025-06-16 18:56:14 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:14 --> Total execution time: 0.0653
+INFO - 2025-06-16 18:56:14 --> Config Class Initialized
+INFO - 2025-06-16 18:56:14 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:14 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:14 --> URI Class Initialized
+INFO - 2025-06-16 18:56:14 --> Router Class Initialized
+INFO - 2025-06-16 18:56:14 --> Output Class Initialized
+INFO - 2025-06-16 18:56:14 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:14 --> Input Class Initialized
+INFO - 2025-06-16 18:56:14 --> Language Class Initialized
+INFO - 2025-06-16 18:56:14 --> Language Class Initialized
+INFO - 2025-06-16 18:56:14 --> Config Class Initialized
+INFO - 2025-06-16 18:56:14 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:14 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:14 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:14 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:14 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:14 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:14 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 18:56:14 --> Model Class Initialized
+INFO - 2025-06-16 18:56:14 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:14 --> Total execution time: 0.0165
+INFO - 2025-06-16 18:56:23 --> Config Class Initialized
+INFO - 2025-06-16 18:56:23 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:23 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:23 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:23 --> URI Class Initialized
+INFO - 2025-06-16 18:56:23 --> Router Class Initialized
+INFO - 2025-06-16 18:56:23 --> Output Class Initialized
+INFO - 2025-06-16 18:56:23 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:23 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:23 --> Input Class Initialized
+INFO - 2025-06-16 18:56:23 --> Language Class Initialized
+INFO - 2025-06-16 18:56:23 --> Language Class Initialized
+INFO - 2025-06-16 18:56:23 --> Config Class Initialized
+INFO - 2025-06-16 18:56:23 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:23 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:23 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:23 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:23 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:23 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:23 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:23 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:23 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:23 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:23 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 18:56:23 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/modules/ref_customer/views/content.php
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 18:56:23 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 18:56:23 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:23 --> Total execution time: 0.0360
+INFO - 2025-06-16 18:56:24 --> Config Class Initialized
+INFO - 2025-06-16 18:56:24 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:24 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:24 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:24 --> URI Class Initialized
+INFO - 2025-06-16 18:56:24 --> Router Class Initialized
+INFO - 2025-06-16 18:56:24 --> Output Class Initialized
+INFO - 2025-06-16 18:56:24 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:24 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:24 --> Input Class Initialized
+INFO - 2025-06-16 18:56:24 --> Language Class Initialized
+INFO - 2025-06-16 18:56:24 --> Language Class Initialized
+INFO - 2025-06-16 18:56:24 --> Config Class Initialized
+INFO - 2025-06-16 18:56:24 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:24 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:24 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:24 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:24 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:24 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:24 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:24 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:24 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:24 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:24 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:24 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 18:56:24 --> Model Class Initialized
+INFO - 2025-06-16 18:56:24 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:24 --> Total execution time: 0.4765
+INFO - 2025-06-16 18:56:50 --> Config Class Initialized
+INFO - 2025-06-16 18:56:50 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:50 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:50 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:50 --> URI Class Initialized
+INFO - 2025-06-16 18:56:50 --> Router Class Initialized
+INFO - 2025-06-16 18:56:50 --> Output Class Initialized
+INFO - 2025-06-16 18:56:50 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:50 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:50 --> Input Class Initialized
+INFO - 2025-06-16 18:56:50 --> Language Class Initialized
+INFO - 2025-06-16 18:56:50 --> Language Class Initialized
+INFO - 2025-06-16 18:56:50 --> Config Class Initialized
+INFO - 2025-06-16 18:56:50 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:50 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:50 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:50 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:50 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:50 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:50 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:50 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:50 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:50 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:50 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:50 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 18:56:50 --> Model Class Initialized
+INFO - 2025-06-16 18:56:50 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:50 --> Total execution time: 0.0470
+INFO - 2025-06-16 18:56:54 --> Config Class Initialized
+INFO - 2025-06-16 18:56:54 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:54 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:54 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:54 --> URI Class Initialized
+INFO - 2025-06-16 18:56:54 --> Router Class Initialized
+INFO - 2025-06-16 18:56:54 --> Output Class Initialized
+INFO - 2025-06-16 18:56:54 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:54 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:54 --> Input Class Initialized
+INFO - 2025-06-16 18:56:54 --> Language Class Initialized
+INFO - 2025-06-16 18:56:54 --> Language Class Initialized
+INFO - 2025-06-16 18:56:54 --> Config Class Initialized
+INFO - 2025-06-16 18:56:54 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:54 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:54 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:54 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:54 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:54 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:54 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:54 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:54 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:54 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:54 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:54 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 18:56:54 --> Model Class Initialized
+INFO - 2025-06-16 18:56:54 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:54 --> Total execution time: 0.0475
+INFO - 2025-06-16 18:56:55 --> Config Class Initialized
+INFO - 2025-06-16 18:56:55 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:55 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:55 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:55 --> URI Class Initialized
+INFO - 2025-06-16 18:56:55 --> Router Class Initialized
+INFO - 2025-06-16 18:56:55 --> Output Class Initialized
+INFO - 2025-06-16 18:56:55 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:55 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:55 --> Input Class Initialized
+INFO - 2025-06-16 18:56:55 --> Language Class Initialized
+INFO - 2025-06-16 18:56:55 --> Language Class Initialized
+INFO - 2025-06-16 18:56:55 --> Config Class Initialized
+INFO - 2025-06-16 18:56:55 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:55 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:55 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:55 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:55 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:55 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:55 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:55 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:55 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:55 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:55 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:55 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 18:56:55 --> Model Class Initialized
+INFO - 2025-06-16 18:56:55 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:55 --> Total execution time: 0.0363
+INFO - 2025-06-16 18:56:58 --> Config Class Initialized
+INFO - 2025-06-16 18:56:58 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:56:58 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:56:58 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:56:58 --> URI Class Initialized
+INFO - 2025-06-16 18:56:58 --> Router Class Initialized
+INFO - 2025-06-16 18:56:58 --> Output Class Initialized
+INFO - 2025-06-16 18:56:58 --> Security Class Initialized
+DEBUG - 2025-06-16 18:56:58 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:56:58 --> Input Class Initialized
+INFO - 2025-06-16 18:56:58 --> Language Class Initialized
+INFO - 2025-06-16 18:56:58 --> Language Class Initialized
+INFO - 2025-06-16 18:56:58 --> Config Class Initialized
+INFO - 2025-06-16 18:56:58 --> Loader Class Initialized
+INFO - 2025-06-16 18:56:58 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:56:58 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:56:58 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:56:58 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:56:58 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:56:58 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:56:58 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:56:58 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:56:58 --> Controller Class Initialized
+INFO - 2025-06-16 18:56:58 --> Model Class Initialized
+DEBUG - 2025-06-16 18:56:58 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 18:56:58 --> Model Class Initialized
+INFO - 2025-06-16 18:56:58 --> Final output sent to browser
+DEBUG - 2025-06-16 18:56:58 --> Total execution time: 0.0517
+INFO - 2025-06-16 18:57:07 --> Config Class Initialized
+INFO - 2025-06-16 18:57:07 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:07 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:07 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:07 --> URI Class Initialized
+INFO - 2025-06-16 18:57:07 --> Router Class Initialized
+INFO - 2025-06-16 18:57:07 --> Output Class Initialized
+INFO - 2025-06-16 18:57:07 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:07 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:07 --> Input Class Initialized
+INFO - 2025-06-16 18:57:07 --> Language Class Initialized
+INFO - 2025-06-16 18:57:07 --> Language Class Initialized
+INFO - 2025-06-16 18:57:07 --> Config Class Initialized
+INFO - 2025-06-16 18:57:07 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:07 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:07 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:07 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:07 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:07 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:07 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:07 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:07 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:07 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:07 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/models/Sales_salesman_model.php
+INFO - 2025-06-16 18:57:07 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/views/content.php
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 18:57:07 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 18:57:07 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:07 --> Total execution time: 0.0126
+INFO - 2025-06-16 18:57:08 --> Config Class Initialized
+INFO - 2025-06-16 18:57:08 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:08 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:08 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:08 --> URI Class Initialized
+INFO - 2025-06-16 18:57:08 --> Router Class Initialized
+INFO - 2025-06-16 18:57:08 --> Output Class Initialized
+INFO - 2025-06-16 18:57:08 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:08 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:08 --> Input Class Initialized
+INFO - 2025-06-16 18:57:08 --> Language Class Initialized
+INFO - 2025-06-16 18:57:08 --> Language Class Initialized
+INFO - 2025-06-16 18:57:08 --> Config Class Initialized
+INFO - 2025-06-16 18:57:08 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:08 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:08 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:08 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:08 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:08 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:08 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:08 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:08 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:08 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:08 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:08 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/models/Sales_salesman_model.php
+INFO - 2025-06-16 18:57:08 --> Model Class Initialized
+INFO - 2025-06-16 18:57:08 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:08 --> Total execution time: 0.0107
+INFO - 2025-06-16 18:57:23 --> Config Class Initialized
+INFO - 2025-06-16 18:57:23 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:23 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:23 --> URI Class Initialized
+INFO - 2025-06-16 18:57:23 --> Router Class Initialized
+INFO - 2025-06-16 18:57:23 --> Output Class Initialized
+INFO - 2025-06-16 18:57:23 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:23 --> Input Class Initialized
+INFO - 2025-06-16 18:57:23 --> Language Class Initialized
+INFO - 2025-06-16 18:57:23 --> Language Class Initialized
+INFO - 2025-06-16 18:57:23 --> Config Class Initialized
+INFO - 2025-06-16 18:57:23 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:23 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:23 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:23 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:23 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 18:57:23 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 18:57:23 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:23 --> Total execution time: 0.0161
+INFO - 2025-06-16 18:57:23 --> Config Class Initialized
+INFO - 2025-06-16 18:57:23 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:23 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:23 --> URI Class Initialized
+INFO - 2025-06-16 18:57:23 --> Router Class Initialized
+INFO - 2025-06-16 18:57:23 --> Output Class Initialized
+INFO - 2025-06-16 18:57:23 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:23 --> Input Class Initialized
+INFO - 2025-06-16 18:57:23 --> Language Class Initialized
+INFO - 2025-06-16 18:57:23 --> Language Class Initialized
+INFO - 2025-06-16 18:57:23 --> Config Class Initialized
+INFO - 2025-06-16 18:57:23 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:23 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:23 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:23 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:23 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:23 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:23 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 18:57:23 --> Model Class Initialized
+INFO - 2025-06-16 18:57:23 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:23 --> Total execution time: 0.0079
+INFO - 2025-06-16 18:57:26 --> Config Class Initialized
+INFO - 2025-06-16 18:57:26 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:26 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:26 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:26 --> URI Class Initialized
+INFO - 2025-06-16 18:57:26 --> Router Class Initialized
+INFO - 2025-06-16 18:57:26 --> Output Class Initialized
+INFO - 2025-06-16 18:57:26 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:26 --> Input Class Initialized
+INFO - 2025-06-16 18:57:26 --> Language Class Initialized
+INFO - 2025-06-16 18:57:26 --> Language Class Initialized
+INFO - 2025-06-16 18:57:26 --> Config Class Initialized
+INFO - 2025-06-16 18:57:26 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:26 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:26 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:26 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:26 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:26 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:26 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:26 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:26 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:26 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:26 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 18:57:26 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/form_addpjp.php
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 18:57:26 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 18:57:26 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:26 --> Total execution time: 0.0083
+INFO - 2025-06-16 18:57:27 --> Config Class Initialized
+INFO - 2025-06-16 18:57:27 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:27 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:27 --> URI Class Initialized
+INFO - 2025-06-16 18:57:27 --> Router Class Initialized
+INFO - 2025-06-16 18:57:27 --> Output Class Initialized
+INFO - 2025-06-16 18:57:27 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:27 --> Input Class Initialized
+INFO - 2025-06-16 18:57:27 --> Language Class Initialized
+INFO - 2025-06-16 18:57:27 --> Language Class Initialized
+INFO - 2025-06-16 18:57:27 --> Config Class Initialized
+INFO - 2025-06-16 18:57:27 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:27 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:27 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:27 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:27 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 18:57:27 --> Model Class Initialized
+INFO - 2025-06-16 18:57:27 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:27 --> Total execution time: 0.0038
+INFO - 2025-06-16 18:57:27 --> Config Class Initialized
+INFO - 2025-06-16 18:57:27 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:27 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:27 --> URI Class Initialized
+INFO - 2025-06-16 18:57:27 --> Router Class Initialized
+INFO - 2025-06-16 18:57:27 --> Output Class Initialized
+INFO - 2025-06-16 18:57:27 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:27 --> Input Class Initialized
+INFO - 2025-06-16 18:57:27 --> Language Class Initialized
+INFO - 2025-06-16 18:57:27 --> Language Class Initialized
+INFO - 2025-06-16 18:57:27 --> Config Class Initialized
+INFO - 2025-06-16 18:57:27 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:27 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:27 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:27 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:27 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:27 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:27 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 18:57:27 --> Model Class Initialized
+INFO - 2025-06-16 18:57:27 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:27 --> Total execution time: 0.0064
+INFO - 2025-06-16 18:57:29 --> Config Class Initialized
+INFO - 2025-06-16 18:57:29 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:29 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:29 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:29 --> URI Class Initialized
+INFO - 2025-06-16 18:57:29 --> Router Class Initialized
+INFO - 2025-06-16 18:57:29 --> Output Class Initialized
+INFO - 2025-06-16 18:57:29 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:29 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:29 --> Input Class Initialized
+INFO - 2025-06-16 18:57:29 --> Language Class Initialized
+INFO - 2025-06-16 18:57:29 --> Language Class Initialized
+INFO - 2025-06-16 18:57:29 --> Config Class Initialized
+INFO - 2025-06-16 18:57:29 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:29 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:29 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:29 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:29 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:29 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:29 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:29 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:29 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:29 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:29 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:29 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 18:57:29 --> Model Class Initialized
+INFO - 2025-06-16 18:57:29 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:29 --> Total execution time: 0.0039
+INFO - 2025-06-16 18:57:49 --> Config Class Initialized
+INFO - 2025-06-16 18:57:49 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:49 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:49 --> URI Class Initialized
+INFO - 2025-06-16 18:57:49 --> Router Class Initialized
+INFO - 2025-06-16 18:57:49 --> Output Class Initialized
+INFO - 2025-06-16 18:57:49 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:49 --> Input Class Initialized
+INFO - 2025-06-16 18:57:49 --> Language Class Initialized
+INFO - 2025-06-16 18:57:49 --> Language Class Initialized
+INFO - 2025-06-16 18:57:49 --> Config Class Initialized
+INFO - 2025-06-16 18:57:49 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:49 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:49 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:49 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:49 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 18:57:49 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 18:57:49 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:49 --> Total execution time: 0.0085
+INFO - 2025-06-16 18:57:49 --> Config Class Initialized
+INFO - 2025-06-16 18:57:49 --> Hooks Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> UTF-8 Support Enabled
+INFO - 2025-06-16 18:57:49 --> Utf8 Class Initialized
+INFO - 2025-06-16 18:57:49 --> URI Class Initialized
+INFO - 2025-06-16 18:57:49 --> Router Class Initialized
+INFO - 2025-06-16 18:57:49 --> Output Class Initialized
+INFO - 2025-06-16 18:57:49 --> Security Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 18:57:49 --> Input Class Initialized
+INFO - 2025-06-16 18:57:49 --> Language Class Initialized
+INFO - 2025-06-16 18:57:49 --> Language Class Initialized
+INFO - 2025-06-16 18:57:49 --> Config Class Initialized
+INFO - 2025-06-16 18:57:49 --> Loader Class Initialized
+INFO - 2025-06-16 18:57:49 --> Helper loaded: url_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: param_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: credential_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: template_helper
+INFO - 2025-06-16 18:57:49 --> Helper loaded: rest_helper
+INFO - 2025-06-16 18:57:49 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 18:57:49 --> Controller Class Initialized
+INFO - 2025-06-16 18:57:49 --> Model Class Initialized
+DEBUG - 2025-06-16 18:57:49 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 18:57:49 --> Model Class Initialized
+INFO - 2025-06-16 18:57:49 --> Final output sent to browser
+DEBUG - 2025-06-16 18:57:49 --> Total execution time: 0.0062
+INFO - 2025-06-16 19:59:42 --> Config Class Initialized
+INFO - 2025-06-16 19:59:42 --> Hooks Class Initialized
+DEBUG - 2025-06-16 19:59:42 --> UTF-8 Support Enabled
+INFO - 2025-06-16 19:59:42 --> Utf8 Class Initialized
+INFO - 2025-06-16 19:59:42 --> URI Class Initialized
+DEBUG - 2025-06-16 19:59:42 --> No URI present. Default controller set.
+INFO - 2025-06-16 19:59:42 --> Router Class Initialized
+INFO - 2025-06-16 19:59:42 --> Output Class Initialized
+INFO - 2025-06-16 19:59:42 --> Security Class Initialized
+DEBUG - 2025-06-16 19:59:42 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 19:59:42 --> Input Class Initialized
+INFO - 2025-06-16 19:59:42 --> Language Class Initialized
+INFO - 2025-06-16 19:59:42 --> Language Class Initialized
+INFO - 2025-06-16 19:59:42 --> Config Class Initialized
+INFO - 2025-06-16 19:59:42 --> Loader Class Initialized
+INFO - 2025-06-16 19:59:42 --> Helper loaded: url_helper
+INFO - 2025-06-16 19:59:42 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 19:59:42 --> Helper loaded: param_helper
+INFO - 2025-06-16 19:59:42 --> Helper loaded: credential_helper
+INFO - 2025-06-16 19:59:42 --> Helper loaded: template_helper
+INFO - 2025-06-16 19:59:42 --> Helper loaded: rest_helper
+INFO - 2025-06-16 19:59:42 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 19:59:42 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 19:59:42 --> Controller Class Initialized
+DEBUG - 2025-06-16 19:59:42 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 19:59:42 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 19:59:42 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 19:59:42 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 19:59:42 --> Final output sent to browser
+DEBUG - 2025-06-16 19:59:42 --> Total execution time: 0.0042
+INFO - 2025-06-16 20:44:10 --> Config Class Initialized
+INFO - 2025-06-16 20:44:10 --> Hooks Class Initialized
+DEBUG - 2025-06-16 20:44:10 --> UTF-8 Support Enabled
+INFO - 2025-06-16 20:44:10 --> Utf8 Class Initialized
+INFO - 2025-06-16 20:44:10 --> URI Class Initialized
+DEBUG - 2025-06-16 20:44:10 --> No URI present. Default controller set.
+INFO - 2025-06-16 20:44:10 --> Router Class Initialized
+INFO - 2025-06-16 20:44:10 --> Output Class Initialized
+INFO - 2025-06-16 20:44:10 --> Security Class Initialized
+DEBUG - 2025-06-16 20:44:10 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 20:44:10 --> Input Class Initialized
+INFO - 2025-06-16 20:44:10 --> Language Class Initialized
+INFO - 2025-06-16 20:44:10 --> Language Class Initialized
+INFO - 2025-06-16 20:44:10 --> Config Class Initialized
+INFO - 2025-06-16 20:44:10 --> Loader Class Initialized
+INFO - 2025-06-16 20:44:10 --> Helper loaded: url_helper
+INFO - 2025-06-16 20:44:10 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 20:44:10 --> Helper loaded: param_helper
+INFO - 2025-06-16 20:44:10 --> Helper loaded: credential_helper
+INFO - 2025-06-16 20:44:10 --> Helper loaded: template_helper
+INFO - 2025-06-16 20:44:10 --> Helper loaded: rest_helper
+INFO - 2025-06-16 20:44:10 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 20:44:10 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 20:44:10 --> Controller Class Initialized
+DEBUG - 2025-06-16 20:44:10 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 20:44:10 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 20:44:10 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 20:44:10 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 20:44:10 --> Final output sent to browser
+DEBUG - 2025-06-16 20:44:10 --> Total execution time: 0.0037
+INFO - 2025-06-16 21:17:22 --> Config Class Initialized
+INFO - 2025-06-16 21:17:22 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:17:22 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:17:22 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:17:22 --> URI Class Initialized
+DEBUG - 2025-06-16 21:17:22 --> No URI present. Default controller set.
+INFO - 2025-06-16 21:17:22 --> Router Class Initialized
+INFO - 2025-06-16 21:17:22 --> Output Class Initialized
+INFO - 2025-06-16 21:17:22 --> Security Class Initialized
+DEBUG - 2025-06-16 21:17:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:17:22 --> Input Class Initialized
+INFO - 2025-06-16 21:17:22 --> Language Class Initialized
+INFO - 2025-06-16 21:17:22 --> Language Class Initialized
+INFO - 2025-06-16 21:17:22 --> Config Class Initialized
+INFO - 2025-06-16 21:17:22 --> Loader Class Initialized
+INFO - 2025-06-16 21:17:22 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:17:22 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:17:22 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:17:22 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:17:22 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:17:22 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:17:22 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:17:22 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:17:22 --> Controller Class Initialized
+DEBUG - 2025-06-16 21:17:22 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 21:17:22 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 21:17:22 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 21:17:22 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 21:17:22 --> Final output sent to browser
+DEBUG - 2025-06-16 21:17:22 --> Total execution time: 0.0035
+INFO - 2025-06-16 21:17:26 --> Config Class Initialized
+INFO - 2025-06-16 21:17:26 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:17:26 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:17:26 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:17:26 --> URI Class Initialized
+DEBUG - 2025-06-16 21:17:26 --> No URI present. Default controller set.
+INFO - 2025-06-16 21:17:26 --> Router Class Initialized
+INFO - 2025-06-16 21:17:26 --> Output Class Initialized
+INFO - 2025-06-16 21:17:26 --> Security Class Initialized
+DEBUG - 2025-06-16 21:17:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:17:26 --> Input Class Initialized
+INFO - 2025-06-16 21:17:26 --> Language Class Initialized
+INFO - 2025-06-16 21:17:26 --> Language Class Initialized
+INFO - 2025-06-16 21:17:26 --> Config Class Initialized
+INFO - 2025-06-16 21:17:26 --> Loader Class Initialized
+INFO - 2025-06-16 21:17:26 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:17:26 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:17:26 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:17:26 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:17:26 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:17:26 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:17:26 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:17:26 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:17:26 --> Controller Class Initialized
+DEBUG - 2025-06-16 21:17:26 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 21:17:26 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 21:17:26 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 21:17:26 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 21:17:26 --> Final output sent to browser
+DEBUG - 2025-06-16 21:17:26 --> Total execution time: 0.0044
+INFO - 2025-06-16 21:18:04 --> Config Class Initialized
+INFO - 2025-06-16 21:18:04 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:04 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:04 --> URI Class Initialized
+INFO - 2025-06-16 21:18:04 --> Router Class Initialized
+INFO - 2025-06-16 21:18:04 --> Output Class Initialized
+INFO - 2025-06-16 21:18:04 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:04 --> Input Class Initialized
+INFO - 2025-06-16 21:18:04 --> Language Class Initialized
+INFO - 2025-06-16 21:18:04 --> Language Class Initialized
+INFO - 2025-06-16 21:18:04 --> Config Class Initialized
+INFO - 2025-06-16 21:18:04 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:04 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:04 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:04 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:04 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 21:18:04 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/form_download.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/templates/footer.php
+INFO - 2025-06-16 21:18:04 --> Config Class Initialized
+INFO - 2025-06-16 21:18:04 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:04 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:04 --> URI Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> No URI present. Default controller set.
+INFO - 2025-06-16 21:18:04 --> Router Class Initialized
+INFO - 2025-06-16 21:18:04 --> Output Class Initialized
+INFO - 2025-06-16 21:18:04 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:04 --> Input Class Initialized
+INFO - 2025-06-16 21:18:04 --> Language Class Initialized
+INFO - 2025-06-16 21:18:04 --> Language Class Initialized
+INFO - 2025-06-16 21:18:04 --> Config Class Initialized
+INFO - 2025-06-16 21:18:04 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:04 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:04 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:04 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:04 --> Controller Class Initialized
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 21:18:04 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 21:18:04 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:04 --> Total execution time: 0.0036
+INFO - 2025-06-16 21:18:07 --> Config Class Initialized
+INFO - 2025-06-16 21:18:07 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:07 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:07 --> URI Class Initialized
+INFO - 2025-06-16 21:18:07 --> Router Class Initialized
+INFO - 2025-06-16 21:18:07 --> Output Class Initialized
+INFO - 2025-06-16 21:18:07 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:07 --> Input Class Initialized
+INFO - 2025-06-16 21:18:07 --> Language Class Initialized
+INFO - 2025-06-16 21:18:07 --> Language Class Initialized
+INFO - 2025-06-16 21:18:07 --> Config Class Initialized
+INFO - 2025-06-16 21:18:07 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:07 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:07 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:07 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:07 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:07 --> Total execution time: 0.0036
+INFO - 2025-06-16 21:18:07 --> Config Class Initialized
+INFO - 2025-06-16 21:18:07 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:07 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:07 --> URI Class Initialized
+INFO - 2025-06-16 21:18:07 --> Router Class Initialized
+INFO - 2025-06-16 21:18:07 --> Output Class Initialized
+INFO - 2025-06-16 21:18:07 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:07 --> Input Class Initialized
+INFO - 2025-06-16 21:18:07 --> Language Class Initialized
+INFO - 2025-06-16 21:18:07 --> Language Class Initialized
+INFO - 2025-06-16 21:18:07 --> Config Class Initialized
+INFO - 2025-06-16 21:18:07 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:07 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:07 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:07 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:07 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:07 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 21:18:07 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/modules/app_dashboard/views/content.php
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 21:18:07 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 21:18:07 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:07 --> Total execution time: 0.0070
+INFO - 2025-06-16 21:18:08 --> Config Class Initialized
+INFO - 2025-06-16 21:18:08 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:08 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:08 --> URI Class Initialized
+INFO - 2025-06-16 21:18:08 --> Router Class Initialized
+INFO - 2025-06-16 21:18:08 --> Output Class Initialized
+INFO - 2025-06-16 21:18:08 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:08 --> Input Class Initialized
+INFO - 2025-06-16 21:18:08 --> Language Class Initialized
+INFO - 2025-06-16 21:18:08 --> Language Class Initialized
+INFO - 2025-06-16 21:18:08 --> Config Class Initialized
+INFO - 2025-06-16 21:18:08 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:08 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:08 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:08 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:08 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 21:18:08 --> Model Class Initialized
+INFO - 2025-06-16 21:18:08 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:08 --> Total execution time: 0.0038
+INFO - 2025-06-16 21:18:08 --> Config Class Initialized
+INFO - 2025-06-16 21:18:08 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:08 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:08 --> URI Class Initialized
+INFO - 2025-06-16 21:18:08 --> Router Class Initialized
+INFO - 2025-06-16 21:18:08 --> Output Class Initialized
+INFO - 2025-06-16 21:18:08 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:08 --> Input Class Initialized
+INFO - 2025-06-16 21:18:08 --> Language Class Initialized
+INFO - 2025-06-16 21:18:08 --> Language Class Initialized
+INFO - 2025-06-16 21:18:08 --> Config Class Initialized
+INFO - 2025-06-16 21:18:08 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:08 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:08 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:08 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:08 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:08 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:08 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 21:18:08 --> Model Class Initialized
+INFO - 2025-06-16 21:18:08 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:08 --> Total execution time: 0.0052
+INFO - 2025-06-16 21:18:16 --> Config Class Initialized
+INFO - 2025-06-16 21:18:16 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:16 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:16 --> URI Class Initialized
+INFO - 2025-06-16 21:18:16 --> Router Class Initialized
+INFO - 2025-06-16 21:18:16 --> Output Class Initialized
+INFO - 2025-06-16 21:18:16 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:16 --> Input Class Initialized
+INFO - 2025-06-16 21:18:16 --> Language Class Initialized
+INFO - 2025-06-16 21:18:16 --> Language Class Initialized
+INFO - 2025-06-16 21:18:16 --> Config Class Initialized
+INFO - 2025-06-16 21:18:16 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:16 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:16 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:16 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:16 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 21:18:16 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/modules/ref_customer/views/content.php
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 21:18:16 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:16 --> Total execution time: 0.0074
+INFO - 2025-06-16 21:18:16 --> Config Class Initialized
+INFO - 2025-06-16 21:18:16 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:16 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:16 --> URI Class Initialized
+INFO - 2025-06-16 21:18:16 --> Router Class Initialized
+INFO - 2025-06-16 21:18:16 --> Output Class Initialized
+INFO - 2025-06-16 21:18:16 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:16 --> Input Class Initialized
+INFO - 2025-06-16 21:18:16 --> Language Class Initialized
+INFO - 2025-06-16 21:18:16 --> Language Class Initialized
+INFO - 2025-06-16 21:18:16 --> Config Class Initialized
+INFO - 2025-06-16 21:18:16 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:16 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:16 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:16 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:16 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:16 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:16 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 21:18:16 --> Model Class Initialized
+INFO - 2025-06-16 21:18:16 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:16 --> Total execution time: 0.0502
+INFO - 2025-06-16 21:18:19 --> Config Class Initialized
+INFO - 2025-06-16 21:18:19 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:19 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:19 --> URI Class Initialized
+INFO - 2025-06-16 21:18:19 --> Router Class Initialized
+INFO - 2025-06-16 21:18:19 --> Output Class Initialized
+INFO - 2025-06-16 21:18:19 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:19 --> Input Class Initialized
+INFO - 2025-06-16 21:18:19 --> Language Class Initialized
+INFO - 2025-06-16 21:18:19 --> Language Class Initialized
+INFO - 2025-06-16 21:18:19 --> Config Class Initialized
+INFO - 2025-06-16 21:18:19 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:19 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:19 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:19 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:19 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 21:18:19 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/modules/ref_customer/views/form_download.php
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 21:18:19 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:19 --> Total execution time: 0.0067
+INFO - 2025-06-16 21:18:19 --> Config Class Initialized
+INFO - 2025-06-16 21:18:19 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:19 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:19 --> URI Class Initialized
+INFO - 2025-06-16 21:18:19 --> Router Class Initialized
+INFO - 2025-06-16 21:18:19 --> Output Class Initialized
+INFO - 2025-06-16 21:18:19 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:19 --> Input Class Initialized
+INFO - 2025-06-16 21:18:19 --> Language Class Initialized
+INFO - 2025-06-16 21:18:19 --> Language Class Initialized
+INFO - 2025-06-16 21:18:19 --> Config Class Initialized
+INFO - 2025-06-16 21:18:19 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:19 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:19 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:19 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:19 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:19 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:19 --> File loaded: /apps/par-web/application/modules/ref_customer_class/models/Customer_class_model.php
+INFO - 2025-06-16 21:18:19 --> Model Class Initialized
+INFO - 2025-06-16 21:18:19 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:19 --> Total execution time: 0.0063
+INFO - 2025-06-16 21:18:22 --> Config Class Initialized
+INFO - 2025-06-16 21:18:22 --> Hooks Class Initialized
+DEBUG - 2025-06-16 21:18:22 --> UTF-8 Support Enabled
+INFO - 2025-06-16 21:18:22 --> Utf8 Class Initialized
+INFO - 2025-06-16 21:18:22 --> URI Class Initialized
+INFO - 2025-06-16 21:18:22 --> Router Class Initialized
+INFO - 2025-06-16 21:18:22 --> Output Class Initialized
+INFO - 2025-06-16 21:18:22 --> Security Class Initialized
+DEBUG - 2025-06-16 21:18:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 21:18:22 --> Input Class Initialized
+INFO - 2025-06-16 21:18:22 --> Language Class Initialized
+INFO - 2025-06-16 21:18:22 --> Language Class Initialized
+INFO - 2025-06-16 21:18:22 --> Config Class Initialized
+INFO - 2025-06-16 21:18:22 --> Loader Class Initialized
+INFO - 2025-06-16 21:18:22 --> Helper loaded: url_helper
+INFO - 2025-06-16 21:18:22 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 21:18:22 --> Helper loaded: param_helper
+INFO - 2025-06-16 21:18:22 --> Helper loaded: credential_helper
+INFO - 2025-06-16 21:18:22 --> Helper loaded: template_helper
+INFO - 2025-06-16 21:18:22 --> Helper loaded: rest_helper
+INFO - 2025-06-16 21:18:22 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 21:18:22 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 21:18:22 --> Controller Class Initialized
+INFO - 2025-06-16 21:18:22 --> Model Class Initialized
+DEBUG - 2025-06-16 21:18:22 --> File loaded: /apps/par-web/application/modules/ref_customer/models/Customer_model.php
+INFO - 2025-06-16 21:18:22 --> Model Class Initialized
+INFO - 2025-06-16 21:18:23 --> Final output sent to browser
+DEBUG - 2025-06-16 21:18:23 --> Total execution time: 1.2816
+INFO - 2025-06-16 22:02:33 --> Config Class Initialized
+INFO - 2025-06-16 22:02:33 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:33 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:33 --> URI Class Initialized
+INFO - 2025-06-16 22:02:33 --> Router Class Initialized
+INFO - 2025-06-16 22:02:33 --> Output Class Initialized
+INFO - 2025-06-16 22:02:33 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:33 --> Input Class Initialized
+INFO - 2025-06-16 22:02:33 --> Language Class Initialized
+INFO - 2025-06-16 22:02:33 --> Language Class Initialized
+INFO - 2025-06-16 22:02:33 --> Config Class Initialized
+INFO - 2025-06-16 22:02:33 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:33 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:33 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:33 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:33 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:33 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/templates/footer.php
+INFO - 2025-06-16 22:02:33 --> Config Class Initialized
+INFO - 2025-06-16 22:02:33 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:33 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:33 --> URI Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> No URI present. Default controller set.
+INFO - 2025-06-16 22:02:33 --> Router Class Initialized
+INFO - 2025-06-16 22:02:33 --> Output Class Initialized
+INFO - 2025-06-16 22:02:33 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:33 --> Input Class Initialized
+INFO - 2025-06-16 22:02:33 --> Language Class Initialized
+INFO - 2025-06-16 22:02:33 --> Language Class Initialized
+INFO - 2025-06-16 22:02:33 --> Config Class Initialized
+INFO - 2025-06-16 22:02:33 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:33 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:33 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:33 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:33 --> Controller Class Initialized
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 22:02:33 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 22:02:33 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:33 --> Total execution time: 0.0036
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:35 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:35 --> URI Class Initialized
+INFO - 2025-06-16 22:02:35 --> Router Class Initialized
+INFO - 2025-06-16 22:02:35 --> Output Class Initialized
+INFO - 2025-06-16 22:02:35 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:35 --> Input Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:35 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:35 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:35 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:35 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:35 --> Total execution time: 0.0044
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:35 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:35 --> URI Class Initialized
+INFO - 2025-06-16 22:02:35 --> Router Class Initialized
+INFO - 2025-06-16 22:02:35 --> Output Class Initialized
+INFO - 2025-06-16 22:02:35 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:35 --> Input Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:35 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:35 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:35 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:35 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 22:02:35 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/modules/app_dashboard/views/content.php
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:02:35 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:35 --> Total execution time: 0.0063
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:35 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:35 --> URI Class Initialized
+INFO - 2025-06-16 22:02:35 --> Router Class Initialized
+INFO - 2025-06-16 22:02:35 --> Output Class Initialized
+INFO - 2025-06-16 22:02:35 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:35 --> Input Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:35 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:35 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:35 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:35 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 22:02:35 --> Model Class Initialized
+INFO - 2025-06-16 22:02:35 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:35 --> Total execution time: 0.0053
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:35 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:35 --> URI Class Initialized
+INFO - 2025-06-16 22:02:35 --> Router Class Initialized
+INFO - 2025-06-16 22:02:35 --> Output Class Initialized
+INFO - 2025-06-16 22:02:35 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:35 --> Input Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Language Class Initialized
+INFO - 2025-06-16 22:02:35 --> Config Class Initialized
+INFO - 2025-06-16 22:02:35 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:35 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:35 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:35 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:35 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:35 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:35 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 22:02:35 --> Model Class Initialized
+INFO - 2025-06-16 22:02:35 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:35 --> Total execution time: 0.0026
+INFO - 2025-06-16 22:02:40 --> Config Class Initialized
+INFO - 2025-06-16 22:02:40 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:40 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:40 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:40 --> URI Class Initialized
+INFO - 2025-06-16 22:02:40 --> Router Class Initialized
+INFO - 2025-06-16 22:02:40 --> Output Class Initialized
+INFO - 2025-06-16 22:02:40 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:40 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:40 --> Input Class Initialized
+INFO - 2025-06-16 22:02:40 --> Language Class Initialized
+INFO - 2025-06-16 22:02:40 --> Language Class Initialized
+INFO - 2025-06-16 22:02:40 --> Config Class Initialized
+INFO - 2025-06-16 22:02:40 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:40 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:40 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:40 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:40 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:40 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:40 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:40 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:40 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:40 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:40 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:40 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:02:40 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:02:40 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:40 --> Total execution time: 0.0056
+INFO - 2025-06-16 22:02:41 --> Config Class Initialized
+INFO - 2025-06-16 22:02:41 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:41 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:41 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:41 --> URI Class Initialized
+INFO - 2025-06-16 22:02:41 --> Router Class Initialized
+INFO - 2025-06-16 22:02:41 --> Output Class Initialized
+INFO - 2025-06-16 22:02:41 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:41 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:41 --> Input Class Initialized
+INFO - 2025-06-16 22:02:41 --> Language Class Initialized
+INFO - 2025-06-16 22:02:41 --> Language Class Initialized
+INFO - 2025-06-16 22:02:41 --> Config Class Initialized
+INFO - 2025-06-16 22:02:41 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:41 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:41 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:41 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:41 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:41 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:41 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:41 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:41 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:41 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:41 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:41 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:41 --> Model Class Initialized
+INFO - 2025-06-16 22:02:41 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:41 --> Total execution time: 0.0054
+INFO - 2025-06-16 22:02:46 --> Config Class Initialized
+INFO - 2025-06-16 22:02:46 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:46 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:46 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:46 --> URI Class Initialized
+INFO - 2025-06-16 22:02:46 --> Router Class Initialized
+INFO - 2025-06-16 22:02:46 --> Output Class Initialized
+INFO - 2025-06-16 22:02:46 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:46 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:46 --> Input Class Initialized
+INFO - 2025-06-16 22:02:46 --> Language Class Initialized
+INFO - 2025-06-16 22:02:46 --> Language Class Initialized
+INFO - 2025-06-16 22:02:46 --> Config Class Initialized
+INFO - 2025-06-16 22:02:46 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:46 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:46 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:46 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:46 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:46 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:46 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:46 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:46 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:46 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:46 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:46 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/form_upload.php
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:02:46 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:02:46 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:46 --> Total execution time: 0.0078
+INFO - 2025-06-16 22:02:48 --> Config Class Initialized
+INFO - 2025-06-16 22:02:48 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:48 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:48 --> URI Class Initialized
+INFO - 2025-06-16 22:02:48 --> Router Class Initialized
+INFO - 2025-06-16 22:02:48 --> Output Class Initialized
+INFO - 2025-06-16 22:02:48 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:48 --> Input Class Initialized
+INFO - 2025-06-16 22:02:48 --> Language Class Initialized
+INFO - 2025-06-16 22:02:48 --> Language Class Initialized
+INFO - 2025-06-16 22:02:48 --> Config Class Initialized
+INFO - 2025-06-16 22:02:48 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:48 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:48 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:48 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:48 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:48 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:02:48 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:48 --> Total execution time: 0.0061
+INFO - 2025-06-16 22:02:48 --> Config Class Initialized
+INFO - 2025-06-16 22:02:48 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:48 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:48 --> URI Class Initialized
+INFO - 2025-06-16 22:02:48 --> Router Class Initialized
+INFO - 2025-06-16 22:02:48 --> Output Class Initialized
+INFO - 2025-06-16 22:02:48 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:48 --> Input Class Initialized
+INFO - 2025-06-16 22:02:48 --> Language Class Initialized
+INFO - 2025-06-16 22:02:48 --> Language Class Initialized
+INFO - 2025-06-16 22:02:48 --> Config Class Initialized
+INFO - 2025-06-16 22:02:48 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:48 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:48 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:48 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:48 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:48 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:48 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:48 --> Model Class Initialized
+INFO - 2025-06-16 22:02:48 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:48 --> Total execution time: 0.0059
+INFO - 2025-06-16 22:02:49 --> Config Class Initialized
+INFO - 2025-06-16 22:02:49 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:49 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:49 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:49 --> URI Class Initialized
+INFO - 2025-06-16 22:02:49 --> Router Class Initialized
+INFO - 2025-06-16 22:02:49 --> Output Class Initialized
+INFO - 2025-06-16 22:02:49 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:49 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:49 --> Input Class Initialized
+INFO - 2025-06-16 22:02:49 --> Language Class Initialized
+INFO - 2025-06-16 22:02:49 --> Language Class Initialized
+INFO - 2025-06-16 22:02:49 --> Config Class Initialized
+INFO - 2025-06-16 22:02:49 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:49 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:49 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:49 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:49 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:49 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:49 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:49 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:49 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:49 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:49 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:49 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/form_download.php
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:02:49 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:02:49 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:49 --> Total execution time: 0.0067
+INFO - 2025-06-16 22:02:50 --> Config Class Initialized
+INFO - 2025-06-16 22:02:50 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:50 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:50 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:50 --> URI Class Initialized
+INFO - 2025-06-16 22:02:50 --> Router Class Initialized
+INFO - 2025-06-16 22:02:50 --> Output Class Initialized
+INFO - 2025-06-16 22:02:50 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:50 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:50 --> Input Class Initialized
+INFO - 2025-06-16 22:02:50 --> Language Class Initialized
+INFO - 2025-06-16 22:02:50 --> Language Class Initialized
+INFO - 2025-06-16 22:02:50 --> Config Class Initialized
+INFO - 2025-06-16 22:02:50 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:50 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:50 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:50 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:50 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:50 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:50 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:50 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:50 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:50 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:50 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:50 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 22:02:50 --> Model Class Initialized
+INFO - 2025-06-16 22:02:50 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:50 --> Total execution time: 0.0035
+INFO - 2025-06-16 22:02:51 --> Config Class Initialized
+INFO - 2025-06-16 22:02:51 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:02:51 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:02:51 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:02:51 --> URI Class Initialized
+INFO - 2025-06-16 22:02:51 --> Router Class Initialized
+INFO - 2025-06-16 22:02:51 --> Output Class Initialized
+INFO - 2025-06-16 22:02:51 --> Security Class Initialized
+DEBUG - 2025-06-16 22:02:51 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:02:51 --> Input Class Initialized
+INFO - 2025-06-16 22:02:51 --> Language Class Initialized
+INFO - 2025-06-16 22:02:51 --> Language Class Initialized
+INFO - 2025-06-16 22:02:51 --> Config Class Initialized
+INFO - 2025-06-16 22:02:51 --> Loader Class Initialized
+INFO - 2025-06-16 22:02:51 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:02:51 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:02:51 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:02:51 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:02:51 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:02:51 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:02:51 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:02:51 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:02:51 --> Controller Class Initialized
+INFO - 2025-06-16 22:02:51 --> Model Class Initialized
+DEBUG - 2025-06-16 22:02:51 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:02:51 --> Model Class Initialized
+INFO - 2025-06-16 22:02:51 --> Final output sent to browser
+DEBUG - 2025-06-16 22:02:51 --> Total execution time: 0.0096
+INFO - 2025-06-16 22:37:25 --> Config Class Initialized
+INFO - 2025-06-16 22:37:25 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:25 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:25 --> URI Class Initialized
+INFO - 2025-06-16 22:37:25 --> Router Class Initialized
+INFO - 2025-06-16 22:37:25 --> Output Class Initialized
+INFO - 2025-06-16 22:37:25 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:25 --> Input Class Initialized
+INFO - 2025-06-16 22:37:25 --> Language Class Initialized
+INFO - 2025-06-16 22:37:25 --> Language Class Initialized
+INFO - 2025-06-16 22:37:25 --> Config Class Initialized
+INFO - 2025-06-16 22:37:25 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:25 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:25 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:25 --> Controller Class Initialized
+INFO - 2025-06-16 22:37:25 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/models/Sales_salesman_model.php
+INFO - 2025-06-16 22:37:25 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/views/content.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/templates/footer.php
+INFO - 2025-06-16 22:37:25 --> Config Class Initialized
+INFO - 2025-06-16 22:37:25 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:25 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:25 --> URI Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> No URI present. Default controller set.
+INFO - 2025-06-16 22:37:25 --> Router Class Initialized
+INFO - 2025-06-16 22:37:25 --> Output Class Initialized
+INFO - 2025-06-16 22:37:25 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:25 --> Input Class Initialized
+INFO - 2025-06-16 22:37:25 --> Language Class Initialized
+INFO - 2025-06-16 22:37:25 --> Language Class Initialized
+INFO - 2025-06-16 22:37:25 --> Config Class Initialized
+INFO - 2025-06-16 22:37:25 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:25 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:25 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:25 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:25 --> Controller Class Initialized
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 22:37:25 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 22:37:25 --> Final output sent to browser
+DEBUG - 2025-06-16 22:37:25 --> Total execution time: 0.0029
+INFO - 2025-06-16 22:37:26 --> Config Class Initialized
+INFO - 2025-06-16 22:37:26 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:26 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:26 --> URI Class Initialized
+INFO - 2025-06-16 22:37:26 --> Router Class Initialized
+INFO - 2025-06-16 22:37:26 --> Output Class Initialized
+INFO - 2025-06-16 22:37:26 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:26 --> Input Class Initialized
+INFO - 2025-06-16 22:37:26 --> Language Class Initialized
+INFO - 2025-06-16 22:37:26 --> Language Class Initialized
+INFO - 2025-06-16 22:37:26 --> Config Class Initialized
+INFO - 2025-06-16 22:37:26 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:26 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:26 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:26 --> Controller Class Initialized
+INFO - 2025-06-16 22:37:26 --> Final output sent to browser
+DEBUG - 2025-06-16 22:37:26 --> Total execution time: 0.0046
+INFO - 2025-06-16 22:37:26 --> Config Class Initialized
+INFO - 2025-06-16 22:37:26 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:26 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:26 --> URI Class Initialized
+INFO - 2025-06-16 22:37:26 --> Router Class Initialized
+INFO - 2025-06-16 22:37:26 --> Output Class Initialized
+INFO - 2025-06-16 22:37:26 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:26 --> Input Class Initialized
+INFO - 2025-06-16 22:37:26 --> Language Class Initialized
+INFO - 2025-06-16 22:37:26 --> Language Class Initialized
+INFO - 2025-06-16 22:37:26 --> Config Class Initialized
+INFO - 2025-06-16 22:37:26 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:26 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:26 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:26 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:26 --> Controller Class Initialized
+INFO - 2025-06-16 22:37:26 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 22:37:26 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/modules/app_dashboard/views/content.php
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:37:26 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:37:26 --> Final output sent to browser
+DEBUG - 2025-06-16 22:37:26 --> Total execution time: 0.0059
+INFO - 2025-06-16 22:37:27 --> Config Class Initialized
+INFO - 2025-06-16 22:37:27 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:27 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:27 --> URI Class Initialized
+INFO - 2025-06-16 22:37:27 --> Router Class Initialized
+INFO - 2025-06-16 22:37:27 --> Output Class Initialized
+INFO - 2025-06-16 22:37:27 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:27 --> Input Class Initialized
+INFO - 2025-06-16 22:37:27 --> Language Class Initialized
+INFO - 2025-06-16 22:37:27 --> Language Class Initialized
+INFO - 2025-06-16 22:37:27 --> Config Class Initialized
+INFO - 2025-06-16 22:37:27 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:27 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:27 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:27 --> Controller Class Initialized
+INFO - 2025-06-16 22:37:27 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 22:37:27 --> Model Class Initialized
+INFO - 2025-06-16 22:37:27 --> Final output sent to browser
+DEBUG - 2025-06-16 22:37:27 --> Total execution time: 0.0063
+INFO - 2025-06-16 22:37:27 --> Config Class Initialized
+INFO - 2025-06-16 22:37:27 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:27 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:27 --> URI Class Initialized
+INFO - 2025-06-16 22:37:27 --> Router Class Initialized
+INFO - 2025-06-16 22:37:27 --> Output Class Initialized
+INFO - 2025-06-16 22:37:27 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:27 --> Input Class Initialized
+INFO - 2025-06-16 22:37:27 --> Language Class Initialized
+INFO - 2025-06-16 22:37:27 --> Language Class Initialized
+INFO - 2025-06-16 22:37:27 --> Config Class Initialized
+INFO - 2025-06-16 22:37:27 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:27 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:27 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:27 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:27 --> Controller Class Initialized
+INFO - 2025-06-16 22:37:27 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:27 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 22:37:27 --> Model Class Initialized
+INFO - 2025-06-16 22:37:27 --> Final output sent to browser
+DEBUG - 2025-06-16 22:37:27 --> Total execution time: 0.0033
+INFO - 2025-06-16 22:37:31 --> Config Class Initialized
+INFO - 2025-06-16 22:37:31 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:31 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:31 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:31 --> URI Class Initialized
+INFO - 2025-06-16 22:37:31 --> Router Class Initialized
+INFO - 2025-06-16 22:37:31 --> Output Class Initialized
+INFO - 2025-06-16 22:37:31 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:31 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:31 --> Input Class Initialized
+INFO - 2025-06-16 22:37:31 --> Language Class Initialized
+INFO - 2025-06-16 22:37:31 --> Language Class Initialized
+INFO - 2025-06-16 22:37:31 --> Config Class Initialized
+INFO - 2025-06-16 22:37:31 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:31 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:31 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:31 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:31 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:31 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:31 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:31 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:31 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:31 --> Controller Class Initialized
+INFO - 2025-06-16 22:37:31 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/models/Sales_salesman_model.php
+INFO - 2025-06-16 22:37:31 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/views/content.php
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:37:31 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:37:31 --> Final output sent to browser
+DEBUG - 2025-06-16 22:37:31 --> Total execution time: 0.0064
+INFO - 2025-06-16 22:37:32 --> Config Class Initialized
+INFO - 2025-06-16 22:37:32 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:37:32 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:37:32 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:37:32 --> URI Class Initialized
+INFO - 2025-06-16 22:37:32 --> Router Class Initialized
+INFO - 2025-06-16 22:37:32 --> Output Class Initialized
+INFO - 2025-06-16 22:37:32 --> Security Class Initialized
+DEBUG - 2025-06-16 22:37:32 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:37:32 --> Input Class Initialized
+INFO - 2025-06-16 22:37:32 --> Language Class Initialized
+INFO - 2025-06-16 22:37:32 --> Language Class Initialized
+INFO - 2025-06-16 22:37:32 --> Config Class Initialized
+INFO - 2025-06-16 22:37:32 --> Loader Class Initialized
+INFO - 2025-06-16 22:37:32 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:37:32 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:37:32 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:37:32 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:37:32 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:37:32 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:37:32 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:37:32 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:37:32 --> Controller Class Initialized
+INFO - 2025-06-16 22:37:32 --> Model Class Initialized
+DEBUG - 2025-06-16 22:37:32 --> File loaded: /apps/par-web/application/modules/ref_sales_salesman/models/Sales_salesman_model.php
+INFO - 2025-06-16 22:37:32 --> Model Class Initialized
+INFO - 2025-06-16 22:37:32 --> Final output sent to browser
+DEBUG - 2025-06-16 22:37:32 --> Total execution time: 0.0037
+INFO - 2025-06-16 22:58:04 --> Config Class Initialized
+INFO - 2025-06-16 22:58:04 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:58:04 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:58:04 --> URI Class Initialized
+INFO - 2025-06-16 22:58:04 --> Router Class Initialized
+INFO - 2025-06-16 22:58:04 --> Output Class Initialized
+INFO - 2025-06-16 22:58:04 --> Security Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:58:04 --> Input Class Initialized
+INFO - 2025-06-16 22:58:04 --> Language Class Initialized
+INFO - 2025-06-16 22:58:04 --> Language Class Initialized
+INFO - 2025-06-16 22:58:04 --> Config Class Initialized
+INFO - 2025-06-16 22:58:04 --> Loader Class Initialized
+INFO - 2025-06-16 22:58:04 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:58:04 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:58:04 --> Controller Class Initialized
+INFO - 2025-06-16 22:58:04 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:58:04 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:58:04 --> Final output sent to browser
+DEBUG - 2025-06-16 22:58:04 --> Total execution time: 0.0094
+INFO - 2025-06-16 22:58:04 --> Config Class Initialized
+INFO - 2025-06-16 22:58:04 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:58:04 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:58:04 --> URI Class Initialized
+INFO - 2025-06-16 22:58:04 --> Router Class Initialized
+INFO - 2025-06-16 22:58:04 --> Output Class Initialized
+INFO - 2025-06-16 22:58:04 --> Security Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:58:04 --> Input Class Initialized
+INFO - 2025-06-16 22:58:04 --> Language Class Initialized
+INFO - 2025-06-16 22:58:04 --> Language Class Initialized
+INFO - 2025-06-16 22:58:04 --> Config Class Initialized
+INFO - 2025-06-16 22:58:04 --> Loader Class Initialized
+INFO - 2025-06-16 22:58:04 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:58:04 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:58:04 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:58:04 --> Controller Class Initialized
+INFO - 2025-06-16 22:58:04 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:04 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:58:04 --> Model Class Initialized
+INFO - 2025-06-16 22:58:04 --> Final output sent to browser
+DEBUG - 2025-06-16 22:58:04 --> Total execution time: 0.0046
+INFO - 2025-06-16 22:58:06 --> Config Class Initialized
+INFO - 2025-06-16 22:58:06 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:58:06 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:58:06 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:58:06 --> URI Class Initialized
+INFO - 2025-06-16 22:58:06 --> Router Class Initialized
+INFO - 2025-06-16 22:58:06 --> Output Class Initialized
+INFO - 2025-06-16 22:58:06 --> Security Class Initialized
+DEBUG - 2025-06-16 22:58:06 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:58:06 --> Input Class Initialized
+INFO - 2025-06-16 22:58:06 --> Language Class Initialized
+INFO - 2025-06-16 22:58:06 --> Language Class Initialized
+INFO - 2025-06-16 22:58:06 --> Config Class Initialized
+INFO - 2025-06-16 22:58:06 --> Loader Class Initialized
+INFO - 2025-06-16 22:58:06 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:58:06 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:58:06 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:58:06 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:58:06 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:58:06 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:58:06 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:58:06 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:58:06 --> Controller Class Initialized
+INFO - 2025-06-16 22:58:06 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:58:06 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/form_upload.php
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:58:06 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:58:06 --> Final output sent to browser
+DEBUG - 2025-06-16 22:58:06 --> Total execution time: 0.0061
+INFO - 2025-06-16 22:58:14 --> Config Class Initialized
+INFO - 2025-06-16 22:58:14 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:58:14 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:58:14 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:58:14 --> URI Class Initialized
+INFO - 2025-06-16 22:58:14 --> Router Class Initialized
+INFO - 2025-06-16 22:58:14 --> Output Class Initialized
+INFO - 2025-06-16 22:58:14 --> Security Class Initialized
+DEBUG - 2025-06-16 22:58:14 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:58:14 --> Input Class Initialized
+INFO - 2025-06-16 22:58:14 --> Language Class Initialized
+INFO - 2025-06-16 22:58:14 --> Language Class Initialized
+INFO - 2025-06-16 22:58:14 --> Config Class Initialized
+INFO - 2025-06-16 22:58:14 --> Loader Class Initialized
+INFO - 2025-06-16 22:58:14 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:58:14 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:58:14 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:58:14 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:58:14 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:58:14 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:58:14 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:58:14 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:58:14 --> Controller Class Initialized
+INFO - 2025-06-16 22:58:14 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:14 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:58:14 --> Model Class Initialized
+INFO - 2025-06-16 22:58:14 --> Upload Class Initialized
+INFO - 2025-06-16 22:58:20 --> Final output sent to browser
+DEBUG - 2025-06-16 22:58:20 --> Total execution time: 6.2406
+INFO - 2025-06-16 22:58:20 --> Config Class Initialized
+INFO - 2025-06-16 22:58:20 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:58:20 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:58:20 --> URI Class Initialized
+INFO - 2025-06-16 22:58:20 --> Router Class Initialized
+INFO - 2025-06-16 22:58:20 --> Output Class Initialized
+INFO - 2025-06-16 22:58:20 --> Security Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:58:20 --> Input Class Initialized
+INFO - 2025-06-16 22:58:20 --> Language Class Initialized
+INFO - 2025-06-16 22:58:20 --> Language Class Initialized
+INFO - 2025-06-16 22:58:20 --> Config Class Initialized
+INFO - 2025-06-16 22:58:20 --> Loader Class Initialized
+INFO - 2025-06-16 22:58:20 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:58:20 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:58:20 --> Controller Class Initialized
+INFO - 2025-06-16 22:58:20 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:58:20 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 22:58:20 --> Final output sent to browser
+DEBUG - 2025-06-16 22:58:20 --> Total execution time: 0.0051
+INFO - 2025-06-16 22:58:20 --> Config Class Initialized
+INFO - 2025-06-16 22:58:20 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:58:20 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:58:20 --> URI Class Initialized
+INFO - 2025-06-16 22:58:20 --> Router Class Initialized
+INFO - 2025-06-16 22:58:20 --> Output Class Initialized
+INFO - 2025-06-16 22:58:20 --> Security Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:58:20 --> Input Class Initialized
+INFO - 2025-06-16 22:58:20 --> Language Class Initialized
+INFO - 2025-06-16 22:58:20 --> Language Class Initialized
+INFO - 2025-06-16 22:58:20 --> Config Class Initialized
+INFO - 2025-06-16 22:58:20 --> Loader Class Initialized
+INFO - 2025-06-16 22:58:20 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:58:20 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:58:20 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:58:20 --> Controller Class Initialized
+INFO - 2025-06-16 22:58:20 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:20 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 22:58:20 --> Model Class Initialized
+INFO - 2025-06-16 22:58:20 --> Final output sent to browser
+DEBUG - 2025-06-16 22:58:20 --> Total execution time: 0.0133
+INFO - 2025-06-16 22:58:51 --> Config Class Initialized
+INFO - 2025-06-16 22:58:51 --> Hooks Class Initialized
+DEBUG - 2025-06-16 22:58:51 --> UTF-8 Support Enabled
+INFO - 2025-06-16 22:58:51 --> Utf8 Class Initialized
+INFO - 2025-06-16 22:58:51 --> URI Class Initialized
+INFO - 2025-06-16 22:58:51 --> Router Class Initialized
+INFO - 2025-06-16 22:58:51 --> Output Class Initialized
+INFO - 2025-06-16 22:58:51 --> Security Class Initialized
+DEBUG - 2025-06-16 22:58:51 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 22:58:51 --> Input Class Initialized
+INFO - 2025-06-16 22:58:51 --> Language Class Initialized
+INFO - 2025-06-16 22:58:51 --> Language Class Initialized
+INFO - 2025-06-16 22:58:51 --> Config Class Initialized
+INFO - 2025-06-16 22:58:51 --> Loader Class Initialized
+INFO - 2025-06-16 22:58:51 --> Helper loaded: url_helper
+INFO - 2025-06-16 22:58:51 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 22:58:51 --> Helper loaded: param_helper
+INFO - 2025-06-16 22:58:51 --> Helper loaded: credential_helper
+INFO - 2025-06-16 22:58:51 --> Helper loaded: template_helper
+INFO - 2025-06-16 22:58:51 --> Helper loaded: rest_helper
+INFO - 2025-06-16 22:58:51 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 22:58:51 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 22:58:51 --> Controller Class Initialized
+INFO - 2025-06-16 22:58:51 --> Model Class Initialized
+DEBUG - 2025-06-16 22:58:51 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 22:58:51 --> Model Class Initialized
+ERROR - 2025-06-16 22:58:51 --> Query error: FUNCTION dbpar.CALCULATE_DISTANCE does not exist - Invalid query:  replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, `call`, 
+											   extra_call, crc, promo, competitor, `order`, sos, image,checkin_out_area)
+					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
+													   when a.type='ICT' then 'C' 
+													   when a.type='AHR' then 'H'
+													   else 'HF' end tipe, 
+							check_in checkin, check_out checkout, ifnull(b.flag_adjust,0) as flag_adjust,
+							concat(ifnull(a.description,''),ifnull(concat('-',a.description_in),''),ifnull(concat('-',a.description_out),'')) as keterangan, 
+							case when a.type='ICT' and b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
+							when b.flag_adjust=1 then 0
+							else 0 
+							end _pjp, 
+							0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image, 0 _out_area
+					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
+					where a.date between DATE_ADD('2025-06-16', INTERVAL -7 DAY) and DATE_ADD('2025-06-16', INTERVAL -1 DAY)
+					union
+					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
+					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp, 
+					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) else 0 end _call,
+					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+													and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) 
+						else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
+					end _extra_call,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and order_time is not null) _order,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image,
+					(select count(1) from t_sales_rrk_trans z left join m_customer x on z.customerid=x.customerid where z.periode=a.periode and z.salesmanid=a.salesmanid and 
+						ROUND(CALCULATE_DISTANCE(x.latitude,x.longitude,z.latitude_cell,z.longitude_cell),2)>1) as _out_area
+					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
+					where a.periode between DATE_ADD('2025-06-16', INTERVAL -7 DAY) and DATE_ADD('2025-06-16', INTERVAL -1 DAY)
+					group by a.periode,a.salesmanid
+					;
+				
+INFO - 2025-06-16 22:58:51 --> Language file loaded: language/english/db_lang.php
+INFO - 2025-06-16 23:06:43 --> Config Class Initialized
+INFO - 2025-06-16 23:06:43 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:06:43 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:06:43 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:06:43 --> URI Class Initialized
+INFO - 2025-06-16 23:06:43 --> Router Class Initialized
+INFO - 2025-06-16 23:06:43 --> Output Class Initialized
+INFO - 2025-06-16 23:06:43 --> Security Class Initialized
+DEBUG - 2025-06-16 23:06:43 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:06:43 --> Input Class Initialized
+INFO - 2025-06-16 23:06:43 --> Language Class Initialized
+INFO - 2025-06-16 23:06:43 --> Language Class Initialized
+INFO - 2025-06-16 23:06:43 --> Config Class Initialized
+INFO - 2025-06-16 23:06:43 --> Loader Class Initialized
+INFO - 2025-06-16 23:06:43 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:06:43 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:06:43 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:06:43 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:06:43 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:06:43 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:06:43 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:06:43 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:06:43 --> Controller Class Initialized
+INFO - 2025-06-16 23:06:43 --> Model Class Initialized
+DEBUG - 2025-06-16 23:06:43 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 23:06:43 --> Model Class Initialized
+INFO - 2025-06-16 23:06:46 --> Final output sent to browser
+DEBUG - 2025-06-16 23:06:46 --> Total execution time: 3.2948
+INFO - 2025-06-16 23:31:14 --> Config Class Initialized
+INFO - 2025-06-16 23:31:14 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:14 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:14 --> URI Class Initialized
+INFO - 2025-06-16 23:31:14 --> Router Class Initialized
+INFO - 2025-06-16 23:31:14 --> Output Class Initialized
+INFO - 2025-06-16 23:31:14 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:14 --> Input Class Initialized
+INFO - 2025-06-16 23:31:14 --> Language Class Initialized
+INFO - 2025-06-16 23:31:14 --> Language Class Initialized
+INFO - 2025-06-16 23:31:14 --> Config Class Initialized
+INFO - 2025-06-16 23:31:14 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:14 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:14 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:14 --> Controller Class Initialized
+INFO - 2025-06-16 23:31:14 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 23:31:14 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/templates/footer.php
+INFO - 2025-06-16 23:31:14 --> Config Class Initialized
+INFO - 2025-06-16 23:31:14 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:14 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:14 --> URI Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> No URI present. Default controller set.
+INFO - 2025-06-16 23:31:14 --> Router Class Initialized
+INFO - 2025-06-16 23:31:14 --> Output Class Initialized
+INFO - 2025-06-16 23:31:14 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:14 --> Input Class Initialized
+INFO - 2025-06-16 23:31:14 --> Language Class Initialized
+INFO - 2025-06-16 23:31:14 --> Language Class Initialized
+INFO - 2025-06-16 23:31:14 --> Config Class Initialized
+INFO - 2025-06-16 23:31:14 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:14 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:14 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:14 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:14 --> Controller Class Initialized
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 23:31:14 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 23:31:14 --> Final output sent to browser
+DEBUG - 2025-06-16 23:31:14 --> Total execution time: 0.0032
+INFO - 2025-06-16 23:31:15 --> Config Class Initialized
+INFO - 2025-06-16 23:31:15 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:15 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:15 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:15 --> URI Class Initialized
+INFO - 2025-06-16 23:31:15 --> Router Class Initialized
+INFO - 2025-06-16 23:31:15 --> Output Class Initialized
+INFO - 2025-06-16 23:31:15 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:15 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:15 --> Input Class Initialized
+INFO - 2025-06-16 23:31:15 --> Language Class Initialized
+ERROR - 2025-06-16 23:31:15 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:31:16 --> Config Class Initialized
+INFO - 2025-06-16 23:31:16 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:16 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:16 --> URI Class Initialized
+INFO - 2025-06-16 23:31:16 --> Router Class Initialized
+INFO - 2025-06-16 23:31:16 --> Output Class Initialized
+INFO - 2025-06-16 23:31:16 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:16 --> Input Class Initialized
+INFO - 2025-06-16 23:31:16 --> Language Class Initialized
+INFO - 2025-06-16 23:31:16 --> Language Class Initialized
+INFO - 2025-06-16 23:31:16 --> Config Class Initialized
+INFO - 2025-06-16 23:31:16 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:16 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:16 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:16 --> Controller Class Initialized
+INFO - 2025-06-16 23:31:16 --> Final output sent to browser
+DEBUG - 2025-06-16 23:31:16 --> Total execution time: 0.0039
+INFO - 2025-06-16 23:31:16 --> Config Class Initialized
+INFO - 2025-06-16 23:31:16 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:16 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:16 --> URI Class Initialized
+INFO - 2025-06-16 23:31:16 --> Router Class Initialized
+INFO - 2025-06-16 23:31:16 --> Output Class Initialized
+INFO - 2025-06-16 23:31:16 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:16 --> Input Class Initialized
+INFO - 2025-06-16 23:31:16 --> Language Class Initialized
+INFO - 2025-06-16 23:31:16 --> Language Class Initialized
+INFO - 2025-06-16 23:31:16 --> Config Class Initialized
+INFO - 2025-06-16 23:31:16 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:16 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:16 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:16 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:16 --> Controller Class Initialized
+INFO - 2025-06-16 23:31:16 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 23:31:16 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/modules/app_dashboard/views/content.php
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 23:31:16 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 23:31:16 --> Final output sent to browser
+DEBUG - 2025-06-16 23:31:16 --> Total execution time: 0.0065
+INFO - 2025-06-16 23:31:17 --> Config Class Initialized
+INFO - 2025-06-16 23:31:17 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:17 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:17 --> URI Class Initialized
+INFO - 2025-06-16 23:31:17 --> Router Class Initialized
+INFO - 2025-06-16 23:31:17 --> Output Class Initialized
+INFO - 2025-06-16 23:31:17 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:17 --> Input Class Initialized
+INFO - 2025-06-16 23:31:17 --> Language Class Initialized
+INFO - 2025-06-16 23:31:17 --> Language Class Initialized
+INFO - 2025-06-16 23:31:17 --> Config Class Initialized
+INFO - 2025-06-16 23:31:17 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:17 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:17 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:17 --> Controller Class Initialized
+INFO - 2025-06-16 23:31:17 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> File loaded: /apps/par-web/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2025-06-16 23:31:17 --> Model Class Initialized
+INFO - 2025-06-16 23:31:17 --> Final output sent to browser
+DEBUG - 2025-06-16 23:31:17 --> Total execution time: 0.0057
+INFO - 2025-06-16 23:31:17 --> Config Class Initialized
+INFO - 2025-06-16 23:31:17 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:17 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:17 --> URI Class Initialized
+INFO - 2025-06-16 23:31:17 --> Router Class Initialized
+INFO - 2025-06-16 23:31:17 --> Output Class Initialized
+INFO - 2025-06-16 23:31:17 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:17 --> Input Class Initialized
+INFO - 2025-06-16 23:31:17 --> Language Class Initialized
+INFO - 2025-06-16 23:31:17 --> Language Class Initialized
+INFO - 2025-06-16 23:31:17 --> Config Class Initialized
+INFO - 2025-06-16 23:31:17 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:17 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:17 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:17 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:17 --> Controller Class Initialized
+INFO - 2025-06-16 23:31:17 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:17 --> File loaded: /apps/par-web/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-06-16 23:31:17 --> Model Class Initialized
+INFO - 2025-06-16 23:31:17 --> Final output sent to browser
+DEBUG - 2025-06-16 23:31:17 --> Total execution time: 0.0030
+INFO - 2025-06-16 23:31:22 --> Config Class Initialized
+INFO - 2025-06-16 23:31:22 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:22 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:22 --> URI Class Initialized
+INFO - 2025-06-16 23:31:22 --> Router Class Initialized
+INFO - 2025-06-16 23:31:22 --> Output Class Initialized
+INFO - 2025-06-16 23:31:22 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:22 --> Input Class Initialized
+INFO - 2025-06-16 23:31:22 --> Language Class Initialized
+INFO - 2025-06-16 23:31:22 --> Language Class Initialized
+INFO - 2025-06-16 23:31:22 --> Config Class Initialized
+INFO - 2025-06-16 23:31:22 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:22 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:22 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:22 --> Controller Class Initialized
+INFO - 2025-06-16 23:31:22 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 23:31:22 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/views/content.php
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/views/templates/header.php
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/views/templates/toolbar.php
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/views/templates/sidebar.php
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/views/templates/contents.php
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/views/templates/content_footer.php
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/views/templates/footer.php
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/views/templates/default.php
+INFO - 2025-06-16 23:31:22 --> Final output sent to browser
+DEBUG - 2025-06-16 23:31:22 --> Total execution time: 0.0070
+INFO - 2025-06-16 23:31:22 --> Config Class Initialized
+INFO - 2025-06-16 23:31:22 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:31:22 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:31:22 --> URI Class Initialized
+INFO - 2025-06-16 23:31:22 --> Router Class Initialized
+INFO - 2025-06-16 23:31:22 --> Output Class Initialized
+INFO - 2025-06-16 23:31:22 --> Security Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:31:22 --> Input Class Initialized
+INFO - 2025-06-16 23:31:22 --> Language Class Initialized
+INFO - 2025-06-16 23:31:22 --> Language Class Initialized
+INFO - 2025-06-16 23:31:22 --> Config Class Initialized
+INFO - 2025-06-16 23:31:22 --> Loader Class Initialized
+INFO - 2025-06-16 23:31:22 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:31:22 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:31:22 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:31:22 --> Controller Class Initialized
+INFO - 2025-06-16 23:31:22 --> Model Class Initialized
+DEBUG - 2025-06-16 23:31:22 --> File loaded: /apps/par-web/application/modules/conf_setup_pjp/models/Setup_pjp_model.php
+INFO - 2025-06-16 23:31:22 --> Model Class Initialized
+INFO - 2025-06-16 23:31:22 --> Final output sent to browser
+DEBUG - 2025-06-16 23:31:22 --> Total execution time: 0.0313
+INFO - 2025-06-16 23:39:55 --> Config Class Initialized
+INFO - 2025-06-16 23:39:55 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:39:55 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:39:55 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:39:55 --> URI Class Initialized
+DEBUG - 2025-06-16 23:39:55 --> No URI present. Default controller set.
+INFO - 2025-06-16 23:39:55 --> Router Class Initialized
+INFO - 2025-06-16 23:39:55 --> Output Class Initialized
+INFO - 2025-06-16 23:39:55 --> Security Class Initialized
+DEBUG - 2025-06-16 23:39:55 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:39:55 --> Input Class Initialized
+INFO - 2025-06-16 23:39:55 --> Language Class Initialized
+INFO - 2025-06-16 23:39:55 --> Language Class Initialized
+INFO - 2025-06-16 23:39:55 --> Config Class Initialized
+INFO - 2025-06-16 23:39:55 --> Loader Class Initialized
+INFO - 2025-06-16 23:39:55 --> Helper loaded: url_helper
+INFO - 2025-06-16 23:39:55 --> Helper loaded: easyui_helper
+INFO - 2025-06-16 23:39:55 --> Helper loaded: param_helper
+INFO - 2025-06-16 23:39:55 --> Helper loaded: credential_helper
+INFO - 2025-06-16 23:39:55 --> Helper loaded: template_helper
+INFO - 2025-06-16 23:39:55 --> Helper loaded: rest_helper
+INFO - 2025-06-16 23:39:55 --> Database Driver Class Initialized
+DEBUG - 2025-06-16 23:39:55 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-06-16 23:39:55 --> Controller Class Initialized
+DEBUG - 2025-06-16 23:39:55 --> File loaded: /apps/par-web/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-06-16 23:39:55 --> File loaded: /apps/par-web/application/views/template_login_lte/header.php
+DEBUG - 2025-06-16 23:39:55 --> File loaded: /apps/par-web/application/views/template_login_lte/contents.php
+DEBUG - 2025-06-16 23:39:55 --> File loaded: /apps/par-web/application/views/template_login_lte/default.php
+INFO - 2025-06-16 23:39:55 --> Final output sent to browser
+DEBUG - 2025-06-16 23:39:55 --> Total execution time: 0.0035
+INFO - 2025-06-16 23:40:34 --> Config Class Initialized
+INFO - 2025-06-16 23:40:34 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:34 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:34 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:34 --> URI Class Initialized
+INFO - 2025-06-16 23:40:34 --> Router Class Initialized
+INFO - 2025-06-16 23:40:34 --> Output Class Initialized
+INFO - 2025-06-16 23:40:34 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:34 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:34 --> Input Class Initialized
+INFO - 2025-06-16 23:40:34 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:34 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:40:37 --> Config Class Initialized
+INFO - 2025-06-16 23:40:37 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:37 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:37 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:37 --> URI Class Initialized
+INFO - 2025-06-16 23:40:37 --> Router Class Initialized
+INFO - 2025-06-16 23:40:37 --> Output Class Initialized
+INFO - 2025-06-16 23:40:37 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:37 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:37 --> Input Class Initialized
+INFO - 2025-06-16 23:40:37 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:37 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:40:41 --> Config Class Initialized
+INFO - 2025-06-16 23:40:41 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:41 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:41 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:41 --> URI Class Initialized
+INFO - 2025-06-16 23:40:41 --> Router Class Initialized
+INFO - 2025-06-16 23:40:41 --> Output Class Initialized
+INFO - 2025-06-16 23:40:41 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:41 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:41 --> Input Class Initialized
+INFO - 2025-06-16 23:40:41 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:41 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:40:44 --> Config Class Initialized
+INFO - 2025-06-16 23:40:44 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:44 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:44 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:44 --> URI Class Initialized
+INFO - 2025-06-16 23:40:44 --> Router Class Initialized
+INFO - 2025-06-16 23:40:44 --> Output Class Initialized
+INFO - 2025-06-16 23:40:44 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:44 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:44 --> Input Class Initialized
+INFO - 2025-06-16 23:40:44 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:44 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:40:47 --> Config Class Initialized
+INFO - 2025-06-16 23:40:47 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:47 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:47 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:47 --> URI Class Initialized
+INFO - 2025-06-16 23:40:47 --> Router Class Initialized
+INFO - 2025-06-16 23:40:47 --> Output Class Initialized
+INFO - 2025-06-16 23:40:47 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:47 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:47 --> Input Class Initialized
+INFO - 2025-06-16 23:40:47 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:47 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:40:50 --> Config Class Initialized
+INFO - 2025-06-16 23:40:50 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:50 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:50 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:50 --> URI Class Initialized
+INFO - 2025-06-16 23:40:50 --> Router Class Initialized
+INFO - 2025-06-16 23:40:50 --> Output Class Initialized
+INFO - 2025-06-16 23:40:50 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:50 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:50 --> Input Class Initialized
+INFO - 2025-06-16 23:40:50 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:50 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:40:53 --> Config Class Initialized
+INFO - 2025-06-16 23:40:53 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:53 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:53 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:53 --> URI Class Initialized
+INFO - 2025-06-16 23:40:53 --> Router Class Initialized
+INFO - 2025-06-16 23:40:53 --> Output Class Initialized
+INFO - 2025-06-16 23:40:53 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:53 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:53 --> Input Class Initialized
+INFO - 2025-06-16 23:40:53 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:53 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:40:59 --> Config Class Initialized
+INFO - 2025-06-16 23:40:59 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:40:59 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:40:59 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:40:59 --> URI Class Initialized
+INFO - 2025-06-16 23:40:59 --> Router Class Initialized
+INFO - 2025-06-16 23:40:59 --> Output Class Initialized
+INFO - 2025-06-16 23:40:59 --> Security Class Initialized
+DEBUG - 2025-06-16 23:40:59 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:40:59 --> Input Class Initialized
+INFO - 2025-06-16 23:40:59 --> Language Class Initialized
+ERROR - 2025-06-16 23:40:59 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:01 --> Config Class Initialized
+INFO - 2025-06-16 23:41:01 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:01 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:01 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:01 --> URI Class Initialized
+INFO - 2025-06-16 23:41:01 --> Router Class Initialized
+INFO - 2025-06-16 23:41:01 --> Output Class Initialized
+INFO - 2025-06-16 23:41:01 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:01 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:01 --> Input Class Initialized
+INFO - 2025-06-16 23:41:01 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:01 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:04 --> Config Class Initialized
+INFO - 2025-06-16 23:41:04 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:04 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:04 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:04 --> URI Class Initialized
+INFO - 2025-06-16 23:41:04 --> Router Class Initialized
+INFO - 2025-06-16 23:41:04 --> Output Class Initialized
+INFO - 2025-06-16 23:41:04 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:04 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:04 --> Input Class Initialized
+INFO - 2025-06-16 23:41:04 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:04 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:07 --> Config Class Initialized
+INFO - 2025-06-16 23:41:07 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:07 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:07 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:07 --> URI Class Initialized
+INFO - 2025-06-16 23:41:07 --> Router Class Initialized
+INFO - 2025-06-16 23:41:07 --> Output Class Initialized
+INFO - 2025-06-16 23:41:07 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:07 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:07 --> Input Class Initialized
+INFO - 2025-06-16 23:41:07 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:07 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:09 --> Config Class Initialized
+INFO - 2025-06-16 23:41:09 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:09 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:09 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:09 --> URI Class Initialized
+INFO - 2025-06-16 23:41:09 --> Router Class Initialized
+INFO - 2025-06-16 23:41:09 --> Output Class Initialized
+INFO - 2025-06-16 23:41:09 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:09 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:09 --> Input Class Initialized
+INFO - 2025-06-16 23:41:09 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:09 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:12 --> Config Class Initialized
+INFO - 2025-06-16 23:41:12 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:12 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:12 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:12 --> URI Class Initialized
+INFO - 2025-06-16 23:41:12 --> Router Class Initialized
+INFO - 2025-06-16 23:41:12 --> Output Class Initialized
+INFO - 2025-06-16 23:41:12 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:12 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:12 --> Input Class Initialized
+INFO - 2025-06-16 23:41:12 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:12 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:15 --> Config Class Initialized
+INFO - 2025-06-16 23:41:15 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:15 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:15 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:15 --> URI Class Initialized
+INFO - 2025-06-16 23:41:15 --> Router Class Initialized
+INFO - 2025-06-16 23:41:15 --> Output Class Initialized
+INFO - 2025-06-16 23:41:15 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:15 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:15 --> Input Class Initialized
+INFO - 2025-06-16 23:41:15 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:15 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:18 --> Config Class Initialized
+INFO - 2025-06-16 23:41:18 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:18 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:18 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:18 --> URI Class Initialized
+INFO - 2025-06-16 23:41:18 --> Router Class Initialized
+INFO - 2025-06-16 23:41:18 --> Output Class Initialized
+INFO - 2025-06-16 23:41:18 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:18 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:18 --> Input Class Initialized
+INFO - 2025-06-16 23:41:18 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:18 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:22 --> Config Class Initialized
+INFO - 2025-06-16 23:41:22 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:22 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:22 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:22 --> URI Class Initialized
+INFO - 2025-06-16 23:41:22 --> Router Class Initialized
+INFO - 2025-06-16 23:41:22 --> Output Class Initialized
+INFO - 2025-06-16 23:41:22 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:22 --> Input Class Initialized
+INFO - 2025-06-16 23:41:22 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:22 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:41:25 --> Config Class Initialized
+INFO - 2025-06-16 23:41:25 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:41:25 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:41:25 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:41:25 --> URI Class Initialized
+INFO - 2025-06-16 23:41:25 --> Router Class Initialized
+INFO - 2025-06-16 23:41:25 --> Output Class Initialized
+INFO - 2025-06-16 23:41:25 --> Security Class Initialized
+DEBUG - 2025-06-16 23:41:25 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:41:25 --> Input Class Initialized
+INFO - 2025-06-16 23:41:25 --> Language Class Initialized
+ERROR - 2025-06-16 23:41:25 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:53:52 --> Config Class Initialized
+INFO - 2025-06-16 23:53:52 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:53:52 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:53:52 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:53:52 --> URI Class Initialized
+INFO - 2025-06-16 23:53:52 --> Router Class Initialized
+INFO - 2025-06-16 23:53:52 --> Output Class Initialized
+INFO - 2025-06-16 23:53:52 --> Security Class Initialized
+DEBUG - 2025-06-16 23:53:52 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:53:52 --> Input Class Initialized
+INFO - 2025-06-16 23:53:52 --> Language Class Initialized
+ERROR - 2025-06-16 23:53:52 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:53:55 --> Config Class Initialized
+INFO - 2025-06-16 23:53:55 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:53:55 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:53:55 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:53:55 --> URI Class Initialized
+INFO - 2025-06-16 23:53:55 --> Router Class Initialized
+INFO - 2025-06-16 23:53:55 --> Output Class Initialized
+INFO - 2025-06-16 23:53:55 --> Security Class Initialized
+DEBUG - 2025-06-16 23:53:55 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:53:55 --> Input Class Initialized
+INFO - 2025-06-16 23:53:55 --> Language Class Initialized
+ERROR - 2025-06-16 23:53:55 --> 404 Page Not Found: Home/user
+INFO - 2025-06-16 23:53:57 --> Config Class Initialized
+INFO - 2025-06-16 23:53:57 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:53:57 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:53:57 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:53:57 --> URI Class Initialized
+INFO - 2025-06-16 23:53:57 --> Router Class Initialized
+INFO - 2025-06-16 23:53:57 --> Output Class Initialized
+INFO - 2025-06-16 23:53:57 --> Security Class Initialized
+DEBUG - 2025-06-16 23:53:57 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:53:57 --> Input Class Initialized
+INFO - 2025-06-16 23:53:57 --> Language Class Initialized
+ERROR - 2025-06-16 23:53:57 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:00 --> Config Class Initialized
+INFO - 2025-06-16 23:54:00 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:00 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:00 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:00 --> URI Class Initialized
+INFO - 2025-06-16 23:54:00 --> Router Class Initialized
+INFO - 2025-06-16 23:54:00 --> Output Class Initialized
+INFO - 2025-06-16 23:54:00 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:00 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:00 --> Input Class Initialized
+INFO - 2025-06-16 23:54:00 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:00 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:03 --> Config Class Initialized
+INFO - 2025-06-16 23:54:03 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:03 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:03 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:03 --> URI Class Initialized
+INFO - 2025-06-16 23:54:03 --> Router Class Initialized
+INFO - 2025-06-16 23:54:03 --> Output Class Initialized
+INFO - 2025-06-16 23:54:03 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:03 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:03 --> Input Class Initialized
+INFO - 2025-06-16 23:54:03 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:03 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:06 --> Config Class Initialized
+INFO - 2025-06-16 23:54:06 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:06 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:06 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:06 --> URI Class Initialized
+INFO - 2025-06-16 23:54:06 --> Router Class Initialized
+INFO - 2025-06-16 23:54:06 --> Output Class Initialized
+INFO - 2025-06-16 23:54:06 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:06 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:06 --> Input Class Initialized
+INFO - 2025-06-16 23:54:06 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:06 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:09 --> Config Class Initialized
+INFO - 2025-06-16 23:54:09 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:09 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:09 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:09 --> URI Class Initialized
+INFO - 2025-06-16 23:54:09 --> Router Class Initialized
+INFO - 2025-06-16 23:54:09 --> Output Class Initialized
+INFO - 2025-06-16 23:54:09 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:09 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:09 --> Input Class Initialized
+INFO - 2025-06-16 23:54:09 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:09 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:12 --> Config Class Initialized
+INFO - 2025-06-16 23:54:12 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:12 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:12 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:12 --> URI Class Initialized
+INFO - 2025-06-16 23:54:12 --> Router Class Initialized
+INFO - 2025-06-16 23:54:12 --> Output Class Initialized
+INFO - 2025-06-16 23:54:12 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:12 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:12 --> Input Class Initialized
+INFO - 2025-06-16 23:54:12 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:12 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:15 --> Config Class Initialized
+INFO - 2025-06-16 23:54:15 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:15 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:15 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:15 --> URI Class Initialized
+INFO - 2025-06-16 23:54:15 --> Router Class Initialized
+INFO - 2025-06-16 23:54:15 --> Output Class Initialized
+INFO - 2025-06-16 23:54:15 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:15 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:15 --> Input Class Initialized
+INFO - 2025-06-16 23:54:15 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:15 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:18 --> Config Class Initialized
+INFO - 2025-06-16 23:54:18 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:18 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:18 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:18 --> URI Class Initialized
+INFO - 2025-06-16 23:54:18 --> Router Class Initialized
+INFO - 2025-06-16 23:54:18 --> Output Class Initialized
+INFO - 2025-06-16 23:54:18 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:18 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:18 --> Input Class Initialized
+INFO - 2025-06-16 23:54:18 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:18 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:22 --> Config Class Initialized
+INFO - 2025-06-16 23:54:22 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:22 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:22 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:22 --> URI Class Initialized
+INFO - 2025-06-16 23:54:22 --> Router Class Initialized
+INFO - 2025-06-16 23:54:22 --> Output Class Initialized
+INFO - 2025-06-16 23:54:22 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:22 --> Input Class Initialized
+INFO - 2025-06-16 23:54:22 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:22 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:25 --> Config Class Initialized
+INFO - 2025-06-16 23:54:25 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:25 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:25 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:25 --> URI Class Initialized
+INFO - 2025-06-16 23:54:25 --> Router Class Initialized
+INFO - 2025-06-16 23:54:25 --> Output Class Initialized
+INFO - 2025-06-16 23:54:25 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:25 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:25 --> Input Class Initialized
+INFO - 2025-06-16 23:54:25 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:25 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:27 --> Config Class Initialized
+INFO - 2025-06-16 23:54:27 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:27 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:27 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:27 --> URI Class Initialized
+INFO - 2025-06-16 23:54:27 --> Router Class Initialized
+INFO - 2025-06-16 23:54:27 --> Output Class Initialized
+INFO - 2025-06-16 23:54:27 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:27 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:27 --> Input Class Initialized
+INFO - 2025-06-16 23:54:27 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:27 --> 404 Page Not Found: /index
+INFO - 2025-06-16 23:54:30 --> Config Class Initialized
+INFO - 2025-06-16 23:54:30 --> Hooks Class Initialized
+DEBUG - 2025-06-16 23:54:30 --> UTF-8 Support Enabled
+INFO - 2025-06-16 23:54:30 --> Utf8 Class Initialized
+INFO - 2025-06-16 23:54:30 --> URI Class Initialized
+INFO - 2025-06-16 23:54:30 --> Router Class Initialized
+INFO - 2025-06-16 23:54:30 --> Output Class Initialized
+INFO - 2025-06-16 23:54:30 --> Security Class Initialized
+DEBUG - 2025-06-16 23:54:30 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-16 23:54:30 --> Input Class Initialized
+INFO - 2025-06-16 23:54:30 --> Language Class Initialized
+ERROR - 2025-06-16 23:54:30 --> 404 Page Not Found: /index

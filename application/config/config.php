@@ -23,9 +23,13 @@ date_default_timezone_set('Asia/Jakarta');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] =  ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ?  "https" : "http");
-$config['base_url'] .=  "://".$_SERVER['HTTP_HOST'];
-$config['base_url'] .=  str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
+$config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+
+define('DIR_IMAGE', './uploads/');
+define('DIR_IMAGE_PATH', './../digital-record-card-api/uploads/');
+define('DIR_IMAGE_PATH_ABSENCE', './../digital-record-card-api/uploads/absence/');
+define('URL_IMAGE', 'https://api-drc.product-act.com/uploads/');
+define('URL_IMAGE_REVIEW', 'https://api-drc.product-act.com/uploads/image_review/');
 
 /*
 |--------------------------------------------------------------------------
@@ -102,7 +106,8 @@ $config['charset'] = 'UTF-8';
 | setting this variable to TRUE (boolean).  See the user guide for details.
 |
 */
-$config['enable_hooks'] = FALSE;
+//$config['enable_hooks'] = true;
+$config['enable_hooks'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -138,7 +143,8 @@ $config['subclass_prefix'] = 'MY_';
 | Note: This will NOT disable or override the CodeIgniter-specific
 |	autoloading (application/config/autoload.php)
 */
-$config['composer_autoload'] = TRUE;
+//$config['composer_autoload'] = TRUE;
+$config['composer_autoload'] = 'vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -160,7 +166,8 @@ $config['composer_autoload'] = TRUE;
 | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
 |
 */
-$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
+//$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
+$config['permitted_uri_chars'] = '';
 
 /*
 |--------------------------------------------------------------------------
@@ -379,14 +386,21 @@ $config['encryption_key'] = '';
 | except for 'cookie_prefix' and 'cookie_httponly', which are ignored here.
 |
 */
-$config['sess_driver'] = 'files';
+/*$config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;
-
+*/
+$config['sess_driver'] = 'files';
+$config['sess_cookie_name'] = 'ci_session';
+$config['sess_expiration'] = 0;
+$config['sess_save_path'] = NULL;
+$config['sess_match_ip'] = FALSE;
+$config['sess_time_to_update'] = 1000;
+$config['sess_regenerate_destroy'] = TRUE;
 /*
 |--------------------------------------------------------------------------
 | Cookie Related Variables

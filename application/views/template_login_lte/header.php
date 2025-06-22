@@ -23,6 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/plugins/cookies/js.cookie.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.js'); ?>"></script>
 
+
 <style>
 	/* validation */
 	label.error-login {

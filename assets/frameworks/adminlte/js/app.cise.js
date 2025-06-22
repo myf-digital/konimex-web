@@ -60,6 +60,23 @@
         });
     };
 
+    // delete dialog
+    Common.prototype.dialogReject = function (callback) {
+        $.confirm({
+            title: 'Confirmation!',
+            content: 'Rejected request?',
+            buttons: {
+                confirm: {
+                    btnClass: 'btn-red',
+                    action: callback
+                },
+                cancel: function () {
+                    $.alert('Rejected cancel!');
+                }
+            }
+        });
+    };
+
     // notify dialog
     Common.prototype.dialogNotifyEmail = function (callback) {
         $.confirm({
@@ -125,10 +142,14 @@
     };
 
     // url
+	/**
+	kalo pake index.php di ci ambil index 0
+	*/
     Common.prototype.baseURL = function (path = "") {
         let base_url = window.location.origin;
         let pathArray = window.location.pathname.split("/");
-        return base_url + "/" + pathArray[1] + "/" + path + "/";
+		// console.log("path array " + pathArray[0]);
+        return base_url + "/" + pathArray[0] + "/" + path + "/";
     };
 
     Common.prototype.direct = function (path = "") {

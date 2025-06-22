@@ -1,0 +1,60 @@
+INFO - 2025-04-07 19:55:44 --> Config Class Initialized
+INFO - 2025-04-07 19:55:44 --> Hooks Class Initialized
+DEBUG - 2025-04-07 19:55:44 --> UTF-8 Support Enabled
+INFO - 2025-04-07 19:55:44 --> Utf8 Class Initialized
+INFO - 2025-04-07 19:55:44 --> URI Class Initialized
+DEBUG - 2025-04-07 19:55:44 --> No URI present. Default controller set.
+INFO - 2025-04-07 19:55:44 --> Router Class Initialized
+INFO - 2025-04-07 19:55:44 --> Output Class Initialized
+INFO - 2025-04-07 19:55:44 --> Security Class Initialized
+DEBUG - 2025-04-07 19:55:44 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-04-07 19:55:44 --> Input Class Initialized
+INFO - 2025-04-07 19:55:44 --> Language Class Initialized
+INFO - 2025-04-07 19:55:44 --> Language Class Initialized
+INFO - 2025-04-07 19:55:44 --> Config Class Initialized
+INFO - 2025-04-07 19:55:44 --> Loader Class Initialized
+INFO - 2025-04-07 19:55:44 --> Helper loaded: url_helper
+INFO - 2025-04-07 19:55:44 --> Helper loaded: easyui_helper
+INFO - 2025-04-07 19:55:44 --> Helper loaded: param_helper
+INFO - 2025-04-07 19:55:44 --> Helper loaded: credential_helper
+INFO - 2025-04-07 19:55:44 --> Helper loaded: template_helper
+INFO - 2025-04-07 19:55:44 --> Helper loaded: rest_helper
+INFO - 2025-04-07 19:55:44 --> Database Driver Class Initialized
+DEBUG - 2025-04-07 19:55:44 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-04-07 19:55:44 --> Controller Class Initialized
+DEBUG - 2025-04-07 19:55:44 --> File loaded: /apps/web-drc/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-04-07 19:55:44 --> File loaded: /apps/web-drc/application/views/template_login_lte/header.php
+DEBUG - 2025-04-07 19:55:44 --> File loaded: /apps/web-drc/application/views/template_login_lte/contents.php
+DEBUG - 2025-04-07 19:55:44 --> File loaded: /apps/web-drc/application/views/template_login_lte/default.php
+INFO - 2025-04-07 19:55:44 --> Final output sent to browser
+DEBUG - 2025-04-07 19:55:44 --> Total execution time: 0.0962
+INFO - 2025-04-07 21:45:33 --> Config Class Initialized
+INFO - 2025-04-07 21:45:33 --> Hooks Class Initialized
+DEBUG - 2025-04-07 21:45:33 --> UTF-8 Support Enabled
+INFO - 2025-04-07 21:45:33 --> Utf8 Class Initialized
+INFO - 2025-04-07 21:45:33 --> URI Class Initialized
+DEBUG - 2025-04-07 21:45:33 --> No URI present. Default controller set.
+INFO - 2025-04-07 21:45:33 --> Router Class Initialized
+INFO - 2025-04-07 21:45:33 --> Output Class Initialized
+INFO - 2025-04-07 21:45:33 --> Security Class Initialized
+DEBUG - 2025-04-07 21:45:33 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-04-07 21:45:33 --> Input Class Initialized
+INFO - 2025-04-07 21:45:33 --> Language Class Initialized
+INFO - 2025-04-07 21:45:33 --> Language Class Initialized
+INFO - 2025-04-07 21:45:33 --> Config Class Initialized
+INFO - 2025-04-07 21:45:33 --> Loader Class Initialized
+INFO - 2025-04-07 21:45:33 --> Helper loaded: url_helper
+INFO - 2025-04-07 21:45:33 --> Helper loaded: easyui_helper
+INFO - 2025-04-07 21:45:33 --> Helper loaded: param_helper
+INFO - 2025-04-07 21:45:33 --> Helper loaded: credential_helper
+INFO - 2025-04-07 21:45:33 --> Helper loaded: template_helper
+INFO - 2025-04-07 21:45:33 --> Helper loaded: rest_helper
+INFO - 2025-04-07 21:45:33 --> Database Driver Class Initialized
+DEBUG - 2025-04-07 21:45:33 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-04-07 21:45:33 --> Controller Class Initialized
+DEBUG - 2025-04-07 21:45:33 --> File loaded: /apps/web-drc/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-04-07 21:45:33 --> File loaded: /apps/web-drc/application/views/template_login_lte/header.php
+DEBUG - 2025-04-07 21:45:33 --> File loaded: /apps/web-drc/application/views/template_login_lte/contents.php
+DEBUG - 2025-04-07 21:45:33 --> File loaded: /apps/web-drc/application/views/template_login_lte/default.php
+INFO - 2025-04-07 21:45:33 --> Final output sent to browser
+DEBUG - 2025-04-07 21:45:33 --> Total execution time: 0.0086

@@ -44,4 +44,42 @@ class App_resource extends BaseController
         responseJSON($this->resource->load($data));
     }
 
+    function call_area()
+    {
+        $data = param_input();
+        $result = $this->resource->get_area($data);
+        if (200 == $result->code) {
+            return response($result->result);
+        } else {
+            return response($result->result, $result->code, $result->message);
+        }
+    }
+
+    function call_subarea()
+    {
+        $data = param_input();
+        $result = $this->resource->get_subarea($data);
+        if (200 == $result->code) {
+            return response($result->result);
+        } else {
+            return response($result->result, $result->code, $result->message);
+        }
+    }
+
+	public function cek_username() {
+		$user = $this->input->post("username");
+		$cek = $this->resource->cekusername($user);			
+		if ($cek > 0) {
+			$json = false;
+		} else {
+			$json = true; 
+		}	
+		echo json_encode($json);	
+	}
+
+    public function cek_username_update() {
+		$json = true; 
+		echo json_encode($json);	
+	}
+
 }

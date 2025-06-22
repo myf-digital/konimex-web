@@ -1,57 +1,79 @@
 <!-- Content Header (Page header) -->
+<style>
+  <style>
+    .customBox {
+      background: yellow;
+      position: absolute;
+	  padding:2px;
+	  min-width:10px;
+	  position-y:+30px;
+	  color:white;
+    }
+	
+	.customBox2 {
+      background: blue;      
+      position: absolute;
+	  padding:2px;
+	  min-width:10px;
+	  position-y:+15px;
+	  color:white;
+    }
+	
+	.controlUI {
+      background-color: #fff;
+      border: 2px solid #fff;
+      border-radius: 3px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.3);
+      margin-top: 22px;
+      margin-right: 22px;
+      text-align: center;
+	  min-width:200px;
+	  height:450px;
+    }
+    .controlText {
+      color: rgb(25,25,25);
+      font-family: Roboto,Arial,sans-serif;
+      font-size: 12px;
+      line-height: 18px;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+</style>
+
 <section class="content-header">
-    <h1>
-        Dashboard
-    </h1>
-    <ol class="breadcrumb">
+    <!-- <h1>
+        Dashboard Maps
+    </h1> -->
+    <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-    </ol>
+    </ol> -->
 </section>
 
 <!-- Main content -->
 <section id="content-main" class="content">
-
-
     <div class="row">
         <div class="col-md-12">
             <div class="box">
+                <section class="content-header">
+                    <h1>
+                        Dashboard Maps
+                    </h1>
+                </section>
 
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <div class="row">
+                    <div class="col-md-12">
                         <!-- /.col -->
 
-                        <div class="col-md-4">
-                            <select id="satker" name="satker" class="form-control"></select>
-                        </div>
-                        <div class="col-md-8">
-                            <select id="riset" name="riset" class="form-control"></select>
-
-                        </div>
-                        <div id="labelriset" class="col-md-12" style="padding-top: 20px">
-                            <p class="text-center">
-                                <strong></strong>
-                            </p>
-                        </div>
-
-                        <div id="chartriset" class="col-md-12">
-                            <canvas id="chart-1" height="75"></canvas>
+                        <div id="maps" style="height:500px;">
                             <!-- /.progress-group -->
                         </div>
-
-                        <div id="label-rgd" class="col-md-12" style="padding-top: 20px">
-
-                            <p class="text-center">
-                                <i class="fa fa-user" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;&nbsp;Total
-                                <strong id="res-total">(0)</strong>&nbsp;&nbsp;Responden <strong id="res-total-current">(0)</strong>
-                            </p>
+                        <div id="tbl-content" class="box-table box-success">
+                            <div class="box-body">
+                                <table id="tbl">
+                                </table>
+                            </div>
                         </div>
-
-                        <div class="col-md-12">
-                            <canvas id="chart-2" height="75"></canvas>
-                            <!-- /.progress-group -->
-                        </div>
-
                         <!-- /.col -->
                     </div>
                     <!-- /.row -->
@@ -65,38 +87,62 @@
     </div>
     <!-- /.row -->
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="box">
-
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <table id="tbl-saran" class="table table-striped">
-                                <caption><strong>Saran Responden</strong></caption>
-                                <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Responden</th>
-                                    <th>Satker</th>
-                                    <th>Waktu</th>
-                                    <th>Saran</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 </section>
+<div class="modal fade" id="modal_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" >
+    <div class="modal-content" style="overflow-y: auto; width:9x`00px; max-height: 500px;" >
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">List Data</h4>
+      </div>
+		<div class="modal-body" style=" max-height: 75%; width: 100%;">
+		</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>      
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- JS content -->
 <script src="<?php echo base_url() . 'assets/modules/app_dashboard/dashboard-content.js' ?>"></script>
+
+  <script>
+  /*
+    var map;
+   function initialize()   
+    {  
+        var vloc = {lat: 1.0553161, lng: 103.9765848};
+        var myOptions = {  
+            zoom: 12,  
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoomControl: true,
+            //center: new google.maps.LatLng(-6.26149,106.81060),
+            center: new google.maps.LatLng(vloc),  
+                  mapTypeId: google.maps.MapTypeId.ROADMAP  
+              }  
+        map = new google.maps.Map(document.getElementById("maps"), myOptions);  
+    }    
+    $(document).ready(function () {
+      initialize();
+    });
+*/
+    /*  var map;
+      var vloc = {lat: 1.0553161, lng: 103.9765848};
+      function initMap(vaction) {
+        map = new google.maps.Map(document.getElementById('maps'), {
+          zoom: 7,
+          center: vloc,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          zoomControl: true,
+        });
+        if (vaction=='tracking'){
+          var marker = new google.maps.Marker({position: vloc, map: map});
+        }
+      }
+    */
+
+
+    </script>
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&callback=initMap" async defer></script>-->

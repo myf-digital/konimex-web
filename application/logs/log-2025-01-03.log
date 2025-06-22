@@ -1,0 +1,28 @@
+INFO - 2025-01-03 22:35:37 --> Config Class Initialized
+INFO - 2025-01-03 22:35:37 --> Hooks Class Initialized
+DEBUG - 2025-01-03 22:35:37 --> UTF-8 Support Enabled
+INFO - 2025-01-03 22:35:37 --> Utf8 Class Initialized
+INFO - 2025-01-03 22:35:37 --> URI Class Initialized
+INFO - 2025-01-03 22:35:37 --> Router Class Initialized
+INFO - 2025-01-03 22:35:37 --> Output Class Initialized
+INFO - 2025-01-03 22:35:37 --> Security Class Initialized
+DEBUG - 2025-01-03 22:35:37 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-01-03 22:35:37 --> Input Class Initialized
+INFO - 2025-01-03 22:35:37 --> Language Class Initialized
+INFO - 2025-01-03 22:35:37 --> Language Class Initialized
+INFO - 2025-01-03 22:35:37 --> Config Class Initialized
+INFO - 2025-01-03 22:35:37 --> Loader Class Initialized
+INFO - 2025-01-03 22:35:37 --> Helper loaded: url_helper
+INFO - 2025-01-03 22:35:37 --> Helper loaded: easyui_helper
+INFO - 2025-01-03 22:35:37 --> Helper loaded: param_helper
+INFO - 2025-01-03 22:35:37 --> Helper loaded: credential_helper
+INFO - 2025-01-03 22:35:37 --> Helper loaded: template_helper
+INFO - 2025-01-03 22:35:37 --> Helper loaded: rest_helper
+INFO - 2025-01-03 22:35:37 --> Database Driver Class Initialized
+DEBUG - 2025-01-03 22:35:37 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-01-03 22:35:37 --> Controller Class Initialized
+INFO - 2025-01-03 22:35:37 --> Model Class Initialized
+DEBUG - 2025-01-03 22:35:37 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2025-01-03 22:35:37 --> Model Class Initialized
+INFO - 2025-01-03 22:35:57 --> Final output sent to browser
+DEBUG - 2025-01-03 22:35:57 --> Total execution time: 19.5290

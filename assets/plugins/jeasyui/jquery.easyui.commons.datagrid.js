@@ -74,10 +74,28 @@
     /*
     color: bootsrap class color button
     */
+    CommonGrid.prototype.btnBuilderText = function (id, color, icon, vtext) {
+        if (undefined === color) color = "btn-primary";
+        if (undefined === icon) icon = "";
+        return '<a id="' + id + '" href="javascript:void(0)" style="height: 25px" class="btn btn-' + color + ' btn-xs" ><i style="padding-top: 5px" class="' + icon + '"></i>' + vtext + '</a>';
+    }
+
+    /*
+    color: bootsrap class color button
+    */
     CommonGrid.prototype.btnBuilder = function (id, color, icon) {
         if (undefined === color) color = "btn-primary";
         if (undefined === icon) icon = "";
-        return '<a id="' + id + '" href="javascript:void(0)" style="width: 25px;height: 25px" class="btn btn-' + color + ' btn-xs" ><i style="padding-top: 5px" class="' + icon + '"></i></a>';
+        return '<a id="' + id + '" href="javascript:void(0)" style="width: 25px;height: 25px" class="btn btn-' + color + ' btn-xs""><i style="padding-top: 5px" class="' + icon + '"></i></a>';
+    }
+
+    /*
+    color: bootsrap class color button
+    */
+    CommonGrid.prototype.btnBuilderDash = function (id, color, icon) {
+        if (undefined === color) color = "btn-primary";
+        if (undefined === icon) icon = "";
+        return '<a id="' + id + '" href="javascript:void(0)" style="width: 25px;height: 30px opacity: 100%; background-color: transparent; border-color: transparent" class="btn btn-' + color + ' btn-xs"><img style="width: 25px;height: 30px; padding-top: 5px" src="' + icon + '"/></a>';
     }
 
     /*

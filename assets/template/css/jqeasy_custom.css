@@ -1,0 +1,78 @@
+/*
+	add customs
+*/
+
+.panel-form {
+	padding-top: 25px;
+}
+
+.cpage-header {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+.page-footer-table {
+	height: 15px;
+}
+/*
+	.datagrid-header-row td div{text-align: center;}
+*/
+.datagrid-cell span {font-weight:bold;}
+
+/*
+	.datagrid filter height
+*/
+td div .datebox {
+	height: 22px!important;
+}
+
+td div .datebox input.textbox-text{
+	padding-top: 1px!important;
+}
+
+/*
+	fix on fire fox, when expander detail
+*/
+.datagrid-btable {
+	line-height: 140%;
+}
+/*
+	remove dot on mozilla
+*/
+a:active, a:focus, button:active, button:focus  {
+	outline: none!important;
+}
+/*
+	header height
+*/
+.datagrid-header-row {
+    height: 30px !important;
+}
+
+.datagrid-row {
+    min-height: 25px!important;
+}
+
+.datagrid-img{
+	height: 26px;
+	width: 26px;
+}
+
+/*
+	page not found center
+	
+.page-not-found {
+	text-align: center !important;
+	background-color : transparent;
+}
+*/
+
+.not-found-content{
+	z-index: 1 !important;
+}
+.not-found-background {
+	z-index: 0 !important;
+}
+#article {
+	background-color: white;
+	min-width: 680px;
+}

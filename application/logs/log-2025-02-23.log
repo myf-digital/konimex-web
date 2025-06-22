@@ -1,0 +1,54 @@
+INFO - 2025-02-23 13:50:19 --> Config Class Initialized
+INFO - 2025-02-23 13:50:19 --> Hooks Class Initialized
+DEBUG - 2025-02-23 13:50:19 --> UTF-8 Support Enabled
+INFO - 2025-02-23 13:50:19 --> Utf8 Class Initialized
+INFO - 2025-02-23 13:50:19 --> URI Class Initialized
+DEBUG - 2025-02-23 13:50:19 --> No URI present. Default controller set.
+INFO - 2025-02-23 13:50:19 --> Router Class Initialized
+INFO - 2025-02-23 13:50:19 --> Output Class Initialized
+INFO - 2025-02-23 13:50:19 --> Security Class Initialized
+DEBUG - 2025-02-23 13:50:19 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-02-23 13:50:19 --> Input Class Initialized
+INFO - 2025-02-23 13:50:19 --> Language Class Initialized
+INFO - 2025-02-23 13:50:19 --> Language Class Initialized
+INFO - 2025-02-23 13:50:19 --> Config Class Initialized
+INFO - 2025-02-23 13:50:19 --> Loader Class Initialized
+INFO - 2025-02-23 13:50:19 --> Helper loaded: url_helper
+INFO - 2025-02-23 13:50:19 --> Helper loaded: easyui_helper
+INFO - 2025-02-23 13:50:19 --> Helper loaded: param_helper
+INFO - 2025-02-23 13:50:19 --> Helper loaded: credential_helper
+INFO - 2025-02-23 13:50:19 --> Helper loaded: template_helper
+INFO - 2025-02-23 13:50:19 --> Helper loaded: rest_helper
+INFO - 2025-02-23 13:50:19 --> Database Driver Class Initialized
+DEBUG - 2025-02-23 13:50:19 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2025-02-23 13:50:19 --> Controller Class Initialized
+DEBUG - 2025-02-23 13:50:19 --> File loaded: /apps/web-drc/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2025-02-23 13:50:19 --> File loaded: /apps/web-drc/application/views/template_login_lte/header.php
+DEBUG - 2025-02-23 13:50:19 --> File loaded: /apps/web-drc/application/views/template_login_lte/contents.php
+DEBUG - 2025-02-23 13:50:19 --> File loaded: /apps/web-drc/application/views/template_login_lte/default.php
+INFO - 2025-02-23 13:50:19 --> Final output sent to browser
+DEBUG - 2025-02-23 13:50:19 --> Total execution time: 0.0770
+INFO - 2025-02-23 13:50:26 --> Config Class Initialized
+INFO - 2025-02-23 13:50:26 --> Hooks Class Initialized
+DEBUG - 2025-02-23 13:50:26 --> UTF-8 Support Enabled
+INFO - 2025-02-23 13:50:26 --> Utf8 Class Initialized
+INFO - 2025-02-23 13:50:26 --> URI Class Initialized
+INFO - 2025-02-23 13:50:26 --> Router Class Initialized
+INFO - 2025-02-23 13:50:26 --> Output Class Initialized
+INFO - 2025-02-23 13:50:26 --> Security Class Initialized
+DEBUG - 2025-02-23 13:50:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-02-23 13:50:26 --> Input Class Initialized
+INFO - 2025-02-23 13:50:26 --> Language Class Initialized
+ERROR - 2025-02-23 13:50:26 --> 404 Page Not Found: /index
+INFO - 2025-02-23 13:50:27 --> Config Class Initialized
+INFO - 2025-02-23 13:50:27 --> Hooks Class Initialized
+DEBUG - 2025-02-23 13:50:27 --> UTF-8 Support Enabled
+INFO - 2025-02-23 13:50:27 --> Utf8 Class Initialized
+INFO - 2025-02-23 13:50:27 --> URI Class Initialized
+INFO - 2025-02-23 13:50:27 --> Router Class Initialized
+INFO - 2025-02-23 13:50:27 --> Output Class Initialized
+INFO - 2025-02-23 13:50:27 --> Security Class Initialized
+DEBUG - 2025-02-23 13:50:27 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-02-23 13:50:27 --> Input Class Initialized
+INFO - 2025-02-23 13:50:27 --> Language Class Initialized
+ERROR - 2025-02-23 13:50:27 --> 404 Page Not Found: /index

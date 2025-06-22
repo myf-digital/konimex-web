@@ -13,7 +13,7 @@
 <section id="content-main" class="content">
     <div class="row">
         <div class="col-xs-12">
-            <div id="tbl-content" class="box-table box-primary">
+            <div id="tbl-content" class="box-table box-success">
                 <div class="box-body">
                     <table id="tbl-constant">
                     </table>

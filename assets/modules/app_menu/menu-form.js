@@ -52,9 +52,6 @@
         $.when(
             $.post(common.baseURL("app_menu/load"), filter.build()),
             // $.post(common.baseURL("app_menu/load"), param.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build())
         ).done(function (data, textStatus, jqXHR) {
             console.log("done");
             //console.log(d);

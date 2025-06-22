@@ -1,0 +1,318 @@
+(function () {
+
+    // import commons
+    const common = new Common();
+    const commonGrid = new CommonGrid();
+    //
+    common.setTitle("Dashboard Maps");
+    // ui components
+    let uiMaps = $("#maps");
+    let uiTbl = $("#tbl");
+    let uiTanggalPicker = $("#get_date"); 
+    var baseurl = window.location.origin;
+    let today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+    let paramsession = common.getCookie("session");
+
+    /*function initMap(vaction) {
+      map = new google.maps.Map(document.getElementById('maps'), {
+        zoom: 7,
+        center: vloc,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        zoomControl: true,
+      });
+
+      var marker = new google.maps.Marker({position: vloc, map: map});
+    }*/
+    //initialize();
+    initializeGrid();
+    setupFormUI();
+    initializeParamMaps();
+
+    //alert(baseurl);
+    function initializeGrid() {
+      let option = {
+          title: "Table Performance Sales",
+          toolbar: toolbar(),
+          url: common.baseURL("app_dashboard/load"),
+          queryParams: {
+                        usersession: paramsession.username,
+                        idjabatan: paramsession.idjabatan,
+                        restrict_level: paramsession.restrict_level,
+                        restrict_bu: paramsession.restrict_bu
+                        },
+          pageNumber: 1,
+          pageSize: commonGrid.getCurentSize(),
+          pageList: commonGrid.getPageSize(),
+          height:400,
+          frozenColumns: [[
+              { 
+                  field: 'options',
+                  title: 'ACTION',
+                  width: 100,
+                  halign: 'center',
+                  align: 'center',
+                  formatter: formatterButton
+              }
+          ]],
+          columns: [[
+            {field: 'salesmanid', title: 'Kode GFF', width: 100, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'nama_salesman', title: 'Nama GFF', width: 150, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'tipe_sales', title: 'Posisi', width: 100, sortable: 'true', halign: 'left', align: 'left'},
+            {field: '_jadwal', title: 'Schedule', width: 70, sortable: 'true', halign: 'center', align: 'center'},
+            {field: '_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_call.png"></img> Call', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            {field: '_extra_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_extra_call.png"></img> Extra Call', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            {field: '_crc', title: 'CRC', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            {field: '_order', title: 'Order', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'noo', title: '<img class="color" src="'+baseurl+'/assets/mapIcon/legend_5.png" title="Register Titik Outlet"></img>Check In', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'effectivecall', title: '<img class="image" src="'+baseurl+'/assets/mapIcon/legend_1.png"></img> Call', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'ExtraCall', title: '<img class="color" src="'+baseurl+'/assets/mapIcon/legend_2.png"></img>Check Out', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'InvalidCall', title: '<img class="color" src="'+baseurl+'/assets/mapIcon/legend_4.png"></img> Inv Call', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'eff_time', title: 'Eff Time', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'eff_time', title: 'Eff Time', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'eff_order', title: 'Eff Order', width: 75, sortable: 'true', halign: 'center', align: 'center'},
+            //{field: 'amount', title: 'Amount', width: 150, sortable: 'true', halign: 'center', align: 'right', formatter: formatAmount},
+            //{field: 'longlatnull', title: 'Blank Posisi', width: 100, sortable: 'true', halign: 'center', align: 'center'},
+          ]],
+          onBeforeLoad: function (param) {
+              param = common.replaceGridFilterPrefix(param, "a");
+              //param = common.replaceGridFilter(param,["periode"],["b.periode"]);
+          },
+          onLoadSuccess: function (data) {
+              $(this).datagrid('resize', 'fixRowHeight');
+              optionButton(data);
+          }
+      };
+      uiTbl.datagrid(commonGrid.optionValue(option));
+      uiTbl.datagrid('enableFilter');
+      common.removeFilter(['options']);        
+
+    }
+
+    function setupFormUI() {
+        let uiTanggalPicker = $("#get_date"); 
+        uiTanggalPicker.datepicker({
+            format: 'yyyy-mm-dd',
+            //startDate: '-3d'
+        }).on('change', function(){
+            $('.datepicker').hide();
+        });
+ 
+        let uiBtnSearch = $("#btn-search");
+        uiBtnSearch.click(function () {
+            //alert (paramsession.username);
+            uiTbl.datagrid('load',{
+                get_date: uiTanggalPicker.val(),
+                usersession: paramsession.username,
+                idjabatan: paramsession.idjabatan,
+                restrict_level: paramsession.restrict_level,
+                restrict_bu: paramsession.restrict_bu
+            });
+        });
+
+        let uiBtnAddress = $("#btn-address");
+        uiBtnAddress.click(function () {
+            //alert (paramsession.username);
+            get_address();
+        });
+
+    }
+
+    function toolbar() {
+        const btnSearch = commonGrid.btnBuilder('btn-search', 'primary', 'fa fa-search');
+        const btnAddress = commonGrid.btnBuilder('btn-address', 'success', 'fa fa-address');
+        return '<div class="action-grid-toolbar"> &nbsp;&nbsp;&nbsp; Periode : &nbsp; <input type="text" id="get_date" value="'+today+'" name="get_date">'+ btnSearch + btnAddress +'</div>';
+    }
+    
+	function formatAmount(val, row, index) {
+		var result;
+		var valData = row.amount;
+		
+		result = CurrencyFormatted(valData);
+		return result;
+	}
+	
+	function CurrencyFormatted(amount) {
+		var delimiter = ","; // replace comma if desired
+		var a = amount.split('.',2);
+		var d = a[1];
+		var i = parseInt(a[0]);
+		if(isNaN(i)) { return ''; }
+		var minus = '';
+		if(i < 0) { minus = '-'; }
+		i = Math.abs(i);
+		var n = new String(i);
+		var a = [];
+		while(n.length > 3)
+		{
+			var nn = n.substr(n.length-3);
+			a.unshift(nn);
+			n = n.substr(0,n.length-3);
+		}
+		if(n.length > 0) { a.unshift(n); }
+		n = a.join(delimiter);
+		if(d.length < 1) { amount = n; }
+		else { amount = n + '.' + d; }
+		amount = minus + amount;
+		return amount;
+	}
+
+  function optionButton(data) {
+    let btnContent = $(".action-grid");
+    let index = 0;
+    for (const btns of btnContent) {
+        const param = data.rows[index];
+        const btnMaps = $(btns).find("a.btn-default");
+        const btnTrackings = $(btns).find("a.btn-info");
+        const btnReports = $(btns).find("a.btn-success");
+        btnMaps.click(function () {
+            get_map(param.salesmanid,param.periode);
+        });
+        btnTrackings.click(function () {
+            get_maptracking(param.salesmanid,param.periode)
+        });
+        btnReports.click(function () {
+            open_detail(param.salesmanid, param.siteid);
+        });
+        index++;
+    }
+}
+
+/*
+* action button generator
+*/
+function formatterButton(val, row, index) {
+    const btnMap = commonGrid.btnBuilder('btn-maps', 'default', 'fa fa-map-o');
+    const btnTracking = commonGrid.btnBuilder('btn-tracking', 'info', 'fa fa-map-pin');
+    const btnReport = commonGrid.btnBuilder('btn-report', 'success', 'fa fa-newspaper-o ');
+    return '<div class="action-grid">' + btnMap + ' ' + btnTracking + ' ' + btnReport + '</div>';
+}
+
+function open_detail(sid,siteid) {
+		
+    var get = document.getElementsByName('get_date')[0].value;
+    $.ajax({
+        type:"POST",
+        dataType: "html",
+        beforeSend : function() {
+            //$("#map-content").html('Populating data, please wait..');
+        },
+        url: common.baseURL("app_dashboard/open_detail"),
+        data : "sid="+sid+"&get_date="+get+"&siteid="+siteid,
+        success:function(res){
+            response = res;
+            $('div .modal-header .modal-title').text('Detail Productifity Sales');			
+            $('#modal_detail').find('.modal-body').html(response);
+            $("#modal_detail").modal('show');
+        },
+        error:function(){
+            alert("Load failed");
+        }
+    });
+    
+}
+
+function initializeParamMaps() {
+    common.loading();
+    let resolver = new HttpResolver();
+    let filter = new Filter();
+    console.log(filter);
+    
+    $.when(
+        $.post(common.baseURL("api_v1/call_siteid"), filter.build()),
+    ).done(function (data, textStatus, jqXHR) {
+        console.log("done");
+        //console.log(d);
+    }).then(function (r1) {
+        common.loadingClose();
+        //console.log("then");
+        initializemap(r1);
+    }).fail(resolver.fail);
+}
+
+function initializemap(r1)   
+{   
+    let rows = r1.result[0];
+    //alert(rows.latitude);
+    let vloc = {lat: Number(rows.latitude), lng: Number(rows.longitude)};
+    var myOptions = {  
+         zoom: 12,  
+         mapTypeId: google.maps.MapTypeId.ROADMAP,
+         zoomControl: true,
+         //center: new google.maps.LatLng(-6.26149,106.81060),
+         center: new google.maps.LatLng(vloc),  
+               mapTypeId: google.maps.MapTypeId.ROADMAP  
+           }  
+    var map;
+    map = new google.maps.Map(document.getElementById("maps"), myOptions);  
+ }    
+
+function get_map(sid,periode) {
+    $.ajax({
+        type:"POST",
+        dataType: "html",
+        beforeSend : function() {
+            common.loading();
+            //$("#maps").html('Populating data, please wait..');
+        },
+        url: common.baseURL("app_dashboard/get_gmap"),
+        data : "sid="+sid+"&get_date="+periode,
+        success:function(msg){
+            //alert(msg);
+            $("#maps").html(msg);
+            common.loadingClose();
+        },
+        error:function(){
+            alert("Load failed");
+            common.loadingClose();
+        }
+    });
+}
+
+
+function get_maptracking(sid,periode) {
+    $.ajax({
+        type:"POST",
+        dataType: "html",
+        beforeSend : function() {
+            common.loading();
+            //$("#maps").html('Populating data, please wait..');
+        },
+        url: common.baseURL("app_dashboard/get_gmaptracking"),
+        data : "sid="+sid+"&get_date="+periode,
+        success:function(msg){
+            $("#maps").html(msg);
+            common.loadingClose();
+        },
+        error:function(){
+            alert("Load failed");
+            common.loadingClose();
+        }
+    });
+}
+
+function get_address() {
+    $.ajax({
+        type:"POST",
+        dataType: "html",
+        beforeSend : function() {
+            common.loading();
+        },
+        url: common.baseURL("app_dashboard/get_gmapaddress"),
+        data : "",
+        success:function(msg){
+            $("#maps").html(msg);
+            common.loadingClose();
+        },
+        error:function(){
+            alert("Load failed");
+            common.loadingClose();
+        }
+    });
+}
+
+
+})();

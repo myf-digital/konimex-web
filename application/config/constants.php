@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 define('DIR_DOC', 	'./uploads/documents/');
+define('DIR_IMAGES', 	'./uploads/images/');
 
 /*
 |--------------------------------------------------------------------------

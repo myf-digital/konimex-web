@@ -1,0 +1,1122 @@
+INFO - 2024-12-27 09:39:35 --> Config Class Initialized
+INFO - 2024-12-27 09:39:35 --> Hooks Class Initialized
+DEBUG - 2024-12-27 09:39:35 --> UTF-8 Support Enabled
+INFO - 2024-12-27 09:39:35 --> Utf8 Class Initialized
+INFO - 2024-12-27 09:39:35 --> URI Class Initialized
+INFO - 2024-12-27 09:39:35 --> Router Class Initialized
+INFO - 2024-12-27 09:39:35 --> Output Class Initialized
+INFO - 2024-12-27 09:39:35 --> Security Class Initialized
+DEBUG - 2024-12-27 09:39:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 09:39:35 --> Input Class Initialized
+INFO - 2024-12-27 09:39:35 --> Language Class Initialized
+INFO - 2024-12-27 09:39:35 --> Language Class Initialized
+INFO - 2024-12-27 09:39:35 --> Config Class Initialized
+INFO - 2024-12-27 09:39:35 --> Loader Class Initialized
+INFO - 2024-12-27 09:39:35 --> Helper loaded: url_helper
+INFO - 2024-12-27 09:39:35 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 09:39:35 --> Helper loaded: param_helper
+INFO - 2024-12-27 09:39:35 --> Helper loaded: credential_helper
+INFO - 2024-12-27 09:39:35 --> Helper loaded: template_helper
+INFO - 2024-12-27 09:39:35 --> Helper loaded: rest_helper
+INFO - 2024-12-27 09:39:35 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 09:39:35 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 09:39:35 --> Controller Class Initialized
+INFO - 2024-12-27 09:39:35 --> Model Class Initialized
+DEBUG - 2024-12-27 09:39:35 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2024-12-27 09:39:35 --> Model Class Initialized
+ERROR - 2024-12-27 09:39:35 --> Query error: Unknown column 'a.effective_call' in 'field list' - Invalid query:  select e.nama_regional, d.nama_area, c.nama_area city,
+							b.salesmanid,b.nama_salesman,b.tipe_sales, 
+							date_format('','%d')-FLOOR(date_format('','%d')/7)-(case when date_format('','%d') > 15 
+							then (select jml_libur from setup_jumlah_harilibur where tahun=date_format('','%Y') and bulan=date_format('','%m')) else 0 end) as 'GFF Aktif', 
+							(select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '' and LAST_DAY('')) as 'GFF Hadir',
+							(select count(1) from t_sales_absensi where status='C' and salesmanid=a.salesmanid and periode between '' and LAST_DAY('')) as cuti,
+							(select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '' and LAST_DAY('')) as sakit, 
+							round((count(1)/(date_format('','%d')-FLOOR(date_format('','%d')/7)-(case when date_format('','%d') > 25 
+							then (select jml_libur from setup_jumlah_harilibur where tahun=date_format('','%Y') and bulan=date_format('','%m')) else 0 end)))*100,0) as persentasi,
+							sum(a.pjp) as pjp, sum(a.effective_call) as effective_call, sum(a.call) as `call`, sum(a.extra_call) as extra_call, sum(a.invalid_call) as invalid_call,
+							ifnull((select sum(qty_sos_gsk)/sum(qty_sos_competitor)*100 as sos_gsk 
+							from rekap_sos_detail a join m_customer x on a.customerid=x.customerid 
+							left join m_customer_class y on x.classid=y.classid
+							where a.tahun=date_format('','%Y') and a.bulan=date_format('','%m') and a.salesmanid=b.salesmanid and a.type_sos='P'
+							and x.typeid = 'HYPERMARKET'),'0') as sos_gsk_hyp,
+							ifnull((select sum(qty_sos_gsk)/sum(qty_sos_competitor)*100 as sos_gsk 
+							from rekap_sos_detail a join m_customer x on a.customerid=x.customerid 
+							left join m_customer_class y on x.classid=y.classid
+							where a.tahun=date_format('','%Y') and a.bulan=date_format('','%m') and a.salesmanid=b.salesmanid and a.type_sos='P'
+							and x.typeid = 'MTI'),'0') as sos_gsk_mti,
+							ifnull((select sum(qty_sos_gsk)/sum(qty_sos_competitor)*100 as sos_gsk 
+							from rekap_sos_detail a join m_customer x on a.customerid=x.customerid 
+							left join m_customer_class y on x.classid=y.classid
+							where a.tahun=date_format('','%Y') and a.bulan=date_format('','%m') and a.salesmanid=b.salesmanid and a.type_sos='P'
+							and x.typeid = 'SUPERMARKET'),'0') as sos_gsk_spm,
+							ifnull((select sum(qty_sos_gsk)/sum(qty_sos_competitor)*100 as sos_gsk 
+							from rekap_sos_detail a join m_customer x on a.customerid=x.customerid 
+							left join m_customer_class y on x.classid=y.classid
+							where a.tahun=date_format('','%Y') and a.bulan=date_format('','%m') and a.salesmanid=b.salesmanid and a.type_sos='P'
+							and x.typeid = 'MINIMARKET'),'0') as sos_gsk_mini,
+							ifnull((select sum(qty_sos_gsk)/sum(qty_sos_competitor)*100 as sos_gsk 
+							from rekap_sos_detail a join m_customer x on a.customerid=x.customerid 
+							left join m_customer_class y on x.classid=y.classid
+							where a.tahun=date_format('','%Y') and a.bulan=date_format('','%m') and a.salesmanid=b.salesmanid and a.type_sos='P'
+							and x.typeid = 'MODERN PHARMA'),'0') as sos_gsk_mph,
+							ifnull((select sum(qty_sos_gsk)/sum(qty_sos_competitor)*100 as sos_gsk 
+							from rekap_sos_detail a join m_customer x on a.customerid=x.customerid 
+							left join m_customer_class y on x.classid=y.classid
+							where a.tahun=date_format('','%Y') and a.bulan=date_format('','%m') and a.salesmanid=b.salesmanid and a.type_sos='P'
+							and x.typeid in ('MINIMARKET','SUPERMARKET','MTI','HYPERMARKET','MODERN PHARMA')),'0') as sos_gsk_total,
+							ifnull((
+							select GROUP_CONCAT(x.reason_rrk SEPARATOR ' , ') from ( 
+							SELECT z.salesmanid, CONCAT(y.reason, '(', count(y.reason), ')') AS reason_rrk 
+							from t_sales_rrk_trans z left join t_sales_rrk_reason y on z.call_reasonid=y.call_reasonid 
+							where z.periode between '' and LAST_DAY('') 
+							and z.call_reasonid is not null 
+							group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
+							),'-') as rrk_keterangan,
+							sum(a.checkin_out_area) as out_area,
+							(select avg(z.final_score) as final_score
+							from evaluation_product_knowledge z left join product_knowledge_event x on z.id_event = x.id_event 
+							where z.periode between '' and LAST_DAY('')  and z.username = a.salesmanid
+							group by z.username) as quiz,
+							sum(a.order) as outlet_order, sum(a.total_order) as total_order
+					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1 left join m_area_subarea c on b.subareaid=c.subareaid 
+					left join m_area_areasite d on c.areaid=d.areaid left join m_area_regional e on e.regionalid=d.regionalid 
+					where a.periode between '' and LAST_DAY('') and b.tipe_sales not in ('ADMIN','FC')
+					and a.salesmanid = NULL
+					group by e.nama_regional, d.nama_area, c.nama_area, b.salesmanid,b.nama_salesman,b.tipe_sales
+					order by tipe_sales asc, nama_salesman asc;
+						
+ERROR - 2024-12-27 09:39:35 --> Severity: error --> Exception: Call to a member function result_array() on bool /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php 1534
+INFO - 2024-12-27 18:34:37 --> Config Class Initialized
+INFO - 2024-12-27 18:34:37 --> Hooks Class Initialized
+DEBUG - 2024-12-27 18:34:37 --> UTF-8 Support Enabled
+INFO - 2024-12-27 18:34:37 --> Utf8 Class Initialized
+INFO - 2024-12-27 18:34:37 --> URI Class Initialized
+INFO - 2024-12-27 18:34:37 --> Router Class Initialized
+INFO - 2024-12-27 18:34:37 --> Output Class Initialized
+INFO - 2024-12-27 18:34:37 --> Security Class Initialized
+DEBUG - 2024-12-27 18:34:37 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 18:34:37 --> Input Class Initialized
+INFO - 2024-12-27 18:34:37 --> Language Class Initialized
+ERROR - 2024-12-27 18:34:37 --> 404 Page Not Found: /index
+INFO - 2024-12-27 22:10:16 --> Config Class Initialized
+INFO - 2024-12-27 22:10:16 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:16 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:16 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:16 --> URI Class Initialized
+INFO - 2024-12-27 22:10:16 --> Router Class Initialized
+INFO - 2024-12-27 22:10:16 --> Output Class Initialized
+INFO - 2024-12-27 22:10:16 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:16 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:16 --> Input Class Initialized
+INFO - 2024-12-27 22:10:16 --> Language Class Initialized
+INFO - 2024-12-27 22:10:16 --> Language Class Initialized
+INFO - 2024-12-27 22:10:16 --> Config Class Initialized
+INFO - 2024-12-27 22:10:16 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:16 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:16 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:16 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:16 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:16 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:16 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:16 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:16 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:16 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:16 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:16 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:10:16 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:16 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/views/content.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+INFO - 2024-12-27 22:10:17 --> Config Class Initialized
+INFO - 2024-12-27 22:10:17 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:17 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:17 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:17 --> URI Class Initialized
+DEBUG - 2024-12-27 22:10:17 --> No URI present. Default controller set.
+INFO - 2024-12-27 22:10:17 --> Router Class Initialized
+INFO - 2024-12-27 22:10:17 --> Output Class Initialized
+INFO - 2024-12-27 22:10:17 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:17 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:17 --> Input Class Initialized
+INFO - 2024-12-27 22:10:17 --> Language Class Initialized
+INFO - 2024-12-27 22:10:17 --> Language Class Initialized
+INFO - 2024-12-27 22:10:17 --> Config Class Initialized
+INFO - 2024-12-27 22:10:17 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:17 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:17 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:17 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:17 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:17 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:17 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:17 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:17 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:17 --> Controller Class Initialized
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/modules/app_auth/views/login_lte_template.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/template_login_lte/header.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/template_login_lte/contents.php
+DEBUG - 2024-12-27 22:10:17 --> File loaded: /apps/web-drc/application/views/template_login_lte/default.php
+INFO - 2024-12-27 22:10:17 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:17 --> Total execution time: 0.0080
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:19 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:19 --> URI Class Initialized
+INFO - 2024-12-27 22:10:19 --> Router Class Initialized
+INFO - 2024-12-27 22:10:19 --> Output Class Initialized
+INFO - 2024-12-27 22:10:19 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:19 --> Input Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:19 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:19 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:19 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:19 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:19 --> Total execution time: 0.0213
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:19 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:19 --> URI Class Initialized
+INFO - 2024-12-27 22:10:19 --> Router Class Initialized
+INFO - 2024-12-27 22:10:19 --> Output Class Initialized
+INFO - 2024-12-27 22:10:19 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:19 --> Input Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:19 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:19 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:19 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:19 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2024-12-27 22:10:19 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/modules/app_dashboard/views/content.php
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:10:19 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:19 --> Total execution time: 0.0463
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:19 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:19 --> URI Class Initialized
+INFO - 2024-12-27 22:10:19 --> Router Class Initialized
+INFO - 2024-12-27 22:10:19 --> Output Class Initialized
+INFO - 2024-12-27 22:10:19 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:19 --> Input Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:19 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:19 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:19 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:19 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/modules/app_dashboard/models/App_dashboard_model.php
+INFO - 2024-12-27 22:10:19 --> Model Class Initialized
+INFO - 2024-12-27 22:10:19 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:19 --> Total execution time: 0.0502
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:19 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:19 --> URI Class Initialized
+INFO - 2024-12-27 22:10:19 --> Router Class Initialized
+INFO - 2024-12-27 22:10:19 --> Output Class Initialized
+INFO - 2024-12-27 22:10:19 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:19 --> Input Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Language Class Initialized
+INFO - 2024-12-27 22:10:19 --> Config Class Initialized
+INFO - 2024-12-27 22:10:19 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:19 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:19 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:19 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:19 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:19 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:19 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2024-12-27 22:10:19 --> Model Class Initialized
+INFO - 2024-12-27 22:10:19 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:19 --> Total execution time: 0.0063
+INFO - 2024-12-27 22:10:26 --> Config Class Initialized
+INFO - 2024-12-27 22:10:26 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:26 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:26 --> URI Class Initialized
+INFO - 2024-12-27 22:10:26 --> Router Class Initialized
+INFO - 2024-12-27 22:10:26 --> Output Class Initialized
+INFO - 2024-12-27 22:10:26 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:26 --> Input Class Initialized
+INFO - 2024-12-27 22:10:26 --> Language Class Initialized
+INFO - 2024-12-27 22:10:26 --> Language Class Initialized
+INFO - 2024-12-27 22:10:26 --> Config Class Initialized
+INFO - 2024-12-27 22:10:26 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:26 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:26 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:26 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:26 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:10:26 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/views/content.php
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:10:26 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:26 --> Total execution time: 0.0266
+INFO - 2024-12-27 22:10:26 --> Config Class Initialized
+INFO - 2024-12-27 22:10:26 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:26 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:26 --> URI Class Initialized
+INFO - 2024-12-27 22:10:26 --> Router Class Initialized
+INFO - 2024-12-27 22:10:26 --> Output Class Initialized
+INFO - 2024-12-27 22:10:26 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:26 --> Input Class Initialized
+INFO - 2024-12-27 22:10:26 --> Language Class Initialized
+INFO - 2024-12-27 22:10:26 --> Language Class Initialized
+INFO - 2024-12-27 22:10:26 --> Config Class Initialized
+INFO - 2024-12-27 22:10:26 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:26 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:26 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:26 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:26 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:26 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:26 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:10:26 --> Model Class Initialized
+INFO - 2024-12-27 22:10:26 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:26 --> Total execution time: 0.0138
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:29 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:29 --> URI Class Initialized
+INFO - 2024-12-27 22:10:29 --> Router Class Initialized
+INFO - 2024-12-27 22:10:29 --> Output Class Initialized
+INFO - 2024-12-27 22:10:29 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:29 --> Input Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:29 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:29 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:29 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/views/form.php
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:10:29 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:29 --> Total execution time: 0.0172
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:29 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:29 --> URI Class Initialized
+INFO - 2024-12-27 22:10:29 --> Router Class Initialized
+INFO - 2024-12-27 22:10:29 --> Output Class Initialized
+INFO - 2024-12-27 22:10:29 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:29 --> Input Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:29 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:29 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:29 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+INFO - 2024-12-27 22:10:29 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:29 --> Total execution time: 0.0067
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:29 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:29 --> URI Class Initialized
+INFO - 2024-12-27 22:10:29 --> Router Class Initialized
+INFO - 2024-12-27 22:10:29 --> Output Class Initialized
+INFO - 2024-12-27 22:10:29 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:29 --> Input Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:29 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:29 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:29 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+INFO - 2024-12-27 22:10:29 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:29 --> Total execution time: 0.0076
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:10:29 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:10:29 --> URI Class Initialized
+INFO - 2024-12-27 22:10:29 --> Router Class Initialized
+INFO - 2024-12-27 22:10:29 --> Output Class Initialized
+INFO - 2024-12-27 22:10:29 --> Security Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:10:29 --> Input Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Language Class Initialized
+INFO - 2024-12-27 22:10:29 --> Config Class Initialized
+INFO - 2024-12-27 22:10:29 --> Loader Class Initialized
+INFO - 2024-12-27 22:10:29 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:10:29 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:10:29 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:10:29 --> Controller Class Initialized
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+DEBUG - 2024-12-27 22:10:29 --> File loaded: /apps/web-drc/application/modules/ref_customer_class/models/Customer_class_model.php
+INFO - 2024-12-27 22:10:29 --> Model Class Initialized
+INFO - 2024-12-27 22:10:29 --> Final output sent to browser
+DEBUG - 2024-12-27 22:10:29 --> Total execution time: 0.0067
+INFO - 2024-12-27 22:11:28 --> Config Class Initialized
+INFO - 2024-12-27 22:11:28 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:11:28 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:11:28 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:11:28 --> URI Class Initialized
+INFO - 2024-12-27 22:11:28 --> Router Class Initialized
+INFO - 2024-12-27 22:11:28 --> Output Class Initialized
+INFO - 2024-12-27 22:11:28 --> Security Class Initialized
+DEBUG - 2024-12-27 22:11:28 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:11:28 --> Input Class Initialized
+INFO - 2024-12-27 22:11:28 --> Language Class Initialized
+INFO - 2024-12-27 22:11:28 --> Language Class Initialized
+INFO - 2024-12-27 22:11:28 --> Config Class Initialized
+INFO - 2024-12-27 22:11:28 --> Loader Class Initialized
+INFO - 2024-12-27 22:11:28 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:11:28 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:11:28 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:11:28 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:11:28 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:11:28 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:11:28 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:11:28 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:11:28 --> Controller Class Initialized
+INFO - 2024-12-27 22:11:28 --> Model Class Initialized
+DEBUG - 2024-12-27 22:11:28 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:11:28 --> Model Class Initialized
+ERROR - 2024-12-27 22:11:28 --> Cache: Failed to initialize APC; extension not loaded/enabled?
+INFO - 2024-12-27 22:11:28 --> Helper loaded: file_helper
+ERROR - 2024-12-27 22:11:28 --> Cache adapter "apc" and backup "file" are both unavailable. Cache is now using "Dummy" adapter.
+ERROR - 2024-12-27 22:11:28 --> Severity: Warning --> fopen(/apps/web-drc/resource/files/lock/lock.txt): failed to open stream: Permission denied /apps/web-drc/application/libraries/IDGenerator.php 30
+ERROR - 2024-12-27 22:11:28 --> Severity: Warning --> flock() expects parameter 1 to be resource, bool given /apps/web-drc/application/libraries/IDGenerator.php 31
+ERROR - 2024-12-27 22:11:28 --> Severity: Warning --> fclose() expects parameter 1 to be resource, bool given /apps/web-drc/application/libraries/IDGenerator.php 67
+INFO - 2024-12-27 22:11:28 --> Final output sent to browser
+DEBUG - 2024-12-27 22:11:28 --> Total execution time: 0.0360
+INFO - 2024-12-27 22:11:36 --> Config Class Initialized
+INFO - 2024-12-27 22:11:36 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:11:36 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:11:36 --> URI Class Initialized
+INFO - 2024-12-27 22:11:36 --> Router Class Initialized
+INFO - 2024-12-27 22:11:36 --> Output Class Initialized
+INFO - 2024-12-27 22:11:36 --> Security Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:11:36 --> Input Class Initialized
+INFO - 2024-12-27 22:11:36 --> Language Class Initialized
+INFO - 2024-12-27 22:11:36 --> Language Class Initialized
+INFO - 2024-12-27 22:11:36 --> Config Class Initialized
+INFO - 2024-12-27 22:11:36 --> Loader Class Initialized
+INFO - 2024-12-27 22:11:36 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:11:36 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:11:36 --> Controller Class Initialized
+INFO - 2024-12-27 22:11:36 --> Model Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:11:36 --> Model Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/views/content.php
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:11:36 --> Final output sent to browser
+DEBUG - 2024-12-27 22:11:36 --> Total execution time: 0.0193
+INFO - 2024-12-27 22:11:36 --> Config Class Initialized
+INFO - 2024-12-27 22:11:36 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:11:36 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:11:36 --> URI Class Initialized
+INFO - 2024-12-27 22:11:36 --> Router Class Initialized
+INFO - 2024-12-27 22:11:36 --> Output Class Initialized
+INFO - 2024-12-27 22:11:36 --> Security Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:11:36 --> Input Class Initialized
+INFO - 2024-12-27 22:11:36 --> Language Class Initialized
+INFO - 2024-12-27 22:11:36 --> Language Class Initialized
+INFO - 2024-12-27 22:11:36 --> Config Class Initialized
+INFO - 2024-12-27 22:11:36 --> Loader Class Initialized
+INFO - 2024-12-27 22:11:36 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:11:36 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:11:36 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:11:36 --> Controller Class Initialized
+INFO - 2024-12-27 22:11:36 --> Model Class Initialized
+DEBUG - 2024-12-27 22:11:36 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:11:36 --> Model Class Initialized
+INFO - 2024-12-27 22:11:36 --> Final output sent to browser
+DEBUG - 2024-12-27 22:11:36 --> Total execution time: 0.0071
+INFO - 2024-12-27 22:11:39 --> Config Class Initialized
+INFO - 2024-12-27 22:11:39 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:11:39 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:11:39 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:11:39 --> URI Class Initialized
+INFO - 2024-12-27 22:11:39 --> Router Class Initialized
+INFO - 2024-12-27 22:11:39 --> Output Class Initialized
+INFO - 2024-12-27 22:11:39 --> Security Class Initialized
+DEBUG - 2024-12-27 22:11:39 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:11:39 --> Input Class Initialized
+INFO - 2024-12-27 22:11:39 --> Language Class Initialized
+INFO - 2024-12-27 22:11:39 --> Language Class Initialized
+INFO - 2024-12-27 22:11:39 --> Config Class Initialized
+INFO - 2024-12-27 22:11:39 --> Loader Class Initialized
+INFO - 2024-12-27 22:11:39 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:11:39 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:11:39 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:11:39 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:11:39 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:11:39 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:11:39 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:11:39 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:11:39 --> Controller Class Initialized
+INFO - 2024-12-27 22:11:39 --> Model Class Initialized
+DEBUG - 2024-12-27 22:11:39 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:11:39 --> Model Class Initialized
+INFO - 2024-12-27 22:11:39 --> Final output sent to browser
+DEBUG - 2024-12-27 22:11:39 --> Total execution time: 0.0095
+INFO - 2024-12-27 22:11:40 --> Config Class Initialized
+INFO - 2024-12-27 22:11:40 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:11:40 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:11:40 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:11:40 --> URI Class Initialized
+INFO - 2024-12-27 22:11:40 --> Router Class Initialized
+INFO - 2024-12-27 22:11:40 --> Output Class Initialized
+INFO - 2024-12-27 22:11:40 --> Security Class Initialized
+DEBUG - 2024-12-27 22:11:40 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:11:40 --> Input Class Initialized
+INFO - 2024-12-27 22:11:40 --> Language Class Initialized
+INFO - 2024-12-27 22:11:40 --> Language Class Initialized
+INFO - 2024-12-27 22:11:40 --> Config Class Initialized
+INFO - 2024-12-27 22:11:40 --> Loader Class Initialized
+INFO - 2024-12-27 22:11:40 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:11:40 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:11:40 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:11:40 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:11:40 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:11:40 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:11:40 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:11:40 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:11:40 --> Controller Class Initialized
+INFO - 2024-12-27 22:11:40 --> Model Class Initialized
+DEBUG - 2024-12-27 22:11:40 --> File loaded: /apps/web-drc/application/modules/mapping_promo_active/models/Promo_active_model.php
+INFO - 2024-12-27 22:11:40 --> Model Class Initialized
+INFO - 2024-12-27 22:11:40 --> Final output sent to browser
+DEBUG - 2024-12-27 22:11:40 --> Total execution time: 0.0081
+INFO - 2024-12-27 22:15:21 --> Config Class Initialized
+INFO - 2024-12-27 22:15:21 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:15:21 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:15:21 --> URI Class Initialized
+INFO - 2024-12-27 22:15:21 --> Router Class Initialized
+INFO - 2024-12-27 22:15:21 --> Output Class Initialized
+INFO - 2024-12-27 22:15:21 --> Security Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:15:21 --> Input Class Initialized
+INFO - 2024-12-27 22:15:21 --> Language Class Initialized
+INFO - 2024-12-27 22:15:21 --> Language Class Initialized
+INFO - 2024-12-27 22:15:21 --> Config Class Initialized
+INFO - 2024-12-27 22:15:21 --> Loader Class Initialized
+INFO - 2024-12-27 22:15:21 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:15:21 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:15:21 --> Controller Class Initialized
+INFO - 2024-12-27 22:15:21 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:15:21 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/views/content.php
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:15:21 --> Final output sent to browser
+DEBUG - 2024-12-27 22:15:21 --> Total execution time: 0.0149
+INFO - 2024-12-27 22:15:21 --> Config Class Initialized
+INFO - 2024-12-27 22:15:21 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:15:21 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:15:21 --> URI Class Initialized
+INFO - 2024-12-27 22:15:21 --> Router Class Initialized
+INFO - 2024-12-27 22:15:21 --> Output Class Initialized
+INFO - 2024-12-27 22:15:21 --> Security Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:15:21 --> Input Class Initialized
+INFO - 2024-12-27 22:15:21 --> Language Class Initialized
+INFO - 2024-12-27 22:15:21 --> Language Class Initialized
+INFO - 2024-12-27 22:15:21 --> Config Class Initialized
+INFO - 2024-12-27 22:15:21 --> Loader Class Initialized
+INFO - 2024-12-27 22:15:21 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:15:21 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:15:21 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:15:21 --> Controller Class Initialized
+INFO - 2024-12-27 22:15:21 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:21 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:15:21 --> Model Class Initialized
+INFO - 2024-12-27 22:15:21 --> Final output sent to browser
+DEBUG - 2024-12-27 22:15:21 --> Total execution time: 0.0049
+INFO - 2024-12-27 22:15:27 --> Config Class Initialized
+INFO - 2024-12-27 22:15:27 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:15:27 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:15:27 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:15:27 --> URI Class Initialized
+INFO - 2024-12-27 22:15:27 --> Router Class Initialized
+INFO - 2024-12-27 22:15:27 --> Output Class Initialized
+INFO - 2024-12-27 22:15:27 --> Security Class Initialized
+DEBUG - 2024-12-27 22:15:27 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:15:27 --> Input Class Initialized
+INFO - 2024-12-27 22:15:27 --> Language Class Initialized
+INFO - 2024-12-27 22:15:27 --> Language Class Initialized
+INFO - 2024-12-27 22:15:27 --> Config Class Initialized
+INFO - 2024-12-27 22:15:27 --> Loader Class Initialized
+INFO - 2024-12-27 22:15:27 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:15:27 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:15:27 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:15:27 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:15:27 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:15:27 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:15:27 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:15:27 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:15:27 --> Controller Class Initialized
+INFO - 2024-12-27 22:15:27 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:15:27 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/views/form.php
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:15:27 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:15:27 --> Final output sent to browser
+DEBUG - 2024-12-27 22:15:27 --> Total execution time: 0.0102
+INFO - 2024-12-27 22:15:28 --> Config Class Initialized
+INFO - 2024-12-27 22:15:28 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:15:28 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:15:28 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:15:28 --> URI Class Initialized
+INFO - 2024-12-27 22:15:28 --> Router Class Initialized
+INFO - 2024-12-27 22:15:28 --> Output Class Initialized
+INFO - 2024-12-27 22:15:28 --> Security Class Initialized
+DEBUG - 2024-12-27 22:15:28 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:15:28 --> Input Class Initialized
+INFO - 2024-12-27 22:15:28 --> Language Class Initialized
+INFO - 2024-12-27 22:15:28 --> Language Class Initialized
+INFO - 2024-12-27 22:15:28 --> Config Class Initialized
+INFO - 2024-12-27 22:15:28 --> Loader Class Initialized
+INFO - 2024-12-27 22:15:28 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:15:28 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:15:28 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:15:28 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:15:28 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:15:28 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:15:28 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:15:28 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:15:28 --> Controller Class Initialized
+INFO - 2024-12-27 22:15:28 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:28 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2024-12-27 22:15:28 --> Model Class Initialized
+INFO - 2024-12-27 22:15:28 --> Final output sent to browser
+DEBUG - 2024-12-27 22:15:28 --> Total execution time: 0.0048
+INFO - 2024-12-27 22:15:37 --> Config Class Initialized
+INFO - 2024-12-27 22:15:37 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:15:37 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:15:37 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:15:37 --> URI Class Initialized
+INFO - 2024-12-27 22:15:37 --> Router Class Initialized
+INFO - 2024-12-27 22:15:37 --> Output Class Initialized
+INFO - 2024-12-27 22:15:37 --> Security Class Initialized
+DEBUG - 2024-12-27 22:15:37 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:15:37 --> Input Class Initialized
+INFO - 2024-12-27 22:15:37 --> Language Class Initialized
+INFO - 2024-12-27 22:15:37 --> Language Class Initialized
+INFO - 2024-12-27 22:15:37 --> Config Class Initialized
+INFO - 2024-12-27 22:15:37 --> Loader Class Initialized
+INFO - 2024-12-27 22:15:37 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:15:37 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:15:37 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:15:37 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:15:37 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:15:37 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:15:37 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:15:37 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:15:37 --> Controller Class Initialized
+INFO - 2024-12-27 22:15:37 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:15:37 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/views/content.php
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:15:37 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:15:37 --> Final output sent to browser
+DEBUG - 2024-12-27 22:15:37 --> Total execution time: 0.0090
+INFO - 2024-12-27 22:15:38 --> Config Class Initialized
+INFO - 2024-12-27 22:15:38 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:15:38 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:15:38 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:15:38 --> URI Class Initialized
+INFO - 2024-12-27 22:15:38 --> Router Class Initialized
+INFO - 2024-12-27 22:15:38 --> Output Class Initialized
+INFO - 2024-12-27 22:15:38 --> Security Class Initialized
+DEBUG - 2024-12-27 22:15:38 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:15:38 --> Input Class Initialized
+INFO - 2024-12-27 22:15:38 --> Language Class Initialized
+INFO - 2024-12-27 22:15:38 --> Language Class Initialized
+INFO - 2024-12-27 22:15:38 --> Config Class Initialized
+INFO - 2024-12-27 22:15:38 --> Loader Class Initialized
+INFO - 2024-12-27 22:15:38 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:15:38 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:15:38 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:15:38 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:15:38 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:15:38 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:15:38 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:15:38 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:15:38 --> Controller Class Initialized
+INFO - 2024-12-27 22:15:38 --> Model Class Initialized
+DEBUG - 2024-12-27 22:15:38 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:15:38 --> Model Class Initialized
+INFO - 2024-12-27 22:15:38 --> Final output sent to browser
+DEBUG - 2024-12-27 22:15:38 --> Total execution time: 0.0041
+INFO - 2024-12-27 22:18:35 --> Config Class Initialized
+INFO - 2024-12-27 22:18:35 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:35 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:35 --> URI Class Initialized
+INFO - 2024-12-27 22:18:35 --> Router Class Initialized
+INFO - 2024-12-27 22:18:35 --> Output Class Initialized
+INFO - 2024-12-27 22:18:35 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:35 --> Input Class Initialized
+INFO - 2024-12-27 22:18:35 --> Language Class Initialized
+INFO - 2024-12-27 22:18:35 --> Language Class Initialized
+INFO - 2024-12-27 22:18:35 --> Config Class Initialized
+INFO - 2024-12-27 22:18:35 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:35 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:35 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:35 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:35 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:35 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/views/form.php
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:18:35 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:35 --> Total execution time: 0.0212
+INFO - 2024-12-27 22:18:35 --> Config Class Initialized
+INFO - 2024-12-27 22:18:35 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:35 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:35 --> URI Class Initialized
+INFO - 2024-12-27 22:18:35 --> Router Class Initialized
+INFO - 2024-12-27 22:18:35 --> Output Class Initialized
+INFO - 2024-12-27 22:18:35 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:35 --> Input Class Initialized
+INFO - 2024-12-27 22:18:35 --> Language Class Initialized
+INFO - 2024-12-27 22:18:35 --> Language Class Initialized
+INFO - 2024-12-27 22:18:35 --> Config Class Initialized
+INFO - 2024-12-27 22:18:35 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:35 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:35 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:35 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:35 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:35 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:35 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2024-12-27 22:18:35 --> Model Class Initialized
+INFO - 2024-12-27 22:18:35 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:35 --> Total execution time: 0.0045
+INFO - 2024-12-27 22:18:42 --> Config Class Initialized
+INFO - 2024-12-27 22:18:42 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:42 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:42 --> URI Class Initialized
+INFO - 2024-12-27 22:18:42 --> Router Class Initialized
+INFO - 2024-12-27 22:18:42 --> Output Class Initialized
+INFO - 2024-12-27 22:18:42 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:42 --> Input Class Initialized
+INFO - 2024-12-27 22:18:42 --> Language Class Initialized
+INFO - 2024-12-27 22:18:42 --> Language Class Initialized
+INFO - 2024-12-27 22:18:42 --> Config Class Initialized
+INFO - 2024-12-27 22:18:42 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:42 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:42 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:42 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:42 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:42 --> Model Class Initialized
+INFO - 2024-12-27 22:18:42 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:42 --> Total execution time: 0.0120
+INFO - 2024-12-27 22:18:42 --> Config Class Initialized
+INFO - 2024-12-27 22:18:42 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:42 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:42 --> URI Class Initialized
+INFO - 2024-12-27 22:18:42 --> Router Class Initialized
+INFO - 2024-12-27 22:18:42 --> Output Class Initialized
+INFO - 2024-12-27 22:18:42 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:42 --> Input Class Initialized
+INFO - 2024-12-27 22:18:42 --> Language Class Initialized
+INFO - 2024-12-27 22:18:42 --> Language Class Initialized
+INFO - 2024-12-27 22:18:42 --> Config Class Initialized
+INFO - 2024-12-27 22:18:42 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:42 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:42 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:42 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:42 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:42 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/views/content.php
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:18:42 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:42 --> Total execution time: 0.0069
+INFO - 2024-12-27 22:18:42 --> Config Class Initialized
+INFO - 2024-12-27 22:18:42 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:42 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:42 --> URI Class Initialized
+INFO - 2024-12-27 22:18:42 --> Router Class Initialized
+INFO - 2024-12-27 22:18:42 --> Output Class Initialized
+INFO - 2024-12-27 22:18:42 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:42 --> Input Class Initialized
+INFO - 2024-12-27 22:18:42 --> Language Class Initialized
+INFO - 2024-12-27 22:18:42 --> Language Class Initialized
+INFO - 2024-12-27 22:18:42 --> Config Class Initialized
+INFO - 2024-12-27 22:18:42 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:42 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:42 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:42 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:42 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:42 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:42 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:42 --> Model Class Initialized
+INFO - 2024-12-27 22:18:42 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:42 --> Total execution time: 0.0053
+INFO - 2024-12-27 22:18:44 --> Config Class Initialized
+INFO - 2024-12-27 22:18:44 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:44 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:44 --> URI Class Initialized
+INFO - 2024-12-27 22:18:44 --> Router Class Initialized
+INFO - 2024-12-27 22:18:44 --> Output Class Initialized
+INFO - 2024-12-27 22:18:44 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:44 --> Input Class Initialized
+INFO - 2024-12-27 22:18:44 --> Language Class Initialized
+INFO - 2024-12-27 22:18:44 --> Language Class Initialized
+INFO - 2024-12-27 22:18:44 --> Config Class Initialized
+INFO - 2024-12-27 22:18:44 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:44 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:44 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:44 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:44 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:44 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/views/form.php
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:18:44 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:44 --> Total execution time: 0.0081
+INFO - 2024-12-27 22:18:44 --> Config Class Initialized
+INFO - 2024-12-27 22:18:44 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:44 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:44 --> URI Class Initialized
+INFO - 2024-12-27 22:18:44 --> Router Class Initialized
+INFO - 2024-12-27 22:18:44 --> Output Class Initialized
+INFO - 2024-12-27 22:18:44 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:44 --> Input Class Initialized
+INFO - 2024-12-27 22:18:44 --> Language Class Initialized
+INFO - 2024-12-27 22:18:44 --> Language Class Initialized
+INFO - 2024-12-27 22:18:44 --> Config Class Initialized
+INFO - 2024-12-27 22:18:44 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:44 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:44 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:44 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:44 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:44 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:44 --> File loaded: /apps/web-drc/application/modules/api_v1/models/Api_v1_model.php
+INFO - 2024-12-27 22:18:44 --> Model Class Initialized
+INFO - 2024-12-27 22:18:44 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:44 --> Total execution time: 0.0037
+INFO - 2024-12-27 22:18:49 --> Config Class Initialized
+INFO - 2024-12-27 22:18:49 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:49 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:49 --> URI Class Initialized
+INFO - 2024-12-27 22:18:49 --> Router Class Initialized
+INFO - 2024-12-27 22:18:49 --> Output Class Initialized
+INFO - 2024-12-27 22:18:49 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:49 --> Input Class Initialized
+INFO - 2024-12-27 22:18:49 --> Language Class Initialized
+INFO - 2024-12-27 22:18:49 --> Language Class Initialized
+INFO - 2024-12-27 22:18:49 --> Config Class Initialized
+INFO - 2024-12-27 22:18:49 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:49 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:49 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:49 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:49 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:49 --> Model Class Initialized
+INFO - 2024-12-27 22:18:49 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:49 --> Total execution time: 0.0050
+INFO - 2024-12-27 22:18:49 --> Config Class Initialized
+INFO - 2024-12-27 22:18:49 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:49 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:49 --> URI Class Initialized
+INFO - 2024-12-27 22:18:49 --> Router Class Initialized
+INFO - 2024-12-27 22:18:49 --> Output Class Initialized
+INFO - 2024-12-27 22:18:49 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:49 --> Input Class Initialized
+INFO - 2024-12-27 22:18:49 --> Language Class Initialized
+INFO - 2024-12-27 22:18:49 --> Language Class Initialized
+INFO - 2024-12-27 22:18:49 --> Config Class Initialized
+INFO - 2024-12-27 22:18:49 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:49 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:49 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:49 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:49 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:49 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/views/content.php
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/views/templates/header.php
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/views/templates/toolbar.php
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/views/templates/sidebar.php
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/views/templates/contents.php
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/views/templates/content_footer.php
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/views/templates/footer.php
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/views/templates/default.php
+INFO - 2024-12-27 22:18:49 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:49 --> Total execution time: 0.0054
+INFO - 2024-12-27 22:18:49 --> Config Class Initialized
+INFO - 2024-12-27 22:18:49 --> Hooks Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> UTF-8 Support Enabled
+INFO - 2024-12-27 22:18:49 --> Utf8 Class Initialized
+INFO - 2024-12-27 22:18:49 --> URI Class Initialized
+INFO - 2024-12-27 22:18:49 --> Router Class Initialized
+INFO - 2024-12-27 22:18:49 --> Output Class Initialized
+INFO - 2024-12-27 22:18:49 --> Security Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> Global POST, GET and COOKIE data sanitized
+INFO - 2024-12-27 22:18:49 --> Input Class Initialized
+INFO - 2024-12-27 22:18:49 --> Language Class Initialized
+INFO - 2024-12-27 22:18:49 --> Language Class Initialized
+INFO - 2024-12-27 22:18:49 --> Config Class Initialized
+INFO - 2024-12-27 22:18:49 --> Loader Class Initialized
+INFO - 2024-12-27 22:18:49 --> Helper loaded: url_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: easyui_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: param_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: credential_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: template_helper
+INFO - 2024-12-27 22:18:49 --> Helper loaded: rest_helper
+INFO - 2024-12-27 22:18:49 --> Database Driver Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> Idgenerator class already loaded. Second attempt ignored.
+INFO - 2024-12-27 22:18:49 --> Controller Class Initialized
+INFO - 2024-12-27 22:18:49 --> Model Class Initialized
+DEBUG - 2024-12-27 22:18:49 --> File loaded: /apps/web-drc/application/modules/promo_product_sales/models/Promo_product_model.php
+INFO - 2024-12-27 22:18:49 --> Model Class Initialized
+INFO - 2024-12-27 22:18:49 --> Final output sent to browser
+DEBUG - 2024-12-27 22:18:49 --> Total execution time: 0.0041

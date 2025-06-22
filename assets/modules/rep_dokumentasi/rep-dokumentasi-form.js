@@ -1,0 +1,207 @@
+(function () {
+
+    const common = new Common();
+    common.setTitle("Report Dokumentasi");
+    // declare dom
+    let uiForm = $("#fm-dokumentasi");
+    let uiBtnPreview = $("#btn-preview-form");
+    let uiBtnDownload = $("#btn-download-form");
+    let uiBtnDownloadOOS = $("#btn-download-form-oos");
+    let uiSelectAccount = $("#account-id");
+    //let uiSelectTypesos = $("#typesos-id");
+    let uiStartPeriode = $("#start_periode"); 
+    let uiEndPeriode = $("#end_periode"); 
+    //let uiTblReport = $("#tbl-content"); 
+    
+    // define from *-content.js
+    //let param = common.getCookie("module.report.promo.update");
+    let paramsession = common.getCookie("session");
+    
+    initializeParam();
+
+    function initializeParam() {
+        //common.loading();
+         let resolver = new HttpResolver();
+        let filter = new Filter();
+		console.log(filter);
+
+        $.when(
+            $.post(common.baseURL("rep_crc/load_account"), filter.build()),
+        ).done(function (data, textStatus, jqXHR) {
+            console.log("done");
+            //console.log(d);
+        }).then(function (r1) {
+            common.loadingClose();
+            console.log("then");
+            setupForm(r1);
+        }).fail(resolver.fail);
+
+        uiBtnPreview.click(function () {
+            //alert(uiSelectSalesman.val());
+            if ( uiStartPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
+			}else if (uiSelectAccount.val()===null){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Sub Channel / Account harus di isi...!',
+                    containerFluid: true
+                });
+            }else{
+                open_preview();
+            }
+        });
+
+        uiBtnDownload.click(function () {
+            //alert(uiSelectSalesman.val());
+            if ( uiStartPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
+            }else if (uiSelectAccount.val() === null){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Sub Channel / Account harus di isi...!',
+                    containerFluid: true
+                });
+            }
+			else{
+                save_xls();
+            }
+        });
+
+        uiBtnDownloadOOS.click(function () {
+            //alert(uiSelectSalesman.val());
+            if ( uiStartPeriode.val()===''){
+                //uiAlertNotif.show();
+                alert ('Periode harus di isi...!');
+            }else if (uiSelectAccount.val() === null){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Sub Channel / Account harus di isi...!',
+                    containerFluid: true
+                });
+            }else{
+                save_xls_oos();
+            }
+        });
+
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+        });
+ 
+        uiSelectAccount.on('select2:select', function (e) {
+            accountSelected = e.params.data;
+            //loadOutlet(accountSelected, paramsession);
+        });
+ 
+        /*uiStartPeriode.on('changeDate', function(selected) {
+            var startDate = new Date(selected.date.valueOf());
+            var endDate = new Date(selected.date.valueOf());
+            endDate.setDate(endDate.getDate() + 6);
+            uiEndPeriode.datepicker('setStartDate', startDate);
+            uiEndPeriode.datepicker('setEndDate', endDate);
+            if(uiStartPeriode.val() > uiEndPeriode.val()){
+                uiEndPeriode.val(uiStartPeriode.val());
+            }
+        });*/
+
+    }
+
+    function setupForm(r1) {
+        let rows1 = r1.rows;
+
+        uiSelectAccount.select2({
+            placeholder: 'Select Account',
+            allowClear: true,
+            data: $.map(rows1, function (o) {
+                o.id = o.classid; // replace name with the property used for the text
+                o.text = o.nama_class; // replace name with the property used for the text
+                return o;
+            }),
+        });
+
+        uiSelectAccount.val(null).trigger('change');
+    }
+
+    function open_preview() {
+		
+        var start = uiStartPeriode.val();
+        var end = uiStartPeriode.val();
+        var account = uiSelectAccount.val();
+        var idjabatan = paramsession.idjabatan;
+        var usersession = paramsession.username;
+        var restrict_level = paramsession.restrict_level;
+            $.ajax({
+                type:"POST",
+                dataType: "html",
+                beforeSend : function() {
+                    //$("#map-content").html('Populating data, please wait..');
+                },
+                url: common.baseURL("rep_dokumentasi/open_detail"),
+                data : "start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrict_level+"&account="+account,
+                success:function(res){
+                    response = res;
+                    //$('div .modal-header .modal-title').text('Detail Productifity Sales');			
+                    $('#tbl-content').html(response);
+                    //$("#modal_detail").modal('show');
+                },
+                error:function(){
+                    alert("Load failed");
+                }
+            });
+        
+    }
+
+    function save_xls() {
+		
+        var start = uiStartPeriode.val();
+        var account = uiSelectAccount.val();
+        var end = uiStartPeriode.val();
+        var idjabatan = paramsession.idjabatan;
+        var usersession = paramsession.username;
+        var restrict_level = paramsession.restrict_level;
+        //idpromo = idpromo.replace(",", "|");
+        //var url = encodeURI();
+        common.direct("rep_dokumentasi/savetoxlsx/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+account);
+        /*
+        $.ajax({
+            type:"POST",
+            dataType: "html",
+            beforeSend : function() {
+                //$("#map-content").html('Populating data, please wait..');
+            },
+            url: common.baseURL("rep_promo/savetoxls"),
+            data : "idpromo="+idpromo+"&start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession,
+            success:function(res){
+                response = res;
+                $('#tbl-content').html(response);
+            },
+            error:function(){
+                alert("Load failed");
+            }
+        });
+        */
+    }
+
+    function save_xls_oos() {
+		
+        var start = uiStartPeriode.val();
+        var account = uiSelectAccount.val();
+        var end = uiStartPeriode.val();
+        var idjabatan = paramsession.idjabatan;
+        var usersession = paramsession.username;
+        var restrict_level = paramsession.restrict_level;
+        //idpromo = idpromo.replace(",", "|");
+        //var url = encodeURI();
+        common.direct("rep_dokumentasi/savetoxlsx_oos/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+account);
+    }
+
+})();

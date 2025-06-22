@@ -21,6 +21,14 @@ function is_allow_page()
     if (!isset($_SESSION)) {
         session_start();
     }
+	
+    if (strtotime('now') > $_SESSION['expired_at']) {
+        //logout
+        unset($_SESSION["user_credential"]);
+    } else {
+        $_SESSION['expired_at'] = strtotime("+30 minutes");
+    }
+	
     if (isset($_SESSION['user_credential'])) {
         if (!empty($ci->uri->segment(1))) {
             $role = $_SESSION['role_id'];
@@ -45,8 +53,8 @@ function authUserApplication($data)
 {
     $ci =& get_instance();
     $values = array($data['username'], $data['password']);
-    $sql = "SELECT a.*,b.kode_satker, b.satker FROM app_resource a left join ref_satuan_kerja b on a.id_satker=b.id_satker
-			WHERE a.username=? AND password=md5(?)";
+    $sql = "SELECT a.*, b.restrict_level, b.restrict_bu, (select aktif_week from m_setup_site) as week_aktif FROM app_resource a left join ref_jabatan b on a.idjabatan=b.idjabatan
+			WHERE a.username=? AND a.password=md5(?) AND a.status='RA'";
     $res = $ci->db->query($sql, $values)->result_array();
     $form_response = new stdClass();
     if (1 == count($res)) {
@@ -56,12 +64,16 @@ function authUserApplication($data)
         $_SESSION['nip'] = $res[0]['nip'];
         $_SESSION['user_credential'] = $res[0]['username'];
         $_SESSION['role_id'] = $res[0]['role_id'];
-        $_SESSION['satker'] = $res[0]['satker'];
-        $_SESSION['kode_satker'] = $res[0]['kode_satker'];
+        $_SESSION['idjabatan'] = $res[0]['idjabatan'];
+        $_SESSION['expired_at'] = strtotime("+30 minutes");
         unset($res[0]["password"]);
         $form_response->session = $res[0];
         $form_response->status_login = 200;
         $form_response->message = "Login success";
+
+        //insert log
+        log_activity('login');
+
         return $form_response;
     } else if (1 < count($res)) { // duplicate user
         $form_response->status_login = 201;
@@ -119,6 +131,10 @@ function logoutUserLogin()
     if (!isset($_SESSION)) {
         session_start();
     }
+
+    //insert log
+    log_activity('logout');
+
     $form_response = new stdClass();
     if (isset($_SESSION['user_credential'])) {
         $form_response->status = 1;
@@ -141,7 +157,6 @@ function user_menu()
     $selected = $ci->uri->segment(1);
     $parent = selected_menu(find_menu($_SESSION['role_id']), $selected);
     $list_menu = '<ul class="sidebar-menu">';
-    $list_menu .= '<li class="header">MAIN NAVIGATION</li>';
     $list_menu .= build_tree_menu($parent);
     $list_menu .= '</ul';
     return $list_menu;
@@ -231,4 +246,22 @@ function build_tree_menu(array $elements, $parentId = 0)
     return $navigation;
 }
 
+/*
+    log_resource_activity
+*/
+function log_activity($type, $log = null)
+{
+    $ci =& get_instance();
+    
+    $data = [
+        'periode' => date('Y-m-d'),
+        'idjabatan' => $_SESSION['idjabatan'],
+        'username' => $_SESSION['user_login'],
+        'log' => $log,
+        'log_type' => $type,
+        'log_date' => date('Y-m-d H:i:s')
+    ];
+
+    return $ci->db->insert('log_resource_activity', $data);
+}
 ?>

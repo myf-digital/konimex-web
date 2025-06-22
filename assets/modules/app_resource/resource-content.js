@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("Resource");
+    common.setTitle("User Access");
     // ui components
     let uiTbl = $("#tbl-resource");
 
@@ -23,7 +23,7 @@
 
     function initializeGrid() {
         let option = {
-            title: "Resource",
+            title: "User Access",
             toolbar: toolbar(),
             url: common.baseURL("app_resource/load"),
             pageNumber: 1,
@@ -41,20 +41,23 @@
             ]],
             columns: [[
 				// {field:'resource_id', title:'RESOURCE ID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nip', title:'NIP', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'name', title:'NAME', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'email', title:'EMAIL', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'telepon', title:'TELEPON', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'satker', title:'SATKER', halign: 'center', align: 'left', sortable:"true", width:300},
-				{field:'role_name', title:'ROLE', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'username', title:'USERNAME', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'password', title:'PASSWORD', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'type', title:'TYPE', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'status', title:'STATUS', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'created_by', title:'CREATED BY', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'created_date', title:'CREATED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'modified_by', title:'MODIFIED BY', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'modified_date', title:'MODIFIED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'nip', title:'NIP', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'name', title:'NAME', halign: 'left', align: 'left', sortable:"true", width:150},
+				{field:'email', title:'EMAIL', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'telepon', title:'TELEPON', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'role_name', title:'ROLE', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'username', title:'USERNAME', halign: 'left', align: 'left', sortable:"true", width:150},
+				//{field:'password', title:'PASSWORD', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'type', title:'TYPE', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'jabatan', title:'Jabatan', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'nama_regional', title:'Regional', halign: 'left', align: 'left', sortable:"true", width:200},
+				{field:'nama_area', title:'Area', halign: 'left', align: 'left', sortable:"true", width:200},
+				{field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:200},
+				//{field:'status', title:'STATUS', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'created_by', title:'CREATED BY', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'created_date', title:'CREATED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'modified_by', title:'MODIFIED BY', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'modified_date', title:'MODIFIED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
             ]],
             onBeforeLoad: function (param) {
                 param = common.replaceGridFilterPrefix(param, "a");
@@ -71,7 +74,7 @@
     }
 
     function toolbar() {
-        const btnCreate = commonGrid.btnBuilder('btn-create', 'success', 'fa fa-pencil');
+        const btnCreate = commonGrid.btnBuilderDash('btn-create', 'success', '../assets/images/ic_edit.png');
         return '<div class="action-grid-toolbar">' + btnCreate + '</div>';
     }
 
@@ -96,8 +99,8 @@
     * action button generator
     */
     function formatterButton(val, row, index) {
-        const btnUpdate = commonGrid.btnBuilder('btn-update', 'success', 'fa fa-pencil');
-        const btnDelete = commonGrid.btnBuilder('btn-delete', 'danger', 'fa fa-times');
+        const btnUpdate = commonGrid.btnBuilderDash('btn-update', 'success', '../assets/images/ic_edit.png');
+        const btnDelete = commonGrid.btnBuilderDash('btn-delete', 'danger', '../assets/images/ic_trash.png');
         return '<div class="action-grid">' + btnUpdate + ' ' + btnDelete + '</div>';
     }
 

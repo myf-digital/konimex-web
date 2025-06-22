@@ -55,19 +55,29 @@ div.form-group textarea {
 }
 
 .skin-blue .main-header .logo {
-    background-color: #234f76!important;
+    background-color: #5bb23a!important;
 }
 
 .skin-blue .main-header .navbar{
-    background-color: #234f76;
-    background-image: url("../../../images/header_blend_0.png") !important;
+    background-color: #edf0f4; 
+    /*background-image: url("../../../images/header_blend_0.png") !important;*/
     background-position: 100% 150%;
     background-size: 96.5% 100%;
     background-repeat: no-repeat;
 }
 
+.skin-blue .main-header .navbar #navbar_user:hover{
+    background-color: #f4f6f8;
+    color: black;
+}
+
+.skin-blue .main-header .navbar #navbar_setting:hover{
+    background-color: #f4f6f8;
+    color: black;
+}
+
 .main-footer{
-    background-color: #234f76;
+    background-color: #5bb23a;
     background-image: url("../../../images/footer_blend_0.png") !important;
     background-repeat: no-repeat;
     background-size: auto;
@@ -75,12 +85,16 @@ div.form-group textarea {
 
 .login-banner {
 
-    content:url(../../../images/login_riset_background.png);
+    content:url(../../../images/new_dig_record.png);
 
     /*background-image: url("../../../images/login_riset_background.png") !important;*/
     /*background-position: 100% 100%;*/
     /*background-size: 100% 100%;*/
     /*background-repeat: no-repeat;*/
+}
+
+#get_date {
+    
 }
 
 div.form-group-login {
@@ -93,7 +107,7 @@ div.form-group-login {
 }
 
 .login-page, .register-page {
-    background: #214E77;!important;
+    background: #5bb23a;!important;
 }
 
 .table-light tbody+tbody, .table-light td, .table-light th, .table-light thead th {
@@ -101,3 +115,13 @@ div.form-group-login {
 }
 
 
+.gradient-custom {
+/* fallback for old browsers */
+background: #5bb23a;
+
+/* Chrome 10-25, Safari 5.1-6 */
+background: -webkit-linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1));
+
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1))
+}

@@ -106,7 +106,7 @@
     }
 
     function toolbar() {
-        const btnCreate = commonGrid.btnBuilder('btn-create', 'success', 'fa fa-pencil');
+        const btnCreate = commonGrid.btnBuilderDash('btn-create', 'success', '../assets/images/ic_edit.png');
         return '<div class="action-grid-toolbar">' + btnCreate + '</div>';
     }
 
@@ -135,8 +135,8 @@
     * action button generator
     */
     function formatterButton(val, row, index) {
-        const btnUpdate = commonGrid.btnBuilder('btn-update', 'success', 'fa fa-pencil');
-        const btnDelete = commonGrid.btnBuilder('btn-delete', 'danger', 'fa fa-times');
+        const btnUpdate = commonGrid.btnBuilderDash('btn-update', 'success', '../assets/images/ic_edit.png');
+        const btnDelete = commonGrid.btnBuilderDash('btn-delete', 'danger', '../assets/images/ic_trash.png');
         const btnView = commonGrid.btnBuilder('btn-view', 'info', 'fa fa-navicon');
         return '<div class="action-grid">' + btnUpdate + ' ' + btnDelete + ' ' + btnView + '</div>';
     }

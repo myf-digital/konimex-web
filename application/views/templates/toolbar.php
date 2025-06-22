@@ -1,21 +1,17 @@
 <header class="main-header">
     <a href="#" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini"><b>BI</b></span>
+        <span href="#" data-toggle="offcanvas" role="button" class="logo-mini"><b>DRC</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>D</b>MST</span>
+        <span href="#" data-toggle="offcanvas" role="button" class="logo-lg"><b>Digital Record Card</b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
-        <!-- Sidebar toggle button-->
-        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-            <span class="sr-only">Toggle navigation</span>
-        </a>
 
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <li class="dropdown user user-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <a id="navbar_user" href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <!--
                       <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
                         -->
@@ -28,7 +24,6 @@
                             <p>
                                 <?php echo $_SESSION['user'] ?>
                                 <small><?php echo $_SESSION['user_credential'] ?></small>
-                                <small><?php echo $_SESSION['satker'] ?></small>
                             </p>
                         </li>
                         <!-- Menu Body -->
@@ -51,10 +46,7 @@
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
-                                <!--
-
-                                <button id="btn-profile" class="btn btn-default btn-flat">Profile</button>
-                                -->
+                                <button id="btn-reset" class="btn btn-default btn-flat">Reset Password</button>
                             </div>
                             <div class="pull-right">
                                 <button id="btn-logout" class="btn btn-default btn-flat">Sign out</button>
@@ -64,7 +56,7 @@
                 </li>
                 <!-- Control Sidebar Toggle Button -->
                 <li>
-                    <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                    <a id="navbar_setting" href="#" data-toggle="control-sidebar"><i class="fa fa-cog"></i></a>
                 </li>
             </ul>
         </div>
@@ -81,6 +73,10 @@
             $.getJSON(url,  function (response) {
                 window.location.replace(common.baseURL())
             });
+        });
+
+        $("#btn-reset").click(function () {
+            common.direct("change_mypassword");
         });
 
     })()
