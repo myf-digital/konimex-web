@@ -12,10 +12,10 @@
     }
 
     .filter-date thead tr {
-        background-color: #8BB581;
         color: #ffffff;
         text-align: left;
         font-weight: bold;
+        background: linear-gradient(90deg,rgba(22, 33, 51, 1) 0%, rgba(31, 48, 58, 1) 50%, rgba(45, 68, 73, 1) 100%);
     }
 
     .filter-date th,
@@ -52,10 +52,10 @@
     }
 
     .filter-date-pa thead tr {
-        background-color: #8BB581;
         color: #ffffff;
         text-align: left;
         font-weight: bold;
+        background: linear-gradient(90deg,rgba(22, 33, 51, 1) 0%, rgba(31, 48, 58, 1) 50%, rgba(45, 68, 73, 1) 100%);
     }
 
     .filter-date-pa th,
@@ -92,10 +92,10 @@
     }
 
     .filter-date-sos thead tr {
-        background-color: #8BB581;
         color: #ffffff;
         text-align: left;
         font-weight: bold;
+        background: linear-gradient(90deg,rgba(22, 33, 51, 1) 0%, rgba(31, 48, 58, 1) 50%, rgba(45, 68, 73, 1) 100%);
     }
 
     .filter-date-sos th,
@@ -131,10 +131,10 @@
     }
 
     .report-table tbody th {
-      background-color: #8BB581;
       color: #ffffff;
       text-align: left;
       font-weight: bold;
+      background: linear-gradient(90deg,rgba(22, 33, 51, 1) 0%, rgba(31, 48, 58, 1) 50%, rgba(45, 68, 73, 1) 100%);
     }
 
     .report-table th,
