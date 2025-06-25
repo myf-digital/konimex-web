@@ -1,7 +1,21 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<title>Web Base</title>
+<title>PAR</title>
+<meta charset="utf-8">
+<meta name="region" content="ID">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Product Activation Representative">
+<meta name="keywords" content="PAR, Product Activation Representative">
+<meta property="og:url" content="<?php echo base_url(); ?>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PAR">
+<meta property="og:description" content="Product Activation Representative">
+<meta property="og:image" content="<?php echo base_url('assets/images/favicon.ico'); ?>">
+
+<link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico'); ?>" />
+
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/bootstrap/css/bootstrap.min.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/skins/skin-blue.min.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/app.cise.css'); ?>"/>
@@ -20,14 +34,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.css'); ?>"/>
 <!-- key from yudi -->
 <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyARGDPDFdKHpzeK_96fE92NihBcWGVeUYM&sensor=false"></script>
-<!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBLV6BnTTtSvQThaQdvr2E407LXcNfp47A&sensor=false"></script>
-<!--key from yudi <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCmzAXw4YMiV30PgbYUpWwqfwUvXrSN4uc&sensor=false"></script>
-<!-- <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyDWrZMY20Vu6UgUEPS--HHPaVwGwYj4cNQ&sensor=false"></script>
-<!-- key from zuliadin <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&sensor=false"></script>
-<!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBYh2XE2CUnGQcyAzAesJRc5K5h_emhYCE&sensor=false"></script>-->
-
-<!--old 20240205 <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&sensor=false"></script>
-<!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBYh2XE2CUnGQcyAzAesJRc5K5h_emhYCE&sensor=false"></script>-->
 
 <!-- Add fancyBox CSS files --> 
 <link rel="stylesheet" href="<?php echo base_url('assets/fancybox/jquery.fancybox.css?v=2.1.5'); ?>" type="text/css" media="screen" />

@@ -17,18 +17,11 @@ header('Vary: Accept-Encoding');
 	})(window,document,'script','dataLayer','GTM-W6HTBNN');</script>
 	<!-- End Google Tag Manager -->
 
-		<?php if (isset($header)) echo $header; ?>
+	<?php if (isset($header)) echo $header; ?>
     </head>
-	<body class="hold-transition login-page">
-	<!-- Google Tag Manager (noscript) 
-	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W6HTBNN"
-	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-	<!-- End Google Tag Manager (noscript) -->
-		
+	<body class="hold-transition login-page">		
 		<?php if (isset($contents)) echo $contents; ?>
     </body>
 	<script>
-	
 	</script>
-     
 </html>

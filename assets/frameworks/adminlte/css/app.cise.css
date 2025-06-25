@@ -55,12 +55,11 @@ div.form-group textarea {
 }
 
 .skin-blue .main-header .logo {
-    background-color: #5bb23a!important;
+    background: linear-gradient(90deg,rgba(22, 33, 51, 1) 0%, rgba(31, 48, 58, 1) 50%, rgba(45, 68, 73, 1) 100%);
 }
 
 .skin-blue .main-header .navbar{
     background-color: #edf0f4; 
-    /*background-image: url("../../../images/header_blend_0.png") !important;*/
     background-position: 100% 150%;
     background-size: 96.5% 100%;
     background-repeat: no-repeat;
@@ -84,17 +83,8 @@ div.form-group textarea {
 }
 
 .login-banner {
-
-    content:url(../../../images/new_dig_record.png);
-
-    /*background-image: url("../../../images/login_riset_background.png") !important;*/
-    /*background-position: 100% 100%;*/
-    /*background-size: 100% 100%;*/
-    /*background-repeat: no-repeat;*/
-}
-
-#get_date {
-    
+    border-radius: 15px;
+    content: url(../../../../assets/images/par-sm.jpg);
 }
 
 div.form-group-login {

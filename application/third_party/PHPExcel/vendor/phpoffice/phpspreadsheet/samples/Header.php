@@ -19,11 +19,23 @@ if ($helper->isCli()) {
 <head>
     <title><?php echo $helper->getPageTitle(); ?></title>
     <meta charset="utf-8">
+    <meta name="region" content="ID">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Product Activation Representative">
+    <meta name="keywords" content="PAR, Product Activation Representative">
+    <meta property="og:url" content="<?php echo base_url(); ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PAR">
+    <meta property="og:description" content="Product Activation Representative">
+    <meta property="og:image" content="<?php echo base_url('assets/images/favicon.ico'); ?>">
+
+    <link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico'); ?>" />
+
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/bootstrap/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="/bootstrap/css/phpspreadsheet.css"/>
+
     <script src="/bootstrap/js/jquery.min.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
 </head>

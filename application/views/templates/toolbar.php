@@ -1,9 +1,11 @@
 <header class="main-header">
     <a href="#" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span href="#" data-toggle="offcanvas" role="button" class="logo-mini"><b>DRC</b></span>
+        <span href="#" data-toggle="offcanvas" role="button" class="logo-mini"><b>PAR</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span href="#" data-toggle="offcanvas" role="button" class="logo-lg"><b>Digital Record Card</b></span>
+        <span href="#" data-toggle="offcanvas" role="button" class="logo-lg">
+            <b>Product Activation Representative</b>
+        </span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">

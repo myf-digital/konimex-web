@@ -2,6 +2,19 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <title><?php echo $title; ?></title>
+<meta charset="utf-8">
+<meta name="region" content="ID">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Product Activation Representative">
+<meta name="keywords" content="PAR, Product Activation Representative">
+<meta property="og:url" content="<?php echo base_url(); ?>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PAR">
+<meta property="og:description" content="Product Activation Representative">
+<meta property="og:image" content="<?php echo base_url('assets/images/favicon.ico'); ?>">
+
+<link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico'); ?>" />
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/bootstrap/css/bootstrap.min.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/font-awesome/css/font-awesome.min.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/ionicons/css/ionicons.min.css'); ?>"/>
@@ -23,12 +36,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/plugins/cookies/js.cookie.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.js'); ?>"></script>
 
-
 <style>
 	/* validation */
 	label.error-login {
 		font-weight: normal;
 		color: #ff0000;
 	}
-
+  .img-left {
+    position: relative;
+    top: 30%;
+  }
 </style>
