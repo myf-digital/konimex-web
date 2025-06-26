@@ -2,3 +2,4 @@
 /application/logs/*
 /application/cache/sessions/*
 /application/config/database.php
+/application/config/onesignal.php

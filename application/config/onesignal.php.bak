@@ -1,0 +1,6 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$config['onesignal_url'] = 'https://onesignal.com/api/v1/notifications';
+$config['onesignal_app_id'] = 'YOUR_ONESIGNAL_APP_ID';
+$config['onesignal_rest_api_key'] = 'YOUR_REST_API_KEY';

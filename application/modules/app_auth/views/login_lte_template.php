@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-xs-6"></div>
           <div class="col-xs-4">
-            <img class="img login-banner" src="assets/images/par-sm.jpg" alt="PAR" width="75%">
+            <img class="img login-banner" src="assets/images/par-dark.png" alt="PAR" width="50%">
           </div>
         </div>
         <div class="row">
@@ -18,44 +18,44 @@
           </div>
         </div>
         <p class="login-box-msg"></p>
-          <form id="login-form" method="post" action>
-            <div class="form-group-login">
-              <div class="row">
-                <div class="col-xs-6"></div>
-                <div class="col-xs-6">
-                  <label class="login-label" for="email">Email</label>
-                </div>
-                <div class="col-xs-6"></div>
-                <div class="col-xs-6">
-                  <input type="username" name="username" class="form-control" placeholder="Masukan Email Disini">
-                </div>
-              </div>
-            </div>
-            <br>
-            <div class="form-group-login">
-              <div class="row">
-                <div class="col-xs-6"></div>
-                <div class="col-xs-6">
-                  <label class="login-label" for="password">Password</label>
-                </div>
-                <div class="col-xs-6"></div>
-                <div class="col-xs-6">
-                  <input type="password" name="password" class="form-control" placeholder="Masukan Password Disini">
-                </div>
-              </div>
-            </div>
+        <form id="login-form" method="post" action>
+          <div class="form-group-login">
             <div class="row">
               <div class="col-xs-6"></div>
               <div class="col-xs-6">
-                <label id="error-login" class="error-login"></label>
+                <label class="login-label" for="email">Email</label>
               </div>
               <div class="col-xs-6"></div>
               <div class="col-xs-6">
-                <button type="submit" class="login-button btn btn-block">Sign In</button>
+                <input type="username" name="username" class="form-control" placeholder="Masukan Email Disini">
               </div>
             </div>
-          </form>
-        </div>
+          </div>
+          <br>
+          <div class="form-group-login">
+            <div class="row">
+              <div class="col-xs-6"></div>
+              <div class="col-xs-6">
+                <label class="login-label" for="password">Password</label>
+              </div>
+              <div class="col-xs-6"></div>
+              <div class="col-xs-6">
+                <input type="password" name="password" class="form-control" placeholder="Masukan Password Disini">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6"></div>
+            <div class="col-xs-6">
+              <label id="error-login" class="error-login"></label>
+            </div>
+            <div class="col-xs-6"></div>
+            <div class="col-xs-6">
+              <input type="hidden" id="player_id" name="player_id">
+              <button type="submit" class="login-button btn btn-block">Sign In</button>
+            </div>
+          </div>
+        </form>
       </div>
   </div>
 </div>
@@ -85,4 +85,42 @@
       }
     });
   })()
+</script>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js"></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    try {
+      await OneSignal.init({
+        appId: "<?php echo $onesignal_app_id; ?>",
+        allowLocalhostAsSecureOrigin: true,
+        autoRegister: true,
+        promptOptions: {
+          slidedown: {
+            enabled: true,
+            autoPrompt: false // Disable auto prompt since we have permission
+          }
+        },
+        notifyButton: {
+          enable: true,
+          size: 'small',
+          position: 'bottom-right',
+          showCredit: false,
+        }
+      });
+
+      // Check current permission state
+      const permission = await OneSignal.Notifications.permissionNative;
+      if (permission === 'granted') {
+        const userId = await OneSignal.User.PushSubscription.id;
+        document.getElementById('player_id').value = userId; // Set player ID in the form
+      } else {
+        console.log('User has not granted permission');
+      }
+    } catch (error) {
+      console.error('OneSignal initialization error:', error);
+    }
+  });
 </script>

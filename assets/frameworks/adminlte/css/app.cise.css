@@ -83,8 +83,7 @@ div.form-group textarea {
 }
 
 .login-banner {
-    border-radius: 15px;
-    content: url(../../../../assets/images/par-sm.jpg);
+    content: url(../../../../assets/images/par-dark.png);
 }
 
 div.form-group-login {

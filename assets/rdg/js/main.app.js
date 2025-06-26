@@ -35,7 +35,6 @@ function processJson(responseText, statusText, xhr, $form) {
                 let response = responseText.result[0];
                 localStorage.setItem("user.login", JSON.stringify({nip: response.nip}));
                 localStorage.setItem("user.event", JSON.stringify({event_id: response.id_event}));
-                // localStorage.setItem("user.events", JSON.stringify(responseText.result));
                 common.direct("rdg/materi");
             }
         } else {
