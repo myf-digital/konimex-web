@@ -32,7 +32,7 @@ class App_auth extends CI_Controller
         $result = authUserApplication($data);
 
         if (isset($data['player_id']) && !empty($data['player_id'])) {
-            $response = send_onesignal($data['player_id'], $data['username'] . ' Berhasil login pada tanggal ' . date('Y-m-d H:i:s'), $result);
+            $response = send_onesignal($data['player_id'], $data['username'] . ' berhasil login pada tanggal ' . date('Y-m-d H:i:s'), $result);
             $result->res_onesignal = json_decode($response, true);
         }
 

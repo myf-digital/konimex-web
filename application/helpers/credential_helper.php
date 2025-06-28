@@ -291,41 +291,4 @@ function log_activity($type, $log = null)
 
     return $ci->db->insert('log_resource_activity', $data);
 }
-
-if (!function_exists('send_onesignal')) {
-    function send_onesignal($player_ids, $message, $data = []) {
-        $CI =& get_instance();
-        $CI->load->config('onesignal');
-        
-        $url = $CI->config->item('onesignal_url');
-        $app_id = $CI->config->item('onesignal_app_id');
-        $rest_api_key = $CI->config->item('onesignal_rest_api_key');
-        
-        $fields = [
-            'app_id' => $app_id,
-            'include_player_ids' => is_array($player_ids) ? $player_ids : [$player_ids],
-            'contents' => ['en' => $message],
-            'data' => $data
-        ];
-        $fields = json_encode($fields);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json; charset=utf-8',
-            'Authorization: Basic ' . $rest_api_key
-        ));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-        
-        $response = curl_exec($ch);
-        curl_close($ch);
-        
-        return $response;
-    }
-}
-
 ?>
