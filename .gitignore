@@ -3,4 +3,5 @@
 /application/cache/sessions/*
 /application/config/database.php
 /application/config/onesignal.php
+/application/config/wa_zawa.php
 /composer.lock

@@ -15,8 +15,8 @@ class App_auth extends CI_Controller
 
     public function index()
     {
-        $session = isset($_SESSION) ? $_SESSION : array();
-        if (isset($session['user_login']) && !empty($session['user_login'])) {
+        $session = isset($_SESSION) ? $_SESSION : [];
+        if (isset($session['user_credential']) && !empty($session['user_credential'])) {
             redirect(base_url('app_dashboard'));
         }
 
@@ -31,9 +31,19 @@ class App_auth extends CI_Controller
         $data = param_input();
         $result = authUserApplication($data);
 
+        $message = $data['username'] . ' berhasil login pada tanggal ' . date('Y-m-d H:i:s');
         if (isset($data['player_id']) && !empty($data['player_id'])) {
-            $response = send_onesignal($data['player_id'], $data['username'] . ' berhasil login pada tanggal ' . date('Y-m-d H:i:s'), $result);
-            $result->res_onesignal = json_decode($response, true);
+            $resOnesignal = send_onesignal($data['player_id'], $message, $result);
+            $data->res_onesignal = $resOnesignal ? $resOnesignal['data'] : false;
+        }
+        if (isset($result->session) && isset($result->session['telepon'])) {
+            $nomor = format_phone($result->session['telepon']);
+            if ($nomor) {
+                $resWA = send_wa(['phone' => $nomor, 'type' => 'text', 'text' => $message]);
+                $data->res_wa = $resWA ? $resWA['data'] : false;
+            } else {
+                log_message('error', "Nomor telepon tidak valid: " . $result->session['telepon']);
+            }
         }
 
         response($result, 200, "process success");
@@ -41,7 +51,8 @@ class App_auth extends CI_Controller
 
     public function logout()
     {
+        $response = logoutUserLogin();
         header('Content-Type: application/json');
-        echo json_encode(logoutUserLogin());
+        echo json_encode($response);
     }
 }

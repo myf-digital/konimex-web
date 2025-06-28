@@ -1,0 +1,6 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$config['wa_zawa_url'] = 'https://api-zawa.azickri.com/message';
+$config['wa_zawa_id'] = '';
+$config['wa_zawa_session_id'] = '';
