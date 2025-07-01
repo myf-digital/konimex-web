@@ -200,7 +200,6 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             $.post(common.baseURL("conf_setup_site/load"), filter.build()),
@@ -210,11 +209,8 @@
             //$.post(common.baseURL("api_v1/call_aas_aam_tss_tsm"), filter.build()),
             //$.post(common.baseURL("api_v1/call_fc"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1, r2, r3) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1[0], r2[0], r3[0]);
         }).fail(resolver.fail);
     }

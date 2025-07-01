@@ -33,7 +33,6 @@
 					height : "hide"
 				}, 100, "swing", function() {
 					$row.remove();
-					//console.log($row.attr("id") +" was deleted");
 					if (callback) {
 						return callback();
 					}

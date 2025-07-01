@@ -66,11 +66,9 @@
         common.loading();
         let resolver = new HttpResolver();
         let param = new Filter();
-        console.log(param.build());
 		$.when(
             $.post(common.baseURL("ref_event/load_mapping_rdg"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormRdgPublish(r1);

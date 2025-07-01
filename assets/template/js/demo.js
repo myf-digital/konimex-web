@@ -11,7 +11,6 @@ $("#smart-bgimages")
 
 $('#demo-setting')
     .click(function () {
-        //console.log('setting');
         $('#ribbon .demo')
             .toggleClass('activate');
     })
@@ -158,7 +157,6 @@ $('input[type="checkbox"]#smart-fixed-container')
             $.root_.removeClass("container");
             $("#smart-bgimages")
                 .fadeOut();
-            // console.log("container off");
         }
     });
 

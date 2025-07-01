@@ -55,16 +55,12 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             $.post(common.baseURL("ref_customer_segment/load"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r2) {
             common.loadingClose();
-            console.log("then");
             setupForm(r2);
         }).fail(resolver.fail);
 

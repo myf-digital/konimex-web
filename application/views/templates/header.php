@@ -13,6 +13,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <meta property="og:title" content="PAR">
 <meta property="og:description" content="Product Activation Representative">
 <meta property="og:image" content="<?php echo base_url('assets/images/favicon.ico'); ?>">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
 <link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico'); ?>" />
 

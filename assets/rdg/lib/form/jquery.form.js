@@ -194,17 +194,12 @@ $.fn.ajaxSubmit = function(options) {
         });
     }
     else if (options.success) {
-        console.log("callback "+options.success);
         callbacks.push(options.success);
-        console.log(callbacks);
     }
 
     options.success = function(data, status, xhr) { // jQuery 1.4+ passes xhr as 3rd arg
         var context = options.context || this ;    // jQuery 1.4+ supports scope context
-        console.log("success");
-        console.log(callbacks.length);
         for (var i=0, max=callbacks.length; i < max; i++) {
-            console.log("success callback : "+callbacks[i]);
             callbacks[i].apply(context, [data, status, xhr || $form, $form]);
         }
     };
@@ -1271,10 +1266,7 @@ function log() {
         return;
     }
     var msg = '[jquery.form] ' + Array.prototype.join.call(arguments,'');
-    if (window.console && window.console.log) {
-        window.console.log(msg);
-    }
-    else if (window.opera && window.opera.postError) {
+    if (window.opera && window.opera.postError) {
         window.opera.postError(msg);
     }
 }

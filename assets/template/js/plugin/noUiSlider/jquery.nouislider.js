@@ -348,13 +348,6 @@
 
 					// For debugging purposes it might be very useful
 					// to know what option caused the trouble.
-					if(console&&console.log){
-						console.log(
-							"Slider:\t\t\t",	set,
-							"\nOption:\t\t\t",	i,
-							"\nValue:\t\t\t",	o[i]
-						);
-					}
 					// Since 'error' will prevent further script execution,
 					// log the error first.
 					$.error("Error on noUiSlider initialisation.");

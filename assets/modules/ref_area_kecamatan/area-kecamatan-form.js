@@ -60,17 +60,13 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             //$.post(common.baseURL("conf_setup_site/load"), filter.build()),
             $.post(common.baseURL("ref_area_propinsi/load"), filter.build())
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1);
         }).fail(resolver.fail);
     }

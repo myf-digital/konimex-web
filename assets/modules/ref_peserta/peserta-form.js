@@ -92,7 +92,6 @@
         $.when(
             $.post(common.baseURL("ref_satker/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormSatker(r1);
@@ -119,7 +118,6 @@
         $.when(
             $.post(common.baseURL("ref_aspek/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormAspek(r1);

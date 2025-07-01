@@ -56,7 +56,6 @@
         $.when(
             $.post(common.baseURL("ref_karyawan/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormPeserta(r1);

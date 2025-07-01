@@ -39,7 +39,6 @@ class Template
     /* hmvc */
     function show($controller, $body_view = null, $data = null)
     {
-
         $tpl_view = 'default';
         if (!is_null($body_view)) {
             if (file_exists(APPPATH . 'views/' . $tpl_view . '/' . $body_view)) {
@@ -53,9 +52,6 @@ class Template
             } else if (file_exists(APPPATH . 'modules/' . $controller->router->fetch_class() . '/views/' . $body_view . '.php')) {
                 $body_view_path = $body_view . '.php';
             }
-//            else {
-//                show_error('Unable to load the requested file: ' . $tpl_name . '/' . $view_name . '.php');
-//            }
 
             $body = $this->ci->load->view($body_view_path, $data, TRUE);
 
@@ -75,6 +71,10 @@ class Template
         } else {
             $data['navmode'] = "hold-transition skin-blue sidebar-mini";
         }
+        // onesignal
+        $this->ci->load->config('onesignal');
+        $data['onesignal_app_id'] = $this->ci->config->item('onesignal_app_id');
+
         $data['header'] = $this->ci->load->view('templates/header', $data, TRUE);
         $data['toolbar'] = $this->ci->load->view('templates/toolbar', $data, TRUE);
         $data['sidebar'] = $this->ci->load->view('templates/sidebar', $data, TRUE);

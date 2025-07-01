@@ -173,16 +173,12 @@
 		common.loading();
 		let resolver = new HttpResolver();
 		let filter = new Filter();
-		console.log(filter);
 		
 		$.when(
 			$.post(common.baseURL("api_v1/call_siteid"), filter.build()),
 		).done(function (data, textStatus, jqXHR) {
-			console.log("done");
-			//console.log(d);
 		}).then(function (r1) {
 			common.loadingClose();
-			//console.log("then");
 			initializemap(r1);
 		}).fail(resolver.fail);
 	}

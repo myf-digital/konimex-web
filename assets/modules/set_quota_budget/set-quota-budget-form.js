@@ -35,7 +35,6 @@
         //common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-        console.log(filter);
 
         uiBtnPreview.click(function () {
             open_preview();
@@ -45,20 +44,6 @@
             save_xls();
         });
 
-        /*$(".datepicker").datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true
-        });
-        
-        uiStartPeriode.on('changeDate', function(selected) {
-            var startDate = new Date(selected.date.valueOf());
-            uiEndPeriode.datepicker('setStartDate', startDate);
-            if(uiStartPeriode.val() > uiEndPeriode.val()){
-                uiEndPeriode.val(uiStartPeriode.val());
-            }
-        });*/
-
     }
 
     function open_preview() {
@@ -66,13 +51,11 @@
         var start = uiStartPeriode.val();
         var idjabatan = paramsession.idjabatan;
         var usersession = paramsession.username;
-        //alert("start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession);
 
         $.ajax({
             type:"POST",
             dataType: "html",
             beforeSend : function() {
-                //$("#map-content").html('Populating data, please wait..');
             },
             url: common.baseURL("set_quota_budget/load_data_city"),
             data : "start="+start+"&idjabatan="+idjabatan+"&usersession="+usersession,

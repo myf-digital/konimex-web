@@ -106,7 +106,6 @@
             afterSuccess: function (response) {
                 let result = response.result;
                 if (200 === result.status_login) {
-                    console.log(result);
                     common.setCookie("session", result.session);
                     location.replace(common.baseURL("app_dashboard"));
                 } else {

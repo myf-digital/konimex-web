@@ -40,46 +40,4 @@
             common.direct("ref_area_propinsi");
         });
     }
-
-    /*function initializeParam() {
-        common.loading();
-        let resolver = new HttpResolver();
-        let filter = new Filter();
-		console.log(filter);
-        
-        $.when(
-            $.post(common.baseURL("conf_setup_site/load"), filter.build()),
-        ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
-        }).then(function (r1, r2) {
-            common.loadingClose();
-            console.log("then");
-            setupForm(r1);
-        }).fail(resolver.fail);
-    }
-
-
-    function setupFormUI() {
-        uiSelectSiteid.select2({
-            placeholder: 'Select SiteId',
-            allowClear: true
-        });
-    }
-
-    function setupForm(r1, r2) {
-        let rows = [];
-        rows = rows.concat(r1.rows);
-        
-        uiSelectSiteid.select2({
-            data: $.map(rows, function (o) {
-                o.id = o.siteid; // replace name with the property used for the text
-                o.text = o.nama_site; // replace name with the property used for the text
-                return o;
-            }),
-        });
-        if (isUpdate) uiSelectSiteid.val(param.siteid).trigger('change');
-
-    }*/
-
 })();

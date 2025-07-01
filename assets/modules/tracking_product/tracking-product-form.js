@@ -22,17 +22,13 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             $.post(common.baseURL("api_v1/call_product_brand"), filter.build()),
             $.post(common.baseURL("tracking_product/load_regional"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1, r2) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1[0], r2[0]);
         }).fail(resolver.fail);
 

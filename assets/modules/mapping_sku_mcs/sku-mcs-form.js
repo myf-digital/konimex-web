@@ -45,27 +45,10 @@
                 }                
             }
         });
-
-        // uiSelectProduct.select2({
-        //     placeholder: 'Select Product',
-        //     minimumSelectionLength: 1,
-        //     maximumSelectionLength: 1000,
-        //     allowClear: true,
-        //     multiple: true,
-        //     tokenSeparators: [',']
-        // });
         
         uiBtnCancel.click(function () {
             common.direct("mapping_sku_mcs");
         });
-
-        // uiSearch.on("keyup", function() {
-        //     var value = $(this).val().toLowerCase();
-        //     console.log(value)
-        //     $("div #search-value").filter(function() {
-        //       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        //     });
-        // });
 
         uiSearch.multiselect({
             search: {
@@ -85,17 +68,13 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             $.post(common.baseURL("ref_customer_type/load"), filter.build()),
             $.post(common.baseURL("api_v1/call_product"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1, r2) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1[0], r2[0]);
         }).fail(resolver.fail);
 

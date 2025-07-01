@@ -217,7 +217,6 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             $.post(common.baseURL("ref_customer_segment/load"), filter.build()),
@@ -225,11 +224,8 @@
             $.post(common.baseURL("ref_customer_class/load"), filter.build()),
             $.post(common.baseURL("api_v1/call_param_key"), {parkey:"key_outlet_type"}, filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r2, r3, r4, r5) {
             common.loadingClose();
-            console.log("then");
             setupForm(r2[0], r3[0], r4[0], r5[0]);
         }).fail(resolver.fail);
 
@@ -465,7 +461,7 @@
             if(isUpdate) {
                 //do something
                 let arrgff = param.usergff;
-                let varrgff = arrgff.split(',');
+                let varrgff = arrgff ? arrgff.split(',') : [];
                 if (varrgff.length>1) {
                     uiCheckboxDblCvr.prop("checked","checked");
                     vmin=1;
@@ -497,7 +493,7 @@
             
             if (isUpdate) {
                 let arrgff = param.usergff;
-                let varrgff = arrgff.split(',');
+                let varrgff = arrgff ? arrgff.split(',') : [];
                 let rarrgff=[];
 
                 var i;

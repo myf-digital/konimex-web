@@ -54,7 +54,6 @@
             // $.post(common.baseURL("app_menu/load"), param.build())
         ).done(function (data, textStatus, jqXHR) {
 
-            //console.log(d);
         }).then(function (r1, r2) {
             common.loadingClose();
 
@@ -75,14 +74,9 @@
     }
 
     function setupForm(r1, r2) {
-        console.log(r1);
         let rows = r1.rows;
         let rowsRole = r2.rows;
-        if (isUpdate) { // update
-            // rows = rows.filter(function (val) {
-            //     return val.menu_id !== param.menu_id;
-            // })
-        }
+
         uiSelectMenu.select2({
             data: $.map(rows, function (o) {
                 o.id = o.menu_id; // replace name with the property used for the text

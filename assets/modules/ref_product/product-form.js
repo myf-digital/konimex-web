@@ -72,7 +72,6 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             $.post(common.baseURL("api_v1/call_param_key"), {parkey:"key_group_prod"}, filter.build()),
@@ -80,11 +79,8 @@
             $.post(common.baseURL("api_v1/call_param_key"), {parkey:"key_status_product"}, filter.build()),
             $.post(common.baseURL("api_v1/call_product_brand"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1, r2, r3, r4) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1[0], r2[0], r3[0], r4[0]);
         }).fail(resolver.fail);
 

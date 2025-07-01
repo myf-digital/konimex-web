@@ -70,7 +70,6 @@
         $.when(
             $.post(common.baseURL("ref_aspek/load_tipe_pertanyaan"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormTipePertanyaan(r1);
@@ -142,7 +141,6 @@
         $.when(
             $.post(common.baseURL("ref_aspek/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormHeader(r1);

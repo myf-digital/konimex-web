@@ -129,7 +129,6 @@ $(document).ready(function() {
 		if ($this.find('.badge').hasClass('bg-color-red')) {
 			$this.find('.badge').removeClassPrefix('bg-color-');
 			$this.find('.badge').text("0");
-			// console.log("Ajax call for activity")
 		}
 
 		if (!$this.next('.ajax-dropdown').is(':visible')) {
@@ -141,13 +140,11 @@ $(document).ready(function() {
 		}
 
 		var mytest = $this.next('.ajax-dropdown').find('.btn-group > .active > input').attr('id');
-		//console.log(mytest)
 
 		e.preventDefault();
 	});
 
 	$('input[name="activity"]').change(function() {
-		//alert($(this).val())
 		var $this = $(this);
 
 		url = $this.attr('id');
@@ -1129,7 +1126,6 @@ function loadScript(scriptName, callback) {
 		body.appendChild(script);
 
 	} else if (callback) {// changed else to else if(callback)
-		//console.log("JS file already added!");
 		//execute function
 		callback();
 	}
@@ -1234,7 +1230,6 @@ function checkURL() {
 
 		// change page title from global var
 		document.title = (title || document.title);
-		//console.log("page title: " + document.title);
 
 		// parse url to jquery
 		loadURL(url + location.search, container);
@@ -1253,7 +1248,6 @@ function checkURL() {
 // LOAD AJAX PAGES
 
 function loadURL(url, container) {
-	//console.log(container)
 
 	$.ajax({
 		type : "GET",
@@ -1296,15 +1290,12 @@ function loadURL(url, container) {
 		},
 		async : false
 	});
-
-	//console.log("ajax request sent");
 }
 
 // UPDATE BREADCRUMB
 function drawBreadCrumb() {
 	var nav_elems = $('nav li.active > a'), count = nav_elems.length;
 	
-	//console.log("breadcrumb")
 	$.bread_crumb.empty();
 	$.bread_crumb.append($("<li>Home</li>"));
 	nav_elems.each(function() {

@@ -59,10 +59,25 @@ class Request_new_outlet_model extends CI_Model
         return $this->db->insert('m_customer', $data);
     }
 
+    public function get_customer_ob($customerid)
+    {
+        $this->db->select('*');
+		$this->db->from('m_customer_ob');
+        $this->db->where('customerid', $customerid);
+        return $this->db->get()->result();
+        
+    }
+
+    public function get_x_player($ids)
+    {
+        $this->db->select('*');
+		$this->db->from('x_player');
+        $this->db->where_in('account_id', $ids);
+        return $this->db->get()->result();
+    }
+
     public function update($data)
     {
-        //$this->db->where('siteid', $data['siteid']);
-        //$this->db->where('customerid_m', $data['customerid_m']);
         $data["modified_by"] = $data["usersession"];
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
@@ -88,10 +103,6 @@ class Request_new_outlet_model extends CI_Model
         //update sequence
         $this->db->query("update app_table_sequence set used=".$data['customerid']." where id=5");
 
-        //$sql = "select max(CAST(customerid as UNSIGNED))+1 customerid_new from m_customer";
-        //$newidcust = $this->db->query($sql)->row();
-        //$data['customerid'] =  $newidcust->customerid_new;
-
         $data['customerid_m'] = $datacustidm;
 
         $this->db->where('customerid_m', $datacustidm);
@@ -106,6 +117,32 @@ class Request_new_outlet_model extends CI_Model
             "created_by" => $data["modified_by"]
             );
         $execreturncustob = $this->db->insert('m_customer_ob', $data_custob);
+
+        // notif onesignal
+        $customer_ob = $this->get_customer_ob($data['customerid']);
+        if (count($customer_ob) < 1) {
+            log_message('error', 'get get_customer_ob not found (' . $data['customerid'] . ')');
+            return;
+        }
+        $x_players = $this->get_x_player(array_column($customer_ob, 'salesmanid'));
+        if (count($x_players) > 0) {
+            foreach ($x_players as $xp) {
+                if (isset($xp->player_id)) {
+                    send_onesignal([
+                        'player_ids' => $xp->player_id,
+                        'title' => 'Approve Outlet',
+                        'message' => 'Outlet ' . ($data['kode_outlet'] ? '(' . $data['kode_outlet'] : '') . ($data['nama_customer'] ? ' ' . $data['nama_customer'] : '') . ') berhasil di Approve' . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : ''),
+                        'data' => array_merge(['type' => 'Approve Outlet'], [
+                            'siteid' => $data['siteid'] ?? '',
+                            'kode_outlet' => $data['kode_outlet'] ?? '',
+                            'nama_customer' => $data['nama_customer'] ?? '',
+                            'salesmanid' => $data['salesmanid'] ?? '',
+                        ]),
+                        'url' => 'ref_customer',
+                    ]);
+                }
+            }
+        }
 
         if ($execreturnapprove){
             //add pjp
@@ -159,11 +196,10 @@ class Request_new_outlet_model extends CI_Model
                         );
                     $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
                 }
-            //$sql = "select max(CAST(customerid as UNSIGNED))+1 customerid_new from m_customer";
             $this->db->query("Update app_data_version set version=version+1, modified_date=now(), modified_by='Req New Outlet'");
             $this->db->query("Update m_customer_image set customerid='".$data['customerid']."' where customerid='".$datacustidm."';");
             return $execreturnapprove;
-        }else{
+        } else {
             return $execreturnapprove;
         }
     }

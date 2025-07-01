@@ -32,22 +32,14 @@
 					imgLink = imgData,
 					imgTitle = currentimg.attr('title') || "No Title";
 					
-					//console.log(imgData, imgDescription, imgLink, imgTitle)
-					
 				superboximg.attr('src', imgData);
 				
 				$('.superbox-list').removeClass('active');
 				$this.addClass('active');
 				
-				//$('#imgInfoBox em').text(imgLink);
-				//$('#imgInfoBox >:first-child').text(imgTitle);
-				//$('#imgInfoBox .superbox-img-description').text(imgDescription);
-				
 				superboximg.find('em').text(imgLink);
 				superboximg.find('>:first-child').text(imgTitle);
 				superboximg.find('.superbox-img-description').text(imgDescription);
-				
-				//console.log("fierd")
 				
 				if($('.superbox-current-img').css('opacity') == 0) {
 					$('.superbox-current-img').animate({opacity: 1});

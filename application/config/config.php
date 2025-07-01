@@ -28,8 +28,8 @@ $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ?
 define('DIR_IMAGE', './uploads/');
 define('DIR_IMAGE_PATH', './../digital-record-card-api/uploads/');
 define('DIR_IMAGE_PATH_ABSENCE', './../digital-record-card-api/uploads/absence/');
-define('URL_IMAGE', 'https://api-drc.product-act.com/uploads/');
-define('URL_IMAGE_REVIEW', 'https://api-drc.product-act.com/uploads/image_review/');
+define('URL_IMAGE', 'https://par-api.product-act.com/uploads/');
+define('URL_IMAGE_REVIEW', 'https://par-api.product-act.com/uploads/image_review/');
 
 /*
 |--------------------------------------------------------------------------

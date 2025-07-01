@@ -15,15 +15,11 @@
 
         let resolver = new HttpResolver();
         let filter = new Filter();
-        console.log(filter);
         
         $.when(
             $.post(common.baseURL("ref_customer_class/load_subchannel"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1) {
-            console.log("then");
             setupForm(r1);
         }).fail(resolver.fail);
 

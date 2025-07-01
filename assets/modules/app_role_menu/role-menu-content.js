@@ -51,7 +51,6 @@
             onBeforeLoad: function (param) {
                 param = common.replaceGridFilterPrefix(param, "a");
                 param = common.replaceGridFilter(param, ["a.menu_name", "a.role_name"], ["b.menu_name", "c.role_name"]);
-                console.log(param);
                 return param;
             },
             onLoadSuccess: function (data) {

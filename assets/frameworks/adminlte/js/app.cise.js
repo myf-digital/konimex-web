@@ -148,7 +148,6 @@
     Common.prototype.baseURL = function (path = "") {
         let base_url = window.location.origin;
         let pathArray = window.location.pathname.split("/");
-		// console.log("path array " + pathArray[0]);
         return base_url + "/" + pathArray[0] + "/" + path + "/";
     };
 
@@ -167,10 +166,8 @@
 
     Common.prototype.post = function (url, data, callback, serialize) {
         if (serialize) {
-            // console.log("post serialize");
             $.post(url, JSON.stringify(data), callback, "json");
         } else {
-            // console.log("post original");
             $.post(url, data, callback, "json");
         }
     };
@@ -643,77 +640,6 @@
             };
         return this;
     }
-
-    /*
-    let value = {
-        page: undefined,
-        rows: undefined,
-        sort: undefined,
-        order: undefined,
-        filterRules: undefined
-    };
-    //
-    var filterRules = [];
-
-    Filter = function () {
-        filterRules = [];
-    };
-
-    Filter = function (page, rows) {
-        filterRules = [];
-        if (page !== undefined && isNaN(page) && page < 1) {
-            throw "page number min 1"
-        }
-        if (rows !== undefined && isNaN(rows) && rows < 1) {
-            throw "rows number min 1"
-        }
-        value.page = page;
-        value.rows = rows;
-        value.filterRules = undefined;
-        return this;
-    };
-
-    Filter = function (page, rows, sort, order) {
-        filterRules = [];
-        if (page !== undefined && isNaN(page) && page < 1) {
-            throw "page number min 1"
-        }
-        if (rows !== undefined && isNaN(rows) && rows < 1) {
-            throw "rows number min 1"
-        }
-        value.page = page;
-        value.rows = rows;
-        value.sort = sort;
-        value.order = order;
-        value.filterRules = undefined;
-        return this;
-    };
-
-    Filter.prototype.add = function (field, op, value) {
-        filterRules.push(new FilterRule(field, op, value));
-    };
-
-    Filter.prototype.build = function () {
-        console.log(value);
-        if (value.page === undefined) {
-            delete value.page;
-        }
-        if (value.rows === undefined) {
-            delete value.rows;
-        }
-        if (value.order === undefined) {
-            delete value.order;
-        }
-        if (value.filterRules === undefined) {
-            delete value.filterRules;
-        } else {
-            value.filterRules = JSON.stringify(filterRules);
-        }
-        return value;
-    };
-    */
-
-
 }(jQuery));
 
 // grid basic
@@ -724,7 +650,6 @@
         var setting = $.extend({
             columns: [],
             rows: [],
-            // key: []
         }, options);
         this.rows = setting.rows;
 

@@ -76,7 +76,6 @@
       afterSuccess: function (response) {
         let result = response.result;
         if (200 === result.status_login) {
-          console.log(result);
           common.setCookie("session", result.session);
           location.replace(common.baseURL("app_dashboard"));
         } else {
@@ -87,19 +86,24 @@
   })()
 </script>
 
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
+  // 1. Configure Service Worker Paths
+  OneSignalDeferred.push(function(OneSignal) {
+    OneSignal.SERVICE_WORKER_PATH = '/OneSignalSDKWorker.js';
+    OneSignal.SERVICE_WORKER_UPDATER_PATH = '/OneSignalSDKUpdaterWorker.js';
+  });
+
+  // 2. Initialize OneSignal with proper settings
   OneSignalDeferred.push(async function(OneSignal) {
     try {
       await OneSignal.init({
-        appId: "<?php echo $onesignal_app_id; ?>",
-        allowLocalhostAsSecureOrigin: true,
+        appId: '<?php echo $onesignal_app_id; ?>',
         autoRegister: true,
         promptOptions: {
           slidedown: {
-            enabled: true,
+            enabled: false,
             autoPrompt: false // Disable auto prompt since we have permission
           }
         },
@@ -108,7 +112,8 @@
           size: 'small',
           position: 'bottom-right',
           showCredit: false,
-        }
+        },
+        persistNotification: false,
       });
 
       // Check current permission state
@@ -120,7 +125,7 @@
         console.log('User has not granted permission');
       }
     } catch (error) {
-      console.error('OneSignal initialization error:', error);
+      console.error('OneSignal initialization error: ', error);
     }
   });
 </script>

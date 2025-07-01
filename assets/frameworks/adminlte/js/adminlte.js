@@ -27,10 +27,8 @@ function _init() {
 			b = $(window).height(),
 			c = $(".sidebar").height();
 			if ($("body").hasClass("fixed")) {
-				console.log('fixed');
 				$(".content-wrapper, .right-side").css("min-height", b - $(".main-footer").outerHeight());
 			} else {
-				console.log('no-fixed : ' + b + '|' + c);
 				var d;
 				b >= c ? ($(".content-wrapper, .right-side").css("min-height", b - a), d = b - a) : ($(".content-wrapper, .right-side").css("min-height", c), d = c);
 				var e = $($.AdminLTE.options.controlSidebarOptions.selector);
@@ -38,19 +36,6 @@ function _init() {
 			}
 		},
 		fixSidebar : function () {
-			//return $("body").hasClass("fixed") ? console.log('has fixed') : console.log('has no fixed')
-			/*
-			("undefined" == typeof $.fn.slimScroll && window.console && window.console.error("Error: the fixed layout requires the slimscroll plugin!"), void($.AdminLTE.options.sidebarSlimScroll && "undefined" != typeof $.fn.slimScroll && ($(".sidebar").slimScroll({
-							destroy : !0
-						}).height("auto")
-						, $(".sidebar").slimscroll({
-							// height : $(window).height() - $(".main-header").height() + "px",
-							color : "rgba(0,0,0,0.2)",
-							size : "3px"
-						})))) : void("undefined" != typeof $.fn.slimScroll && $(".sidebar").slimScroll({
-					destroy : !0
-				}).height("auto"))
-			*/
 		}
 	},
 	$.AdminLTE.pushMenu = {

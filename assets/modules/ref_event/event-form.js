@@ -85,7 +85,6 @@
         $.when(
             $.post(common.baseURL("ref_rdg/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormRdg(r1);
@@ -117,7 +116,6 @@
         $.when(
             $.post(common.baseURL("ref_group_peserta/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupFormPeserta(r1);

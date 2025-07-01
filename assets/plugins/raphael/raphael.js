@@ -5738,7 +5738,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * concated to the list of final arguments.
 	     | el.onclick = eve.f("click", 1, 2);
 	     | eve.on("click", function (a, b, c) {
-	     |     console.log(a, b, c); // 1, 2, [event object]
 	     | });
 	     > Arguments
 	     - event (string) event name
@@ -6769,7 +6768,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     | // to reset transformation call method with empty string
 	     | el.transform("");
 	     | // to get current value call it without parameters
-	     | console.log(el.transform());
 	     > Parameters
 	     - tstr (string) #optional transformation string
 	     * If tstr isn’t specified

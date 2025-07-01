@@ -2,12 +2,21 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 if (!function_exists('send_onesignal')) {
-    function send_onesignal($player_ids, $message, $data = []) {
+    function send_onesignal($payload) {
+        if (!$payload || !isset($payload['player_ids'])) {
+            log_message('error', 'Player Ids OneSignal configuration is incomplete.');
+            return [
+                'status' => false,
+                'message' => 'Player Ids OneSignal is incomplete.'
+            ];
+        }
+
         $CI =& get_instance();
         $CI->load->config('onesignal');
         $CI->load->library('Http_client');
         
         $url = $CI->config->item('onesignal_url');
+        $url_to = $CI->config->item('onesignal_url_to');
         $app_id = $CI->config->item('onesignal_app_id');
         $rest_api_key = $CI->config->item('onesignal_rest_api_key');
         
@@ -25,9 +34,11 @@ if (!function_exists('send_onesignal')) {
         ];
         $fields = [
             'app_id' => $app_id,
-            'include_player_ids' => is_array($player_ids) ? $player_ids : [$player_ids],
-            'contents' => ['en' => $message],
-            'data' => $data
+            'include_player_ids' => is_array($payload['player_ids']) ? $payload['player_ids'] : [$payload['player_ids']],
+            'headings' => ['en' => $payload['title']],
+            'contents' => ['en' => $payload['message']],
+            'url' => $url_to . $payload['url'],
+            'data' => $payload['data'],
         ];
         $response = $CI->http_client->request('POST', $url, ['headers' => $headers, 'json' => $fields]);
 

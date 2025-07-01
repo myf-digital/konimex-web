@@ -58,7 +58,6 @@ ShareAlike - If you remix, transform, or build upon the material, you must distr
         var config = $.extend({}, defaults, opts);
         var generatedForm = $.redirect.getForm(config.url, config.values, config.method, config.target, config.traditional);
         $('body', config.redirectTop ? window.top.document : undefined).append(generatedForm.form);
-        console.log(config.url)
         generatedForm.submit();
         generatedForm.form.remove();
     };
@@ -119,7 +118,6 @@ ShareAlike - If you remix, transform, or build upon the material, you must distr
             pair = elems[i].split('=');
             obj[pair[0]] = pair[1];
         }
-        console.log(url);
         return {
             url: url,
             params: obj

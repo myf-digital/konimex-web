@@ -160,8 +160,6 @@
             disabledPrev = 'disabled = "disabled"';
         }
 
-        console.log(Number(option.offset), Number(option.limit) , Number(option.resultCount))
-
         if ((Number(option.offset)+Number(option.limit)) >= Number(option.resultCount)) {
             disabledNext = 'disabled = "disabled"';
         }

@@ -71,7 +71,6 @@
 
         $("#btn-logout").click(function () {
             let url = common.baseURL("app_auth/logout");
-            console.log(url);
             $.getJSON(url,  function (response) {
                 window.location.replace(common.baseURL())
             });

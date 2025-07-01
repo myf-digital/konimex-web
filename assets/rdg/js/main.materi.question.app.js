@@ -112,7 +112,6 @@ $(document).ready(function () {
     }
 
     function templateAspekType1(value) {
-        // console.log("type - 1");
         var tmp = '' +
             '                       <div class="form-group">\n' +
             '                            <label>?1. ?2</label>\n' +
@@ -207,7 +206,6 @@ $(document).ready(function () {
                 }
                 valueOption = valueOption + option;
             });
-            // console.log(valueOption);
             tmp = tmp.replace("?4", valueOption);
         }
         tmp = tmp.replace("?1", value.nourut);
@@ -298,12 +296,10 @@ $(document).ready(function () {
             '                                </td>\n';
         var title = v.split('(');
         if (title.length > 1) {
-            // tmp = tmp.replace("?1", title[0] + "</br>(" + title[1]);
             tmp = tmp.replace("?1",  "(" + title[1] + "</br>" + title[0]);
         } else {
             tmp = tmp.replace("?1", v);
         }
-        // console.log(v);
         return tmp;
     }
 
@@ -314,13 +310,6 @@ $(document).ready(function () {
         return tmp;
     }
 
-    /**
-     * radio
-     * <label class="checkbox">\n' +
-     '      <input type="radio" name="radio-?1" value="?2" ?3>&nbsp;&nbsp; ?4\n' +
-     '      <span class="checkmark"></span>\n' +
-     '</label>\n' +
-     * */
     function templateTableRowQuestion(isHeader, index, value) {
         var tmp = '';
         if (isHeader) {
@@ -371,13 +360,11 @@ function review(rdg) {
 
 // pre-submit callback
 function validate(formData, jqForm, options) {
-    // console.log("validate");
     var isvalidForm = true;
     var optionValue = [];
     let param = JSON.parse(sessionStorage.getItem("review.list.aspek"));
     let user = JSON.parse(sessionStorage.getItem("review.nip"));
     $.each(param, function (i, v) {
-        // console.log("validate : " + v.tipe_soal);
         if (1 == v.tipe_soal) {
             if ($("input[name=radio-" + v.nourut + "]:checked").length === 0) {
                 isvalidForm = false;
@@ -388,9 +375,7 @@ function validate(formData, jqForm, options) {
                 optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
             }
         } else if (2 == v.tipe_soal) {
-            // console.log("validation selection");
             let nilai = $("select[name=" + v.nourut + "] option:selected").val();
-            // console.log(nilai);
             if ("" !== nilai) {
                 optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
             } else {
@@ -400,7 +385,6 @@ function validate(formData, jqForm, options) {
             }
         } else if (3 == v.tipe_soal) {
             let nilai = $("input[name=" + v.nourut + "]").val();
-            // console.log(nilai);
             if ("" !== nilai) {
                 optionValue.push({nip: user.nip, id_rdg: v.id_rdg, id_aspek: v.id_aspek, value: nilai});
             } else {

@@ -27,17 +27,13 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
             $.post(common.baseURL("rep_promo/load_account"), filter.build()),
             $.post(common.baseURL("rep_promo/load_regional"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1, r2) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1, r2);
         }).fail(resolver.fail);
 

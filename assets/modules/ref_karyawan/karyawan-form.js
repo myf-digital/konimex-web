@@ -53,7 +53,6 @@
         $.when(
             $.post(common.baseURL("ref_satker/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupForm(r1);

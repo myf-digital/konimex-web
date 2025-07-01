@@ -16,15 +16,11 @@
     function initializeParam() {
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
 
         $.when(
             $.post(common.baseURL("api_v1/call_product_brand"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-        }).then(function (r1) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1);
         }).fail(resolver.fail);
 
@@ -95,7 +91,6 @@
             data : "brandid="+brandid+"&productid="+productid,
             success:function(res){
                 response = res;
-                console.log(response)
                 $('#tbl-content').html(response);
 
                 common.loadingClose();

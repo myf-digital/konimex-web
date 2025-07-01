@@ -127,7 +127,6 @@
             $.post(common.baseURL("ref_jabatan/load"), param.build()),
             //$.post(common.baseURL("Conf_setup_site/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
         }).then(function (r1, r2) {
             common.loadingClose();
             setupForm(r1[0], r2[0]);

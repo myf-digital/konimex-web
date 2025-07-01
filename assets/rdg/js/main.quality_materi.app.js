@@ -9,8 +9,6 @@ $(document).ready(function () {
     let eventTmp = localStorage.getItem("user.event");
     let materiTmp = sessionStorage.getItem("quality.materi");
 
-    console.log(isMobile);
-
     $("#btn-back").on('click', function () {
         backToMateri();
     });
@@ -152,7 +150,6 @@ $(document).ready(function () {
 
         // let event = JSON.parse(eventTmp);
         window.setInterval(function () {
-            // console.log("reload interval");
             let materi1 = JSON.parse(materiTmp);
             let event1 = JSON.parse(eventTmp);
             common.post(common.baseURL('api_v1/grafik_per_materi'), {

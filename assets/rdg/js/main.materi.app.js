@@ -55,27 +55,7 @@ $(document).ready(function () {
         common.direct("rdg")
     }
 
-    function templateReview(value) {
-        // console.log(value);
-        var tmp ='';
-		/*if(0 < value.publish){
-		var tmp = '' +
-            '<li>' +
-            '   <span> ?1 / ?2</span>' +
-            '   <div class="button-group">\n' +
-            '       <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="reviewNotPublish(this)" class="btn-start">Evaluasi</a>' +
-            '   </div>' +
-            '</li>';
-		}else {
-		var tmp = '' +
-            '<li>' +
-            '   <span> ?1 / ?2</span>' +
-            '   <div class="button-group">\n' +
-			'       <a data-rdg="?3" data-nip="?4" data-materi="?5" data-rdgname="?6" href="javascript:void(0)" onclick="review(this)" class="btn-start">Evaluasi</a>' +
-            '   </div>' +
-            '</li>';
-		}*/
-		
+    function templateReview(value) {		
         if (0 < value.review) {
             tmp = '' +
                 '<li>' +

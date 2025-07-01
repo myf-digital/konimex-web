@@ -47,17 +47,13 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
 		if(isUpdate) filter.add("a.menu_id", "!=", param.menu_id);
         $.when(
             $.post(common.baseURL("app_menu/load"), filter.build()),
             // $.post(common.baseURL("app_menu/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1, r2) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1);
         }).fail(resolver.fail);
     }

@@ -140,7 +140,6 @@
                 rowNum++;
             } else {
                 $.each(v.child, function (i1, v1) {
-                    console.log(i, (i1));
                     headerChild.push({
                         field: 'item_' + rowNum,
                         title: v1.title.toUpperCase(),

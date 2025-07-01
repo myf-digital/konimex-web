@@ -100,31 +100,10 @@
         };
         
         uiTbl.datagrid(commonGrid.optionValue(option));
-        //uiTbl.datagrid(commonGrid.optionValue(detail));
         uiTbl.datagrid('enableFilter');
         common.removeFilter(['options']);
         common.removeFilter(['detail']);
-
       }
-
-    /*function initializeParam() {
-        common.loading();
-        let resolver = new HttpResolver();
-        let filter = new Filter();
-		console.log(filter);
-        
-        $.when(
-            $.post(common.baseURL("ref_customer_class/load"), filter.build()),
-        ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
-        }).then(function (r1) {
-            common.loadingClose();
-            console.log("then");
-            setupFormUI(r1);
-        }).fail(resolver.fail);
-
-    }*/
 
     function setupFormUI(r1) {
         let uiSelectClass = $("#classid-id");

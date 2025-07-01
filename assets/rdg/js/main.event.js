@@ -44,7 +44,6 @@ function showRequest(formData, jqForm, options) {
 // post-submit callback
 function processJson(responseText, statusText, xhr, $form) {
     hideLoading();
-    console.log("OK");
     if ("success" === statusText) {
         if (200 === responseText.code && responseText.result) {
             localStorage.setItem("user.login", JSON.stringify(responseText.result));

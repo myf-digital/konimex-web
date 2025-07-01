@@ -50,7 +50,6 @@
         let resolver = new HttpResolver();
         let filter = new Filter();
 
-		console.log(filter);
         uiBtnMP.click(function (){
             document.getElementById("id-tbmp").style.display="table"; 
             document.getElementById("id-tbpa").style.display="none"; 
@@ -69,11 +68,8 @@
                 $.post(common.baseURL("api_v1/call_product_brand"), filter.build()),
                 $.post(common.baseURL("ref_customer_class/load"), filter.build()),
             ).done(function (data, textStatus, jqXHR) {
-                console.log("done");
-                //console.log(d);
             }).then(function (r1, r2) {
                 common.loadingClose();
-                console.log("then");
                 setupForm(r1[0], r2[0]);
             }).fail(resolver.fail);
 
@@ -129,11 +125,8 @@
             $.when(
                 $.post(common.baseURL("ref_customer_class/load"), filter.build()),
             ).done(function (data, textStatus, jqXHR) {
-                console.log("done");
-                //console.log(d);
             }).then(function (r3) {
                 common.loadingClose();
-                console.log("then");
                 setupFormSos(r3);
             }).fail(resolver.fail);
 
@@ -167,11 +160,8 @@
                 $.post(common.baseURL("api_v1/call_product_brand"), filter.build()),
                 $.post(common.baseURL("ref_customer_class/load"), filter.build()),
             ).done(function (data, textStatus, jqXHR) {
-                console.log("done");
-                //console.log(d);
             }).then(function (r1, r2) {
                 common.loadingClose();
-                console.log("then");
                 setupForm(r1[0], r2[0]);
             }).fail(resolver.fail);
 

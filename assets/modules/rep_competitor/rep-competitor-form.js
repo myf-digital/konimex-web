@@ -22,7 +22,6 @@
         //common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
 
         uiBtnPreview.click(function () {
             //alert(uiSelectSalesman.val());

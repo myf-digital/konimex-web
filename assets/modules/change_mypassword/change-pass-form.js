@@ -15,7 +15,6 @@
                 return true; // MANDATORY!
             },
             afterSuccess: function (response) {
-                console.log(response)
                 let result = response.result;
                 if (result.status == 'ok') {
                     $.alert({
