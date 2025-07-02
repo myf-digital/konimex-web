@@ -1,10 +1,12 @@
 <header class="main-header">
     <a href="#" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span href="#" data-toggle="offcanvas" role="button" class="logo-mini"><b>PAR</b></span>
+        <span href="#" data-toggle="offcanvas" role="button" class="logo-mini">
+            <img src="assets/images/konimex-icon.png" alt="Konimex" width="65%">
+        </span>
         <!-- logo for regular state and mobile devices -->
         <span href="#" data-toggle="offcanvas" role="button" class="logo-lg">
-            <b>Product Activation Representative</b>
+            <img class="img" src="assets/images/konimex.png" alt="Konimex">
         </span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->

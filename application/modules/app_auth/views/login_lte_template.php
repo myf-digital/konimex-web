@@ -1,14 +1,15 @@
 <div class="container-fluid">
   <div class="row login">
     <div class="col-lg-2 col-sm-2 sidenav text-center">
-      <img class="img img-left" src="assets/images/par.png" alt="PAR" width="50%">
+      <img class="img img-left" src="assets/images/konimex-white.png" alt="Konimex" width="65%">
+      <p class="slogan">Ikut Menyehatkan Bangsa</p>
     </div>
     <div class="col-lg-8 col-sm-8">
       <div class="login-box-body">
         <div class="row">
           <div class="col-xs-6"></div>
           <div class="col-xs-4">
-            <img class="img login-banner" src="assets/images/par-dark.png" alt="PAR" width="50%">
+            <img class="img login-banner" src="assets/images/konimex.png" alt="Konimex">
           </div>
         </div>
         <div class="row">
