@@ -41,7 +41,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?php echo base_url('assets/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5'); ?>" type="text/css" />
 <link rel="stylesheet" href="<?php echo base_url('assets/fancybox/helpers/jquery.fancybox-thumbs.css?v=1.0.7'); ?>" type="text/css"/>
 
-<!--<link rel="stylesheet" href="<?php echo base_url('assets/multiselect/css/bootstrap.min.css'); ?>" /> -->
 <link rel="stylesheet" href="<?php echo base_url('assets/multiselect/lib/google-code-prettify/prettify.css'); ?>" />
 <link rel="stylesheet" href="<?php echo base_url('assets/multiselect/css/style.css'); ?>" />
 

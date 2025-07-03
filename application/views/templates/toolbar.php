@@ -2,11 +2,11 @@
     <a href="#" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span href="#" data-toggle="offcanvas" role="button" class="logo-mini">
-            <img src="assets/images/konimex-icon.png" alt="Konimex" width="65%">
+            <img src="<?php echo base_url() ?>assets/images/konimex-icon.png" alt="Konimex" width="65%">
         </span>
         <!-- logo for regular state and mobile devices -->
         <span href="#" data-toggle="offcanvas" role="button" class="logo-lg">
-            <img class="img" src="assets/images/konimex.png" alt="Konimex">
+            <img class="img" src="<?php echo base_url() ?>assets/images/konimex.png" alt="Konimex">
         </span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
@@ -16,9 +16,6 @@
             <ul class="nav navbar-nav">
                 <li class="dropdown user user-menu">
                     <a id="navbar_user" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <!--
-                      <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                        -->
                         <span class="hidden-xs"><?php echo $_SESSION['user'] ?></span>
                     </a>
                     <ul class="dropdown-menu">
@@ -33,17 +30,6 @@
                         <!-- Menu Body -->
                         <li class="user-body">
                             <div class="row">
-                                <!--
-                              <div class="col-xs-4 text-center">
-                                <a href="#">Followers</a>
-                              </div>
-                              <div class="col-xs-4 text-center">
-                                <a href="#">Sales</a>
-                              </div>
-                              <div class="col-xs-4 text-center">
-                                <a href="#">Friends</a>
-                              </div>
-                                -->
                             </div>
                             <!-- /.row -->
                         </li>
