@@ -70,10 +70,10 @@
                             <label for="areaid">Area</label>
                             <select id="areaid-id" name="areaid[]" class="form-control" multiple = "multiple" placeholder="Area"></select>
                         </div>
-                        <div class="form-group col-md-5">
+                        <!-- <div class="form-group col-md-5">
                             <label for="subareaid">City</label>
                             <select id="subareaid-id" name="subareaid[]" class="form-control" multiple = "multiple" placeholder="City"></select>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="box-footer">

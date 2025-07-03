@@ -234,7 +234,14 @@
             for (var i = 0; i < res.result.length; i++){
                 var opt = document.createElement('option');
                 opt.value = res.result[i].customerid;
-                opt.innerHTML = res.result[i].kode_outlet + " - " +res.result[i].outlet + " - " + res.result[i].account + " - " + res.result[i].dc;
+                
+                let html = '';
+                if (res.result[i].kode_outlet) html += res.result[i].kode_outlet;
+                if (res.result[i].outlet) html += ` - ${res.result[i].outlet}`;
+                if (res.result[i].account) html += ` - ${res.result[i].account}`;
+                if (res.result[i].dc) html += ` - ${res.result[i].dc}`;
+
+                opt.innerHTML = html;
                 opt.setAttribute('data-position', res.result[i].customerid);
                 select.appendChild(opt);
             }
@@ -242,5 +249,4 @@
             common.loadingClose();
         });
     }
-
 })();

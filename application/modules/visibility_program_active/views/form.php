@@ -20,61 +20,61 @@
 
                 <form id="fm-visibility-program-active" role="form" method="post">
                     <div class="box-body">
-							<div class="form-group col-md-6">
-								<label for="program_name">Program name</label>
-								<input name="program_name" class="form-control" placeholder="Program name">
-							</div>
-							<div class="form-group col-md-6">
-							</div>
-							<div class="form-group col-md-6">
-								<label for="description">Description</label>
-								<input name="description" class="form-control" placeholder="Description">
-							</div>
-							<div class="form-group col-md-6">
-							</div>
-							<div class="form-group col-md-2">
-								<label for="start_period">Start Period</label>
-                                    <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-th"></span>
-                                    </div>
-                                    <input id="start_period" placeholder="Start Period" type="text" class="form-control datepicker" name="start_period" readonly>
-                                    </div>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="end_period">End Period</label>
-                                <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-th"></span>
-                                    </div>
-                                    <input id="end_period" placeholder="End Period" type="text" class="form-control datepicker" name="end_period" readonly>
-                                    </div>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="qty_submit_photo">Qty Submit Photo</label>
-								<input name="qty_submit_photo" class="form-control" placeholder="Qty Submit Photo" type="number">
-							</div>
-							<div class="form-group col-md-6">
-							</div>
+                        <div class="form-group col-md-6">
+                            <label for="program_name">Program name</label>
+                            <input name="program_name" class="form-control" placeholder="Program name">
+                        </div>
+                        <div class="form-group col-md-6">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="description">Description</label>
+                            <input name="description" class="form-control" placeholder="Description">
+                        </div>
+                        <div class="form-group col-md-6">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="start_period">Start Period</label>
+                            <div class="input-group date">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                            <input id="start_period" placeholder="Start Period" type="text" class="form-control datepicker" name="start_period" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="end_period">End Period</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                                <input id="end_period" placeholder="End Period" type="text" class="form-control datepicker" name="end_period" readonly>
+                                </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="qty_submit_photo">Qty Submit Photo</label>
+                            <input name="qty_submit_photo" class="form-control" placeholder="Qty Submit Photo" type="number">
+                        </div>
+                        <div class="form-group col-md-6">
+                        </div>
 
-							<div class="form-group col-md-6">
-								<label for="classid">Select Account List</label>
-                                <select id="classid-id" name="classid[]" class="form-control" placeholder="Select Account List"></select>
-							</div>
-							<div class="form-group col-md-6">
-							</div>
-                            <div class="form-group col-md-3">
-                                <label for="regionalid">Regional</label>
-                                <select id="regionalid-id" name="regionalid" class="form-control" placeholder="Regional"></select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="areaid">Area</label>
-                                <select id="areaid-id" name="areaid" class="form-control" placeholder="Area"></select>
-                            </div>
-                            <div class="form-group col-md-5">
-                                <label for="subareaid">City</label>
-                                <select id="subareaid-id" name="subareaid[]" class="form-control" placeholder="City"></select>
-                            </div>
+                        <div class="form-group col-md-6">
+                            <label for="classid">Select Account List</label>
+                            <select id="classid-id" name="classid[]" class="form-control" placeholder="Select Account List"></select>
+                        </div>
+                        <div class="form-group col-md-6">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="regionalid">Regional</label>
+                            <select id="regionalid-id" name="regionalid" class="form-control" placeholder="Regional"></select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="areaid">Area</label>
+                            <select id="areaid-id" name="areaid" class="form-control" placeholder="Area"></select>
+                        </div>
+                        <!-- <div class="form-group col-md-5">
+                            <label for="subareaid">City</label>
+                            <select id="subareaid-id" name="subareaid[]" class="form-control" placeholder="City"></select>
+                        </div> -->
                     </div>
 
                     <div class="box-footer">

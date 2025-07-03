@@ -67,9 +67,9 @@
                 areaid: {
                     required: true
                 },
-                subareaid: {
-                    required: true
-                },
+                // subareaid: {
+                //     required: true
+                // },
                 classid: {
                     required: true
                 },
@@ -125,9 +125,9 @@
             areaSelected = e.params.data;
             //siteSelected = uiSelectSiteid.val();
             regionalSelected = uiSelectRegional.val();
-            let sraval = areaSelected;
-            sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
-            loadSubArea(sraval);
+            // let sraval = areaSelected;
+            // sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
+            // loadSubArea(sraval);
         });
 
         uiSelectPropinsi.select2({
@@ -207,7 +207,7 @@
             loadRegional({usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level: paramsession.restrict_level});
             loadSalesman({usersession: paramsession.username, idjabatan: paramsession.idjabatan,restrict_level: paramsession.restrict_level});
             loadArea({regionalid:param.regionalid, usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level:paramsession.restrict_level});
-            loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
+            // loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
 
         }
 

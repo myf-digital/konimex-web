@@ -1,3 +1,9 @@
+<style>
+    #btn-preview {
+        margin: 5px -5px 0px 7px !important;
+    }
+</style>
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>

@@ -48,7 +48,7 @@
 				{field:'account_name', title:'Account', halign: 'center', align: 'center', sortable:"true", width:50},
 				{field:'nama_regional', title:'Regional', halign: 'center', align: 'center', sortable:"true", width:20},
 				{field:'nama_area', title:'Area', halign: 'center', align: 'center', sortable:"true", width:20},
-				{field:'city', title:'City', halign: 'center', align: 'center', sortable:"true", width:50},
+				// {field:'city', title:'City', halign: 'center', align: 'center', sortable:"true", width:50},
 				//{field:'created_by', title:'Created By', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'created_date', title:'Created Date', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'modified_by', title:'Modified By', halign: 'center', align: 'left', sortable:"true", width:200},

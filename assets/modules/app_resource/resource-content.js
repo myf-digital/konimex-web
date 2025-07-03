@@ -1,5 +1,4 @@
 (function () {
-
     // import commons
     const common = new Common();
     const commonGrid = new CommonGrid();
@@ -52,7 +51,7 @@
 				{field:'jabatan', title:'Jabatan', halign: 'left', align: 'left', sortable:"true", width:100},
 				{field:'nama_regional', title:'Regional', halign: 'left', align: 'left', sortable:"true", width:200},
 				{field:'nama_area', title:'Area', halign: 'left', align: 'left', sortable:"true", width:200},
-				{field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:200},
+				// {field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:200},
 				//{field:'status', title:'STATUS', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'created_by', title:'CREATED BY', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'created_date', title:'CREATED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
@@ -121,5 +120,4 @@
             })
         });
     }
-
 })();

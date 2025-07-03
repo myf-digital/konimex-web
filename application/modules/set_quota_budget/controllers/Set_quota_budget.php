@@ -314,7 +314,7 @@ class Set_quota_budget extends BaseController
 		$html .='<th style="text-align:center;white-space:nowrap;width:25px;">No.</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">Regional</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">Area</th>';
-		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">City</th>';
+		// $html .='<th style="text-align:left;white-space:nowrap;width:100px;">City</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">SPG</th>';
         $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MERCHANDISER</th>';
         $html .='<th style="text-align:left;white-space:nowrap;width:100px;">SALESMAN MT</th>';
@@ -336,7 +336,7 @@ class Set_quota_budget extends BaseController
 			$html .='<tr><td style="text-align:center;white-space:nowrap;">'.$no.'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_city['nama_regional'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_city['nama_area'].'</td>';
-			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_city['city'].'<input id="listcity" type="hidden" name="listcity[]"  value="'.$v_city['subareaid'].'" /><input id="listcitynm" type="hidden" name="listcitynm[]"  value="'.$v_city['city'].'" /></td>';
+			// $html .='<td style="text-align:left;white-space:nowrap;">'.$v_city['city'].'<input id="listcity" type="hidden" name="listcity[]"  value="'.$v_city['subareaid'].'" /><input id="listcitynm" type="hidden" name="listcitynm[]"  value="'.$v_city['city'].'" /></td>';
 			$html .='<td style="text-align:left;white-space:nowrap;"><input id="listspg" type="text" name="listspg[]"  value="'.$v_city['spg'].'" autocomplete="off" onkeypress="javascript:return isNumber(event)" /></td>';
 			$html .='<td style="text-align:left;white-space:nowrap;"><input id="listmd" type="text" name="listmd[]"  value="'.$v_city['md'].'" autocomplete="off" onkeypress="javascript:return isNumber(event)" /></td>';
 			$html .='<td style="text-align:left;white-space:nowrap;"><input id="listsfmt" type="text" name="listsfmt[]"  value="'.$v_city['sfmt'].'" autocomplete="off" onkeypress="javascript:return isNumber(event)" /></td>';

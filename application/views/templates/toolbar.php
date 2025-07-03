@@ -4,7 +4,7 @@
         <span href="#" data-toggle="offcanvas" role="button" class="logo-mini"><b>PAR</b></span>
         <!-- logo for regular state and mobile devices -->
         <span href="#" data-toggle="offcanvas" role="button" class="logo-lg">
-            <b>Product Activation Representative</b>
+            <img src="<?php echo base_url() ?>assets/images/par-full.png" alt="PAR" width="100%">
         </span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
@@ -14,9 +14,6 @@
             <ul class="nav navbar-nav">
                 <li class="dropdown user user-menu">
                     <a id="navbar_user" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <!--
-                      <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                        -->
                         <span class="hidden-xs"><?php echo $_SESSION['user'] ?></span>
                     </a>
                     <ul class="dropdown-menu">
@@ -30,19 +27,7 @@
                         </li>
                         <!-- Menu Body -->
                         <li class="user-body">
-                            <div class="row">
-                                <!--
-                              <div class="col-xs-4 text-center">
-                                <a href="#">Followers</a>
-                              </div>
-                              <div class="col-xs-4 text-center">
-                                <a href="#">Sales</a>
-                              </div>
-                              <div class="col-xs-4 text-center">
-                                <a href="#">Friends</a>
-                              </div>
-                                -->
-                            </div>
+                            <div class="row"></div>
                             <!-- /.row -->
                         </li>
                         <!-- Menu Footer-->

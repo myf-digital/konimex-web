@@ -1,5 +1,4 @@
 (function () {
-
     const common = new Common();
     common.setTitle("Resource");
     // declare dom
@@ -91,10 +90,10 @@
             areaSelected = e.params.data;
             //siteSelected = uiSelectSiteid.val();
             //regionalSelected = uiSelectRegional.val();
-            let sraval = {areaid:uiSelectArea.val()};
+            // let sraval = {areaid:uiSelectArea.val()};
             //sraval.push = {siteid:siteSelected};
             //sraval.push = {regionalid:regionalSelected};
-            loadSubArea(sraval);
+            // loadSubArea(sraval);
         });
 
         if (isUpdate) {
@@ -104,16 +103,16 @@
             uiSelectRegional.val(param.regionalid).trigger('change');
             let srval = {regionalid:param.regionalid};
             loadArea(srval);
-            let sraval = {areaid:param.areaid};
-            loadSubArea(sraval);
+            // let sraval = {areaid:param.areaid};
+            // loadSubArea(sraval);
         }else{
             //loadSiteid(null);
             let sval = {siteid:"GSK01"};
             loadRegional(sval);
             let srval = {regionalid:null};
             loadArea(srval);
-            let sraval = {areaid:null};
-            loadSubArea(sraval);
+            // let sraval = {areaid:null};
+            // loadSubArea(sraval);
         }
 
     }
@@ -269,6 +268,4 @@
             common.loadingClose();
         });
     }
-
-    
 })();

@@ -112,10 +112,10 @@ class Conf_setup_pjp extends BaseController
             
             $filename = "PJP_".$filename.".xlsx";
             $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, b.typeid channel, a.minggu, a.hari,
-                             b.kode_outlet, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
+                             b.kode_outlet, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area area
                       from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
                       left join m_sales_salesman d on d.salesmanid=a.salesmanid
-                      left join m_area_subarea e on e.subareaid = b.subareaid
+                      left join m_area_areasite e on e.areaid = b.areaid
                       $strquery
                       order by b.nama_customer, a.minggu asc
                     ";
@@ -142,7 +142,7 @@ class Conf_setup_pjp extends BaseController
                         ->setCellValue('J2', 'SUB CHANNEL/ACCOUNT')
                         ->setCellValue('K2', 'MINGGU')
                         ->setCellValue('L2', 'HARI')
-                        ->setCellValue('M2', 'KOTA')
+                        ->setCellValue('M2', 'AREA')
                         ->setCellValue('N2', 'TYPE')
                         ->setCellValue('O2', 'DC')
                         ;
@@ -164,7 +164,7 @@ class Conf_setup_pjp extends BaseController
                                         ->setCellValue('J'.$i, $vpjp['nama_class'])
                                         ->setCellValue('K'.$i, $vpjp['minggu'])
                                         ->setCellValue('L'.$i, $vpjp['hari'])
-                                        ->setCellValue('M'.$i, $vpjp['city'])
+                                        ->setCellValue('M'.$i, $vpjp['area'])
                                         ->setCellValue('N'.$i, $vpjp['outlet_type'])
                                         ->setCellValue('O'.$i, $vpjp['dc']);
                                 $i++;

@@ -70,7 +70,7 @@
 				//{field:'tipe_bayar', title:'TIPE BAYAR', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'nama_regional', title:'Regional', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'nama_area', title:'Area', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nama_subarea', title:'Sub Area', halign: 'center', align: 'left', sortable:"true", width:200},
+				// {field:'nama_subarea', title:'Sub Area', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'propinsiid', title:'Propinsi', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'kotaid', title:'Kota/Kabupaten', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'kelurahanid', title:'Kelurahan', halign: 'center', align: 'left', sortable:"true", width:200},

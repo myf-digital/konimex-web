@@ -74,7 +74,7 @@
 				{field:'nama_customer', title:'OUTLET NAME', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'group_account', title:'GROUP ACCOUNT', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'city', title:'City', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'area', title:'Area', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'nama_class', title:'ACCOUNT', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'tgl_proses', title:'TGL PROSES', halign: 'center', align: 'left', sortable:"true", width:200},

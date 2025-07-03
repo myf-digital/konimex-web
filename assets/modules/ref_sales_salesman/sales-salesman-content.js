@@ -46,7 +46,7 @@
 				{field:'tipe_sales', title:'GFF TYPE', halign: 'left', align: 'left', sortable:"true", width:100},
 				{field:'nama_regional', title:'Regional', halign: 'left', align: 'left', sortable:"true", width:120},
 				{field:'nama_area', title:'Area', halign: 'left', align: 'left', sortable:"true", width:120},
-				{field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:120},
+				// {field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:120},
 				{field:'aktifstatus', title:'STATUS', halign: 'left', align: 'left', sortable:"true", width:100},
 				//{field:'password', title:'PASSWORD', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'nama_category', title:'CATEGORY', halign: 'left', align: 'left', sortable:"true", width:200},

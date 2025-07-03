@@ -33,7 +33,6 @@
                         <button id="btn-download-form" type="button" class="btn btn-primary fa fa-download">  Download</button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>

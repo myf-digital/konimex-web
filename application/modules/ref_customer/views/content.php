@@ -33,14 +33,11 @@
                     <h4 class="modal-title" id="ModalLabel">List GFF</h4>
                 </div>
                 <div class="modal-body">
-
-                        <div id="tbl-listgff" class="box-table box-success">
-                        </div>
-
- 
-                        <div class="modal-footer">
-                            <a  class="btn btn-secondary" data-dismiss="modal">Close</a>
-                        </div>
+                    <div id="tbl-listgff" class="box-table box-success">
+                    </div>
+                    <div class="modal-footer">
+                        <a  class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    </div>
                 </div>
             </div>
         </div>
