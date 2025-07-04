@@ -74,31 +74,31 @@
 
                 <form id="fm-report_promo" role="form" method="post">
                     <div class="box-body col-md-12">
-                            <div class="form-group col-md-3">
-								<label for="typecompetitor">Option</label>
-                                <select id="typecompetitor-id" name="typecompetitor" class="form-control" placeholder="Select Option">
+                        <div class="form-group col-md-3">
+                            <label for="typecompetitor">Option</label>
+                            <select id="typecompetitor-id" name="typecompetitor" class="form-control" placeholder="Select Option">
                                 <option value="PC">Promo Competitor</option>
                                 <option value="NPD">New Product Competitor</option>
-                                </select>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="start_periode">Periode</label>
-                                    <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-th"></span>
-                                    </div>
-                                    <input id="start_periode" placeholder="Periode" type="text" class="form-control datepicker" name="start_periode" readonly>
-                                    </div>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="end_periode">End Periode</label>
-                                <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-th"></span>
-                                    </div>
-                                    <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
-                                    </div>
-							</div>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="start_periode">Periode</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                                <input id="start_periode" placeholder="Periode" type="text" class="form-control datepicker" name="start_periode" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="end_periode">End Periode</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                                <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="box-footer">

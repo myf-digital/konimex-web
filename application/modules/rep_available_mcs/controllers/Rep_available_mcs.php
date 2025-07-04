@@ -120,11 +120,11 @@ class Rep_available_mcs extends BaseController
                     ->setCellValue('F1', 'Account')
                     ->setCellValue('G1', 'Regional')
                     ->setCellValue('H1', 'Area')
-                    ->setCellValue('I1', 'City')
-                    ->setCellValue('J1', 'DC')
-                    ->setCellValue('K1', 'MCS')
-                    ->setCellValue('L1', 'Last3Months')
-                    ->setCellValue('M1', '%')
+                    // ->setCellValue('I1', 'City')
+                    ->setCellValue('I1', 'DC')
+                    ->setCellValue('J1', 'MCS')
+                    ->setCellValue('K1', 'Last3Months')
+                    ->setCellValue('L1', '%')
                     ;
 
         $datamcs = $this->available_mcs->get_available_mcs_xls($data);
@@ -140,11 +140,11 @@ class Rep_available_mcs extends BaseController
                         ->setCellValue('F'.$row, $value['nama_class'])
                         ->setCellValue('G'.$row, $value['nama_regional'])
                         ->setCellValue('H'.$row, $value['nama_area'])
-                        ->setCellValue('I'.$row, $value['city'])
-                        ->setCellValue('J'.$row, $value['dc'])
-                        ->setCellValue('K'.$row, $value['active_mcs'])
-                        ->setCellValue('L'.$row, $value['active_sku'])
-                        ->setCellValue('M'.$row, $value['_percentage'])
+                        // ->setCellValue('I'.$row, $value['city'])
+                        ->setCellValue('I'.$row, $value['dc'])
+                        ->setCellValue('J'.$row, $value['active_mcs'])
+                        ->setCellValue('K'.$row, $value['active_sku'])
+                        ->setCellValue('L'.$row, $value['_percentage'])
 						;
 			$i++;
             $row++;

@@ -36,6 +36,15 @@ class Rep_gffaktif_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
 
+    public function get_area($data)
+    {
+        $field = " a.* ";
+        $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
+                        order by areaid asc
+                    ) as a";
+        return easy_pagging($data, $field, $table);
+    }
+
     public function get_city($data)
     {
         $field = " a.* ";
@@ -91,7 +100,7 @@ class Rep_gffaktif_model extends CI_Model
         }
 
 		$regional = $regionalid != 'null' ? ' and d.regionalid="'.$regionalid.'" ' : '';
-        $area = $areaid != 'null' ? ' and b.subareaid="'.$areaid.'" ' : '';
+        $area = $areaid != 'null' ? ' and b.areaid="'.$areaid.'" ' : '';
 
 		$q = $this->db->query("
                                 select a.salesmanid, a.nama_salesman, a.tipe_sales,d.nama_regional,c.nama_area,b.nama_area city from 

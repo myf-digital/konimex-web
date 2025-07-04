@@ -105,27 +105,25 @@
 </section>
 
 <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="ModalLabel">List Product MCS vs Active SKU</h4>
-                </div>
-                <div class="modal-body">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                  <h4 class="modal-title" id="ModalLabel">List Product MCS vs Active SKU</h4>
+              </div>
+              <div class="modal-body">
+                    <div id="tbl-listproduct" class="box-table box-success">
+                    </div>
 
-                        <div id="tbl-listproduct" class="box-table box-success">
-                        </div>
-
- 
-                        <div class="modal-footer">
-                            <a  class="btn btn-secondary" data-dismiss="modal">Close</a>
-                        </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <div class="modal-footer">
+                        <a  class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    </div>
+              </div>
+          </div>
+      </div>
+  </div>
 
 <!-- JS content -->
 <script src="<?php echo base_url() . 'assets/modules/rep_available_mcs/rep-available-mcs-content.js' ?>"></script>

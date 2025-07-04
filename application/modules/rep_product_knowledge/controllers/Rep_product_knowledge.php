@@ -118,8 +118,8 @@ class Rep_product_knowledge extends BaseController
                     ->setCellValue('D1', 'Nama GFF')
                     ->setCellValue('E1', 'Regional')
                     ->setCellValue('F1', 'Area')
-                    ->setCellValue('G1', 'City')
-                    ->setCellValue('H1', 'Score')
+                    // ->setCellValue('G1', 'City')
+                    ->setCellValue('G1', 'Score')
                     ;
 
         $datamcs = $this->product_knowledge->get_product_knowledge_xls($data);
@@ -133,8 +133,8 @@ class Rep_product_knowledge extends BaseController
                         ->setCellValue('D'.$row, $value['nama_salesman'])
                         ->setCellValue('E'.$row, $value['nama_regional'])
                         ->setCellValue('F'.$row, $value['nama_area'])
-                        ->setCellValue('G'.$row, $value['city'])
-                        ->setCellValue('H'.$row, $value['final_score'])
+                        // ->setCellValue('G'.$row, $value['city'])
+                        ->setCellValue('G'.$row, $value['final_score'])
 						;
 			$i++;
             $row++;

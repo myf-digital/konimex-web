@@ -14,7 +14,8 @@
     let uiSelectTipepromo = $("#tipepromo-id");   
     let uiEndPeriode = $("#end_periode"); 
     let uiSelectRegional = $("#regional-id");   
-    let uiSelectCity = $("#city-id");   
+    let uiSelectArea = $("#area-id");
+    let uiSelectCity = $("#city-id");
     //let uiTblReport = $("#tbl-content"); 
     
     // define from *-content.js
@@ -113,7 +114,7 @@
             regionalSelected = e.params.data;
             //alert(uiSelectTipepromo.val());
             paramdata = {regionalid:uiSelectRegional.val()};
-            loadCity(paramdata);
+            loadArea(paramdata);
         });
 
         uiStartPeriode.on('changeDate', function(selected) {
@@ -166,7 +167,7 @@
         var start = uiStartPeriode.val();
         var end = uiEndPeriode.val();
         var regional = uiSelectRegional.val();
-        var city = uiSelectCity.val();
+        var area = uiSelectArea.val();
         var tipepromo = uiSelectTypePromo.val();
         var idjabatan = paramsession.idjabatan;
         var usersession = paramsession.username;
@@ -180,7 +181,7 @@
                     //$("#map-content").html('Populating data, please wait..');
                 },
                 url: common.baseURL("rep_promo/open_detail"),
-                data : "tipepromo="+tipepromo+"&idpromo="+idpromo+"&start="+start+"&end="+end+"&regional="+regional+"&city="+city+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrict_level,
+                data : "tipepromo="+tipepromo+"&idpromo="+idpromo+"&start="+start+"&end="+end+"&regional="+regional+"&area="+area+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrict_level,
                 success:function(res){
                     response = res;
                     //$('div .modal-header .modal-title').text('Detail Productifity Sales');			
@@ -199,7 +200,7 @@
                     //$("#map-content").html('Populating data, please wait..');
                 },
                 url: common.baseURL("rep_promo/open_detail_gimmick"),
-                data : "tipepromo="+tipepromo+"&idpromo="+idpromo+"&start="+start+"&end="+end+"&regional="+regional+"&city="+city+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrict_level,
+                data : "tipepromo="+tipepromo+"&idpromo="+idpromo+"&start="+start+"&end="+end+"&regional="+regional+"&area="+area+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrict_level,
                 success:function(res){
                     response = res;
                     //$('div .modal-header .modal-title').text('Detail Productifity Sales');			
@@ -232,6 +233,24 @@
         });
     }
 
+    function loadArea(data) {
+        common.loading();
+        //alert(data.idaccount);
+        $.post(common.baseURL("rep_promo/load_area"), {regionalid: data.regionalid}, function (res) {
+            uiSelectArea.empty();
+            uiSelectArea.select2({
+                placeholder: "Select Area",
+                allowClear: true,
+                data: $.map(res.rows, function (o) {
+                    o.id = o.areaid; // replace name with the property used for the text
+                    o.text = o.nama_area;
+                    return o;
+                }),
+            });
+            common.loadingClose();
+        });
+    }
+
     function loadCity(data) {
         common.loading();
         //alert(data.idaccount);
@@ -256,7 +275,7 @@
         var start = uiStartPeriode.val();
         var end = uiEndPeriode.val();
         var regional = uiSelectRegional.val();
-        var city = uiSelectCity.val();
+        var area = uiSelectArea.val();
         var tipepromo = uiSelectTypePromo.val();
         var idjabatan = paramsession.idjabatan;
         var usersession = paramsession.username;
@@ -264,9 +283,9 @@
         //idpromo = idpromo.replace(",", "|");
         //var url = encodeURI();
         if (uiSelectTypePromo.val()=='Discount' || uiSelectTypePromo.val()=='Joint Promo' || uiSelectTypePromo.val()=='Display'){
-            common.direct("rep_promo/savetoxlsx/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+tipepromo+"/"+regional+"/"+city);
+            common.direct("rep_promo/savetoxlsx/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+tipepromo+"/"+regional+"/"+area);
         }else{
-            common.direct("rep_promo/savetoxlsx_gimmick/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+regional+"/"+city);
+            common.direct("rep_promo/savetoxlsx_gimmick/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+regional+"/"+area);
         }
         /*
         $.ajax({
@@ -293,16 +312,16 @@
         var idpromo = uiSelectPromo.val();
         var start = uiStartPeriode.val();
         var end = uiEndPeriode.val();
-        var city = uiSelectCity.val();
+        var area = uiSelectArea.val();
         var regional = uiSelectRegional.val();
         var tipepromo = uiSelectTypePromo.val();
         var idjabatan = paramsession.idjabatan;
         var usersession = paramsession.username;
         var restrict_level = paramsession.restrict_level;
         if (uiSelectTypePromo.val()=='Discount' || uiSelectTypePromo.val()=='Joint Promo' || uiSelectTypePromo.val()=='Display'){
-            common.direct("rep_promo/savetoxlsx_text_only/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+tipepromo+"/"+regional+"/"+city);
+            common.direct("rep_promo/savetoxlsx_text_only/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+tipepromo+"/"+regional+"/"+area);
         }else{
-            common.direct("rep_promo/savetoxlsx_gimmick_text_only/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+regional+"/"+city);
+            common.direct("rep_promo/savetoxlsx_gimmick_text_only/"+idpromo+"/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+regional+"/"+area);
         }
     }
 

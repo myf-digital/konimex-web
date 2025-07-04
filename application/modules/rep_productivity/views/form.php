@@ -112,8 +112,8 @@
                                 <select id="regional-id" name="regional" class="form-control" placeholder="Select Regional"></select>
                             </div>
                             <div class="form-group col-md-2">
-                                <label for="city">City</label>
-                                <select id="city-id" name="city" class="form-control" placeholder="Select City"></select>
+                                <label for="area">Area</label>
+                                <select id="area-id" name="area" class="form-control" placeholder="Select Area"></select>
                             </div>
                     </div>
 

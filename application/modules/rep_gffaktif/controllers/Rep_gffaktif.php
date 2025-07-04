@@ -49,6 +49,12 @@ class Rep_gffaktif extends BaseController
         responseJSON($this->report_gffaktif->get_regional($data));
     }
 
+    public function load_area()
+    {
+        $data = param_input();
+        responseJSON($this->report_gffaktif->get_area($data));
+    }
+
     public function load_city()
     {
         $data = param_input();
@@ -103,7 +109,7 @@ class Rep_gffaktif extends BaseController
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Area FC</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">City</th>';
+        // $html .='<th rowspan="2" style="text-align:left;width: 200px">City</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -156,7 +162,7 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['tipe_sales'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_regional'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_area'].'</td>';
-			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['city'].'</td>';
+			// $html .='<td style="text-align:left;width: 200px">'.$v_salesman['city'].'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -307,7 +313,7 @@ class Rep_gffaktif extends BaseController
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area FC</th>';
-        $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">City</th>';
+        // $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">City</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -359,7 +365,7 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['tipe_sales'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_regional'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_area'].'</td>';
-			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['city'].'</td>';
+			// $html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['city'].'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -541,7 +547,7 @@ class Rep_gffaktif extends BaseController
                 $value['tipe_sales'],
                 $value['nama_regional'],
                 $value['nama_area'],
-                $value['city']
+                // $value['city']
             ];
 
             $sheet->fromArray($content,NULL,'A'.$row);
@@ -580,7 +586,7 @@ class Rep_gffaktif extends BaseController
 			$row++;
 		}
 
-		$sheet->setCellValue('G'.$row, 'Total');
+		$sheet->setCellValue('F'.$row, 'Total');
 		$sheet->fromArray($sumStatus,NULL,'H'.$row);
 		$sheet->mergeCells('A2:A3');
 		$sheet->mergeCells('B2:B3');
@@ -588,8 +594,8 @@ class Rep_gffaktif extends BaseController
 		$sheet->mergeCells('D2:D3');
 		$sheet->mergeCells('E2:E3');
 		$sheet->mergeCells('F2:F3');
-		$sheet->mergeCells('G2:G3');
-		$sheet->getStyle('A2:G2')->getAlignment()->setHorizontal('center')->setVertical('center');
+		// $sheet->mergeCells('G2:G3');
+		$sheet->getStyle('A2:F2')->getAlignment()->setHorizontal('center')->setVertical('center');
 
 		//new tab sheet
 		$spreadsheet->createSheet();

@@ -44,6 +44,12 @@ class Rep_promo extends BaseController
         responseJSON($this->report_promo->load_regional($data));
     }
 
+    public function load_area()
+    {
+        $data = param_input();
+        responseJSON($this->report_promo->load_area($data));
+    }
+
     public function load_city()
     {
         $data = param_input();
@@ -58,7 +64,7 @@ class Rep_promo extends BaseController
 		$start = $this->input->post("start");
 		$end = $this->input->post("end");
 		$regional = $this->input->post("regional");
-		$city = $this->input->post("city");
+		$area = $this->input->post("area");
 		$idjabatan = $this->input->post("idjabatan");
 		$restrict_level = $this->input->post("restrict_level");
 		$usersession = $this->input->post("usersession");
@@ -92,8 +98,8 @@ class Rep_promo extends BaseController
 		}else{
             $strquery = "";
         }*/
-        $regional = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
-        $subarea = $city != 'null' ? ' and c.subareaid="'.$city.'" ' : '';
+        $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
+        $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
 
         if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
 
@@ -108,7 +114,7 @@ class Rep_promo extends BaseController
                                 left join m_area_regional f on c.regionalid=f.regionalid
                                 left join m_area_areasite g on c.areaid = g.areaid
                                 left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.periode between '".$start."' and '".$end."' ".$regional.$subarea.$addquery.$strquery.";
+                                where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$addquery.$strquery.";
                             ");
 		//echo $this->db->last_query();
 		$data = $q->result_array();
@@ -128,7 +134,7 @@ class Rep_promo extends BaseController
 		$html .= '<th style="width: 100px">Kode Outlet</th>';
 		$html .= '<th style="width: 250px">Nama Outlet</th>';
 		$html .= '<th style="width: 350px">Alamat</th>';
-		$html .= '<th style="width: 150px">Kota</th>';
+		$html .= '<th style="width: 150px">Area</th>';
 		//$html .= '<th style="white-space: nowrap;">Stock Awal</th>';
 		$html .= '<th style="width: 100px">Qty Pasang</th>';
 		$html .= '<th style="width: 200px">Deskripsi</th>';
@@ -153,7 +159,7 @@ class Rep_promo extends BaseController
 			$html .= '<td style="width: 100px">'.$value['kode_outlet'].'</td>';
 			$html .= '<td style="width: 250px">'.$value['nama_customer'].'</td>';
 			$html .= '<td style="width: 350px">'.$value['alamat'].'</td>';
-			$html .= '<td style="width: 150px">'.$value['city'].'</td>';
+			$html .= '<td style="width: 150px">'.$value['nama_area'].'</td>';
 			//$html .= '<td style="width: 200px">'.$value['stock_awal'].'</td>';
 			$html .= '<td style="width: 100px">'.$value['qty_pasang'].'</td>';
 			$html .= '<td style="width: 200px">'.$value['description'].'</td>';
@@ -189,7 +195,7 @@ class Rep_promo extends BaseController
 		$start = $this->input->post("start");
 		$end = $this->input->post("end");
 		$regional = $this->input->post("regional");
-		$city = $this->input->post("city");
+		$area = $this->input->post("area");
 		$idjabatan = $this->input->post("idjabatan");
 		$restrict_level = $this->input->post("restrict_level");
 		$usersession = $this->input->post("usersession");
@@ -223,14 +229,14 @@ class Rep_promo extends BaseController
 		}else{
             $strquery = "";
         }*/
-        $regional = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
-        $subarea = $city != 'null' ? ' and c.subareaid="'.$city.'" ' : '';
+        $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
+        $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
 
         if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
 
         $q = $this->db->query(" 
                                 select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                       f.nama_regional, g.nama_area, h.nama_area as city 
+                                       f.nama_regional, g.nama_area, h.nama_area as ciry 
                                 from t_activity_promo_gsk a
                                 join mapping_promo_active b on a.idpromo=b.idpromo 
                                 left join m_customer c on a.customerid=c.customerid
@@ -239,7 +245,7 @@ class Rep_promo extends BaseController
                                 left join m_area_regional f on c.regionalid=f.regionalid
                                 left join m_area_areasite g on c.areaid = g.areaid
                                 left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regional.$subarea.$addquery.$strquery.";
+                                where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$addquery.$strquery.";
                             ");
 		//echo $this->db->last_query();
 		$data = $q->result_array();
@@ -259,7 +265,7 @@ class Rep_promo extends BaseController
 		$html .= '<th style="width: 150px">Kode Outlet</th>';
 		$html .= '<th style="width: 200px">Nama Outlet</th>';
 		$html .= '<th style="width: 450px">Alamat</th>';
-		$html .= '<th style="width: 200px">Kota</th>';
+		$html .= '<th style="width: 200px">Area</th>';
 		$html .= '<th style="width: 200px">Tipe Promo</th>';
 		$html .= '<th style="width: 200px">Display</th>';
 		$html .= '<th style="width: 200px">Harga Normal</th>';
@@ -285,7 +291,7 @@ class Rep_promo extends BaseController
 			$html .= '<td style="width: 150px;">'.$value['kode_outlet'].'</td>';
 			$html .= '<td style="width: 200px;">'.$value['nama_customer'].'</td>';
 			$html .= '<td style="width: 450px;">'.$value['alamat'].'</td>';
-			$html .= '<td style="width: 200px;">'.$value['city'].'</td>';
+			$html .= '<td style="width: 200px;">'.$value['nama_area'].'</td>';
 			$html .= '<td style="width: 200px;">'.$value['tipepromo'].'</td>';
 			$html .= '<td style="width: 200px;">'.$value['display'].'</td>';
 			$html .= '<td style="width: 200px;">'.number_format($value['harga_normal'], 0, '.', ',').'</td>';
@@ -326,7 +332,7 @@ class Rep_promo extends BaseController
         $restrict_level = $this->uri->segment('8');
 		$tipepromo = $this->uri->segment('9');
 		$regional = $this->uri->segment('10');
-		$city = $this->uri->segment('11');
+		$area = $this->uri->segment('11');
 
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
@@ -359,8 +365,8 @@ class Rep_promo extends BaseController
 			$strquery = "";
         }
 
-        $regional = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
-        $subarea = $city != 'null' ? ' and c.subareaid="'.$city.'" ' : '';
+        $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
+        $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
         
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
@@ -373,7 +379,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regional.$subarea.$strquery.$addquery.";
+                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
                         ");
         $lovpjp = $q->result_array();
         //echo $this->db->last_query();
@@ -395,7 +401,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('H2', 'Kode Outlet')
                     ->setCellValue('I2', 'Nama Outlet')
                     ->setCellValue('J2', 'Alamat')
-                    ->setCellValue('K2', 'Kota')
+                    ->setCellValue('K2', 'Area')
                     ->setCellValue('L2', 'Display')
                     ->setCellValue('M2', 'Harga Normal')
                     ->setCellValue('N2', 'Harga Promo')
@@ -418,7 +424,7 @@ class Rep_promo extends BaseController
                                     ->setCellValue('H'.$i, $vpjp['kode_outlet'])
                                     ->setCellValue('I'.$i, $vpjp['nama_customer'])
                                     ->setCellValue('J'.$i, $vpjp['alamat'])
-                                    ->setCellValue('K'.$i, $vpjp['city'])
+                                    ->setCellValue('K'.$i, $vpjp['nama_area'])
                                     ->setCellValue('L'.$i, $vpjp['display'])
                                     ->setCellValue('M'.$i, $vpjp['harga_normal'])
                                     ->setCellValue('N'.$i, $vpjp['harga_promo'])
@@ -482,7 +488,7 @@ class Rep_promo extends BaseController
         $usersession = $this->uri->segment('7');
         $restrict_level = $this->uri->segment('8');
         $regional = $this->uri->segment('9');
-        $city = $this->uri->segment('10');
+        $area = $this->uri->segment('10');
 
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
@@ -515,8 +521,8 @@ class Rep_promo extends BaseController
 			$strquery = "";
         }
 
-        $regional = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
-        $subarea = $city != 'null' ? ' and c.subareaid="'.$city.'" ' : '';
+        $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
+        $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
 
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
@@ -529,7 +535,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.periode between '".$start."' and '".$end."' ".$regional.$subarea.$strquery.$addquery.";
+                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
                         ");
         ini_set('memory_limit', '512M');
 
@@ -552,7 +558,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('G2', 'Kode Outlet')
                     ->setCellValue('H2', 'Nama Outlet')
                     ->setCellValue('I2', 'Alamat')
-                    ->setCellValue('J2', 'Kota')
+                    ->setCellValue('J2', 'Area')
                     //->setCellValue('K2', 'Stock Awal')
                     ->setCellValue('K2', 'Qty Pasang')
                     ->setCellValue('L2', 'Deskripsi')
@@ -574,7 +580,7 @@ class Rep_promo extends BaseController
                                     ->setCellValue('G'.$i, $vpjp['kode_outlet'])
                                     ->setCellValue('H'.$i, $vpjp['nama_customer'])
                                     ->setCellValue('I'.$i, $vpjp['alamat'])
-                                    ->setCellValue('J'.$i, $vpjp['city'])
+                                    ->setCellValue('J'.$i, $vpjp['nama_area'])
                                     //->setCellValue('K'.$i, $vpjp['stock_awal'])
                                     ->setCellValue('K'.$i, $vpjp['qty_pasang'])
                                     ->setCellValue('L'.$i, $vpjp['description']);
@@ -655,7 +661,7 @@ class Rep_promo extends BaseController
         $restrict_level = $this->uri->segment('8');
 		$tipepromo = $this->uri->segment('9');
 		$regional = $this->uri->segment('10');
-		$city = $this->uri->segment('11');
+		$area = $this->uri->segment('11');
 
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
@@ -688,8 +694,8 @@ class Rep_promo extends BaseController
 			$strquery = "";
         }
 
-        $regional = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
-        $subarea = $city != 'null' ? ' and c.subareaid="'.$city.'" ' : '';
+        $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
+        $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
         
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
@@ -702,7 +708,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regional.$subarea.$strquery.$addquery.";
+                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
                         ");
         $lovpjp = $q->result_array();
         //echo $this->db->last_query();
@@ -724,7 +730,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('H2', 'Kode Outlet')
                     ->setCellValue('I2', 'Nama Outlet')
                     ->setCellValue('J2', 'Alamat')
-                    ->setCellValue('K2', 'Kota')
+                    ->setCellValue('K2', 'Area')
                     ->setCellValue('L2', 'Display')
                     ->setCellValue('M2', 'Harga Normal')
                     ->setCellValue('N2', 'Harga Promo')
@@ -746,7 +752,7 @@ class Rep_promo extends BaseController
                                     ->setCellValue('H'.$i, $vpjp['kode_outlet'])
                                     ->setCellValue('I'.$i, $vpjp['nama_customer'])
                                     ->setCellValue('J'.$i, $vpjp['alamat'])
-                                    ->setCellValue('K'.$i, $vpjp['city'])
+                                    ->setCellValue('K'.$i, $vpjp['nama_area'])
                                     ->setCellValue('L'.$i, $vpjp['display'])
                                     ->setCellValue('M'.$i, $vpjp['harga_normal'])
                                     ->setCellValue('N'.$i, $vpjp['harga_promo'])
@@ -782,7 +788,7 @@ class Rep_promo extends BaseController
         $usersession = $this->uri->segment('7');
         $restrict_level = $this->uri->segment('8');
         $regional = $this->uri->segment('9');
-        $city = $this->uri->segment('10');
+        $area = $this->uri->segment('10');
 
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
@@ -815,8 +821,8 @@ class Rep_promo extends BaseController
 			$strquery = "";
         }
 
-        $regional = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
-        $subarea = $city != 'null' ? ' and c.subareaid="'.$city.'" ' : '';
+        $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
+        $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
 
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
@@ -829,7 +835,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.periode between '".$start."' and '".$end."' ".$regional.$subarea.$strquery.$addquery.";
+                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
                         ");
         ini_set('memory_limit', '512M');
 
@@ -852,7 +858,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('G2', 'Kode Outlet')
                     ->setCellValue('H2', 'Nama Outlet')
                     ->setCellValue('I2', 'Alamat')
-                    ->setCellValue('J2', 'Kota')
+                    ->setCellValue('J2', 'Area')
                     //->setCellValue('K2', 'Stock Awal')
                     ->setCellValue('K2', 'Qty Pasang')
                     ->setCellValue('L2', 'Deskripsi')
@@ -872,7 +878,7 @@ class Rep_promo extends BaseController
                                     ->setCellValue('G'.$i, $vpjp['kode_outlet'])
                                     ->setCellValue('H'.$i, $vpjp['nama_customer'])
                                     ->setCellValue('I'.$i, $vpjp['alamat'])
-                                    ->setCellValue('J'.$i, $vpjp['city'])
+                                    ->setCellValue('J'.$i, $vpjp['nama_area'])
                                     ->setCellValue('K'.$i, $vpjp['qty_pasang'])
                                     ->setCellValue('L'.$i, $vpjp['description']);
                                 $i++;

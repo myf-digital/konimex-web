@@ -36,7 +36,7 @@
             {field: 'salesmanid', title: 'Kode GFF', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'nama_salesman', title: 'Nama GFF', width: 120, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'tipe_sales', title: 'Posisi', width: 80, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'city', title: 'City', width: 100, sortable: 'true', halign: 'left', align: 'left'},
+            // {field: 'city', title: 'City', width: 100, sortable: 'true', halign: 'left', align: 'left'},
             {field: '_jadwal', title: 'Schedule', width: 70, sortable: 'true', halign: 'center', align: 'center'},
             {field: '_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_call.png"></img> Call', width: 70, sortable: 'true', halign: 'center', align: 'center'},
             {field: '_extra_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_extra_call.png"></img> Extra Call', width: 70, sortable: 'true', halign: 'center', align: 'center'},
@@ -160,8 +160,8 @@
                '</select>' +
                '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select id="area-id" name="area" placeholder="Area"> '+
                '</select>' +
-               '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select id="subarea-id" name="subarea" placeholder="City"> '+
-               '</select>' +
+              //  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select id="subarea-id" name="subarea" placeholder="City"> '+
+              //  '</select>' +
                 btnSearch + btnDownload + '</div>';
     }
     

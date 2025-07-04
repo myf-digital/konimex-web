@@ -160,12 +160,12 @@
                 <div class="box-body">
                     <div class="form-group col-md-2">
                         <label for="start_periode">Start Periode</label>
-                            <div class="input-group date">
+                        <div class="input-group date">
                             <div class="input-group-addon">
                                 <span class="glyphicon glyphicon-th"></span>
                             </div>
                             <input id="start_periode" placeholder="Start Periode" type="text" class="form-control datepicker" name="start_periode" readonly>
-                            </div>
+                        </div>
                     </div>
                     <div class="form-group col-md-2">
                         <label for="end_periode">End Periode</label>
@@ -174,7 +174,7 @@
                                 <span class="glyphicon glyphicon-th"></span>
                             </div>
                             <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
-                            </div>
+                        </div>
                     </div>
                     <div class="button-preview-group">
                         <button id="btn-preview-form" type="button" class="btn btn-success fa fa-search"> Search</button>
@@ -195,10 +195,8 @@
                     <div class="col-xs-12">
                         <div id="tbl-content" style="padding: 0px 10px 0px 10px;">
                             <div id="detail-info">
-                                
                             </div>
                             <div id="detail-content">
-                                
                             </div>
                         </div>
                     </div>

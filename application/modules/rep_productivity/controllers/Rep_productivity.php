@@ -25,6 +25,12 @@ class Rep_productivity extends BaseController
         responseJSON($this->report_productivity->get_regional($data));
     }
 
+    public function load_area()
+    {
+        $data = param_input();
+        responseJSON($this->report_productivity->get_area($data));
+    }
+
     public function load_city()
     {
         $data = param_input();
@@ -74,7 +80,7 @@ class Rep_productivity extends BaseController
 		$html .= '<tbody>';
 		$html .= '<tr>';
         $html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 50px">No</th>';
-		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">City/Area</th>';
+		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Area</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Code GFF</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 300px;">Nama GFF</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Position</th>';
@@ -109,7 +115,7 @@ class Rep_productivity extends BaseController
 		{
 			$html .= '<tr>';
 			$html .= '<td style="width: 50px;">'.$i.'</td>';
-			$html .= '<td style="width:150px;">'.$value['city'].'</td>';
+			$html .= '<td style="width:150px;">'.$value['nama_area'].'</td>';
 			$html .= '<td style="width:150px;">'.$value['salesmanid'].'</td>';
 			$html .= '<td style="width:300px;">'.$value['nama_salesman'].'</td>';
 			$html .= '<td style="width:150px;">'.$value['tipe_sales'].'</td>';
@@ -186,7 +192,7 @@ class Rep_productivity extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'City/Area', 'Code GFF', 'Nama GFF', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan', 'Target Call', 'Call on PJP', 'Extra Call', 'Actual Call', '%PJP Compliance', 'Keterangan', 'SOS HYPERMARKET', 'SOS MTI', 'SOS SUPERMARKET', 'SOS MINIMARKET', 'SOS MODERN PHARMA', 'SOS TOTAL'];
+        $header = ['No', 'Area', 'Code GFF', 'Nama GFF', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan', 'Target Call', 'Call on PJP', 'Extra Call', 'Actual Call', '%PJP Compliance', 'Keterangan', 'SOS HYPERMARKET', 'SOS MTI', 'SOS SUPERMARKET', 'SOS MINIMARKET', 'SOS MODERN PHARMA', 'SOS TOTAL'];
 
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -200,7 +206,7 @@ class Rep_productivity extends BaseController
 
             $content = [
                 $i, 
-				$value['city'],
+				$value['nama_area'],
 				$value['salesmanid'],
 				$value['nama_salesman'],
 				$value['tipe_sales'],

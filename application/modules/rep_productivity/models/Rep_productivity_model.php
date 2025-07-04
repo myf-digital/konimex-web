@@ -14,6 +14,15 @@ class Rep_productivity_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
 
+    public function get_area($data)
+    {
+        $field = " a.* ";
+        $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
+                        order by areaid asc
+                    ) as a";
+        return easy_pagging($data, $field, $table);
+    }
+
     public function get_city($data)
     {
         $field = " a.* ";
@@ -49,7 +58,7 @@ class Rep_productivity_model extends CI_Model
         }
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and b.subareaid="'.$data['areaid'].'" ' : '';
+        $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
         $periode=$data['periode'];
         $year=$data['year'];
         $month=$data['month'];

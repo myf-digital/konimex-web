@@ -10,6 +10,7 @@
     let uiEndPeriode = $("#end_periode"); 
     let uiSelectPosition = $("#tipe_sales-id"); 
     let uiSelectRegional = $("#regional-id");
+    let uiSelectArea = $("#area-id");
     let uiSelectCity = $("#city-id");
     
     // define from *-content.js
@@ -83,6 +84,11 @@
             }),
         });
 
+        uiSelectArea.select2({
+            placeholder: 'Select Area',
+            allowClear: true
+        });
+
         uiSelectCity.select2({
             placeholder: 'Select City',
             allowClear: true
@@ -93,18 +99,18 @@
 
     function loadArea(data) {
         common.loading();
-        $.post(common.baseURL("rep_gffaktif/load_city"), {regionalid: data.regionalid}, function (res) {
-            uiSelectCity.empty();
-            uiSelectCity.select2({
+        $.post(common.baseURL("rep_gffaktif/load_area"), {regionalid: data.regionalid}, function (res) {
+            uiSelectArea.empty();
+            uiSelectArea.select2({
                 placeholder: "Select City",
                 allowClear: true,
                 data: $.map(res.rows, function (o) {
-                    o.id = o.subareaid; // replace name with the property used for the text
+                    o.id = o.areaid; // replace name with the property used for the text
                     o.text = o.nama_area;
                     return o;
                 }),
             });
-            uiSelectCity.val(null).trigger('change');
+            uiSelectArea.val(null).trigger('change');
             common.loadingClose();
         });
 
@@ -120,7 +126,7 @@
         var restrictlevel = paramsession.restrict_level;
 
         var regionalid = uiSelectRegional.val();
-        var areaid = uiSelectCity.val();
+        var areaid = uiSelectArea.val();
         //alert("start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession);
         $.ajax({
             type:"GET",
@@ -184,7 +190,7 @@
         var restrictlevel = paramsession.restrict_level;
 
         var regionalid = uiSelectRegional.val();
-        var areaid = uiSelectCity.val();
+        var areaid = uiSelectArea.val();
         //idpromo = idpromo.replace(",", "|");
         //var url = encodeURI();
         common.direct("rep_gffaktif/savetoxlsx/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrictlevel+"/"+position+"/"+regionalid+"/"+areaid);

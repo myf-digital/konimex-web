@@ -11,6 +11,7 @@
     let uiSelectYear = $("#year-id");
     let uiSelectPosition = $("#tipe_sales-id"); 
     let uiSelectRegional = $("#regional-id");
+    let uiSelectArea = $("#area-id");
     let uiSelectCity = $("#city-id");
 
     let paramsession = common.getCookie("session");
@@ -80,6 +81,11 @@
             placeholder: 'Select Month Period'
         });
 
+        uiSelectArea.select2({
+            placeholder: 'Select Area',
+            allowClear: true
+        });
+
         uiSelectCity.select2({
             placeholder: 'Select City',
             allowClear: true
@@ -93,7 +99,7 @@
         var year = uiSelectYear.val();
         var month = uiSelectMonth.val();
         var regionalid = uiSelectRegional.val();
-        var areaid = uiSelectCity.val();
+        var areaid = uiSelectArea.val();
         var position = uiSelectPosition.val();
 
         var idjabatan = paramsession.idjabatan;
@@ -123,18 +129,18 @@
 
     function loadArea(data) {
         common.loading();
-        $.post(common.baseURL("rep_productivity/load_city"), {regionalid: data.regionalid}, function (res) {
-            uiSelectCity.empty();
-            uiSelectCity.select2({
-                placeholder: "Select City",
+        $.post(common.baseURL("rep_productivity/load_area"), {regionalid: data.regionalid}, function (res) {
+            uiSelectArea.empty();
+            uiSelectArea.select2({
+                placeholder: "Select Area",
                 allowClear: true,
                 data: $.map(res.rows, function (o) {
-                    o.id = o.subareaid; // replace name with the property used for the text
+                    o.id = o.areaid; // replace name with the property used for the text
                     o.text = o.nama_area;
                     return o;
                 }),
             });
-            uiSelectCity.val(null).trigger('change');
+            uiSelectArea.val(null).trigger('change');
             common.loadingClose();
         });
 
@@ -165,7 +171,7 @@
         var month = uiSelectMonth.val();
         var position = uiSelectPosition.val();
         var regionalid = uiSelectRegional.val();
-        var areaid = uiSelectCity.val();
+        var areaid = uiSelectArea.val();
 
         var idjabatan = paramsession.idjabatan;
         var usersession = paramsession.username;
