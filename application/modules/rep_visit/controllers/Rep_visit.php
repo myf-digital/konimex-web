@@ -73,7 +73,6 @@ class Rep_visit extends BaseController
 		$sid 		= $this->input->post("sid");
 		$periode 	= $this->input->post("periode");
 		
-		//print_r($get_map); die();
 		$total = 0 ;
 		$marker 	= "";
 		$marker_sales = "";
