@@ -79,8 +79,8 @@ class Conf_setup_pjp extends BaseController
         $restrict_level = $this->uri->segment('6');
         //$filename = $this->uri->segment('7');
 
-        ini_set("memory_limit","1024M");
-        ini_set('max_execution_time', '360');
+        ini_set("memory_limit","2048M");
+        ini_set('max_execution_time', '0');
         
         if ($salesmanid=='' or empty($salesmanid) or $salesmanid=='null'){
             $filename='All_GFF';
@@ -111,25 +111,29 @@ class Conf_setup_pjp extends BaseController
         }
             
             $filename = "PJP_".$filename.".xlsx";
-            $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, b.typeid channel, a.minggu, a.hari,
-                             b.kode_outlet, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area area
-                      from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
-                      left join m_sales_salesman d on d.salesmanid=a.salesmanid
-                      left join m_area_areasite e on e.areaid = b.areaid
-                      $strquery
-                      order by b.nama_customer, a.minggu asc
+            $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, 
+                                a.customerid, b.typeid channel, GROUP_CONCAT(a.minggu ORDER BY a.minggu ASC SEPARATOR ',') as minggu, a.hari,
+                                b.kode_outlet, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
+                        from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
+                        left join m_sales_salesman d on d.salesmanid=a.salesmanid
+                        left join m_area_subarea e on e.subareaid = b.subareaid
+                        $strquery
+                      group by a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, b.typeid, a.hari
                     ";
             //echo $this->db->last_query();
             $execquery = $this->db->query($query);
             $lovpjp = $execquery->result_array();
-    
+			
+			
+			$rowweek = $this->db->query("select aktif_week from m_setup_site limit 0,1")->row();
+			$weekaktif = $rowweek->aktif_week;
             $this->load->library('excel');
         
             //$objDrawing = new PHPExcel_Worksheet_Drawing();
             $objPHPExcel = new PHPExcel();
 
             $objPHPExcel->setActiveSheetIndex(0)
-                        ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu')
+                        ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active '.$weekaktif)
                         ->setCellValue('A2', 'USER GFF')
                         ->setCellValue('B2', 'KE USER GFF')
                         ->setCellValue('C2', 'NAMA GFF')
@@ -142,7 +146,7 @@ class Conf_setup_pjp extends BaseController
                         ->setCellValue('J2', 'SUB CHANNEL/ACCOUNT')
                         ->setCellValue('K2', 'MINGGU')
                         ->setCellValue('L2', 'HARI')
-                        ->setCellValue('M2', 'AREA')
+                        ->setCellValue('M2', 'KOTA')
                         ->setCellValue('N2', 'TYPE')
                         ->setCellValue('O2', 'DC')
                         ;
@@ -164,7 +168,7 @@ class Conf_setup_pjp extends BaseController
                                         ->setCellValue('J'.$i, $vpjp['nama_class'])
                                         ->setCellValue('K'.$i, $vpjp['minggu'])
                                         ->setCellValue('L'.$i, $vpjp['hari'])
-                                        ->setCellValue('M'.$i, $vpjp['area'])
+                                        ->setCellValue('M'.$i, $vpjp['city'])
                                         ->setCellValue('N'.$i, $vpjp['outlet_type'])
                                         ->setCellValue('O'.$i, $vpjp['dc']);
                                 $i++;
@@ -233,25 +237,53 @@ class Conf_setup_pjp extends BaseController
 				$i=0;
                 $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,NULL,TRUE,FALSE);
 				
-						$arr = explode(",",$rowData[0][10]);
-                        foreach ($arr as $item) {
-                            $datatemp = array(
-								"filename"=> $fileName,
-								"salesmanid"=> $rowData[0][0],
-								"salesmanid_to"=> $rowData[0][1],
-								"customerid"=> $rowData[0][4],
-								"minggu"=> $item,
-								"hari"=> $rowData[0][11]
-							);
+                $arr = explode(",",$rowData[0][10]);
+                $arrhari = explode(",",$rowData[0][11]);
+                $allowed_values_hari = ['0', '1', '2', '3', '4', '5', '6'];
+                $allowed_values_week = ['1', '2', '3', '4'];
+                foreach ($arr as $item) {
 
+                    foreach ($arrhari as $itemhari) {
+                        if (in_array($itemhari, $allowed_values_hari) && in_array($item, $allowed_values_week)) {
+                            $datatemp = array(
+                            "filename"=> $fileName,
+                            "salesmanid"=> $rowData[0][0],
+                            "salesmanid_to"=> $rowData[0][1],
+                            "customerid"=> $rowData[0][4],
+                            "minggu"=> $item,
+                            "hari"=> $itemhari
+                            );
                             $insert = $this->db->insert("t_pjp_upload_detail",$datatemp);
                             if (!$insert){
+                                $datatemp['reason']='Error insert query';
+                                $insert = $this->db->insert("t_pjp_upload_detail_error",$datatemp);
                                 $jmlrowfaild++;
                             }
-                            $jmlrow++;  
-
+                        }else{
+                            $datatemp = array(
+                            "filename"=> $fileName,
+                            "salesmanid"=> $rowData[0][0],
+                            "salesmanid_to"=> $rowData[0][1],
+                            "customerid"=> $rowData[0][4],
+                            "minggu"=> $item,
+                            "hari"=> $itemhari,
+                            "reason"=>'Error variable minggu atau hari'
+                            );
+                            $insert = $this->db->insert("t_pjp_upload_detail_error",$datatemp);
+                            if (!$insert){
+                                $datatemp['reason']='Error insert query';
+                                $insert = $this->db->insert("t_pjp_upload_detail_error",$datatemp);
+                                $jmlrowfaild++;
+                            }else{
+                                $jmlrowfaild++;
+                            }
                         }
+
+                        $jmlrow++;  
+                    }
+                }
             }
+            
             sleep(3);
 
             $datam = array(

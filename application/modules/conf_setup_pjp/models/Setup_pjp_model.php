@@ -6,10 +6,10 @@ class Setup_pjp_model extends CI_Model
 
     public function create($data)
     {
-        $id = IDGenerator::getInstance()->nextID('t_sales_setup_rrk');
+        /*$id = IDGenerator::getInstance()->nextID('t_sales_setup_rrk');
         if (!empty($id)) {
             $data['siteid'] = $id;
-        }
+        }*/
 
         $customers = array();
         $week1 = array();
@@ -218,42 +218,28 @@ class Setup_pjp_model extends CI_Model
 
         $field = " a.* ";
         $table = " ( 
-                    select
-                    x.siteid,
-                    x.salesmanid,
-                    x.nama_salesman,
-                    x.position,
-                    concat(x.nama_salesman,' (',x.position,')') as gffname,
-                    x.ram_rsm,
-                    x.aas_aam_tss_tsm,
-                    x.customerid,
-                    x.kode_outlet,
-                    x.nama_customer,
-                    x.alamat,
-                    x.mcc,
-                    x.nama_class,
+                    select x.siteid, x.salesmanid, x.nama_salesman, x.position, concat(x.nama_salesman,' (',x.position,')') as gffname, x.ram_rsm, x.aas_aam_tss_tsm, x.customerid, x.kode_outlet, x.nama_customer, x.alamat, x.mcc, x.nama_class,
                     GROUP_CONCAT(x.minggu SEPARATOR ',') AS group_minggu,
                     GROUP_CONCAT(x.hari SEPARATOR ',') AS group_hari, 
                     GROUP_CONCAT(distinct(x.minggu) SEPARATOR ',') AS group_nama_minggu,
                     GROUP_CONCAT(distinct(x.nama_hari) SEPARATOR ',') AS group_nama_hari,
                     (select aktif_week from m_setup_site limit 0,1) as week_aktif,
-                    x.area
+                    x.city
                     from (
-                        select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, a.minggu, a.hari, 
-                            case when a.hari=0 then 'Minggu' 
-                            when a.hari=1 then 'Senin'
-                            when a.hari=2 then 'Selasa' 
-                            when a.hari=3 then 'Rabu' 
-                            when a.hari=4 then 'Kamis' 
-                            when a.hari=5 then 'Jumat'
-                            when a.hari=6 then 'Sabtu' end nama_hari,
-                        b.kode_outlet, b.nama_customer, b.alamat, e.nama_area as area,b.mcc, c.nama_class
-                        from t_sales_setup_rrk a
-                        left join m_customer b on a.customerid = b.customerid
-                        left join m_customer_class c on b.classid=c.classid 
-                        left join m_sales_salesman d on d.salesmanid=a.salesmanid
-                        left join m_area_areasite e on e.areaid = b.areaid
-                        ".$strquery."
+                    select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, a.minggu, a.hari, 
+                        case when a.hari=0 then 'Minggu' 
+                        when a.hari=1 then 'Senin'
+                        when a.hari=2 then 'Selasa' 
+                        when a.hari=3 then 'Rabu' 
+                        when a.hari=4 then 'Kamis' 
+                        when a.hari=5 then 'Jumat'
+                        when a.hari=6 then 'Sabtu' end nama_hari,
+                    b.kode_outlet, b.nama_customer, b.alamat, e.nama_area as city,b.mcc, c.nama_class
+                    from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
+                    left join m_sales_salesman d on d.salesmanid=a.salesmanid
+                    left join m_area_subarea e on e.subareaid = b.subareaid
+                    ".$strquery."
+                    limit 0,200000
                     ) x
                     group by x.siteid, x.salesmanid, x.nama_salesman, x.position, x.ram_rsm, x.aas_aam_tss_tsm, x.customerid, x.kode_outlet, x.nama_customer, x.alamat, x.mcc, x.nama_class
                 ) a 
