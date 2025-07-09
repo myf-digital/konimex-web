@@ -113,10 +113,10 @@ class Conf_setup_pjp extends BaseController
             $filename = "PJP_".$filename.".xlsx";
             $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, 
                                 a.customerid, b.typeid channel, GROUP_CONCAT(a.minggu ORDER BY a.minggu ASC SEPARATOR ',') as minggu, a.hari,
-                                b.kode_outlet, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
+                                b.kode_outlet, b.latest_jjid, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
                         from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
                         left join m_sales_salesman d on d.salesmanid=a.salesmanid
-                        left join m_area_subarea e on e.subareaid = b.subareaid
+                        left join m_area_areasite e on e.areaid = b.areaid
                         $strquery
                       group by a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, b.typeid, a.hari
                     ";
@@ -139,7 +139,7 @@ class Conf_setup_pjp extends BaseController
                         ->setCellValue('C2', 'NAMA GFF')
                         ->setCellValue('D2', 'POSITION')
                         ->setCellValue('E2', 'ID OUTLET')
-                        ->setCellValue('F2', 'KODE OUTLET')
+                        ->setCellValue('F2', 'LATEST JJID')
                         ->setCellValue('G2', 'NAMA OUTLET')
                         ->setCellValue('H2', 'ALAMAT')
                         ->setCellValue('I2', 'CHANNEL')
@@ -147,8 +147,6 @@ class Conf_setup_pjp extends BaseController
                         ->setCellValue('K2', 'MINGGU')
                         ->setCellValue('L2', 'HARI')
                         ->setCellValue('M2', 'KOTA')
-                        ->setCellValue('N2', 'TYPE')
-                        ->setCellValue('O2', 'DC')
                         ;
                         $objPHPExcel->getActiveSheet()->getStyle('B2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
                         $objPHPExcel->getActiveSheet()->getStyle('K2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
@@ -161,16 +159,14 @@ class Conf_setup_pjp extends BaseController
                                         ->setCellValue('C'.$i, $vpjp['nama_salesman'])
                                         ->setCellValue('D'.$i, $vpjp['position'])
                                         ->setCellValue('E'.$i, $vpjp['customerid'])
-                                        ->setCellValue('F'.$i, $vpjp['kode_outlet'])
+                                        ->setCellValue('F'.$i, $vpjp['latest_jjid'])
                                         ->setCellValue('G'.$i, $vpjp['nama_customer'])
                                         ->setCellValue('H'.$i, $vpjp['alamat'])
                                         ->setCellValue('I'.$i, $vpjp['channel'])
                                         ->setCellValue('J'.$i, $vpjp['nama_class'])
                                         ->setCellValue('K'.$i, $vpjp['minggu'])
                                         ->setCellValue('L'.$i, $vpjp['hari'])
-                                        ->setCellValue('M'.$i, $vpjp['city'])
-                                        ->setCellValue('N'.$i, $vpjp['outlet_type'])
-                                        ->setCellValue('O'.$i, $vpjp['dc']);
+                                        ->setCellValue('M'.$i, $vpjp['city']);
                                 $i++;
                             }
             // Redirect output to a client's web browser (Excel2007)
