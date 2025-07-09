@@ -30,7 +30,19 @@ class Rep_visit_detailing_model extends CI_Model
                     WHEN a.status = 3 THEN 'Valid'
                     WHEN a.status = 2 THEN 'Belum Valid'
                     ELSE 'Butuh Verifikasi'
-                END as status_label
+                END as status_label,
+                CASE
+                    WHEN (
+                        SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+                        FROM ref_brand rb
+                        WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+                    ) IS NOT NULL THEN (
+                        SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+                        FROM ref_brand rb
+                        WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+                    )
+                    ELSE a.array_product
+                END as brands
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid
@@ -57,14 +69,29 @@ class Rep_visit_detailing_model extends CI_Model
                 a.salesman_name,
                 a.professional_name,
                 a.customerid,
+                a.tipe_pic,
                 c.nama_customer,
                 c.alamat,
                 (select nama_class from m_customer_class where classid=c.classid) account,
                 ifnull(a.latitude_cell,0) latitude_cell,
                 ifnull(a.longitude_cell,0) longitude_cell,
+                concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
+                concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
                 DATE_FORMAT(a.start_detailing,'%H:%i') start_detailing,
                 DATE_FORMAT(a.end_detailing,'%H:%i') end_detailing,
-                timediff(a.end_detailing,a.start_detailing) lamakunjungan
+                timediff(a.end_detailing,a.start_detailing) lamakunjungan,
+                CASE
+                    WHEN (
+                        SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+                        FROM ref_brand rb
+                        WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+                    ) IS NOT NULL THEN (
+                        SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+                        FROM ref_brand rb
+                        WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+                    )
+                    ELSE a.array_product
+                END as brands
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid
@@ -100,7 +127,19 @@ class Rep_visit_detailing_model extends CI_Model
                     WHEN a.status = 3 THEN 'Valid'
                     WHEN a.status = 2 THEN 'Belum Valid'
                     ELSE 'Butuh Verifikasi'
-                END as status_label
+                END as status_label,
+                CASE
+                    WHEN (
+                        SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+                        FROM ref_brand rb
+                        WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+                    ) IS NOT NULL THEN (
+                        SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+                        FROM ref_brand rb
+                        WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+                    )
+                    ELSE a.array_product
+                END as brands
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid

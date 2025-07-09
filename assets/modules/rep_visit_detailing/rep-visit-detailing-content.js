@@ -34,13 +34,13 @@
                 }
             ]],
             columns: [[
-              {field:'periode', title:'Periode', halign: 'left', align: 'left', sortable:"true", width:75},
+              {field:'periode', title:'Periode', halign: 'left', align: 'left', sortable:"true", width:100},
               {field:'salesmanid', title:'User Login', halign: 'left', align: 'left', sortable:"true", width:75},
               {field:'nama_salesman', title:'Salesman', halign: 'left', align: 'left', sortable:"true", width:150},
               {field:'customerid', title:'Outlet ID', halign: 'left', align: 'left', sortable:"true", width:75},
               {field:'nama_customer', title:'Outlet', halign: 'left', align: 'left', sortable:"true", width:200},
               {field:'professional_name', title:'PIC', halign: 'left', align: 'left', sortable:"true", width:100},
-              {field:'array_product', title:'Product', halign: 'left', align: 'left', sortable:"true", width:150},
+              {field:'brands', title:'Brand', halign: 'left', align: 'left', sortable:"true", width:150},
               {field:'start_detailing', title:'Start Detailing', halign: 'left', align: 'left', sortable:"true", width:125},
               {field:'end_detailing', title:'End Detailing', halign: 'left', align: 'left', sortable:"true", width:125},
               {field:'status_label', title:'Status', halign: 'left', align: 'left', sortable:"true", width:125},

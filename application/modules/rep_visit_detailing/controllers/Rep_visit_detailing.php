@@ -140,6 +140,9 @@ class Rep_visit_detailing extends BaseController
 			$add = $d_position['alamat'];
 			$account = $d_position['account'];
 			$pic = $d_position['professional_name'];
+			$img = $d_position['url_img_detailing'];
+			$brand = $d_position['brands'];
+			if ($d_position['tipe_pic']) $pic .= ' ('.$d_position['tipe_pic'].')';
 			$icon = base_url().'assets/mapIcon/tracking.png';
 			
 			if (($latpos) and ($longpos !="0")) {
@@ -160,7 +163,7 @@ class Rep_visit_detailing extends BaseController
 						};
 
 						var contentString_'.$numpos.' = \'<div id="content" style="max-width:1000px;">\'+
-						\'<div style="z-index: -1;" id="siteNotice"><h3>Outlet</h3>\'+
+						\'<div style="z-index: -1;" id="siteNotice"><h3 style="margin-top: 0px;">Outlet</h3><br/><img src="'.$img.'" alt="foto" width="100">\'+
 						\'<table cellspacing="1" cellpadding="1">\'+
 						\'<tbody>\'+
 							\'<tr>\'+									
@@ -170,7 +173,7 @@ class Rep_visit_detailing extends BaseController
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">OutletId</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.$outletid.'</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$outletid.'</td>\'+	
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Nama Outlet</td>\'+
@@ -186,6 +189,11 @@ class Rep_visit_detailing extends BaseController
 													\'<td class="text-muted" style="white-space: nowrap;">PIC</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$pic.'</td>\'+
+												\'</tr>\'+
+												\'<tr>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">Brand</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$brand.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Start</td>\'+	
@@ -334,12 +342,13 @@ class Rep_visit_detailing extends BaseController
             'Outlet ID',
             'Outlet',
             'PIC',
-            'Product',
+            'Brand',
             'Start Detailing',
             'End Detailing',
             'Status',
             'Keterangan',
             'Reason',
+			'Foto',
         ];
 
         $sheet = $spreadsheet->getActiveSheet();
@@ -357,12 +366,13 @@ class Rep_visit_detailing extends BaseController
 				$value['customerid'],
 				$value['nama_customer'],
 				$value['professional_name'],
-				$value['array_product'],
+				$value['brands'],
 				$value['start_detailing'],
 				$value['end_detailing'],
 				$value['status_label'],
 				$value['keterangan'],
 				$value['reason'],
+				$value['url_img_detailing'],
 			];
             $sheet->fromArray($content,NULL,'A'.$row);
             $i++;
