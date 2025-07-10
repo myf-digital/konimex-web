@@ -406,11 +406,12 @@ class Rep_productivity extends BaseController
                     ->setCellValue('F1', 'Kode Outlet')
                     ->setCellValue('G1', 'Outlet Name')
                     ->setCellValue('H1', 'Account')
-                    ->setCellValue('I1', 'ProductID')
-                    ->setCellValue('J1', 'Product Name')
-                    ->setCellValue('K1', 'Qty')
-                    ->setCellValue('L1', 'Price')
-                    ->setCellValue('M1', 'Total')
+                    ->setCellValue('I1', 'No SP')
+                    ->setCellValue('J1', 'ProductID')
+                    ->setCellValue('K1', 'Product Name')
+                    ->setCellValue('L1', 'Qty')
+                    ->setCellValue('M1', 'Price')
+                    ->setCellValue('N1', 'Total')
                     ;
         $dataorder = $this->report_productivity->getOrder_salesman($params);
         $i = 1;
@@ -425,11 +426,12 @@ class Rep_productivity extends BaseController
                         ->setCellValue('F'.$row, $valueorder['kode_outlet'])
                         ->setCellValue('G'.$row, $valueorder['nama_customer'])
                         ->setCellValue('H'.$row, $valueorder['account'])
-                        ->setCellValue('I'.$row, $valueorder['productid'])
-                        ->setCellValue('J'.$row, $valueorder['nama_invoice'])
-                        ->setCellValue('K'.$row, $valueorder['qty_jual_in_pcs'])
-                        ->setCellValue('L'.$row, $valueorder['h_jual'])
-                        ->setCellValue('M'.$row, '=K'.$row.'*L'.$row)
+                        ->setCellValue('I'.$row, $valueorder['no_po'])
+                        ->setCellValue('J'.$row, $valueorder['productid'])
+                        ->setCellValue('K'.$row, $valueorder['nama_invoice'])
+                        ->setCellValue('L'.$row, $valueorder['qty_jual_in_pcs'])
+                        ->setCellValue('M'.$row, $valueorder['h_jual'])
+                        ->setCellValue('N'.$row, '=M'.$row.'*L'.$row)
 						;
 			$i++;
             $row++;

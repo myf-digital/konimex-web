@@ -166,6 +166,7 @@ class Rep_productivity_model extends CI_Model
 									   cst.nama_customer,
 									   e.nama_class as account,
 									   cst.alamat,
+                                       sls.no_po,
 									   dtl.productid,
 									   product.nama_invoice,
 									   sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
@@ -173,7 +174,7 @@ class Rep_productivity_model extends CI_Model
 									   sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
 									from 
 									t_sales_master sls left join
-									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
+									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 									m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
 									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
