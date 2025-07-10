@@ -123,4 +123,123 @@ class Rep_productivity_model extends CI_Model
         return $query->result_array();
     }
 
+    function getOrder_salesman($data)
+    {
+
+        if ($data['restrict_level']=='4'){
+            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='".$data['usersession']."')
+                                                )";
+        }
+        else if ($data['restrict_level']=='3'){
+            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                            where a.username='".$data['usersession']."')
+                                                )";
+        }
+        else if ($data['restrict_level']=='2'){
+            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='".$data['usersession']."')
+                                                ) ";
+        }
+        else {
+            $strquery = "";
+        }
+
+        $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
+        $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
+        $periode=$data['periode'];
+        $year=$data['year'];
+        $month=$data['month'];
+        $tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
+		$query = $this->db->query(" 
+									select 
+									   sls.tanggal as period,
+									   sls.siteid, 
+									   sls.salesmanid,
+									   salesamn.nama_salesman,
+									   sls.customerid,
+									   cst.kode_outlet,
+									   cst.nama_customer,
+									   e.nama_class as account,
+									   cst.alamat,
+									   dtl.productid,
+									   product.nama_invoice,
+									   sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
+									   dtl.h_jual,
+									   sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
+									from 
+									t_sales_master sls left join
+									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
+									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
+									m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
+									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
+									m_product product on dtl.productid = product.productid 
+                                    left join m_customer_class e on e.classid=cst.classid
+									where sls.tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') and salesamn.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+									$area $regional
+									group by sls.siteid, 
+										   sls.salesmanid,
+										   salesamn.nama_salesman,
+										   sls.customerid,
+										   cst.nama_customer,
+										   cst.alamat,
+										   dtl.productid,
+										   product.nama_invoice,dtl.h_jual;
+									");
+        return $query->result_array();
+    }
+
+    function getVisit_salesman($data)
+    {
+
+        if ($data['restrict_level']=='4'){
+            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='".$data['usersession']."')
+                                                )";
+        }
+        else if ($data['restrict_level']=='3'){
+            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                            where a.username='".$data['usersession']."')
+                                                )";
+        }
+        else if ($data['restrict_level']=='2'){
+            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='".$data['usersession']."')
+                                                ) ";
+        }
+        else {
+            $strquery = "";
+        }
+
+        $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
+        $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
+        $periode=$data['periode'];
+        $year=$data['year'];
+        $month=$data['month'];
+        $tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+		$query = $this->db->query(" 
+									select a.periode, a.salesmanid, a.nama_salesman, a.customerid, c.kode_outlet, c.nama_customer, c.alamat, d.nama_area, 
+                                            c.typeid as channel, e.nama_class as account,
+											DATE_FORMAT(a.check_in, '%H:%i:%s') check_in, DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
+											timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan, 
+											(select reason from t_sales_rrk_reason where call_reasonid=a.call_reasonid) alasan, REGEXP_REPLACE(a.keterangan, '\n', ' ') keterangan
+									from t_sales_rrk_trans a
+									left join m_sales_salesman b on a.salesmanid = b.salesmanid
+									left join m_customer c on a.customerid= c.customerid 
+                                    left join m_customer_class e on e.classid=c.classid
+									left join m_area_subarea d on c.subareaid = d.subareaid
+									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+									and b.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+									$area $regional
+									");
+        return $query->result_array();
+    }
+
 }

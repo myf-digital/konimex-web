@@ -120,6 +120,7 @@
                     <div class="box-footer">
                         <button id="btn-preview-form" type="button" class="btn btn-success fa fa-book"> View</button>
                         <button id="btn-download-form" type="button" class="btn btn-primary fa fa-download">  Download</button>
+                        <button id="btn-download-all-data-form" type="button" class="btn btn-primary fa fa-download">  Download Data Visit & Order</button>
                     </div>
                     <div class="row">
                         <div class="col-xs-12">

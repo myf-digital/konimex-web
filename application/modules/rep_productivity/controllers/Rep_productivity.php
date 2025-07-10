@@ -241,6 +241,216 @@ class Rep_productivity extends BaseController
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
-    }
+   }
+
+	function savexls_visit_and_order() {
+        ini_set("memory_limit","1024M");
+        ini_set('max_execution_time', '360');
+		
+        $year = $this->uri->segment('3');
+        $month = $this->uri->segment('4');
+        $position = $this->uri->segment('5');
+        $regionalid = $this->uri->segment('6');
+        $areaid = $this->uri->segment('7');
+
+        $usersession = $this->uri->segment('8');
+        $restrict_level = $this->uri->segment('9');
+        $idjabatan = $this->uri->segment('10');
+
+		if ($year.'-'.$month==date("Y-m")){
+			$periodedate= date("Y-m-d");
+		}else{
+			$periode = $year.'-'.$month.'-01';
+			$periodedate=date("Y-m-t",strtotime($periode));
+		}
+
+        $params = [
+        	'year' => $year,
+        	'month' => $month,
+        	'periode' => $periodedate,
+        	'tipe_sales' => $position,
+        	'idjabatan' => $idjabatan,
+        	'restrict_level' => $restrict_level,
+        	'usersession' => $usersession,
+        	'regionalid' => $regionalid,
+        	'areaid' => $areaid
+        ];
+        
+        $filename = "Report-Productivity-".$year."-".$month.".xlsx";
+
+        $this->load->library('excel');
+    
+        //$objDrawing = new PHPExcel_Worksheet_Drawing();
+        $objPHPExcel = new PHPExcel();
+		$styleArray = array(
+								'borders' => array(
+									'allborders' => array(
+									'style' => PHPExcel_Style_Border::BORDER_THIN
+									)
+								)
+							);
+
+		$objWorkSheet = $objPHPExcel->createSheet(0);
+		$objPHPExcel->setActiveSheetIndex(0)->setTitle('Productivity');
+		//$objPhpExcel->setActiveSheetIndex(0)->setShowGridlines(false);
+        $objPHPExcel->setActiveSheetIndex(0)
+					->setCellValue('A1', 'No')
+					->setCellValue('B1', 'City/Area')
+                    ->setCellValue('C1', 'Code GFF')
+                    ->setCellValue('D1', 'GFF Name')
+                    ->setCellValue('E1', 'Position')
+                    ->setCellValue('F1', 'HK')
+                    ->setCellValue('G1', 'Absensi')
+                    ->setCellValue('H1', '%Kehadiran')
+                    ->setCellValue('I1', 'Keterangan Absensi')
+                    ->setCellValue('J1', 'Target Call')
+                    ->setCellValue('K1', 'Effective Call')
+                    ->setCellValue('L1', 'Call')
+                    ->setCellValue('M1', 'Extra Call')
+                    ->setCellValue('N1', 'Invalid Call')
+                    ->setCellValue('O1', 'Actual Call')
+                    ->setCellValue('P1', '%PJP Compliance')
+                    ->setCellValue('Q1', 'Outlet Order')
+                    ->setCellValue('R1', 'Total Order')
+                    ->setCellValue('S1', 'Keterangan')
+                    ->setCellValue('T1', 'Checkin >1Km')
+					;
+		
+        $data = $this->report_productivity->getProductivity($params);
+        $i = 1;
+        $row = 2;
+        foreach ($data as $value) {
+			$objPHPExcel->setActiveSheetIndex(0)
+                        ->setCellValue('A'.$row, $i)
+                        ->setCellValue('B'.$row, $value['city'])
+                        ->setCellValue('C'.$row, $value['salesmanid'])
+                        ->setCellValue('D'.$row, $value['nama_salesman'])
+                        ->setCellValue('E'.$row, $value['tipe_sales'])
+                        ->setCellValue('F'.$row, $value['GFF Aktif'])
+                        ->setCellValue('G'.$row, $value['GFF Hadir'])
+                        ->setCellValue('H'.$row, '=G'.$row.'/F'.$row)
+                        ->setCellValue('I'.$row, 'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')')
+                        ->setCellValue('J'.$row, $value['pjp'])
+                        ->setCellValue('K'.$row, $value['effective_call'])
+                        ->setCellValue('L'.$row, $value['call'])
+                        ->setCellValue('M'.$row, $value['extra_call'])
+                        ->setCellValue('N'.$row, $value['invalid_call'])
+                        ->setCellValue('O'.$row, '=K'.$row.'+L'.$row)
+                        ->setCellValue('P'.$row, '=K'.$row.'/J'.$row)
+                        ->setCellValue('Q'.$row, $value['outlet_order'])
+                        ->setCellValue('R'.$row, $value['total_order'])
+                        ->setCellValue('S'.$row, $value['rrk_keterangan'])
+                        ->setCellValue('T'.$row, $value['out_area'])
+						;
+			
+			$objPHPExcel->getActiveSheet()->getStyle('H'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
+			$objPHPExcel->getActiveSheet()->getStyle('P'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
+			$objPHPExcel->getActiveSheet()->getStyle('R'.$row)->getNumberFormat()->setFormatCode('"Rp"#,##0.00');
+			$i++;
+            $row++;
+        }
+
+		
+		$objWorkSheet = $objPHPExcel->createSheet(1);
+		$objPHPExcel->setActiveSheetIndex(1)->setTitle('Visit GFF');
+        $objPHPExcel->setActiveSheetIndex(1)
+					->setCellValue('A1', 'No')
+					->setCellValue('B1', 'Period')
+                    ->setCellValue('C1', 'GFF')
+                    ->setCellValue('D1', 'GFF Name')
+                    ->setCellValue('E1', 'OutletID')
+                    ->setCellValue('F1', 'Kode Outlet')
+                    ->setCellValue('G1', 'Outlet Name')
+                    ->setCellValue('H1', 'Channel')
+                    ->setCellValue('I1', 'Account')
+                    ->setCellValue('J1', 'City')
+                    ->setCellValue('K1', 'CheckIn')
+                    ->setCellValue('L1', 'CheckOut')
+                    ->setCellValue('M1', 'Time Visit')
+                    ->setCellValue('N1', 'Reason')
+                    ->setCellValue('O1', 'Description')
+					;
+
+        $datavisit = $this->report_productivity->getVisit_salesman($params);
+        $i = 1;
+        $row = 2;
+        foreach ($datavisit as $valuevisit) {
+            $objPHPExcel->setActiveSheetIndex(1)
+                        ->setCellValue('A'.$row, $i)
+                        ->setCellValue('B'.$row, $valuevisit['periode'])
+                        ->setCellValue('C'.$row, $valuevisit['salesmanid'])
+                        ->setCellValue('D'.$row, $valuevisit['nama_salesman'])
+                        ->setCellValue('E'.$row, $valuevisit['customerid'])
+                        ->setCellValue('F'.$row, $valuevisit['kode_outlet'])
+                        ->setCellValue('G'.$row, $valuevisit['nama_customer'])
+                        ->setCellValue('H'.$row, $valuevisit['channel'])
+                        ->setCellValue('I'.$row, $valuevisit['account'])
+                        ->setCellValue('J'.$row, $valuevisit['nama_area'])
+                        ->setCellValue('K'.$row, $valuevisit['check_in'])
+                        ->setCellValue('L'.$row, $valuevisit['check_out'])
+                        ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'])
+                        ->setCellValue('N'.$row, $valuevisit['alasan'])
+                        ->setCellValue('O'.$row, $valuevisit['keterangan'])
+						;
+			$i++;
+            $row++;
+        }
+		
+        $objPHPExcel->setActiveSheetIndex(2)->setTitle('Order GFF');
+		$objPHPExcel->setActiveSheetIndex(2)
+					->setCellValue('A1', 'No')
+                    ->setCellValue('B1', 'Period')
+                    ->setCellValue('C1', 'User')
+                    ->setCellValue('D1', 'Salesman')
+                    ->setCellValue('E1', 'OutletID')
+                    ->setCellValue('F1', 'Kode Outlet')
+                    ->setCellValue('G1', 'Outlet Name')
+                    ->setCellValue('H1', 'Account')
+                    ->setCellValue('I1', 'ProductID')
+                    ->setCellValue('J1', 'Product Name')
+                    ->setCellValue('K1', 'Qty')
+                    ->setCellValue('L1', 'Price')
+                    ->setCellValue('M1', 'Total')
+                    ;
+        $dataorder = $this->report_productivity->getOrder_salesman($params);
+        $i = 1;
+        $row = 2;
+        foreach ($dataorder as $valueorder) {
+            $objPHPExcel->setActiveSheetIndex(2)
+                        ->setCellValue('A'.$row, $i)
+                        ->setCellValue('B'.$row, $valueorder['period'])
+                        ->setCellValue('C'.$row, $valueorder['salesmanid'])
+                        ->setCellValue('D'.$row, $valueorder['nama_salesman'])
+                        ->setCellValue('E'.$row, $valueorder['customerid'])
+                        ->setCellValue('F'.$row, $valueorder['kode_outlet'])
+                        ->setCellValue('G'.$row, $valueorder['nama_customer'])
+                        ->setCellValue('H'.$row, $valueorder['account'])
+                        ->setCellValue('I'.$row, $valueorder['productid'])
+                        ->setCellValue('J'.$row, $valueorder['nama_invoice'])
+                        ->setCellValue('K'.$row, $valueorder['qty_jual_in_pcs'])
+                        ->setCellValue('L'.$row, $valueorder['h_jual'])
+                        ->setCellValue('M'.$row, '=K'.$row.'*L'.$row)
+						;
+			$i++;
+            $row++;
+        }
+
+		// Redirect output to a client's web browser (Excel2007)
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header("Content-Disposition: attachment;filename=$filename");
+		header('Cache-Control: max-age=0');
+		// If you're serving to IE 9, then the following may be needed
+		header('Cache-Control: max-age=0');
+		// If you're serving to IE over SSL, then the following may be needed
+		header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+		header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+		header ('Pragma: public'); // HTTP/1.0
+		
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save('php://output');
+		unset($objPHPExcel);
+		return true;
+
+	}
 
 }

@@ -6,6 +6,7 @@
     let uiForm = $("#fm-report-productivity");
     let uiBtnPreview = $("#btn-preview-form");
     let uiBtnDownload = $("#btn-download-form");
+    let uiBtnDownloadAllData = $("#btn-download-all-data-form");
 
     let uiSelectMonth = $("#month-id");
     let uiSelectYear = $("#year-id");
@@ -22,12 +23,16 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
+		console.log(filter);
         
         $.when(
             $.post(common.baseURL("rep_productivity/load_regional"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
+            console.log("done");
+            //console.log(d);
         }).then(function (r1) {
             common.loadingClose();
+            console.log("then");
             setupForm(r1);
         }).fail(resolver.fail);
 
@@ -49,6 +54,16 @@
                 alert ('Bulan harus di isi...!');
             }else{
                 save_xls();
+            }
+        });
+		
+        uiBtnDownloadAllData.click(function () {
+            if (uiSelectYear.val()===null){
+                alert ('Tahun harus di isi...!');
+            }else if (uiSelectMonth.val()===null){
+                alert ('Bulan harus di isi...!');
+            }else{
+                save_xls_all_data();
             }
         });
 
@@ -178,6 +193,21 @@
         var restrict_level = paramsession.restrict_level;
         
         common.direct("rep_productivity/savetoxlsx/"+year+"/"+month+"/"+position+"/"+regionalid+"/"+areaid+"/"+usersession+"/"+restrict_level+"/"+idjabatan);
+    }
+
+    function save_xls_all_data() {
+		
+        var year = uiSelectYear.val();
+        var month = uiSelectMonth.val();
+        var position = uiSelectPosition.val();
+        var regionalid = uiSelectRegional.val();
+        var areaid = uiSelectArea.val();
+
+        var idjabatan = paramsession.idjabatan;
+        var usersession = paramsession.username;
+        var restrict_level = paramsession.restrict_level;
+        
+        common.direct("rep_productivity/savexls_visit_and_order/"+year+"/"+month+"/"+position+"/"+regionalid+"/"+areaid+"/"+usersession+"/"+restrict_level+"/"+idjabatan);
     }
 
 })();
