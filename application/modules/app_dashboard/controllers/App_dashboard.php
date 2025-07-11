@@ -74,7 +74,7 @@ class App_dashboard extends BaseController
 		*/
 		$q = $this->db->query("
 								select * from (
-								select 
+								select sls.nama_salesman,sls.salesmanid,
 								   rrk_trans.customerid,
 								   cst.nama_customer,
 								   cst.alamat,
@@ -210,9 +210,10 @@ class App_dashboard extends BaseController
 								/*<td class="active" style="text-align:center;">'.@$d_rrk->order_time.'</td>
 								<td class="active" style="text-align:center;">'.@$d_rrk->tagihan_time.'</td>*/
 
-			$html .='<table class="table table-striped table-bordered table-condensed" style="width:700px;">
+			$html .='<table class="table table-striped table-bordered table-condensed" style="width:1000px;">
 						<thead>
 							<tr style="align:center;">
+								<th width="70">User PARMA</th>
 								<th width="70">Foto Checkin</th>
 								<th width="70">Check IN</th>
 								<th width="70">Check OUT</th>
@@ -223,6 +224,7 @@ class App_dashboard extends BaseController
 							</thead>
 							<tbody>
 							<tr>
+								<td class="success" style="text-align:center;">'.@$value['salesmanid'].'-'.@$value['nama_salesman'].'</td>
 								<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'"></td>
 								<td class="success" style="text-align:center;">'.@$d_rrk->check_in.'</td>
 								<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>
