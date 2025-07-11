@@ -296,7 +296,7 @@ class App_dashboard extends BaseController
 
 				$html .= '<h4>Daily CRC (Quantity in pcs)</h4>';
 				$get_crecord = $this->dashboard->get_record($siteid,$customerid,$sid,$date);
-				//$get_crc = $this->dashboard->get_crc($siteid,$sid,$date,$customerid);
+				///$get_crc = $this->dashboard->get_crc($siteid,$sid,$date,$customerid);
 				$html .= str_replace("'","",str_replace("'+","",$get_crecord));
 
 			$html .= '</div>';		
@@ -749,20 +749,22 @@ class App_dashboard extends BaseController
 			$periode = $get_date;
 			$salesmanid = $map['salesmanid'];
 			$customerid = $map['customerid'];
+			$customerid_m = $map['customerid_m'];
 				
 			$get_crecord = $this->dashboard->get_record($siteid,$customerid,$salesmanid,$get_date);
 			$d_rrk = $this->dashboard->get_detail_rrk($siteid,$customerid,$salesmanid,$get_date);
-			$d_img = $this->dashboard->get_image_cust($siteid,$customerid,$salesmanid);
+			$d_img = $this->dashboard->get_image_cust($siteid,$customerid,$customerid_m,$salesmanid);
 			$d_img_checkin = $this->dashboard->get_image_checkin($siteid,$get_date,$salesmanid,$customerid);
-			$d_img_before = $this->dashboard->get_image_before($siteid,$get_date,$salesmanid,$customerid);
-			$d_img_after = $this->dashboard->get_image_after($siteid,$get_date,$salesmanid,$customerid);
-			$d_img_sell_1 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_I');
-			$d_img_sell_2 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_II');
-			$d_img_sell_3 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_III');
-			$d_img_sos = $this->dashboard->get_image_sos($siteid,$get_date,$salesmanid,$customerid);
-			$d_img_competitor = $this->dashboard->get_image_competitor($siteid,$get_date,$salesmanid,$customerid);
-			$d_img_npd = $this->dashboard->get_image_npd($siteid,$get_date,$salesmanid,$customerid);
-			$d_img_promo_gsk = $this->dashboard->get_image_promo_gsk($siteid,$get_date,$salesmanid,$customerid);
+			$d_detailing = $this->dashboard->get_detailing($siteid,$get_date,$salesmanid,$customerid);
+			//$d_img_before = $this->dashboard->get_image_before($siteid,$get_date,$salesmanid,$customerid);
+			//$d_img_after = $this->dashboard->get_image_after($siteid,$get_date,$salesmanid,$customerid);
+			//$d_img_sell_1 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_I');
+			//$d_img_sell_2 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_II');
+			//$d_img_sell_3 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_III');
+			//$d_img_sos = $this->dashboard->get_image_sos($siteid,$get_date,$salesmanid,$customerid);
+			//$d_img_competitor = $this->dashboard->get_image_competitor($siteid,$get_date,$salesmanid,$customerid);
+			//$d_img_npd = $this->dashboard->get_image_npd($siteid,$get_date,$salesmanid,$customerid);
+			//$d_img_promo_gsk = $this->dashboard->get_image_promo_gsk($siteid,$get_date,$salesmanid,$customerid);
 			
 			$icon = '';
 			//$icon_sales = $icon = base_url().'assets/mapIcon/res/drawable-hdpi/jadwal.png';//"https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png";
@@ -832,6 +834,7 @@ class App_dashboard extends BaseController
 							\'<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">\'+
 								\'<thead>\'+
 									\'<tr style="align:center;">\'+
+										\'<th style="text-align:center;">Foto CheckIn</th>\'+
 										\'<th style="text-align:center;">Check IN</th>\'+
 										\'<th style="text-align:center;">Check OUT</th>\'+
 										\'<th style="text-align:center;">Lama Kunjungan</th>\'+
@@ -841,6 +844,7 @@ class App_dashboard extends BaseController
 								\'</thead>\'+
 								\'<tbody>\'+
 									\'<tr>\'+
+										\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'"></td>\'+
 										\'<td class="success" style="text-align:center;">'.$d_rrk->check_in.'</td>\'+	
 										\'<td class="success" style="text-align:center;">'.$d_rrk->check_out.'</td>\'+	
 										\'<td class="danger" style="text-align:center;">'.$d_rrk->lama_kunjungan.'</td>\'+
@@ -850,109 +854,28 @@ class App_dashboard extends BaseController
 								\'</tbody>\'+
 							\'</table>\'+
 							\'<hr>\'+
-							\'<div><h3>Dokumentasi</h3>\'+
+							\'<div><h3>Detailing</h3>\'+
 							\'<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">\'+
 								\'<thead>\'+
 									\'<tr style="align:center;">\'+
-										\'<th style="text-align:center;">Foto CheckIn</th>\'+
-										\'<th style="text-align:center;">Foto Before</th>\'+
-										\'<th style="text-align:center;">Foto After</th>\'+
-									\'</tr>\'+
-								\'</thead>\'+
-								\'<tbody>\'+
-									\'<tr>\'+
-									\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'"></td>\'+
-									\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_before(\'+param_link_image+\'); " alt="Image Before" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_before->image.'"></td>\'+
-									\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_after(\'+param_link_image+\'); " alt="Image After" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_after->image.'"></td>\'+
-									\'</tr>\'+
-								\'</tbody>\'+
-							\'</table>\'+
-							\'<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">\'+
-								\'<thead>\'+
-									\'<tr style="align:center;">\'+
-									\'<th style="text-align:center;">Foto Selling Out I</th>\'+
-									\'<th style="text-align:center;">Foto Selling Out II</th>\'+
-									\'<th style="text-align:center;">Foto Selling Out III</th>\'+
-									\'</tr>\'+
-								\'</thead>\'+
-								\'<tbody>';
-								if (!empty($d_img_sell_1)){
-									$marker .= '<tr>\'+
-									\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_dokumentasi(\'+param_link_image+\'); " alt="Image Sell Out I" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_sell_1->image.'"></td>\'+
-									\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_dokumentasi(\'+param_link_image+\'); " alt="Image Sell Out II" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_sell_2->image.'"></td>\'+
-									\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_dokumentasi(\'+param_link_image+\'); " alt="Image Sell Out III" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_sell_3->image.'"></td>\'+
-									\'</tr>';
-								}
-								$marker .= '</tbody>\'+
-							\'</table>\'+
-							\'</div>\'+
-							\'<hr>\'+
-							\'<div><h3>Promo</h3>\'+
-							\'<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">\'+
-								\'<thead>\'+
-									\'<tr style="align:center;">\'+
-										\'<th style="text-align:center;">Foto Promo</th>\'+
+										\'<th style="text-align:center;">Foto Detailing</th>\'+
 										\'<th style="text-align:left;">Keterangan</th>\'+
 									\'</tr>\'+
 								\'</thead>\'+
 								\'<tbody>';
-								foreach ($d_img_promo_gsk as $rowsimgpromo){
-									if ($rowsimgpromo['tipepromo']=='Gimmick'){
-										$marker .=' <tr><td valign="top" style="text-align:center;">';
-										$arrimages = explode(',', @$rowsimgpromo['image']);
-										foreach ($arrimages as &$images) {
-									$marker .='<img class="img-rounded" onclick="preview_image_promo_gsk_gimmick(\'+param_link_image+\'); " alt="Image Promo GSK" style="width:100px; height:100px;" src="'.$urlimage.$images.'"><br><br>';
-										}
-										$marker .='</td><td valign="center" style="text-align:left;">\'+
-										\'<p>Promo : '.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsimgpromo['promo'])).'</p>\'+
-										\'<p>Tipe : '.@$rowsimgpromo['tipepromo'].'</p>\'+
-										\'<p>Stock Awal :'.@$rowsimgpromo['harga_normal'].'</p>\'+
-										\'<p>Qty Pasang :'.@$rowsimgpromo['harga_promo'].'</p>\'+
-										\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsimgpromo['description'])).'</p>\'+
-										\'</td>\'+
-										\'</tr>';
-									}else{
+								foreach ($d_detailing as $rowsdetailing){
 									$marker .=' <tr>\'+
-												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_promo_gsk(\'+param_link_image+\'); " alt="Image Promo GSK" style="width:100px; height:100px;" src="'.$urlimage.@$rowsimgpromo['image'].'"></td>\'+
+												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
-												\'<p>Promo : '.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsimgpromo['promo'])).'</p>\'+
-												\'<p>Tipe : '.@$rowsimgpromo['tipepromo'].'</p>\'+
-												\'<p>Display :'.@$rowsimgpromo['display'].'</p>\'+
-												\'<p>Harga Normal :'.@$rowsimgpromo['harga_normal'].'</p>\'+
-												\'<p>Harga Promo :'.@$rowsimgpromo['harga_promo'].'</p>\'+
-												\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsimgpromo['description'])).'</p>\'+
+												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
+												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
+												\'<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>\'+
+												\'<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
+												\'<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
+												\'<p>Detailing Product :'.@$rowsdetailing['array_product'].'</p>\'+
+												\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>\'+
 												\'</td>\'+
 												\'</tr>';
-									}
-								}
-								$marker .= '</tbody>\'+
-							\'</table>\'+
-							\'</div>\'+	
-							\'<hr>\'+
-							\'<div><h3>SOS</h3>\'+
-							\'<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">\'+
-								\'<thead>\'+
-									\'<tr style="align:center;">\'+
-										\'<th style="text-align:center;">Foto SOS</th>\'+
-										\'<th style="text-align:left;">Keterangan</th>\'+
-									\'</tr>\'+
-								\'</thead>\'+
-								\'<tbody>';
-								foreach ($d_img_sos as $rowsimgsos){
-									if($rowsimgsos['sos']<>''){
-									$marker .=' <tr><td valign="top" style="text-align:center;">';
-									$arrimages = explode(',', @$rowsimgsos['image']);
-									foreach ($arrimages as &$images) {
-										$marker .= ' <img class="img-rounded" onclick="preview_image_sos(\'+param_link_image+\'); " alt="Image SOS" style="width:100px; height:100px;" src="'.$urlimage.$images.'">';
-									}
-									$marker .='</td><td valign="center" style="text-align:left;">\'+
-										\'<p>'.@$rowsimgsos['type_sos'].'</p>\'+
-										\'<p>Jumlah Facing Produk GSK : '.@$rowsimgsos['qty_sos_gsk'].'</p>\'+
-										\'<p>Jumlah Facing Kategori : '.@$rowsimgsos['qty_sos_competitor'].'</p>\'+
-										\'<p>SOS :'.@$rowsimgsos['sos'].' %</p>\'+
-										\'</td>\'+
-										\'</tr>';
-									}
 								}
 								$marker .= '</tbody>\'+
 							\'</table>\'+

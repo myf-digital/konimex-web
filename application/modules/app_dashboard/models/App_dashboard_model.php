@@ -113,10 +113,10 @@ class App_dashboard_model extends CI_Model
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
-					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and order_time is not null) _order
+					(select count(1) from t_sales_master where periode=z.periode and salesmanid=z.salesmanid and bruto>0) _order
 					from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
 					left join m_sales_salesman b on z.salesmanid=b.salesmanid
-					left join m_area_subarea c on c.subareaid=b.subareaid
+					left join m_area_areasite c on c.areaid=b.areaid
 					where z.periode = '".$data["get_date"]."' $strquery
 					group by z.siteid, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area) a
 					";
@@ -131,7 +131,7 @@ class App_dashboard_model extends CI_Model
 			   tcrc.brandid, product.nama_brand,
 			   tcrc.productid, replace(product.nama_invoice,'\'','`') nama_invoice,
 			   tcrc.qty_rata  as r1,
-			   tcrc.qty_akhir  as a1,
+			   case when tcrc.stock_buffer>0 then tcrc.stock_buffer else tcrc.qty_akhir end as a1,
 			   tcrc.qty_saran_order  as s1, 
 			   tcrc.qty_fix_order  as f1,
 			   ifnull(tcrc.total_qty_exp,0) as exp_qty,
@@ -164,12 +164,6 @@ class App_dashboard_model extends CI_Model
 						\'<td style="text-align:left;padding:10px;">Product Name</td>\'+
 						\'<td style="text-align:right;padding:10px;">Stock</td>\'+
 						\'<td style="text-align:right;padding:10px;">Harga</td>\'+
-						\'<td style="text-align:right;padding:10px;">Qty Expired</td>\'+
-						\'<td style="text-align:right;padding:10px;">Expired Date</td>\'+
-						\'<td style="text-align:right;padding:10px;">Selling Out</td>\'+
-						\'<td style="text-align:right;padding:10px;">Rata-rata</td>\'+
-						\'<td style="text-align:right;padding:10px;">Saran Order</td>\'+
-						\'<td style="text-align:right;padding:10px;">Order</td>\'+
 					\'</td>\'+
 				\'</thead>\'+
 				\'<tbody>\'+';
@@ -180,12 +174,12 @@ class App_dashboard_model extends CI_Model
 			
 				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['a1'].'</td>\'+';
 				$return .= '\'<td style="text-align:right;padding:10px;">'.number_format($value['price'], 2, '.', ',').'</td>\'+';			
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_qty'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_date'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['sell_out'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['r1'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['s1'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['f1'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_qty'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_date'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['sell_out'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['r1'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['s1'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['f1'].'</td>\'+';
 			
 				$return .= '\'</tr>\'+';
 					
@@ -580,7 +574,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		$q = $this->db->query(" select z.* from (
 								select case when b.customerid is null then 'ExtraCall' 
 									   when b.customerid is not null then 'EffectiveCall' end as flag,
-									   a.siteid, e.nama_site , a.salesmanid,  a.customerid , f.nama_customer, f.alamat, f.latitude, f.longitude, 
+									   a.siteid, e.nama_site , a.salesmanid,  a.customerid , f.customerid_m, f.nama_customer, f.alamat, f.latitude, f.longitude, 
 									   a.latitude_cell, a.longitude_cell, d.nama_salesman,a.check_in
 								from t_sales_rrk_trans a left join t_sales_rrk b on 
 								a.siteid = b.siteid and a.salesmanid = b.salesmanid and a.customerid=b.customerid and a.periode=b.periode
@@ -630,14 +624,19 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		return $data;
     }
 
-	function get_image_cust($siteid,$customerid,$salesmanid) {
+	function get_image_cust($siteid,$customerid,$customerid_m,$salesmanid) {
 	
-		$this->db->select("image");
+		$this->db->select("ifnull(image,'noimage.jpg') as image");
 		$this->db->from("m_customer_image");
-		$this->db->where("customerid",$customerid);
 		$this->db->where("siteid",$siteid);
 		$this->db->where("salesmanid",$salesmanid);
 		$this->db->where("image_type","IMG_OUTLET");
+		$this->db->or_where([
+					'customerid' => $customerid,
+					'customerid_m' => $customerid_m
+				]);
+		//$this->db->where("customerid",$customerid);
+		//$this->db->or_where("customerid_m",$customerid_m);
 		$this->db->order_by("created_date","desc");
 		$this->db->limit(1, 0);
 		$data = $this->db->get()->row();
@@ -645,7 +644,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 	}
 
 	function get_image_checkin($siteid,$periode,$salesmanid,$customerid) {
-	$this->db->select("image,image_type");
+	$this->db->select("ifnull(image,'noimage.jpg') as image,image_type");
 	$this->db->from("m_customer_image");
 	$this->db->where("siteid",$siteid);
 	$this->db->where("periode",$periode);
@@ -750,6 +749,19 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		return $data;
 	}
 
+	function get_detailing($siteid,$periode,$salesmanid,$customerid) {
+		$q = $this->db->query(" SELECT a.periode, a.siteid, a.salesmanid, a.salesman_name, 
+										a.customerid, v.latest_jjid, v.nama_customer, v.typeid, v.nama_account,
+										a.nourut, a.tipe_pic, a.professional_name, 
+										a.array_product, 
+										a.keterangan, a.start_detailing, a.url_img_detailing, 
+										a.latitude_cell, a.longitude_cell, a.end_detailing, a.status, a.reason
+								FROM trx_visit_detailing a left join v_outlet_all v on a.customerid =v.customerid
+								where a.periode='".$periode."' and a.salesmanid='".$salesmanid."' and a.customerid='".$customerid."'
+								;");
+		$data = $q->result_array();
+		return $data;
+	}
 
 	function get_siteid() {
 		$this->db->select("siteid");
