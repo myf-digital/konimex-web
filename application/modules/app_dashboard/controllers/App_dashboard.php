@@ -74,7 +74,7 @@ class App_dashboard extends BaseController
 		*/
 		$q = $this->db->query("
 								select * from (
-								select sls.nama_salesman,sls.salesmanid,
+								select salesamn.nama_salesman,salesamn.salesmanid,
 								   rrk_trans.customerid,
 								   cst.nama_customer,
 								   cst.alamat,
