@@ -113,7 +113,7 @@ class App_dashboard_model extends CI_Model
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
-					(select count(1) from t_sales_master where periode=z.periode and salesmanid=z.salesmanid and bruto>0) _order
+					(select count(1) from t_sales_master where tanggal=z.periode and salesmanid=z.salesmanid and bruto>0) _order
 					from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
 					left join m_sales_salesman b on z.salesmanid=b.salesmanid
 					left join m_area_areasite c on c.areaid=b.areaid
