@@ -108,20 +108,20 @@ class App_dashboard extends BaseController
 									   cst.alamat
 							union all
 								select 
-								   rrk.customerid,
-								   cst.nama_customer,
-								   cst.alamat,
-								   0 as total_netto,
-								   DATE_FORMAT(rrk_trans.check_in, '%H:%i:%s') check_in,
-								   'Jadwal' as flag,
-								   ROUND(CALCULATE_DISTANCE(cst.latitude,cst.longitude,rrk_trans.latitude_cell,rrk_trans.longitude_cell),2) as jarak
+									salesamn.nama_salesman,salesamn.salesmanid,
+								   	rrk.customerid,cst.nama_customer,cst.alamat,
+								   	0 as total_netto,
+								   	DATE_FORMAT(rrk_trans.check_in, '%H:%i:%s') check_in,
+								   	'Jadwal' as flag,
+								   	ROUND(CALCULATE_DISTANCE(cst.latitude,cst.longitude,rrk_trans.latitude_cell,rrk_trans.longitude_cell),2) as jarak
 								from 
 						  t_sales_rrk rrk left join t_sales_rrk_trans rrk_trans 
 						  on rrk.siteid = rrk_trans.siteid and rrk.periode = rrk_trans.periode and rrk.salesmanid = rrk_trans.salesmanid 
 						  and rrk.customerid = rrk_trans.customerid
 						  left JOIN m_customer_ob custob ON rrk.salesmanid = custob.salesmanid and rrk.customerid = custob.customerid
-						  left JOIN m_customer cst 
-								on rrk.siteid = cst.siteid and rrk.customerid = cst.customerid
+						  left JOIN m_customer cst on rrk.siteid = cst.siteid and rrk.customerid = cst.customerid
+							left JOIN m_sales_salesman salesamn 
+							on rrk_trans.siteid = salesamn.siteid and rrk_trans.salesmanid = salesamn.salesmanid 
 								where rrk.siteid = '".$siteid."' AND 
 									  rrk.salesmanid = '".$sid."' AND
 									  rrk.periode = '".$date."' AND
