@@ -586,7 +586,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 								where a.periode='".$get_date."' and a.salesmanid='".$sid."'
 								group by a.siteid, a.periode, a.salesmanid, a.customerid, a.latitude_cell, a.longitude_cell, a.check_in, b.customerid, d.nama_salesman, e.nama_site, f.nama_customer, f.alamat, f.latitude, f.longitude
 								UNION ALL
-								select 'Jadwal' as flag, rrk.siteid, site.nama_site , rrk.salesmanid,  rrk.customerid , cust.nama_customer, cust.alamat, cust.latitude, 
+								select 'Jadwal' as flag, rrk.siteid, site.nama_site , rrk.salesmanid,  rrk.customerid , cust.customerid_m, cust.nama_customer, cust.alamat, cust.latitude, 
 								cust.longitude, cust.latitude as latitude_cell, cust.longitude as longitude_cell, sls.nama_salesman, '' check_in
 								from  t_sales_rrk rrk								
 								INNER JOIN  m_sales_salesman sls ON rrk.siteid = sls.siteid and rrk.salesmanid = sls.salesmanid
@@ -595,7 +595,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 								INNER JOIN  m_setup_site site ON rrk.siteid = site.siteid
 								where rrk.periode = '".$get_date."' and rrk.salesmanid = '".$sid."' 
 								UNION ALL
-								select 'Noo' as flag, cust.siteid, site.nama_site , cust.salesmanid,  cust.customerid , cust.nama_customer, 
+								select 'Noo' as flag, cust.siteid, site.nama_site , cust.salesmanid,  cust.customerid, cust.customerid_m, cust.nama_customer, 
 										cust.alamat, cust.latitude, cust.longitude, cust.latitude as latitude_cell, cust.longitude as longitude_cell, 
 										sls.nama_salesman, '' check_in
 								from  m_customer as cust
