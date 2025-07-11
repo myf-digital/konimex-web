@@ -91,7 +91,7 @@ class App_dashboard extends BaseController
 								on rrk_trans.siteid = sls.siteid and rrk_trans.periode = sls.tanggal and rrk_trans.salesmanid = sls.salesmanid 
 								and rrk_trans.customerid = sls.customerid and rrk_trans.salesmanid = sls.salesmanid and rrk_trans.customerid = sls.customerid
 								left JOIN t_sales_detail dtl 
-								on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales 
+								on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po 
 								left JOIN m_customer_ob custob ON rrk_trans.salesmanid = custob.salesmanid and rrk_trans.customerid = custob.customerid
 								left JOIN m_customer cst 
 								on rrk_trans.siteid = cst.siteid and rrk_trans.customerid = cst.customerid 
@@ -155,6 +155,8 @@ class App_dashboard extends BaseController
 		$html .= '<tbody">';
 
 		$icon = '';
+		$urlimage = URL_IMAGE;
+
 		foreach ($data as $value) {
 			$flag = $value['flag'];
 			if ($flag == 'Call') {
@@ -179,7 +181,7 @@ class App_dashboard extends BaseController
 			} else if ($flag == 'Schedule') {
 				$icon = base_url().'assets/mapIcon/map-pin-31.png';
 			} */
-
+			
 			$html .= '<tr>';
 			$html .= '<td>'.$i.'</td>';
 			$html .= '<td style="white-space: nowrap;"><a class="btn btn-primary btn-xs" href="#" onclick="toggle_visibility(\'tr_detail_'.$i.'\'); return false;">Detail</a></td>';
@@ -200,6 +202,8 @@ class App_dashboard extends BaseController
 			
 			//$get_tagihan = $this->dashboard->get_tagihan_sales($siteid,$sid,$date,$customerid);
 			$d_rrk = $this->dashboard->get_detail_rrk($siteid,$customerid,$sid,$date);
+			$d_img_checkin = $this->dashboard->get_image_checkin($siteid,$date,$sid,$customerid);
+			$d_detailing = $this->dashboard->get_detailing($siteid,$date,$sid,$customerid);
 								/*<th width="70">Order Time</th>
 								<th width="70">Tagihan Time</th>*/
 
@@ -209,6 +213,7 @@ class App_dashboard extends BaseController
 			$html .='<table class="table table-striped table-bordered table-condensed" style="width:700px;">
 						<thead>
 							<tr style="align:center;">
+								<th width="70">Foto Checkin</th>
 								<th width="70">Check IN</th>
 								<th width="70">Check OUT</th>
 								<th width="70">Lama Kunjungan</th>
@@ -218,6 +223,7 @@ class App_dashboard extends BaseController
 							</thead>
 							<tbody>
 							<tr>
+								<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'"></td>
 								<td class="success" style="text-align:center;">'.@$d_rrk->check_in.'</td>
 								<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>
 								<td class="danger" style="text-align:center;">'.@$d_rrk->lama_kunjungan.'</td>
@@ -227,8 +233,32 @@ class App_dashboard extends BaseController
 						</tbody>
 					</table>';
 			
-			//$html .= $get_tagihan;
-
+			$html .='<div><h3>Detailing</h3>
+							<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">
+								<thead>
+									<tr style="align:center;">
+										<th style="text-align:center;">Foto Detailing</th>
+										<th style="text-align:left;">Keterangan</th>
+									</tr>
+								</thead>
+								<tbody>';
+								foreach ($d_detailing as $rowsdetailing){
+									$html .=' <tr>
+												<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>
+												<td valign="center" style="text-align:left;">
+												<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>
+												<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>
+												<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>
+												<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>
+												<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>
+												<p>Detailing Product :'.@$rowsdetailing['array_product'].'</p>
+												<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>
+												</td>
+												</tr>';
+								}
+								$html .= '</tbody>
+							</table>
+							</div>';
 				$html .= '<h4>Order</h4>'; 
 				$html .= '<table class="table table-striped table-bordered table-condensed">';
 				$html .= '<thead>';
@@ -256,7 +286,7 @@ class App_dashboard extends BaseController
 					   sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
 					from 
 					t_sales_master sls left join
-					t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
+					t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
 					m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 					m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
 					m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
@@ -803,11 +833,6 @@ class App_dashboard extends BaseController
 										\'<div class="well bg-info" style="min-width:355px; border:none !important;">\'+
 											\'<table cellspacing="1" cellpadding="1">\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Nama Salesman</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
-												\'</tr>\'+
-												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">OutletId</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['customerid'].'</td>\'+	
@@ -822,6 +847,11 @@ class App_dashboard extends BaseController
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted">'.@$map['alamat'].'</td>\'+	
 												\'</tr>\'+											
+												\'<tr>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">Nama Salesman</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
+												\'</tr>\'+
 											\'</table>\'+
 										\'<\div>\'+
 									\'</td>\'+										
@@ -942,11 +972,6 @@ class App_dashboard extends BaseController
 										\'<div class="well bg-info" style="min-width:355px; border: none !important;">\'+
 											\'<table cellspacing="1" cellpadding="1" >\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Nama Salesman</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
-												\'</tr>\'+
-												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">OutletId</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['customerid'].'</td>\'+	
@@ -961,6 +986,11 @@ class App_dashboard extends BaseController
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted">'.@$map['alamat'].'</td>\'+	
 												\'</tr>\'+											
+												\'<tr>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">Nama Salesman</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
+												\'</tr>\'+
 											\'</table>\'+
 										\'</div>\'+											
 									\'</td>\'+							
