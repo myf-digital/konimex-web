@@ -458,7 +458,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
             from 
             t_sales_master sls left join
             t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
-			left JOIN m_customer_ob custob ON sls.salesmanid = custob.salesmanid and sls.customerid = custob.customerid
+			m_customer_ob custob ON sls.salesmanid = custob.salesmanid and sls.customerid = custob.customerid
             left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
             m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
             m_product product on dtl.productid = product.productid 
