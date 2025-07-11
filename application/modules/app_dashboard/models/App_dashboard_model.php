@@ -631,11 +631,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		$this->db->where("siteid",$siteid);
 		$this->db->where("salesmanid",$salesmanid);
 		$this->db->where("image_type","IMG_OUTLET");
-		$this->db->or_where([
-					'customerid' => $customerid,
-					'customerid_m' => $customerid_m
-				]);
-		//$this->db->where("customerid",$customerid);
+		$this->db->where("customerid",$customerid);
 		//$this->db->or_where("customerid_m",$customerid_m);
 		$this->db->order_by("created_date","desc");
 		$this->db->limit(1, 0);
