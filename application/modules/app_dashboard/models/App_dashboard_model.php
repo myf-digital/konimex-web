@@ -750,6 +750,18 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 										a.customerid, v.latest_jjid, v.nama_customer, v.typeid, v.nama_account,
 										a.nourut, a.tipe_pic, a.professional_name, 
 										a.array_product, 
+										CASE
+											WHEN (
+												SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+												FROM ref_brand rb
+												WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+											) IS NOT NULL THEN (
+												SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+												FROM ref_brand rb
+												WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+											)
+											ELSE a.array_product
+										END as brands,
 										a.keterangan, a.start_detailing, a.url_img_detailing, 
 										a.latitude_cell, a.longitude_cell, a.end_detailing, a.status, a.reason
 								FROM trx_visit_detailing a left join v_outlet_all v on a.customerid =v.customerid

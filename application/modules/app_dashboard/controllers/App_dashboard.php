@@ -251,7 +251,7 @@ class App_dashboard extends BaseController
 												<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>
 												<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>
 												<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>
-												<p>Detailing Product :'.@$rowsdetailing['array_product'].'</p>
+												<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>
 												<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>
 												</td>
 												</tr>';
@@ -901,7 +901,7 @@ class App_dashboard extends BaseController
 												\'<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>\'+
 												\'<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
-												\'<p>Detailing Product :'.@$rowsdetailing['array_product'].'</p>\'+
+												\'<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>\'+
 												\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>\'+
 												\'</td>\'+
 												\'</tr>';
@@ -1039,7 +1039,7 @@ class App_dashboard extends BaseController
 												\'<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>\'+
 												\'<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
-												\'<p>Detailing Product :'.@$rowsdetailing['array_product'].'</p>\'+
+												\'<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>\'+
 												\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>\'+
 												\'</td>\'+
 												\'</tr>';
