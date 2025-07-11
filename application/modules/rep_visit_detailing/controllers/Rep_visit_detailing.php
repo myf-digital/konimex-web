@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class Rep_visit_detailing extends BaseController
 {
@@ -140,7 +141,10 @@ class Rep_visit_detailing extends BaseController
 			$add = $d_position['alamat'];
 			$account = $d_position['account'];
 			$pic = $d_position['professional_name'];
-			$img = $d_position['url_img_detailing'];
+			$img = '';
+			if ($d_position['url_img_detailing']) {
+				$img = '<br/><img src="'.$d_position['url_img_detailing'].'" alt="foto" width="100">';
+			}
 			$brand = $d_position['brands'];
 			if ($d_position['tipe_pic']) $pic .= ' ('.$d_position['tipe_pic'].')';
 			$icon = base_url().'assets/mapIcon/tracking.png';
@@ -163,7 +167,7 @@ class Rep_visit_detailing extends BaseController
 						};
 
 						var contentString_'.$numpos.' = \'<div id="content" style="max-width:1000px;">\'+
-						\'<div style="z-index: -1;" id="siteNotice"><h3 style="margin-top: 0px;">Outlet</h3><br/><img src="'.$img.'" alt="foto" width="100">\'+
+						\'<div style="z-index: -1;" id="siteNotice"><h3 style="margin-top: 0px;">Outlet</h3>'.$img.'\'+
 						\'<table cellspacing="1" cellpadding="1">\'+
 						\'<tbody>\'+
 							\'<tr>\'+									
@@ -374,6 +378,7 @@ class Rep_visit_detailing extends BaseController
 				$value['reason'],
 				$value['url_img_detailing'],
 			];
+			$this->addImageFromUrlToSheet($sheet, $value['url_img_detailing'], 'N'.$row);
             $sheet->fromArray($content,NULL,'A'.$row);
             $i++;
             $row++;
@@ -387,4 +392,45 @@ class Rep_visit_detailing extends BaseController
 
         $writer->save('php://output');
     }
+
+	private function addImageFromUrlToSheet($sheet, $imageUrl, $cellCoordinate) {
+		try {
+			// Verify URL is valid
+			if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+				log_message("error", "Error addImageFromUrlToSheet: Invalid URL");
+			}
+			
+			// Get image contents
+			$imageData = @file_get_contents($imageUrl);
+			if ($imageData === false) {
+				log_message("error", "Error addImageFromUrlToSheet: Could not download image");
+			}
+			
+			// Create temporary file
+			$tempFile = tempnam(sys_get_temp_dir(), 'phpspreadsheet');
+			if (file_put_contents($tempFile, $imageData) === false) {
+				log_message("error", "Error addImageFromUrlToSheet: Could not create temporary file");
+			}
+			
+			// Verify it's a valid image
+			if (!@getimagesize($tempFile)) {
+				log_message("error", "Error addImageFromUrlToSheet: Downloaded file is not a valid image");
+			}
+			
+			// Add image to worksheet
+			$drawing = new Drawing();
+			$drawing->setPath($tempFile);
+			$drawing->setCoordinates($cellCoordinate);
+			$drawing->setWorksheet($sheet);
+			$drawing->setWidth(125);
+
+			return $drawing;
+		} catch (Exception $e) {
+			// Clean up temp file if it exists
+			if (isset($tempFile) && file_exists($tempFile)) {
+				@unlink($tempFile);
+			}
+			log_message("error", "Error addImageFromUrlToSheet: " . $e->getMessage());
+		}
+	}
 }
