@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Setup Pjp <small>Control panel</small>
+        Setup FJP <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Setup Pjp</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Setup FJP</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Setup Pjp</h3>
+                    <h3 class="box-title">Form Setup FJP</h3>
                 </div>
 
                 <form id="fm-add-setup-pjp" role="form" method="post">
@@ -25,8 +25,8 @@
 								<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 							</div>-->
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">GFF (MD/SPG/SALESMAN)</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="GFF (MD/SPG/SALESMAN)"></select>
+								<label for="salesmanid">User (PARMA)</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="User (PARMA)"></select>
 							</div>
 							<!-- <div class="form-group col-xs-12 col-sm-12 col-md-6">
 								<label for="customerid">Outlet</label>

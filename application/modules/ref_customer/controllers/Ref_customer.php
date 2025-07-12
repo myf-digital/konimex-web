@@ -118,13 +118,7 @@ class Ref_customer extends BaseController
                   ";
         $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
                         ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='MERCHANDISER'),'') as gffmd,
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='SPG'),'') as gffspg,
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='SALESMAN MT'),'') as gffmt,
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='SALESMAN GT'),'') as gffgt
+                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='PAR'),'') as gffmd
                         from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                         left join m_area_areasite c on a.areaid = c.areaid
                         left join m_area_subarea d on a.subareaid = d.subareaid
@@ -171,12 +165,9 @@ class Ref_customer extends BaseController
                     ->setCellValue('I1', 'SubChannel/Account')
                     ->setCellValue('J1', 'TYPE')
                     ->setCellValue('K1', 'DC')
-                    ->setCellValue('L1', 'MERCHANDISER')
-                    ->setCellValue('M1', 'SPG')
-                    ->setCellValue('N1', 'SALESMAN MT')
-                    ->setCellValue('O1', 'SALESMAN GT')
-                    ->setCellValue('P1', 'Latitude')
-                    ->setCellValue('Q1', 'Longitude')
+                    ->setCellValue('L1', 'User PARMA')
+                    ->setCellValue('M1', 'Latitude')
+                    ->setCellValue('N1', 'Longitude')
                     ;
         $i = 2;
         foreach ($lovoutlet as $voutlet) {
@@ -195,11 +186,8 @@ class Ref_customer extends BaseController
                         ->setCellValue('J'.$i, $voutlet['spot_id'])
                         ->setCellValue('K'.$i, $voutlet['mcc'])
                         ->setCellValue('L'.$i, $voutlet['gffmd'])
-                        ->setCellValue('M'.$i, $voutlet['gffspg'])
-                        ->setCellValue('N'.$i, $voutlet['gffmt'])
-                        ->setCellValue('O'.$i, $voutlet['gffgt'])
-                        ->setCellValue('P'.$i, $voutlet['latitude'])
-                        ->setCellValue('Q'.$i, $voutlet['longitude'])
+                        ->setCellValue('M'.$i, $voutlet['latitude'])
+                        ->setCellValue('N'.$i, $voutlet['longitude'])
 						;
                 $i++;
                 //}

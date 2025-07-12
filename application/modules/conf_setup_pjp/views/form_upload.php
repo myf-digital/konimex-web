@@ -56,11 +56,11 @@ for (i = 0; i < close.length; i++) {
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Upload Pjp <small>Control panel</small>
+        Upload FJP <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Upload Pjp</a></li>
-        <li class="active">Form Upload Pjp</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Upload FJP</a></li>
+        <li class="active">Form Upload FJP</li>
     </ol>
 </section>
 
@@ -70,7 +70,7 @@ for (i = 0; i < close.length; i++) {
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Upload Pjp</h3>
+                    <h3 class="box-title">Form Upload FJP</h3>
                 </div>
                 <!--<form action="<?php echo base_url();?>conf_setup_pjp/upload/" method="post" enctype="multipart/form-data">-->
                 <form id="fm-upload-setup-pjp" role="form" method="post" enctype="multipart/form-data">
@@ -80,7 +80,7 @@ for (i = 0; i < close.length; i++) {
 								<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 							</div>-->
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">File Upload PJP</label>
+								<label for="salesmanid">File Upload FJP</label>
                                 <input type="file" name="fileupload" id="fileupload" class="form-control"  onchange="return validasiFile()">
                                 <small>*Max Size File Upload 2 Mb</small>
 							</div>

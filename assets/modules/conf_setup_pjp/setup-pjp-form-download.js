@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Download Setup Pjp");
+    common.setTitle("Download Setup FJP");
     // declare dom
     let uiForm = $("#fm-download-setup-pjp");
     let uiBtnCancel = $("#btn-cancel-form");

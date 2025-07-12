@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("Setup Pjp");
+    common.setTitle("Setup FJP");
     // ui components
     let uiTbl = $("#tbl-setup-pjp");
     let paramsession = common.getCookie("session");
@@ -41,7 +41,7 @@
 
     function initializeGrid() {
         let option = {
-            title: "Setup Pjp",
+            title: "Setup FJP",
             toolbar: toolbar(),
             url: common.baseURL("conf_setup_pjp/load"),
             queryParams: {
@@ -99,10 +99,10 @@
     }
 
     function toolbar() {
-        const btnCreate = commonGrid.btnBuilderText('btn-create', 'success', 'fa fa-pencil', ' Create New PJP');
-        const btnDownload = commonGrid.btnBuilderText('btn-download', 'primary', 'fa fa-download',' Download PJP');
+        const btnCreate = commonGrid.btnBuilderText('btn-create', 'success', 'fa fa-pencil', ' Create New FJP');
+        const btnDownload = commonGrid.btnBuilderText('btn-download', 'primary', 'fa fa-download',' Download FJP');
         //const btnSwitch = commonGrid.btnBuilderText('btn-switch', 'info', 'fa fa-exchange',' Switch PJP');
-        const btnUpload = commonGrid.btnBuilderText('btn-upload', 'info', 'fa fa-upload',' Upload PJP');
+        const btnUpload = commonGrid.btnBuilderText('btn-upload', 'info', 'fa fa-upload',' Upload FJP');
         return '<div class="action-grid-toolbar">' + btnCreate + btnDownload + btnUpload + ' Week Aktif : ' + paramsession.week_aktif +'</div>'; //+ btnUpload
     }
 

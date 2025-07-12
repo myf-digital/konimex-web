@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Switch Pjp");
+    common.setTitle("Switch FJP");
     // declare dom
     let uiForm = $("#fm-add-switch-pjp");
     let uiBtnCancel = $("#btn-cancel-form");

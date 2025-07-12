@@ -96,12 +96,7 @@ class Rep_productivity extends BaseController
 		$html .= '<th style="vertical-align : middle;text-align:center;">Actual Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">%PJP Compliance</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Keterangan</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">SOS HYPERMARKET</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">SOS MTI</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">SOS SUPERMARKET</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">SOS MINIMARKET</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">SOS MODERN PHARMA</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">SOS TOTAL</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Detailing</th>';
 		$html .= '</tr>';
 
 		$html .= '</tbody>';
