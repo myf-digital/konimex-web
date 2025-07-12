@@ -154,7 +154,7 @@ class Ref_customer extends BaseController
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A1', 'OUTLETID_DRC')
-                    ->setCellValue('B1', 'KODE OUTLET')
+                    ->setCellValue('B1', 'LATEST JJID')
                     ->setCellValue('C1', 'Nama Outlet')
                     ->setCellValue('D1', 'Alamat')
                     ->setCellValue('E1', 'Regional')
@@ -174,7 +174,7 @@ class Ref_customer extends BaseController
             //if ($voutlet['gffmd']!='' or $voutlet['gffspg']!='' or $voutlet['gffmt']!='' or $voutlet['gffgt']!=''){
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('A'.$i, $voutlet['customerid'])
-                        ->setCellValue('B'.$i, $voutlet['kode_outlet'])
+                        ->setCellValue('B'.$i, $voutlet['latest_jjid'])
                         ->setCellValue('C'.$i, $voutlet['nama_customer'])
                         ->setCellValue('D'.$i, $voutlet['alamat'])
                         ->setCellValue('E'.$i, $voutlet['nama_regional'])
@@ -265,8 +265,8 @@ class Ref_customer extends BaseController
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-        $html .= '<th style="white-space: nowrap;">User GFF</th>';
-		$html .= '<th style="white-space: nowrap;">Nama GFF</th>';
+        $html .= '<th style="white-space: nowrap;">User PARMA</th>';
+		$html .= '<th style="white-space: nowrap;">Nama PARMA</th>';
 		$html .= '<th style="white-space: nowrap;">Posisi</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';
