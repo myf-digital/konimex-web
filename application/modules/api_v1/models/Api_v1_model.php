@@ -605,15 +605,9 @@ class Api_v1_model extends CI_Model
 
 	function get_tipesalesman()
     {
-		$sql = " select 'MERCHANDISER' as idtipesales, 'MERCHANDISER' as tipesales
+		$sql = " select 'PARMA' as idtipesales, 'PARMA' as tipesales
 				union
-				select 'SPG' as idtipesales, 'SPG' as tipesales
-				union
-				select 'SALESMAN' as idtipesales, 'SALESMAN' as tipesales
-				union
-				select 'TL' as idtipesales, 'TL' as tipesales
-				union
-				select 'FC' as idtipesales, 'FC' as tipesales
+				select 'SPV' as idtipesales, 'SPV' as tipesales
 				union
 				select 'ADMIN' as idtipesales, 'ADMIN' as tipesales
 				";
@@ -1055,26 +1049,28 @@ class Api_v1_model extends CI_Model
 
 	function generate_absensi($vdate)
     {
-		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, `call`, 
-											   extra_call, crc, promo, competitor, `order`, sos, image,checkin_out_area)
+		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
+												effective_call, `call`, extra_call, crc, promo, competitor, `order`, sos, image)
 					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
 													   when a.type='ICT' then 'C' 
 													   when a.type='AHR' then 'H'
 													   else 'HF' end tipe, 
 							check_in checkin, check_out checkout, ifnull(b.flag_adjust,0) as flag_adjust,
 							concat(ifnull(a.description,''),ifnull(concat('-',a.description_in),''),ifnull(concat('-',a.description_out),'')) as keterangan, 
-							case when a.type='ICT' and b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
+							case when a.type='ICT' then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
 							when b.flag_adjust=1 then 0
 							else 0 
-							end _pjp, 
-							0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image, 0 _out_area
+							end _pjp, 0 _effective_call,
+							0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
 					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
-					where a.date between DATE_ADD(?, INTERVAL -7 DAY) and DATE_ADD(?, INTERVAL -1 DAY)
+					where a.date between DATE_ADD(?, INTERVAL -7 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp, 
+					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+					(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
+						and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
 					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) else 0 end _call,
+							and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
 					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 													and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) 
 						else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
@@ -1083,11 +1079,9 @@ class Api_v1_model extends CI_Model
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and order_time is not null) _order,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image,
-					(select count(1) from t_sales_rrk_trans z left join m_customer x on z.customerid=x.customerid where z.periode=a.periode and z.salesmanid=a.salesmanid and 
-						ROUND(CALCULATE_DISTANCE(x.latitude,x.longitude,z.latitude_cell,z.longitude_cell),2)>1) as _out_area
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image
 					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
-					where a.periode between DATE_ADD(?, INTERVAL -7 DAY) and DATE_ADD(?, INTERVAL -1 DAY)
+					where a.periode between  DATE_ADD(?, INTERVAL -7 DAY) and ?
 					group by a.periode,a.salesmanid
 					;
 				";
@@ -1147,8 +1141,8 @@ class Api_v1_model extends CI_Model
 	
 	function generate_absensi_daily($vdate)
     {
-		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, `call`, 
-											   extra_call, crc, promo, competitor, `order`, sos, image)
+		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
+												effective_call, `call`, extra_call, crc, promo, competitor, `order`, sos, image)
 					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
 													   when a.type='ICT' then 'C' 
 													   when a.type='AHR' then 'H'
@@ -1158,13 +1152,15 @@ class Api_v1_model extends CI_Model
 							case when a.type='ICT' then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
 							when b.flag_adjust=1 then 0
 							else 0 
-							end _pjp, 
+							end _pjp, 0 _effective_call,
 							0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
 					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
 					where a.date between DATE_ADD(?, INTERVAL -2 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp, 
+					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+					(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
+						and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
 					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 							and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
 					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
