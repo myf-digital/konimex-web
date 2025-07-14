@@ -79,7 +79,7 @@ class Req_pjp_weekly extends BaseController
             $strquery = "where a.salesmanid = '$salesmanid'";
         }
             
-        $filename = "PJP_".$filename.".xlsx";
+        $filename = "PJP_weekly_".$filename.".xlsx";
         $query = "select
                 a.*,
                 b.tipe_sales,
@@ -106,8 +106,9 @@ class Req_pjp_weekly extends BaseController
 
         $objPHPExcel = new PHPExcel();
         $objPHPExcelActive = $objPHPExcel->setActiveSheetIndex(0);
-        $objPHPExcelActive->mergeCells('A1:G1')->getStyle('A1:G1');
-        $objPHPExcelActive->getStyle('A1:G1')->getFont()->setBold(true);
+        $objPHPExcelActive->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+        $objPHPExcelActive->mergeCells('A1:L1')->getStyle('A1:L1');
+        $objPHPExcelActive->getStyle('A1:L1')->getFont()->setBold(true);
         $objPHPExcelActive->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active '.$weekaktif)
             ->setCellValue('A3', 'Kode Salesman')
             ->setCellValue('B3', 'Nama Salesman')
@@ -116,52 +117,49 @@ class Req_pjp_weekly extends BaseController
             ->setCellValue('E3', 'Keterangan')
             ->setCellValue('F3', 'Regional')
             ->setCellValue('G3', 'Area')
+            ->setCellValue('H3', 'Outlet')
+            ->setCellValue('I3', 'Minggu 1')
+            ->setCellValue('J3', 'Minggu 2')
+            ->setCellValue('K3', 'Minggu 3')
+            ->setCellValue('L3', 'Minggu 4')
         ;
-        $objPHPExcelActive->getStyle('A3:G3')->getFont()->setBold(true);
+        $objPHPExcelActive->getStyle('A3:L3')->getFont()->setBold(true);
 
 		$sqldetail = '
             select
                 a.*,
                 b.kode_outlet,
-                b.nama_customer
+                b.nama_customer,
+                b.mcc as dc,
+                c.nama_class as account
             from req_pjp_weekly_detail a
             join m_customer b on b.customerid = a.customerid
+            left join m_customer_class c on c.classid = b.classid
             where a.req_no=?
         ';
 
         $i = 4;
         foreach ($lovpjp as $vpjp) {
+            $detail = $this->db->query($sqldetail, [$vpjp['req_no']])->result_array();
+            $pjp_detail = $this->format_pjp_detail($detail);
+
+            $outlet = isset($pjp_detail['outlet']) ? implode('\n', array_unique($pjp_detail['outlet'])) : '';
+
             $objPHPExcelActive->setCellValue('A'.$i, $vpjp['salesmanid'])
                 ->setCellValue('B'.$i, $vpjp['salesman_name'])
                 ->setCellValue('C'.$i, $vpjp['status_label'])
                 ->setCellValue('D'.$i, $vpjp['reason'])
                 ->setCellValue('E'.$i, $vpjp['keterangan'])
                 ->setCellValue('F'.$i, $vpjp['nama_regional'])
-                ->setCellValue('G'.$i, $vpjp['nama_area']);
-
-            $objPHPExcelActive->mergeCells('A'.($i+1).':G'.($i+1))
-                ->getStyle('A'.($i+1).':G'.($i+1))
-                ->getAlignment()
-                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $objPHPExcelActive->setCellValue('A'.($i+1), 'Detail PJP Weekly')
-                    ->setCellValue('B'.($i+2), 'Kode Outlet')
-                    ->setCellValue('C'.($i+2), 'Nama Outlet')
-                    ->setCellValue('D'.($i+2), 'Minggu 1')
-                    ->setCellValue('E'.($i+2), 'Minggu 2')
-                    ->setCellValue('F'.($i+2), 'Minggu 3')
-                    ->setCellValue('G'.($i+2), 'Minggu 4');
-
-            $detail = $this->db->query($sqldetail, [$vpjp['req_no']])->result_array();
-            $pjp_detail = $this->format_pjp_detail($detail);
-            foreach ($pjp_detail as $x => $pd) {
-                $objPHPExcelActive->setCellValue('B'.($i+$x+3), $pd['kode_outlet'] ?? '')
-                    ->setCellValue('C'.($i+$x+3), $pd['nama_customer'] ?? '')
-                    ->setCellValue('D'.($i+$x+3), implode(',', $pd['minggu_1']))
-                    ->setCellValue('E'.($i+$x+3), implode(',', $pd['minggu_2']))
-                    ->setCellValue('F'.($i+$x+3), implode(',', $pd['minggu_3']))
-                    ->setCellValue('G'.($i+$x+3), implode(',', $pd['minggu_4']));
-            }
-            $i = $i + 5;
+                ->setCellValue('G'.$i, $vpjp['nama_area'])
+                ->setCellValue('H'.$i, str_replace('\n', "\n", $outlet))
+                ->setCellValue('I'.$i, isset($pjp_detail['minggu_1']) ? implode(',', array_unique($pjp_detail['minggu_1'])) : '')
+                ->setCellValue('J'.$i, isset($pjp_detail['minggu_2']) ? implode(',', array_unique($pjp_detail['minggu_2'])) : '')
+                ->setCellValue('K'.$i, isset($pjp_detail['minggu_3']) ? implode(',', array_unique($pjp_detail['minggu_3'])) : '')
+                ->setCellValue('L'.$i, isset($pjp_detail['minggu_4']) ? implode(',', array_unique($pjp_detail['minggu_4'])) : '')
+            ;
+            $objPHPExcelActive->getStyle('H'.$i)->getAlignment()->setWrapText(true);
+            $i++;
         }
 
         // Redirect output to a client's web browser (Excel2007)
@@ -184,30 +182,21 @@ class Req_pjp_weekly extends BaseController
     private function format_pjp_detail($data)
     {
         $result = [];
+        $outletids = [];
         foreach ($data as $d) {
-            if (in_array($d['customerid'], array_column($result, 'customerid'))) {
-                $idx = array_search($d['customerid'], array_column($result, 'customerid'));
-                if ($d['minggu'] == '1') $result[$idx]['minggu_1'][] = $d['hari'];
-                if ($d['minggu'] == '2') $result[$idx]['minggu_2'][] = $d['hari'];
-                if ($d['minggu'] == '3') $result[$idx]['minggu_3'][] = $d['hari'];
-                if ($d['minggu'] == '4') $result[$idx]['minggu_4'][] = $d['hari'];
-            } else {
-                $new_data = [
-                    'customerid' => $d['customerid'],
-                    'kode_outlet' => $d['kode_outlet'],
-                    'nama_customer' => $d['nama_customer'],
-                    'minggu_1' => [],
-                    'minggu_2' => [],
-                    'minggu_3' => [],
-                    'minggu_4' => [],
-                ];
-                if ($d['minggu'] == '1') $new_data['minggu_1'][] = $d['hari'];
-                if ($d['minggu'] == '2') $new_data['minggu_2'][] = $d['hari'];
-                if ($d['minggu'] == '3') $new_data['minggu_3'][] = $d['hari'];
-                if ($d['minggu'] == '4') $new_data['minggu_4'][] = $d['hari'];
-
-                $result[] = $new_data;
+            if (!in_array('customerid', $outletids)) {
+                $outlet = [];
+                $outletids[] = $d['customerid'];
+                if ($d['kode_outlet'] && $d['kode_outlet'] != '-') $outlet[] = $d['kode_outlet'];
+                if ($d['nama_customer']) $outlet[] = $d['nama_customer'];
+                if ($d['account']) $outlet[] = $d['account'];
+                if ($d['dc']) $outlet[] = $d['dc'];
+                $result['outlet'][] = implode('-', $outlet);
             }
+            if ($d['minggu'] == '1') $result['minggu_1'][] = $d['hari'];
+            if ($d['minggu'] == '2') $result['minggu_2'][] = $d['hari'];
+            if ($d['minggu'] == '3') $result['minggu_3'][] = $d['hari'];
+            if ($d['minggu'] == '4') $result['minggu_4'][] = $d['hari'];
         }
         return $result;
     }

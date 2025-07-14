@@ -25,6 +25,10 @@
 							<label for="salesmanid">SALESMAN</label>
 							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="SALESMAN" readonly></select>
 						</div>
+						<div class="form-group col-xs-12 col-sm-12 col-md-6">
+							<label for="keterangan">Keterangan</label>
+							<input type="text" id="keterangan" class="form-control" name="keterangan">
+						</div>
 						<div class="form-group col-md-12">
 							<div class="col-sm-5">
 								<select id="customerid" class="form-control" size="8" multiple="multiple">

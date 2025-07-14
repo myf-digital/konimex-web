@@ -100,6 +100,14 @@ class Req_pjp_weekly_model extends CI_Model
             }
         }
 
+        $this->db->where('req_no', $data['req_no']);
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->update('req_pjp_weekly', [
+            'keterangan' => $data['keterangan'],
+            'modified_by' => $data['usersession'],
+            'modified_date' => $modified_date,
+        ]);
+
         $this->db->where('siteid', $data['siteid']);
         $this->db->where('salesmanid', $data['salesmanid']);
         $this->db->delete('t_sales_setup_rrk');

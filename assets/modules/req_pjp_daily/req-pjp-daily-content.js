@@ -76,7 +76,7 @@
 
     function toolbar() {
         const btnDownload = commonGrid.btnBuilderText('btn-download', 'primary', 'fa fa-download',' Download PJP Daily');
-        return '<div class="action-grid-toolbar">' + btnDownload + ' Week Aktif : ' + paramsession.week_aktif +'</div>'; //+ btnUpload
+        return '<div class="action-grid-toolbar">' + ' Week Aktif : ' + paramsession.week_aktif + btnDownload + '</div>'; //+ btnUpload
     }
 
     function optionButton(data) {

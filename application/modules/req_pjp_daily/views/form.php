@@ -20,11 +20,21 @@
 
                 <form id="fm-req-pjp-daily" role="form" method="post">
                     <div class="box-body">
+						<input type="hidden" name="req_no" id="req_no">
 						<div class="form-group col-xs-12 col-sm-12 col-md-6">
 							<label for="salesmanid">SALESMAN</label>
-							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="SALESMAN" disabled></select>
+							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="SALESMAN" readonly></select>
 						</div>
-						<div class="form-group col-md-12">
+						<div class="form-group col-xs-12 col-sm-12 col-md-6">
+							<label for="periode">Periode</label>
+							<input type="text" id="periode" class="form-control" name="periode" readonly style="background-color: #fff;">
+						</div>
+						<div class="form-group col-xs-12 col-sm-12 col-md-6">
+							<label for="keterangan">Keterangan</label>
+							<input type="text" id="keterangan" class="form-control" name="keterangan">
+						</div>
+						<div class="form-group col-xs-12 col-sm-12 col-md-6"></div>
+						<div class="form-group col-md-12" style="padding-bottom: 3rem;">
 							<div class="col-sm-5">
 								<select id="customerid" class="form-control" size="8" multiple="multiple">
 								</select>
@@ -40,30 +50,13 @@
 								<select id="customerid_to" class="form-control" size="8" multiple="multiple"></select>
 							</div>
 						</div>
-						<div class="form-group col-xs-12 col-sm-12 col-md-6">
-							<label for="week1">Week 1</label>
-							<select id="week1-id" name="week1[]" class="form-control" placeholder="Days" ></select>
-						</div>
-						<div class="form-group col-xs-12 col-sm-12 col-md-6">
-							<label for="week2">Week 2</label>
-							<select id="week2-id" name="week2[]" class="form-control" placeholder="Days" ></select>
-						</div>
-						<div class="form-group col-xs-12 col-sm-12 col-md-6">
-							<label for="week3">Week 3</label>
-							<select id="week3-id" name="week3[]" class="form-control" placeholder="Days" ></select>
-						</div>
-						<div class="form-group col-xs-12 col-sm-12 col-md-6">
-							<label for="week4">Week 4</label>
-							<select id="week4-id" name="week4[]" class="form-control" placeholder="Days" ></select>
-						</div>
-                    </div>
+					</div>
 
                     <div class="box-footer">
                         <button type="submit" class="btn btn-primary">Submit</button>
                         <a id="btn-cancel-form" href="javascript:void(0)" class="btn btn-warning">Cancel</a>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>

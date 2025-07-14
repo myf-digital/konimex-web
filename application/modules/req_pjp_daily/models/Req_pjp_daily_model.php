@@ -3,174 +3,61 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Req_pjp_daily_model extends CI_Model
 {
-
-    public function create($data)
-    {
-        /*$id = IDGenerator::getInstance()->nextID('t_sales_setup_rrk');
-        if (!empty($id)) {
-            $data['siteid'] = $id;
-        }*/
-
-        $customers = array();
-        $week1 = array();
-        $week2 = array();
-        $week3 = array();
-        $week4 = array();
-        if(isset($data['customerid'])){ $customers = $data['customerid']; unset($data['customerid']); }
-        if(isset($data['week1'])){ $week1 = $data['week1']; unset($data['week1']); }
-        if(isset($data['week2'])){ $week2 = $data['week2']; unset($data['week2']); }
-        if(isset($data['week3'])){ $week3 = $data['week3']; unset($data['week3']); }
-        if(isset($data['week4'])){ $week4 = $data['week4']; unset($data['week4']); }
-
-        $sqldate = "select sysdate() datetime;";
-        $datetime = $this->db->query($sqldate)->row();
-        $data["created_date"] = $datetime->datetime;
-
-        $execreturn = false;
-
-        for($a=0;$a<count($customers);$a++){
-            $valcustomerid = $customers[$a];
-            for($i=0;$i<count($week1);$i++){
-                $data_array = array(
-                    "salesmanid" => $data['salesmanid'],
-                    "customerid" => $valcustomerid,
-                    "created_by" => $data["usersession"],
-                    "created_date" => $data["created_date"],
-                    "minggu" => "1",
-                    "hari" => $week1[$i]
-                    );
-                $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
-            }
-            
-            for($i=0;$i<count($week2);$i++){
-                $data_array = array(
-                    "salesmanid" => $data['salesmanid'],
-                    "customerid" => $valcustomerid,
-                    "created_by" => $data["usersession"],
-                    "created_date" => $data["created_date"],
-                    "minggu" => "2",
-                    "hari" => $week2[$i]
-                    );
-                $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
-            }
-
-            for($i=0;$i<count($week3);$i++){
-                $data_array = array(
-                    "salesmanid" => $data['salesmanid'],
-                    "customerid" => $valcustomerid,
-                    "created_by" => $data["usersession"],
-                    "created_date" => $data["created_date"],
-                    "minggu" => "3",
-                    "hari" => $week3[$i]
-                    );
-                $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
-            }
-
-            for($i=0;$i<count($week4);$i++){
-                $data_array = array(
-                    "salesmanid" => $data['salesmanid'],
-                    "customerid" => $valcustomerid,
-                    "created_by" => $data["usersession"],
-                    "created_date" => $data["created_date"],
-                    "minggu" => "4",
-                    "hari" => $week4[$i]
-                    );
-                $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
-            }
-        }
-
-        if (!$execreturn){
-            return false;
-        }else{
-            return true;
-        }
-        
-    }
-
     public function update($data)
     {
-
-        $this->db->where('siteid', $data['siteid']);
-        $this->db->where('customerid', $data['customerid']);
-        $this->db->where('salesmanid', $data['salesmanid']);
-        $this->db->delete('t_sales_setup_rrk');
-
-        $dataupdate = array("salesmanid"=>$data['salesmanid_new']);
-        $this->db->where('customerid', $data['customerid']);
-        $this->db->update('m_customer', $dataupdate);
-
-        $this->db->where('customerid', $data['customerid']);
-        $this->db->where('salesmanid', $data['salesmanid']);
-        $this->db->update('m_customer_ob', $dataupdate);
-
-        $week1 = array();
-        $week2 = array();
-        $week3 = array();
-        $week4 = array();
-        if(isset($data['week1'])){ $week1 = $data['week1']; unset($data['week1']); }
-        if(isset($data['week2'])){ $week2 = $data['week2']; unset($data['week2']); }
-        if(isset($data['week3'])){ $week3 = $data['week3']; unset($data['week3']); }
-        if(isset($data['week4'])){ $week4 = $data['week4']; unset($data['week4']); }
-
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
-        $data["created_date"] = $datetime->datetime;
-        
-        for($i=0;$i<count($week1);$i++){
-                    $data_array = array(
-                        "siteid" => $data['siteid'],
-                        "salesmanid" => $data['salesmanid_new'],
-                        "customerid" => $data['customerid'],
-                        "modified_by" => $data["usersession"],
-                        "modified_date" => $data["created_date"],
-                        "minggu" => "1",
-                        "hari" => $week1[$i]
-                        );
-                    $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
-        }
-        
-        for($i=0;$i<count($week2);$i++){
-            $data_array = array(
-                "siteid" => $data['siteid'],
-                "salesmanid" => $data['salesmanid_new'],
-                "customerid" => $data['customerid'],
-                "modified_by" => $data["usersession"],
-                "modified_date" => $data["created_date"],
-                "minggu" => "2",
-                "hari" => $week2[$i]
-                );
-            $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
+        $modified_date = $datetime->datetime;
+
+        $pjp_detail = [];
+        if (isset($data['customerid'])) {
+            foreach ($data['customerid'] as $cust) {
+                $pjp_detail[] = [
+                    'req_no' => $data['req_no'],
+                    'salesmanid' => $data['salesmanid'],
+                    'periode' => $data['periode'],
+                    'customerid' => $cust,
+                ];
+            }
         }
 
-        for($i=0;$i<count($week3);$i++){
-            $data_array = array(
-                "siteid" => $data['siteid'],
-                "salesmanid" => $data['salesmanid_new'],
-                "customerid" => $data['customerid'],
-                "modified_by" => $data["usersession"],
-                "modified_date" => $data["created_date"],
-                "minggu" => "3",
-                "hari" => $week3[$i]
-                );
-            $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
+        $this->db->where('req_no', $data['req_no']);
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->update('req_pjp_daily', [
+            'keterangan' => $data['keterangan'],
+            'modified_by' => $data['usersession'],
+            'modified_date' => $modified_date,
+        ]);
+
+        $this->db->where('req_no', $data['req_no']);
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->delete('req_pjp_daily_detail');
+
+        $this->db->where_in('customerid', $data['customerid']);
+        $this->db->update('m_customer', [
+            'salesmanid' => $data['salesmanid'],
+            'modified_by' => $data['usersession'],
+            'modified_date' => $modified_date,
+        ]);
+
+        $this->db->where_in('customerid', $data['customerid']);
+        $this->db->update('m_customer_ob', ['salesmanid' => $data['salesmanid']]);
+
+        $status = [];
+        if (count($pjp_detail) > 0) {
+            $this->db->trans_start();
+            $exedetail = $this->db->insert_batch('req_pjp_daily_detail', $pjp_detail);
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                log_message('error', 'Gagal insert_bath req_pjp_weekly_detail: ' . $exedetail);
+                $status[] = 'Gagal insert_bath req_pjp_weekly_detail: ' . $exedetail;
+            }
         }
 
-        for($i=0;$i<count($week4);$i++){
-            $data_array = array(
-                "siteid" => $data['siteid'],
-                "salesmanid" => $data['salesmanid_new'],
-                "customerid" => $data['customerid'],
-                "modified_by" => $data["usersession"],
-                "modified_date" => $data["created_date"],
-                "minggu" => "4",
-                "hari" => $week4[$i]
-                );
-            $execreturn = $this->db->insert('t_sales_setup_rrk', $data_array);
-        }
-
-        if (!$execreturn){
-            return false;
-        }else{
+        if (count($status) > 0) {
+            return $status;
+        } else {
             return true;
         }
     }

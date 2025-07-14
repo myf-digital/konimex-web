@@ -4,10 +4,6 @@
     // declare dom
     let uiForm = $("#fm-req-pjp-daily");
     let uiBtnCancel = $("#btn-cancel-form");
-    let uiSelectWeeks1 = $("#week1-id");
-    let uiSelectWeeks2 = $("#week2-id");
-    let uiSelectWeeks3 = $("#week3-id");
-    let uiSelectWeeks4 = $("#week4-id");
     let uiSelectSalesman = $("#salesmanid-id");
     let uiSearchOutlet = $("#customerid");
 
@@ -62,31 +58,12 @@
             common.direct("req_pjp_daily");
         });
 
-        uiSelectWeeks1.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            multiple: true,
-            tokenSeparators: [',']
+        let uiPeriode = $("#periode");
+        uiPeriode.datepicker({
+            format: 'yyyy-mm-dd',
+        }).on('change', function(){
+            $('.datepicker').hide();
         });
-        uiSelectWeeks2.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            multiple: true,
-            tokenSeparators: [',']
-        });
-        uiSelectWeeks3.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            multiple: true,
-            tokenSeparators: [',']
-        });
-        uiSelectWeeks4.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            multiple: true,
-            tokenSeparators: [',']
-        });
-
     }
 
     function initializeParam() {
@@ -106,55 +83,13 @@
 
     function setupForm(r1) {
         let rows1 = r1.result;
-
-        uiSelectWeeks1.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            data: $.map(rows1, function (o) {
-                o.id = o.iddays; // replace name with the property used for the text
-                o.text = o.days; // replace name with the property used for the text
-                return o;
-            }),
-        });
-        uiSelectWeeks2.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            data: $.map(rows1, function (o) {
-                o.id = o.iddays; // replace name with the property used for the text
-                o.text = o.days; // replace name with the property used for the text
-                return o;
-            }),
-        });
-        uiSelectWeeks3.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            data: $.map(rows1, function (o) {
-                o.id = o.iddays; // replace name with the property used for the text
-                o.text = o.days; // replace name with the property used for the text
-                return o;
-            }),
-        });
-        uiSelectWeeks4.select2({
-            placeholder: 'Select Hari',
-            allowClear: true,
-            data: $.map(rows1, function (o) {
-                o.id = o.iddays; // replace name with the property used for the text
-                o.text = o.days; // replace name with the property used for the text
-                return o;
-            }),
-        });
-
-        uiSelectWeeks1.val(null).trigger('change');
-        uiSelectWeeks2.val(null).trigger('change');
-        uiSelectWeeks3.val(null).trigger('change');
-        uiSelectWeeks4.val(null).trigger('change');
     }
 
     function loadSalesman() {
         uiSelectSalesman.empty();
         uiSelectSalesman.select2({
             placeholder: "Select Salesman",
-            allowClear: true,
+            allowClear: false,
             data: [{
                 id: param.salesmanid, // replace name with the property used for the text
                 text: param.salesmanid + " - " +param.salesman_name + " - " + param.tipe_sales,
@@ -165,7 +100,6 @@
     }
 
     function loadOutlet(data) {
-        console.warn(data);
         common.loading();
         $.post(common.baseURL("api_v1/call_outlet_pjp"), {
             type:'daily',

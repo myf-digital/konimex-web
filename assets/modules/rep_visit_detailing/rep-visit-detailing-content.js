@@ -68,14 +68,14 @@
             format: 'yyyy-mm-dd',
         }).on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         let uiTanggalPicker2 = $("#get_date2");
         uiTanggalPicker2.datepicker({
             format: 'yyyy-mm-dd',
         }).on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         uiTanggalPicker1.on('changeDate', function(selected) {
             var startDate = new Date(selected.date.valueOf());
