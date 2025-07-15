@@ -263,7 +263,7 @@ class Rep_productivity_model extends CI_Model
                                         a.salesmanid,
                                         a.salesman_name,
                                         a.customerid,
-                                        a.latest_jjid,
+                                        c.latest_jjid,
                                         a.professional_name,
                                         a.array_product,
                                         a.keterangan,
@@ -276,7 +276,7 @@ class Rep_productivity_model extends CI_Model
                                         concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
                                         concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
                                         b.nama_salesman,
-                                        c.nama_customer,c.typeid as channel,c.nama_account as account,b.nama_area as city
+                                        c.nama_customer,c.typeid as channel,c.nama_account as account,b.nama_area as city,
                                         CASE
                                             WHEN a.status = 5 THEN 'Tidak Valid'
                                             WHEN a.status = 3 THEN 'Valid'
