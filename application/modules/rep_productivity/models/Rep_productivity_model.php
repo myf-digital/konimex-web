@@ -263,6 +263,7 @@ class Rep_productivity_model extends CI_Model
                                         a.salesmanid,
                                         a.salesman_name,
                                         a.customerid,
+                                        c.latest_jjid,
                                         a.professional_name,
                                         a.array_product,
                                         a.keterangan,
@@ -275,7 +276,7 @@ class Rep_productivity_model extends CI_Model
                                         concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
                                         concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
                                         b.nama_salesman,
-                                        c.nama_customer,
+                                        c.nama_customer,c.typeid as channel,c.nama_account as account,b.nama_area as city,
                                         CASE
                                             WHEN a.status = 5 THEN 'Tidak Valid'
                                             WHEN a.status = 3 THEN 'Valid'
@@ -295,8 +296,8 @@ class Rep_productivity_model extends CI_Model
                                             ELSE a.array_product
                                         END as brands
                                     from trx_visit_detailing a
-                                    left join m_sales_salesman b on a.salesmanid=b.salesmanid 
-                                    left join m_customer c on a.customerid=c.customerid
+                                    left join v_gff_info b on a.salesmanid=b.salesmanid 
+                                    left join v_outlet_all c on a.customerid=c.customerid
                                     where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
                                             $tipesales $strquery
                                             $area $regional;");
