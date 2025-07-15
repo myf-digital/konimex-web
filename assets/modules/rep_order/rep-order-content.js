@@ -41,7 +41,7 @@
             {field: '_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_call.png"></img> Call', width: 70, sortable: 'true', halign: 'center', align: 'center'},
             {field: '_extra_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_extra_call.png"></img> Extra Call', width: 70, sortable: 'true', halign: 'center', align: 'center'},
             {field: '_crc', title: 'CRC', width: 70, sortable: 'true', halign: 'center', align: 'center'},
-            {field: '_order', title: 'Order', width: 70, sortable: 'true', halign: 'center', align: 'center'},
+            {field: '_order', title: 'Order', width: 70, sortable: 'true', halign: 'center', align: 'center', formatter: formatNumber},
           ]],
           onBeforeLoad: function (param) {
               //param = common.replaceGridFilterPrefix(param, "a");
@@ -164,6 +164,10 @@
               //  '</select>' +
                 btnSearch + btnDownload + '</div>';
     }
+
+  function formatNumber(val, row, index) {
+    return Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
     
 	function formatAmount(val, row, index) {
 		var result;

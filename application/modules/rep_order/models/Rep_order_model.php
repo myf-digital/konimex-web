@@ -34,17 +34,26 @@ class Rep_order_model extends CI_Model
         $subarea = $data['subareaid'] != '' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
 
         $field = " a.* ";
-        $table = " (select distinct z.siteid, z.periode, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area city,
+        $table = " (
+                select
+                    distinct z.siteid,
+                    z.periode,
+                    z.salesmanid,
+                    b.nama_salesman,
+                    b.tipe_sales,
+                    c.nama_area city,
                     (select count(1) from t_sales_rrk where periode=z.periode and salesmanid=z.salesmanid) _jadwal, 
                     (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
                     (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
                     (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
-                    (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and order_time is not null) _order
-                    from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
-                    left join m_sales_salesman b on z.salesmanid=b.salesmanid
-                    left join m_area_subarea c on c.subareaid=b.subareaid
-                    where z.periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' ".$regional.$area.$subarea.$strquery."
-                    group by z.siteid, z.salesmanid, b.nama_salesman) a";
+                    (select sum(tsm.netto) from t_sales_master tsm where tsm.tanggal=z.periode and tsm.salesmanid=z.salesmanid) _order
+                from t_sales_rrk_trans z
+                left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
+                left join m_sales_salesman b on z.salesmanid=b.salesmanid
+                left join m_area_subarea c on c.subareaid=b.subareaid
+                where z.periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' ".$regional.$area.$subarea.$strquery."
+                group by z.siteid, z.salesmanid, b.nama_salesman) a
+            ";
 
         return easy_pagging($data, $field, $table);
     }
@@ -119,7 +128,7 @@ class Rep_order_model extends CI_Model
                 sls.no_po,
                 concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
             from t_sales_master sls
-            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
             left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
             left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
             left join m_product product on dtl.productid = product.productid 
@@ -207,7 +216,7 @@ class Rep_order_model extends CI_Model
                 sls.no_po,
                 concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
             from t_sales_master sls
-            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
             left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
             left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
             left join m_product product on dtl.productid = product.productid 
@@ -269,7 +278,7 @@ class Rep_order_model extends CI_Model
                 sls.no_po,
                 concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
             from t_sales_master sls
-            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
             left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
             left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
             left join m_product product on dtl.productid = product.productid
@@ -355,7 +364,7 @@ class Rep_order_model extends CI_Model
                 sls.no_po,
                 concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
             from t_sales_master sls
-            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
             left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
             left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
             left join m_product product on dtl.productid = product.productid
