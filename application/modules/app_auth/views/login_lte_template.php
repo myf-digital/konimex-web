@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-xs-6"></div>
           <div class="col-xs-4">
-            <img class="img login-banner" src="<?php echo base_url() ?>assets/images/par-dark.png" alt="PAR" width="50%">
+            <img class="img login-banner" src="<?php echo base_url() ?>assets/images/logo_transparent.png" alt="PAR" width="50%">
           </div>
         </div>
         <div class="row">
