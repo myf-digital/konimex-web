@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class Rep_visit_detailing extends BaseController
@@ -379,10 +380,16 @@ class Rep_visit_detailing extends BaseController
 				$value['url_img_detailing'],
 			];
 			$this->addImageFromUrlToSheet($sheet, $value['url_img_detailing'], 'N'.$row);
+            $sheet->getStyle('N'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
             $i++;
             $row++;
         }
+		// Ambil range seluruh worksheet
+		$highestRow = $sheet->getHighestRow();
+		$highestColumn = $sheet->getHighestColumn();
+		$fullRange = 'A1:' . $highestColumn . $highestRow;
+		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
  
         $writer = new Xlsx($spreadsheet);
         

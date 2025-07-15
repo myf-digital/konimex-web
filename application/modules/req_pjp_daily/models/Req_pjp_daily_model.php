@@ -24,6 +24,7 @@ class Req_pjp_daily_model extends CI_Model
         $this->db->where('req_no', $data['req_no']);
         $this->db->where('salesmanid', $data['salesmanid']);
         $this->db->update('req_pjp_daily', [
+            'status' =>  3, // approval
             'keterangan' => $data['keterangan'],
             'modified_by' => $data['usersession'],
             'modified_date' => $modified_date,
