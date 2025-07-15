@@ -46,7 +46,7 @@ class Rep_visit_detailing_model extends CI_Model
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid
-            where a.periode between '".@$data["get_date1"]."' and '".@$data["get_date2"]."'
+            where a.periode between '".(@$data["get_date1"] ?? today())."' and '".(@$data["get_date2"] ?? today())."'
         ) a";        
         return easy_pagging($data, $field, $table);
     }

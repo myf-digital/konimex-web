@@ -61,7 +61,8 @@
         let uiPeriode = $("#periode");
         uiPeriode.datepicker({
             format: 'yyyy-mm-dd',
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
         });
     }

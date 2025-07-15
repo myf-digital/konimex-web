@@ -64,6 +64,9 @@
         uiSelectMatrix.select2({multiple: false, placeholder: 'Select value...'});
         uiTanggalPicker.datepicker({
             format: 'dd MM yyyy'
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
+            $('.datepicker').hide();
         });
     }
 

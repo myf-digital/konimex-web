@@ -27,7 +27,7 @@
                 {
                     field: 'options',
                     title: 'Action',
-                    width: 75,
+                    width: 100,
                     halign: 'center',
                     align: 'center',
                     formatter: formatterButton
@@ -66,14 +66,16 @@
         let uiTanggalPicker1 = $("#get_date1");
         uiTanggalPicker1.datepicker({
             format: 'yyyy-mm-dd',
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
         });
 
         let uiTanggalPicker2 = $("#get_date2");
         uiTanggalPicker2.datepicker({
             format: 'yyyy-mm-dd',
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
         });
 
@@ -126,6 +128,10 @@
 			btnPreview.click(function () {
 				open_detail(param.salesmanid, param.periode, param.nama_salesman);
 			});
+            const btnImage = $(btns).find("a.btn-info");
+			btnImage.click(function () {
+				open_image(param);
+			});
             index++;
         }
     }
@@ -135,8 +141,18 @@
     * action button generator
     */
     function formatterButton(val, row, index) {
+        let btnImage = '';
+        if (row.url_img_detailing && row.url_img_detailing != undefined) btnImage = commonGrid.btnBuilder('btn-viem-image', 'info', 'fa fa-image');
         const btnPreview = commonGrid.btnBuilder('btn-viem-maps', 'success', 'fa fa-map-o');
-        return '<div class="action-grid">' + btnPreview + '</div>';
+        return '<div class="action-grid">' + btnPreview + btnImage + '</div>';
+    }
+
+	function open_image(data) {
+        if (data && data != undefined) {
+            $('#myModalImage').text(`Visit Detailing: ${data.nama_salesman}, Outlet: ${data.nama_customer}`);	
+            $("#show-image").html(`<img src="${data.url_img_detailing}" alt="Image" width="400">`);
+            $("#modal_image").modal('show');
+        }
     }
 
 	function open_detail(sid,periode,nama) {

@@ -60,18 +60,18 @@
         let uiTanggalPicker1 = $("#get_date1");
         uiTanggalPicker1.datepicker({
             format: 'yyyy-mm-dd',
-            //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         let uiTanggalPicker2 = $("#get_date2");
         uiTanggalPicker2.datepicker({
             format: 'yyyy-mm-dd',
-            //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         uiTanggalPicker1.on('changeDate', function(selected) {
             var startDate = new Date(selected.date.valueOf());
@@ -328,6 +328,4 @@ function get_order_all(salesmanid) {
         }
     });
 }
-
-
 })();

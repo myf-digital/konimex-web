@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Rep_order extends BaseController
 {
@@ -58,38 +59,42 @@ class Rep_order extends BaseController
 
 		$html = '<div class="container-table">
                     <table class="table table-bordered table-condensed fixed-table">
-                    <tbody>
-                    <tr>
-                    <th style="width: 250px">Customer ID </th>
-                    <th style="width: 200px">Customer Name </th>
-                    <th style="width: 600px">No Sales </th>
-                    <th style="width: 200px">Salesman Name </th>
-                    <th style="width: 150px">Sales Type</th>
-                    <th style="width: 100px">Date </th>
-                    <th style="width: 100px">Product ID </th>
-                    <th style="width: 200px" >Product Name</th>
-                    <th style="width: 100px;text-align:right;" >QTY PCS</th>
-                    <th style="width: 200px;text-align:right;" >Price</th>
-                    <th style="width: 200px;text-align:right;" >Gross</th>
-                    <th style="width: 200px;text-align:right;" >Discount</th>
-                    <th style="width: 200px;text-align:right;" >Net</th>
-                    </tr>
-                    </tbody>
+                        <tbody>
+                            <tr>
+                                <th style="width: 100px">Image</th>
+                                <th style="width: 250px">Customer ID</th>
+                                <th style="width: 200px">Customer Name</th>
+                                <th style="width: 600px">No PO</th>
+                                <th style="width: 200px">Salesman Name</th>
+                                <th style="width: 150px">Sales Type</th>
+                                <th style="width: 100px">Date</th>
+                                <th style="width: 100px">Product ID</th>
+                                <th style="width: 200px">Product Name</th>
+                                <th style="width: 100px;text-align:right;">QTY PCS</th>
+                                <th style="width: 200px;text-align:right;">Price</th>
+                                <th style="width: 200px;text-align:right;">Gross</th>
+                                <th style="width: 200px;text-align:right;">Discount</th>
+                                <th style="width: 200px;text-align:right;">Net</th>
+                            </tr>
+                        </tbody>
                     </table>
-                    </div>
-                    <div class="container-table-content">
+                </div>
+                <div class="container-table-content">
                     <table class="table table-striped table-bordered table-condensed fixed-table">
-                    <tbody>';
+                        <tbody>
+            ';
 
 		$totbruto = 0;
         $totdisc  = 0;
         $totnetto = 0;
         
         foreach ($orders as $v_detail) {
-            $html .= '<tr>
+            $image = $v_detail['url_img_po'] ? '<a href="'.$v_detail['url_img_po'].'" target="_blank">Show</a>' : '';
+            $html .= '<tr">
+                       <td style="width: 100px">'.$image.'</td>
                        <td style="width: 250px">'.$v_detail['customerid'].'</td>
                        <td style="width: 200px">'.$v_detail['nama_customer'].'</td>
-                       <td style="width: 600px">'.$v_detail['no_sales'].'</td>
+                       <td style="width: 600px">'.$v_detail['no_po'].'</td>
                        <td style="width: 200px">'.$v_detail['nama_salesman'].'</td>
                        <td style="width: 150px">'.$v_detail['tipe_sales'].'</td>
                        <td style="width: 100px">'.$v_detail['tanggal'].'</td>
@@ -100,21 +105,23 @@ class Rep_order extends BaseController
                        <td style="width: 200px;text-align:right;">'.number_format($v_detail['total_bruto'], 2, '.', ',').'</td>
                        <td style="width: 200px;text-align:right;">'.number_format($v_detail['total_discount'], 2, '.', ',').'</td>			
                        <td style="width: 200px;text-align:right;">'.number_format($v_detail['total_netto'], 2, '.', ',').'</td>
-                       </tr>';        
+                    </tr>';        
             $totbruto = $totbruto+$v_detail['total_bruto'];
             $totdisc = $totdisc+$v_detail['total_discount'];
             $totnetto = $totnetto+$v_detail['total_netto'];
         }
         $html .='<tr>
-                    <th colspan="10" style="text-align:right;">Total </th>
-                    <th style="width: 200px;text-align:right;" >'.number_format($totbruto, 2, '.', ',').'</th>
-                    <th style="width: 200px;text-align:right;" >'.number_format($totdisc, 2, '.', ',').'</th>
-                    <th style="width: 200px;text-align:right;" >'.number_format($totnetto, 2, '.', ',').'</th>	
-                    </tr>
-                    </tbody>
-                    </table>
-                    </div>
-                    <div class="box-footer"><a id="btn-home-form" href="javascript:void(0)" onclick="savexls(\''.$salesmanid.'\');" class="btn btn-success fa fa-download"> Save Excel</a></div>';
+                    <th colspan="11" style="text-align:right;">Total</th>
+                    <th style="width: 200px;text-align:right;">'.number_format($totbruto, 2, '.', ',').'</th>
+                    <th style="width: 200px;text-align:right;">'.number_format($totdisc, 2, '.', ',').'</th>
+                    <th style="width: 200px;text-align:right;">'.number_format($totnetto, 2, '.', ',').'</th>	
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="box-footer">
+            <a id="btn-home-form" href="javascript:void(0)" onclick="savexls(\''.$salesmanid.'\');" class="btn btn-success fa fa-download"> Save Excel</a>
+        </div>';
         $html .= '<script type="text/javascript">
                     const common = new Common();
 
@@ -154,7 +161,26 @@ class Rep_order extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Customer ID', 'Customer Name', 'Customer Address', 'Customer Phone', 'Customer Area', 'No Sales', 'Salesman Name', 'Sales Type', 'Date', 'Product ID', 'Product Name', 'QTY PCS', 'Price', 'Gross', 'Discount', 'Net'];
+        $header = [
+            'No',
+            'Customer ID',
+            'Customer Name',
+            'Customer Address',
+            'Customer Phone',
+            'Customer Area',
+            'No PO',
+            'Salesman Name',
+            'Sales Type',
+            'Date',
+            'Product ID',
+            'Product Name',
+            'Image',
+            'QTY PCS',
+            'Price',
+            'Gross',
+            'Discount',
+            'Net',
+        ];
 
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -168,7 +194,6 @@ class Rep_order extends BaseController
         $totdisc  = 0;
         $totnetto = 0;
         foreach ($orders as $value) {
-
             $content = [
                 $i, 
                 $value['customerid'], 
@@ -176,19 +201,21 @@ class Rep_order extends BaseController
                 $value['alamat'],
                 $value['telp'],
                 $value['area'],
-                $value['no_sales'],
+                $value['no_po'],
                 $value['nama_salesman'],
                 $value['tipe_sales'],
                 $value['tanggal'],
                 $value['productid'],
                 $value['nama_invoice'],
+                $value['url_img_po'],
                 $value['qty_jual_in_pcs'],
                 $value['h_jual'],
                 $value['total_bruto'],
                 $value['total_discount'],
                 $value['total_netto'],
             ];
-
+			img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
+            $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
 
             $i++;
@@ -207,6 +234,12 @@ class Rep_order extends BaseController
 
         $sheet->fromArray($total,NULL,'N'.$row);
  
+		// Ambil range seluruh worksheet
+		$highestRow = $sheet->getHighestRow();
+		$highestColumn = $sheet->getHighestColumn();
+		$fullRange = 'A1:' . $highestColumn . $highestRow;
+		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        
         $writer = new Xlsx($spreadsheet);
         
         header('Content-Type: application/vnd.ms-excel');
@@ -242,7 +275,26 @@ class Rep_order extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Customer ID', 'Customer Name', 'Customer Address', 'Customer Phone', 'Customer Area', 'No Sales', 'Salesman Name', 'Sales Type', 'Date', 'Product ID', 'Product Name', 'QTY PCS', 'Price', 'Gross', 'Discount', 'Net'];
+        $header = [
+            'No',
+            'Customer ID',
+            'Customer Name',
+            'Customer Address',
+            'Customer Phone',
+            'Customer Area',
+            'No PO',
+            'Salesman Name',
+            'Sales Type',
+            'Date',
+            'Product ID',
+            'Product Name',
+            'Image',
+            'QTY PCS',
+            'Price',
+            'Gross',
+            'Discount',
+            'Net',
+        ];
 
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -256,7 +308,6 @@ class Rep_order extends BaseController
         $totdisc  = 0;
         $totnetto = 0;
         foreach ($orders as $value) {
-
             $content = [
                 $i, 
                 $value['customerid'], 
@@ -270,13 +321,15 @@ class Rep_order extends BaseController
                 $value['tanggal'],
                 $value['productid'],
                 $value['nama_invoice'],
+                $value['url_img_po'],
                 $value['qty_jual_in_pcs'],
                 $value['h_jual'],
                 $value['total_bruto'],
                 $value['total_discount'],
                 $value['total_netto'],
             ];
-
+			img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
+            $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
 
             $i++;
@@ -294,6 +347,11 @@ class Rep_order extends BaseController
         ];
 
         $sheet->fromArray($total,NULL,'N'.$row);
+		// Ambil range seluruh worksheet
+		$highestRow = $sheet->getHighestRow();
+		$highestColumn = $sheet->getHighestColumn();
+		$fullRange = 'A1:' . $highestColumn . $highestRow;
+		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
  
         $writer = new Xlsx($spreadsheet);
         
@@ -373,15 +431,6 @@ class Rep_order extends BaseController
             $total_tunai += $value['bayar_tunai'];
             $total_all += $total;
         }
-
-        // $total = [
-        // 	'Total',
-        // 	$totbruto,
-        // 	$totdisc,
-        // 	$totnetto
-        // ];
-
-        // $sheet->fromArray($total,NULL,'N'.$row);
 	} 
 
 }

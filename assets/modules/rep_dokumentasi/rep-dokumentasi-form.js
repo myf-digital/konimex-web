@@ -91,6 +91,9 @@
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayHighlight: true,
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
+            $('.datepicker').hide();
         });
  
         uiSelectAccount.on('select2:select', function (e) {

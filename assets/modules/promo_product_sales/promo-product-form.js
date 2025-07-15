@@ -40,6 +40,9 @@
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayHighlight: true,
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
+            $('.datepicker').hide();
         });
         
         uiStartPeriode.on('changeDate', function(selected) {

@@ -98,7 +98,8 @@
         uiTanggalPicker.datepicker({
             format: 'yyyy-mm-dd',
             //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
         });
  

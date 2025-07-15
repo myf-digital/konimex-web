@@ -4,7 +4,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class Rep_visit_detailing extends BaseController
 {
@@ -379,7 +378,7 @@ class Rep_visit_detailing extends BaseController
 				$value['reason'],
 				$value['url_img_detailing'],
 			];
-			$this->addImageFromUrlToSheet($sheet, $value['url_img_detailing'], 'N'.$row);
+			img_url_to_sheet($sheet, $value['url_img_detailing'], 'N'.$row);
             $sheet->getStyle('N'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
             $i++;
@@ -399,45 +398,4 @@ class Rep_visit_detailing extends BaseController
 
         $writer->save('php://output');
     }
-
-	private function addImageFromUrlToSheet($sheet, $imageUrl, $cellCoordinate) {
-		try {
-			// Verify URL is valid
-			if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-				log_message("error", "Error addImageFromUrlToSheet: Invalid URL");
-			}
-			
-			// Get image contents
-			$imageData = @file_get_contents($imageUrl);
-			if ($imageData === false) {
-				log_message("error", "Error addImageFromUrlToSheet: Could not download image");
-			}
-			
-			// Create temporary file
-			$tempFile = tempnam(sys_get_temp_dir(), 'phpspreadsheet');
-			if (file_put_contents($tempFile, $imageData) === false) {
-				log_message("error", "Error addImageFromUrlToSheet: Could not create temporary file");
-			}
-			
-			// Verify it's a valid image
-			if (!@getimagesize($tempFile)) {
-				log_message("error", "Error addImageFromUrlToSheet: Downloaded file is not a valid image");
-			}
-			
-			// Add image to worksheet
-			$drawing = new Drawing();
-			$drawing->setPath($tempFile);
-			$drawing->setCoordinates($cellCoordinate);
-			$drawing->setWorksheet($sheet);
-			$drawing->setWidth(125);
-
-			return $drawing;
-		} catch (Exception $e) {
-			// Clean up temp file if it exists
-			if (isset($tempFile) && file_exists($tempFile)) {
-				@unlink($tempFile);
-			}
-			log_message("error", "Error addImageFromUrlToSheet: " . $e->getMessage());
-		}
-	}
 }

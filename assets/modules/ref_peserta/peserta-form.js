@@ -62,6 +62,9 @@
         uiSelectAspek.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiTanggalPicker.datepicker({
             format: 'dd MM yyyy'
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
+            $('.datepicker').hide();
         });
     }
 

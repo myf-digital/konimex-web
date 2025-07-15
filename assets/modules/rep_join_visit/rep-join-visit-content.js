@@ -76,16 +76,18 @@
         uiTanggalPicker1.datepicker({
             format: 'yyyy-mm-dd',
             //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         uiTanggalPicker2.datepicker({
             format: 'yyyy-mm-dd',
             //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         uiTanggalPicker1.on('changeDate', function(selected) {
             var startDate = new Date(selected.date.valueOf());

@@ -54,9 +54,15 @@
         uiSelectPeserta.select2({multiple: true, placeholder: 'Select value...', tokenSeparators: [',']});
         uiTanggalPicker.datepicker({
             format: 'mm/dd/yyyy'
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
+            $('.datepicker').hide();
         });
         uiEndPicker.datepicker({
             format: 'mm/dd/yyyy'
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
+            $('.datepicker').hide();
         });
     }
 

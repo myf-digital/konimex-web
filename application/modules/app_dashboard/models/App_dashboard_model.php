@@ -117,7 +117,7 @@ class App_dashboard_model extends CI_Model
 					from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
 					left join m_sales_salesman b on z.salesmanid=b.salesmanid
 					left join m_area_areasite c on c.areaid=b.areaid
-					where z.periode = '".$data["get_date"]."' $strquery
+					where z.periode = '".($data["get_date"] ?? today())."' $strquery
 					group by z.siteid, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area) a
 					";
         return easy_pagging($data, $field, $table);
