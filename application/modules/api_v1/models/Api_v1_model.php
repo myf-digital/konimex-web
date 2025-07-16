@@ -769,9 +769,18 @@ class Api_v1_model extends CI_Model
 		}
 	}
 
-	function get_product()
+	function get_product($data)
     {
-		$sql = " select * from m_product where status='A'";
+		$where = '';
+		if (isset($data['type']) && $data['type'] == 'mapping_objective') {
+			$where = ' and productid not in (
+				select productid
+				from mapping_objective
+				where date(start_periode) <= CURDATE() and date(end_periode) >= CURDATE()
+				group by productid
+			)';
+		}
+		$sql = " select * from m_product where status='A'" . $where;
 		$res_ss = $this->db->query($sql);
 		if (count($res_ss->result_array()) > 0) {
 		$response = new stdClass();

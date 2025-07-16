@@ -96,10 +96,9 @@
 
         if (isUpdate) {
             uiSelectClass.val(param.classid).trigger('change');
-        }else{
+        } else {
             uiSelectClass.val(null).trigger('change');
         }
-
     }    
 
     function loadParamKey(data) {
