@@ -67,9 +67,6 @@
             autoclose: true,
             todayHighlight: true,
             orientation: "bottom right"
-        }).datepicker("setDate", new Date())
-        .on('change', function(){
-            $('.datepicker').hide();
         });
 
         $('.clockpicker').clockpicker({
