@@ -211,7 +211,7 @@ class Rep_productivity_model extends CI_Model
 		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
 		$query = $this->db->query(" 
 									select 
-									   sls.tanggal as period,
+									   sls.periode,
 									   sls.siteid, 
 									   sls.salesmanid,
 									   salesamn.nama_salesman,
