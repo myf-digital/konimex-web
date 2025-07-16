@@ -177,6 +177,73 @@ class Rep_productivity_model extends CI_Model
         return $query->result_array();
     }
 
+    function getcrc_salesman($data)
+    {
+
+        if ($data['restrict_level']=='4'){
+            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='".$data['usersession']."')
+                                                )";
+        }
+        else if ($data['restrict_level']=='3'){
+            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                            where a.username='".$data['usersession']."')
+                                                )";
+        }
+        else if ($data['restrict_level']=='2'){
+            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='".$data['usersession']."')
+                                                ) ";
+        }
+        else {
+            $strquery = "";
+        }
+
+        $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
+        $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
+        $periode=$data['periode'];
+        $year=$data['year'];
+        $month=$data['month'];
+        $tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
+		$query = $this->db->query(" 
+									select 
+									   sls.tanggal as period,
+									   sls.siteid, 
+									   sls.salesmanid,
+									   salesamn.nama_salesman,
+									   sls.customerid,
+									   cst.latest_jjid,
+									   cst.nama_customer,
+									   e.nama_class as account,
+									   sls.productid,
+									   product.nama_invoice,
+                                       product.nama_brand,
+									   sls.qty_akhir
+									from 
+									t_sales_crc sls left join
+									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
+									m_customer cst on sls.customerid = cst.customerid left JOIN
+									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid left JOIN  
+									m_product product on sls.productid = product.productid 
+                                    left join m_customer_class e on e.classid=cst.classid
+									where sls.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') $tipesales $strquery
+									$area $regional
+									group by sls.siteid, 
+										   sls.salesmanid,
+										   salesamn.nama_salesman,
+										   sls.customerid,
+										   cst.nama_customer,
+										   cst.alamat,
+										   sls.productid,
+										   product.nama_invoice;
+									");
+        return $query->result_array();
+    }
+
     function getVisit_salesman($data)
     {
 
