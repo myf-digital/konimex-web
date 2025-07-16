@@ -445,7 +445,7 @@ class Rep_productivity extends BaseController
         foreach ($datacrc as $valuecrc) {
             $objPHPExcel->setActiveSheetIndex(3)
                         ->setCellValue('A'.$row, $i)
-                        ->setCellValue('B'.$row, $valuecrc['period'])
+                        ->setCellValue('B'.$row, $valuecrc['periode'])
                         ->setCellValue('C'.$row, $valuecrc['salesmanid'])
                         ->setCellValue('D'.$row, $valuecrc['nama_salesman'])
                         ->setCellValue('E'.$row, $valuecrc['customerid'])
