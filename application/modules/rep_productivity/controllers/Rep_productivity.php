@@ -381,6 +381,7 @@ class Rep_productivity extends BaseController
             $row++;
         }
 		
+		$objWorkSheet = $objPHPExcel->createSheet(2);
         $objPHPExcel->setActiveSheetIndex(2)->setTitle('Order PARMA');
 		$objPHPExcel->setActiveSheetIndex(2)
 					->setCellValue('A1', 'No')
@@ -422,6 +423,7 @@ class Rep_productivity extends BaseController
             $row++;
         }
 
+		$objWorkSheet = $objPHPExcel->createSheet(3);
         $objPHPExcel->setActiveSheetIndex(3)->setTitle('CRC');
 		$objPHPExcel->setActiveSheetIndex(3)
 					->setCellValue('A1', 'No')
@@ -437,23 +439,23 @@ class Rep_productivity extends BaseController
                     ->setCellValue('K1', 'Brand')
                     ->setCellValue('L1', 'Qty Stock')
                     ;
-        $dataorder = $this->report_productivity->getcrc_salesman($params);
+        $datacrc = $this->report_productivity->getcrc_salesman($params);
         $i = 1;
         $row = 2;
-        foreach ($dataorder as $valueorder) {
+        foreach ($datacrc as $valuecrc) {
             $objPHPExcel->setActiveSheetIndex(3)
                         ->setCellValue('A'.$row, $i)
-                        ->setCellValue('B'.$row, $valueorder['period'])
-                        ->setCellValue('C'.$row, $valueorder['salesmanid'])
-                        ->setCellValue('D'.$row, $valueorder['nama_salesman'])
-                        ->setCellValue('E'.$row, $valueorder['customerid'])
-                        ->setCellValue('F'.$row, $valueorder['latest_jjid'])
-                        ->setCellValue('G'.$row, $valueorder['nama_customer'])
-                        ->setCellValue('H'.$row, $valueorder['account'])
-                        ->setCellValue('I'.$row, $valueorder['productid'])
-                        ->setCellValue('J'.$row, $valueorder['nama_invoice'])
-                        ->setCellValue('K'.$row, $valueorder['nama_brand'])
-                        ->setCellValue('L'.$row, $valueorder['qty_akhir'])
+                        ->setCellValue('B'.$row, $valuecrc['period'])
+                        ->setCellValue('C'.$row, $valuecrc['salesmanid'])
+                        ->setCellValue('D'.$row, $valuecrc['nama_salesman'])
+                        ->setCellValue('E'.$row, $valuecrc['customerid'])
+                        ->setCellValue('F'.$row, $valuecrc['latest_jjid'])
+                        ->setCellValue('G'.$row, $valuecrc['nama_customer'])
+                        ->setCellValue('H'.$row, $valuecrc['account'])
+                        ->setCellValue('I'.$row, $valuecrc['productid'])
+                        ->setCellValue('J'.$row, $valuecrc['nama_invoice'])
+                        ->setCellValue('K'.$row, $valuecrc['nama_brand'])
+                        ->setCellValue('L'.$row, $valuecrc['qty_akhir'])
 						;
 			$i++;
             $row++;
