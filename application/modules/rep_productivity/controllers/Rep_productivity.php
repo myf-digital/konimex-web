@@ -381,6 +381,7 @@ class Rep_productivity extends BaseController
             $row++;
         }
 		
+		$objWorkSheet = $objPHPExcel->createSheet(2);
         $objPHPExcel->setActiveSheetIndex(2)->setTitle('Order PARMA');
 		$objPHPExcel->setActiveSheetIndex(2)
 					->setCellValue('A1', 'No')
@@ -423,8 +424,46 @@ class Rep_productivity extends BaseController
         }
 
 		$objWorkSheet = $objPHPExcel->createSheet(3);
-		$objPHPExcel->setActiveSheetIndex(3)->setTitle('Detailing');
-        $objPHPExcel->setActiveSheetIndex(3)
+        $objPHPExcel->setActiveSheetIndex(3)->setTitle('CRC');
+		$objPHPExcel->setActiveSheetIndex(3)
+					->setCellValue('A1', 'No')
+                    ->setCellValue('B1', 'Period')
+                    ->setCellValue('C1', 'User PARMA')
+                    ->setCellValue('D1', 'PARMA Name')
+                    ->setCellValue('E1', 'OutletID')
+                    ->setCellValue('F1', 'Latest JJid')
+                    ->setCellValue('G1', 'Outlet Name')
+                    ->setCellValue('H1', 'Account')
+                    ->setCellValue('I1', 'ProductID')
+                    ->setCellValue('J1', 'Product Name')
+                    ->setCellValue('K1', 'Brand')
+                    ->setCellValue('L1', 'Qty Stock')
+                    ;
+        $datacrc = $this->report_productivity->getcrc_salesman($params);
+        $i = 1;
+        $row = 2;
+        foreach ($datacrc as $valuecrc) {
+            $objPHPExcel->setActiveSheetIndex(3)
+                        ->setCellValue('A'.$row, $i)
+                        ->setCellValue('B'.$row, $valuecrc['periode'])
+                        ->setCellValue('C'.$row, $valuecrc['salesmanid'])
+                        ->setCellValue('D'.$row, $valuecrc['nama_salesman'])
+                        ->setCellValue('E'.$row, $valuecrc['customerid'])
+                        ->setCellValue('F'.$row, $valuecrc['latest_jjid'])
+                        ->setCellValue('G'.$row, $valuecrc['nama_customer'])
+                        ->setCellValue('H'.$row, $valuecrc['account'])
+                        ->setCellValue('I'.$row, $valuecrc['productid'])
+                        ->setCellValue('J'.$row, $valuecrc['nama_invoice'])
+                        ->setCellValue('K'.$row, $valuecrc['nama_brand'])
+                        ->setCellValue('L'.$row, $valuecrc['qty_akhir'])
+						;
+			$i++;
+            $row++;
+        }
+
+        $objWorkSheet = $objPHPExcel->createSheet(4);
+		$objPHPExcel->setActiveSheetIndex(4)->setTitle('Detailing');
+        $objPHPExcel->setActiveSheetIndex(4)
 					->setCellValue('A1', 'No')
 					->setCellValue('B1', 'Period')
                     ->setCellValue('C1', 'PARMA')
@@ -446,7 +485,7 @@ class Rep_productivity extends BaseController
         $i = 1;
         $row = 2;
         foreach ($datavisit as $valuevisit) {
-            $objPHPExcel->setActiveSheetIndex(3)
+            $objPHPExcel->setActiveSheetIndex(4)
                         ->setCellValue('A'.$row, $i)
                         ->setCellValue('B'.$row, $valuevisit['periode'])
                         ->setCellValue('C'.$row, $valuevisit['salesmanid'])
