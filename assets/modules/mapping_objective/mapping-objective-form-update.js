@@ -5,7 +5,8 @@
     let uiForm = $("#fm-mapping-objective");
     let uiBtnCancel = $("#btn-cancel-form");
     let uiSelectClass = $("#classid-id");   
-    let uiSelectObjective = $("#objective-id");   
+    let uiSelectObjective = $("#objective-id");  
+    let uiSelectProduct = $('#products'); 
     let uiStartPeriode = $("#start_periode"); 
     let uiEndPeriode = $("#end_periode"); 
 
@@ -80,12 +81,18 @@
         }).fail(resolver.fail);
 
         loadObjective();
+        loadProduct();
     }
 
     function loadClass(r1) {
         let rows1 = r1.rows;
         let vmin = 1;
         let vmax = 10;
+        let options = $.map(rows1, function (o) {
+            o.id = o.classid + '||' + o.nama_class; // replace name with the property used for the text
+            o.text = o.nama_class; // replace name with the property used for the text
+            return o;
+        });
 
         uiSelectClass.empty();
         uiSelectClass.select2({
@@ -96,29 +103,13 @@
             allowClear: true,
             multiple: true,
             tokenSeparators: [','],
-            data: $.map(rows1, function (o) {
-                o.id = o.classid + '||' + o.nama_class; // replace name with the property used for the text
-                o.text = o.nama_class; // replace name with the property used for the text
-                console.warn('o', o)
-                return o;
-            }),
+            data: options,
         });
 
         if (isUpdate) {
             let arrids = param.accountids ?? '';
-            let arrnms = param.accounts ?? '';
             let varsku = arrids.split('||');
-            let nmsku = arrnms.split('||');
-            let rarrsku = [];
-
-            var i;
-            for (i = 0; i < varsku.length; i++) {
-                rarrsku.push({
-                    id: `${varsku[i]}||${nmsku[i]}`,
-                    text: nmsku[i],
-                });
-            }
-            console.warn(param.accountids, varsku, rarrsku)
+            let rarrsku = options.filter(opt => varsku.includes(opt.classid)).map(opt => opt.id);
             uiSelectClass.val(rarrsku).trigger('change');
         } else {
             uiSelectClass.val(null).trigger('change');
@@ -128,7 +119,7 @@
     function loadObjective() {
         let rows = ['NOO', 'Order Reguler', 'Order Reguler Min Order'];
         uiSelectObjective.select2({
-            placeholder: 'Objective',
+            placeholder: 'Select Objective',
             allowClear: true,
             data: rows,
         });
@@ -138,5 +129,37 @@
         } else {
             uiSelectObjective.val(null).trigger('change');
         }
+    }
+
+    function loadProduct() {
+        let value = param.productid + '||' + param.nama_invoice;
+        
+        let text = '';
+        let id = false, nm = false, ct = false;
+        if (param.productid && param.productid != '-') {
+            id = true;
+            text += param.productid;
+        }
+        if (param.nama_invoice && param.nama_invoice != '-') {
+            if (id) text += ' - ';
+            nm = true;
+            text += param.nama_invoice;
+        }
+        if (param.category_product && param.category_product != '-') {
+            if (nm) text += ' - ';
+            ct = true;
+            text += param.category_product;
+        }
+        if (param.nama_brand && param.nama_brand != '-') {
+            if (ct) text += ' - ';
+            text += param.nama_brand;
+        }
+
+        uiSelectProduct.select2({
+            placeholder: 'Select Product',
+            allowClear: false,
+            data: [{ id: value, text }],
+        });
+        uiSelectProduct.val(value).trigger('change');
     }
 })();

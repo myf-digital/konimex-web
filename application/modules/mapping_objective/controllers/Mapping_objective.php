@@ -113,6 +113,7 @@ class Mapping_objective extends BaseController
 
         $i = 3;
         foreach ($result as $val) {
+            $objective = $val['objective'] && $val['objective'] == 'Order Reguler Min Order' ? $val['objective'] . '|| (' . $val['min_order'] . ')' : $val['objective'];
             $objPHPExcelActive
                 ->setCellValue('A'.$i, $val['start_periode'])
                 ->setCellValue('B'.$i, $val['end_periode'])
@@ -121,12 +122,13 @@ class Mapping_objective extends BaseController
                 ->setCellValue('E'.$i, $val['barcode'])
                 ->setCellValue('F'.$i, $val['nama_brand'])
                 ->setCellValue('G'.$i, $val['category_product'])
-                ->setCellValue('H'.$i, $val['objective'])
+                ->setCellValue('H'.$i, str_replace('||', "\n", $objective))
                 ->setCellValue('I'.$i, str_replace('||', "\n", $val['accounts']))
                 ->setCellValue('J'.$i, $val['keterangan'])
                 ->setCellValue('K'.$i, $val['h_grosir'])
                 ->setCellValue('L'.$i, $val['h_ritel'])
             ;
+            $objPHPExcelActive->getStyle('H'.$i)->getAlignment()->setWrapText(true);
             $objPHPExcelActive->getStyle('I'.$i)->getAlignment()->setWrapText(true);
             $objPHPExcelActive->getStyle('K'.$i)->getNumberFormat()->setFormatCode('#,##0');
             $objPHPExcelActive->getStyle('L'.$i)->getNumberFormat()->setFormatCode('#,##0');

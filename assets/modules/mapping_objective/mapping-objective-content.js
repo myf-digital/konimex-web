@@ -45,11 +45,12 @@
 				{field:'barcode', title:'Barcode', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'nama_brand', title:'Brand', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'category_product', title:'Variant', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'objective', title:'Objective', halign: 'center', align: 'left', sortable:"false", width:100},
+				{field:'objective', title:'Objective', halign: 'center', align: 'left', sortable:"false", width:200, formatter: formatObjective},
 				{field:'accounts', title:'Account', halign: 'center', align: 'left', sortable:"false", width:200, formatter: formatAccounts},
-				{field:'keterangan', title:'Keterangan', halign: 'center', align: 'left', sortable:"false", width:200},
+				{field:'keterangan', title:'Keterangan', halign: 'center', align: 'left', sortable:"false", width:100},
 				{field:'h_grosir', title:'HJP', halign: 'center', align: 'right', sortable:"true", width:100, formatter: formatNumber},
 				{field:'h_ritel', title:'HNA', halign: 'center', align: 'right', sortable:"true", width:100, formatter: formatNumber},
+				{field:'status_objective', title:'Status', halign: 'center', align: 'center', sortable:"false", width:100},
             ]],
             onBeforeLoad: function (param) {
                 param = common.replaceGridFilterPrefix(param, "a");
@@ -66,7 +67,11 @@
     }
 
     function formatAccounts(val, row, index) {
-        return val && val != undefined ? val.split('||').map((v, i) => `${i+1}. ${v}`).join('<br>') : val;
+        return val && val != undefined ? val.split('||').map((v, i) => `${i+1}. ${v}`).join('<br />') : val;
+    }
+
+    function formatObjective(val, row, index) {
+        return val && val == 'Order Reguler Min Order' ? `${val} <br /> (${row.min_order})` : val;
     }
 
     function formatNumber(val, row, index) {

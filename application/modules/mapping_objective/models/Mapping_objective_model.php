@@ -60,8 +60,8 @@ class Mapping_objective_model extends CI_Model
 
         $data_update = [];
         $pd = explode('||', $data['products']);
-        if (isset($data['class'])) {
-            foreach ($data['class'] as $class) {
+        if (isset($data['classid'])) {
+            foreach ($data['classid'] as $class) {
                 $cl = explode('||', $class);
 
                 $data_update[] = [
@@ -74,8 +74,8 @@ class Mapping_objective_model extends CI_Model
                     'keterangan' => $data['keterangan'] ?? null,
                     'start_periode' => $data['start_periode'],
                     'end_periode' => $data['end_periode'],
-                    'modified_by' => $data['usersession'],
-                    'modified_date' => $datetime,
+                    'created_by' => $data['usersession'],
+                    'created_date' => $datetime,
                 ];
             }
         }
@@ -83,6 +83,8 @@ class Mapping_objective_model extends CI_Model
         $status = [];
         if (count($data_update) > 0) {
             $this->db->where('productid', $pd[0] ?? 0);
+            $this->db->where('start_periode', $data['start_periode']);
+            $this->db->where('end_periode', $data['end_periode']);
             $this->db->delete('mapping_objective');
 
             $this->db->trans_start();
@@ -139,13 +141,17 @@ class Mapping_objective_model extends CI_Model
                     pd.h_grosir,
                     pd.h_ritel,
                     pd.keterangan as product_keterangan,
-                    GROUP_CONCAT(DISTINCT mo2.classid ORDER BY mo2.classid SEPARATOR '||') AS accountids,
-                    GROUP_CONCAT(DISTINCT mo2.nama_class ORDER BY mo2.nama_class SEPARATOR '||') AS accounts
+                    GROUP_CONCAT(DISTINCT mo2.classid SEPARATOR '||') AS accountids,
+                    GROUP_CONCAT(DISTINCT mo2.nama_class SEPARATOR '||') AS accounts,
+                    CASE
+                        WHEN mo.end_periode > CURDATE() THEN 'Aktif'
+                        ELSE 'Tidak Aktif'
+                    END AS status_objective
                 from mapping_objective mo
                 left join m_product pd on pd.productid = mo.productid
                 left join mapping_objective mo2 on mo2.productid = mo.productid and mo2.siteid = mo.siteid
                 where mo.start_periode <= '".($data['get_date1'] ?? today())."' and mo.end_periode >= '".($data['get_date2'] ?? today())."'
-                group by mo.productid
+                group by mo.productid, mo.start_periode, mo.end_periode
             ) a
         ";
         return easy_pagging($data, $field, $table);

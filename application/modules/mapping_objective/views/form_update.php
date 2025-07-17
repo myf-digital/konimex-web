@@ -43,20 +43,20 @@
 							</div>
 						</div>
 						<div class="form-group col-md-6">
-							<label for="objective">Objective</label>
-							<select id="objective-id" name="objective" class="form-control" placeholder="Objective"></select>
+							<label for="products">Produk</label>
+							<select id="products" name="products" class="form-control" placeholder="Objective"></select>
 						</div>
 						<div class="form-group col-md-6">
 							<label for="keterangan">Keterangan</label>
 							<input name="keterangan" class="form-control" placeholder="Keterangan">
 						</div>
+						<div class="form-group col-md-6">
+							<label for="objective">Objective</label>
+							<select id="objective-id" name="objective" class="form-control" placeholder="Objective"></select>
+						</div>
 						<div id="div_min_order" class="form-group col-md-6" style="display: none;">
 							<label for="min_order">Minimal Order</label>
 							<input id="min_order" name="min_order" class="form-control" placeholder="Minimal Order">
-						</div>
-						<div class="form-group col-md-6">
-							<label for="product">Produk</label>
-							<input id="product" name="product" class="form-control" placeholder="Produk" disabled>
 						</div>
                     </div>
 
@@ -65,7 +65,6 @@
                         <a id="btn-cancel-form" href="javascript:void(0)" class="btn btn-warning">Cancel</a>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
