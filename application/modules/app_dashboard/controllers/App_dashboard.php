@@ -27,64 +27,61 @@ class App_dashboard extends BaseController
 		$siteid = $this->input->post("siteid");
 
 		$q = $this->db->query("
-								select * from (
-								select salesamn.nama_salesman,salesamn.salesmanid,
-								   rrk_trans.customerid,
-								   cst.nama_customer,
-								   cst.alamat,
-								   sum(ifnull(dtl.netto,0)) as total_netto,
-								   DATE_FORMAT(rrk_trans.check_in, '%H:%i:%s') check_in,
-								   case when rrk.customerid is null then 'ExtraCall' 
-									   when rrk.customerid is not null then 'Call' 
-									   when rrk.customerid is not null and rrk_trans.check_in is null then 'Jadwal' end as flag
-									,ROUND(CALCULATE_DISTANCE(cst.latitude,cst.longitude,rrk_trans.latitude_cell,rrk_trans.longitude_cell),2) as jarak 
-								from 
-								t_sales_rrk_trans rrk_trans left join t_sales_rrk rrk on 
-								rrk_trans.siteid = rrk.siteid and rrk_trans.periode = rrk.periode and rrk_trans.salesmanid = rrk.salesmanid and rrk_trans.customerid = rrk.customerid
-								left join t_sales_master sls 
-								on rrk_trans.siteid = sls.siteid and rrk_trans.periode = sls.tanggal and rrk_trans.salesmanid = sls.salesmanid 
-								and rrk_trans.customerid = sls.customerid and rrk_trans.salesmanid = sls.salesmanid and rrk_trans.customerid = sls.customerid
-								left JOIN t_sales_detail dtl 
-								on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po 
-								left JOIN m_customer_ob custob ON rrk_trans.salesmanid = custob.salesmanid and rrk_trans.customerid = custob.customerid
-								left JOIN m_customer cst 
-								on rrk_trans.siteid = cst.siteid and rrk_trans.customerid = cst.customerid 
-								left JOIN m_sales_salesman salesamn 
-								on rrk_trans.siteid = salesamn.siteid and rrk_trans.salesmanid = salesamn.salesmanid 
-								left JOIN m_product product 
-								on dtl.productid = product.productid 
-								where rrk_trans.siteid = '".$siteid."' AND 
-									  rrk_trans.salesmanid = '".$sid."' AND
-									  rrk_trans.periode = '".$date."' 
-								group by 
-									   rrk_trans.customerid,
-									   cst.nama_customer,
-									   cst.alamat
-							union all
-								select 
-									salesamn.nama_salesman,salesamn.salesmanid,
-								   	rrk.customerid,cst.nama_customer,cst.alamat,
-								   	0 as total_netto,
-								   	DATE_FORMAT(rrk_trans.check_in, '%H:%i:%s') check_in,
-								   	'Jadwal' as flag,
-								   	ROUND(CALCULATE_DISTANCE(cst.latitude,cst.longitude,rrk_trans.latitude_cell,rrk_trans.longitude_cell),2) as jarak
-								from 
-						  t_sales_rrk rrk left join t_sales_rrk_trans rrk_trans 
-						  on rrk.siteid = rrk_trans.siteid and rrk.periode = rrk_trans.periode and rrk.salesmanid = rrk_trans.salesmanid 
-						  and rrk.customerid = rrk_trans.customerid
-						  left JOIN m_customer_ob custob ON rrk.salesmanid = custob.salesmanid and rrk.customerid = custob.customerid
-						  left JOIN m_customer cst on rrk.siteid = cst.siteid and rrk.customerid = cst.customerid
-							left JOIN m_sales_salesman salesamn 
-							on rrk_trans.siteid = salesamn.siteid and rrk_trans.salesmanid = salesamn.salesmanid 
-								where rrk.siteid = '".$siteid."' AND 
-									  rrk.salesmanid = '".$sid."' AND
-									  rrk.periode = '".$date."' AND
-									  rrk_trans.check_in is null          
-								group by 
-									   rrk.customerid,
-									   cst.nama_customer,
-									   cst.alamat
-					) fnl order by fnl.check_in desc
+			select * from (
+				select
+					rrk_trans.periode,
+					salesamn.nama_salesman,
+					salesamn.salesmanid,
+					rrk_trans.customerid,
+					cst.nama_customer,
+					cst.alamat,
+					sum(ifnull(dtl.netto,0)) as total_netto,
+					DATE_FORMAT(rrk_trans.check_in, '%H:%i:%s') check_in,
+					case when rrk.customerid is null then 'ExtraCall' 
+						when rrk.customerid is not null then 'Call' 
+						when rrk.customerid is not null and rrk_trans.check_in is null then 'Jadwal'
+					end as flag,
+					ROUND(CALCULATE_DISTANCE(cst.latitude,cst.longitude,rrk_trans.latitude_cell,rrk_trans.longitude_cell),2) as jarak 
+				from t_sales_rrk_trans rrk_trans
+				left join t_sales_rrk rrk on rrk_trans.siteid = rrk.siteid and rrk_trans.periode = rrk.periode and rrk_trans.salesmanid = rrk.salesmanid
+					and rrk_trans.customerid = rrk.customerid
+				left join t_sales_master sls on rrk_trans.siteid = sls.siteid and rrk_trans.periode = sls.tanggal and rrk_trans.salesmanid = sls.salesmanid 
+					and rrk_trans.customerid = sls.customerid and rrk_trans.salesmanid = sls.salesmanid and rrk_trans.customerid = sls.customerid
+				left JOIN t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po 
+				left JOIN m_customer_ob custob ON rrk_trans.salesmanid = custob.salesmanid and rrk_trans.customerid = custob.customerid
+				left JOIN m_customer cst on rrk_trans.siteid = cst.siteid and rrk_trans.customerid = cst.customerid 
+				left JOIN m_sales_salesman salesamn on rrk_trans.siteid = salesamn.siteid and rrk_trans.salesmanid = salesamn.salesmanid 
+				left JOIN m_product product on dtl.productid = product.productid 
+				where rrk_trans.siteid = '".$siteid."' AND rrk_trans.salesmanid = '".$sid."' AND rrk_trans.periode = '".$date."' 
+				group by 
+					rrk_trans.customerid,
+					cst.nama_customer,
+					cst.alamat
+					
+				union all
+				select
+					rrk.periode,
+					salesamn.nama_salesman,
+					salesamn.salesmanid,
+					rrk.customerid,
+					cst.nama_customer,
+					cst.alamat,
+					0 as total_netto,
+					DATE_FORMAT(rrk_trans.check_in, '%H:%i:%s') check_in,
+					'Jadwal' as flag,
+					ROUND(CALCULATE_DISTANCE(cst.latitude,cst.longitude,rrk_trans.latitude_cell,rrk_trans.longitude_cell),2) as jarak
+				from t_sales_rrk rrk
+				left join t_sales_rrk_trans rrk_trans on rrk.siteid = rrk_trans.siteid and rrk.periode = rrk_trans.periode
+					and rrk.salesmanid = rrk_trans.salesmanid and rrk.customerid = rrk_trans.customerid
+				left JOIN m_customer_ob custob ON rrk.salesmanid = custob.salesmanid and rrk.customerid = custob.customerid
+				left JOIN m_customer cst on rrk.siteid = cst.siteid and rrk.customerid = cst.customerid
+				left JOIN m_sales_salesman salesamn on rrk_trans.siteid = salesamn.siteid and rrk_trans.salesmanid = salesamn.salesmanid 
+				where rrk.siteid = '".$siteid."' AND  rrk.salesmanid = '".$sid."' AND rrk.periode = '".$date."' AND rrk_trans.check_in is null          
+				group by 
+					rrk.customerid,
+					cst.nama_customer,
+					cst.alamat
+			) fnl order by fnl.check_in desc
 		");
 		
 		$i = 1;
@@ -143,6 +140,13 @@ class App_dashboard extends BaseController
 			$d_img_checkin = $this->dashboard->get_image_checkin($siteid,$date,$sid,$customerid);
 			$d_detailing = $this->dashboard->get_detailing($siteid,$date,$sid,$customerid);
 
+			$param_link = '\''.$siteid.'\',\''.@$value['periode'].'\',\''.$customerid.'\',\''.@$value['salesmanid'].'\'';	
+
+			$img_checkin = '';
+			if (isset($d_img_checkin->image) && $d_img_checkin->image) {
+				$img_checkin = '<img class="img-rounded" onclick="preview_image_checkin('.$param_link.'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'">';
+			}
+
 			$html .='<table class="table table-striped table-bordered table-condensed" style="width:1000px;">
 						<thead>
 							<tr style="align:center;">
@@ -158,7 +162,7 @@ class App_dashboard extends BaseController
 							<tbody>
 							<tr>
 								<td class="success" style="text-align:center;">'.@$value['salesmanid'].'-'.@$value['nama_salesman'].'</td>
-								<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'"></td>
+								<td valign="top" style="text-align:center;">'.$img_checkin.'</td>
 								<td class="success" style="text-align:center;">'.@$d_rrk->check_in.'</td>
 								<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>
 								<td class="danger" style="text-align:center;">'.@$d_rrk->lama_kunjungan.'</td>
@@ -177,9 +181,13 @@ class App_dashboard extends BaseController
 									</tr>
 								</thead>
 								<tbody>';
-								foreach ($d_detailing as $rowsdetailing){
+								foreach ($d_detailing as $rowsdetailing) {
+									$img_detailing = '';
+									if (isset($rowsdetailing['url_img_detailing']) && $rowsdetailing['url_img_detailing']) {
+										$img_detailing = '<img class="img-rounded" onclick="preview_image_detailing('.$param_link.'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'">';
+									}
 									$html .=' <tr>
-										<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>
+										<td valign="top" style="text-align:center;">'.$img_detailing.'</td>
 										<td valign="center" style="text-align:left;">
 										<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>
 										<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>
@@ -319,7 +327,7 @@ class App_dashboard extends BaseController
 						success: function (result) {
 							var tempFile = [];
 							$.each(result, function (index, value) {
-								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.url_img_detailing, title: `Product: ${value.brands}, Keterangan: ${value.keterangan}`};
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.url_img_detailing, title: `Product: ${value.brands} <br /> Keterangan: ${value.keterangan}`};
 								tempFile.push(tempFileElemet);
 							});
 
@@ -747,7 +755,11 @@ class App_dashboard extends BaseController
 			} else if ($flag == 'Jadwal') {
 				$icon = base_url().'assets/images/ic_store_48.png';
 			} 
-					
+			
+			$img_checkin = '';
+			if (isset($d_img_checkin->image) && $d_img_checkin->image) {
+				$img_checkin = '<img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'">';
+			}
 			if ($flag != 'Jadwal') {
 				if (($lat != "0") and ($long !="0")) {
 				$marker .=' var latlng = new google.maps.LatLng('.$lat.','.$long.');
@@ -802,7 +814,7 @@ class App_dashboard extends BaseController
 								\'</thead>\'+
 								\'<tbody>\'+
 									\'<tr>\'+
-										\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'"></td>\'+
+										\'<td valign="top" style="text-align:center;">'.$img_checkin.'</td>\'+
 										\'<td class="success" style="text-align:center;">'.$d_rrk->check_in.'</td>\'+	
 										\'<td class="success" style="text-align:center;">'.$d_rrk->check_out.'</td>\'+	
 										\'<td class="danger" style="text-align:center;">'.$d_rrk->lama_kunjungan.'</td>\'+
@@ -822,8 +834,12 @@ class App_dashboard extends BaseController
 								\'</thead>\'+
 								\'<tbody>';
 								foreach ($d_detailing as $rowsdetailing){
+									$img_detailing = '';
+									if (isset($rowsdetailing['url_img_detailing']) && $rowsdetailing['url_img_detailing']) {
+										$img_detailing = '<img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'">';
+									}
 									$marker .=' <tr>\'+
-												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>\'+
+												\'<td valign="top" style="text-align:center;">'.$img_detailing.'</td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
 												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
@@ -936,7 +952,7 @@ class App_dashboard extends BaseController
 								\'</thead>\'+
 								\'<tbody>\'+
 									\'<tr>\'+
-										\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_checkin(\'+param_link_image+\'); " alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.@$d_img_checkin->image.'"></td>\'+
+										\'<td valign="top" style="text-align:center;">'.$img_checkin.'</td>\'+
 										\'<td class="success" style="text-align:center;">'.$d_rrk->check_in.'</td>\'+	
 										\'<td class="success" style="text-align:center;">'.$d_rrk->check_out.'</td>\'+	
 										\'<td class="danger" style="text-align:center;">'.$d_rrk->lama_kunjungan.'</td>\'+
@@ -956,8 +972,12 @@ class App_dashboard extends BaseController
 								\'</thead>\'+
 								\'<tbody>';
 								foreach ($d_detailing as $rowsdetailing){
+									$img_detailing = '';
+									if (isset($rowsdetailing['url_img_detailing']) && $rowsdetailing['url_img_detailing']) {
+										$img_detailing = '<img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'">';
+									}
 									$marker .=' <tr>\'+
-												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>\'+
+												\'<td valign="top" style="text-align:center;">'.$img_detailing.'</td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
 												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
@@ -1334,7 +1354,7 @@ class App_dashboard extends BaseController
 						success: function (result) {
 							var tempFile = [];
 							$.each(result, function (index, value) {
-								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.url_img_detailing, title: `Product: ${value.brands}, Keterangan: ${value.keterangan}`};
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.url_img_detailing, title: `Product: ${value.brands} <br /> Keterangan: ${value.keterangan}`};
 								tempFile.push(tempFileElemet);
 							});
 
