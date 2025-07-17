@@ -133,7 +133,7 @@
     function loadProduct() {
         common.loading();
         $.post(common.baseURL("api_v1/call_product"), {
-            type: 'mapping_objective'
+            type: true
         }, function (res) {
             var select = document.getElementById('products');
             var selectTo = document.getElementById('products_to');

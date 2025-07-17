@@ -164,7 +164,6 @@
         const btnReports = $(btns).find("a#btn-report");
         btnMaps.click(function () {
             get_map(param.salesmanid,param.periode);
-            console.log("==========================")
         });
         btnTrackings.click(function () {
             get_maptracking(param.salesmanid,param.periode)
@@ -247,12 +246,10 @@ function get_map(sid,periode) {
         dataType: "html",
         beforeSend : function() {
             common.loading();
-            //$("#maps").html('Populating data, please wait..');
         },
         url: common.baseURL("app_dashboard/get_gmap"),
         data : "sid="+sid+"&get_date="+periode,
         success:function(msg){
-            //alert(msg);
             $("#maps").html(msg);
             common.loadingClose();
         },

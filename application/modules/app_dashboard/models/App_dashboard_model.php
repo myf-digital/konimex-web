@@ -771,6 +771,37 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		return $data;
 	}
 
+	function get_image_detailing() {
+		$siteid = $_POST['siteid'];
+		$periode = $_POST['periode'];
+		$customerid = $_POST['customerid'];
+		$salesmanid = $_POST['salesmanid'];
+
+		$this->db->select("
+			url_img_detailing,
+			keterangan,
+			CASE
+				WHEN (
+					SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+					FROM ref_brand rb
+					WHERE FIND_IN_SET(rb.brandid, array_product) > 0
+				) IS NOT NULL THEN (
+					SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+					FROM ref_brand rb
+					WHERE FIND_IN_SET(rb.brandid, array_product) > 0
+				)
+				ELSE array_product
+			END as brands
+		");
+		$this->db->from("trx_visit_detailing");
+		$this->db->where("periode",$periode);
+		$this->db->where("siteid",$siteid);
+		$this->db->where("salesmanid",$salesmanid);
+		$this->db->where("customerid",$customerid);
+		$data = $this->db->get()->result_array();
+		return $data;
+	}
+
 	function get_siteid() {
 		$this->db->select("siteid");
 		$this->db->from("m_setup_site");

@@ -22,56 +22,10 @@ class App_dashboard extends BaseController
     }
 
 	function open_detail() {
-		
 		$sid = $this->input->post("sid");
 		$date = $this->input->post("get_date");
 		$siteid = $this->input->post("siteid");
-		//$target_detail = $this->dashboard->target_detail($sid,$date);
-		//$html = $target_detail;
 
-		//$html ='<div><h3>Summary</h3>';
-		/*$qtotorder = $this->db->query("
-					select 
-					   sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
-					   sum(case when dtl.flag_bonus = 0 then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
-					   sum(case when dtl.flag_bonus = 0 then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
-					from 
-					t_sales_master sls left join
-					t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales
-					where sls.retur=0 and 
-						  sls.siteid = '".$siteid."' AND 
-						  sls.salesmanid = '".$sid."' AND
-						  sls.tanggal >= '".$date."' AND
-						  sls.tanggal <= '".$date."'
-				");
-		$datatotorder = $qtotorder->result_array();
-		if ($datatotorder){
-		foreach ($datatotorder as $vorder) {
-			$totbruto		= number_format($vorder['total_bruto'], 2, '.', ',');
-			$totdisc		= number_format($vorder['total_discount'], 2, '.', ',');
-			$totnetto		= number_format($vorder['total_netto'], 2, '.', ',');
-		}
-		}else{
-			$totbruto		= 0;
-			$totdisc		= 0;
-			$totnetto		= 0;
-		}
-		
-		
-		$html .= '<table class="table table-striped table-bordered table-condensed" style="width:400px;">';
-		$html .= '<thead>';
-		$html .= '<tr>';
-		$html .= '<th colspan="2" style="white-space: nowrap;text-align:left; padding-left:15px">Order</th>';
-		$html .= '</tr>';
-		$html .= '</thead>';
-		$html .= '<tbody>';		
-		$html .= '<tr>';
-		$html .= '<td style="white-space: nowrap;text-align:left;padding-left:15px">Total Netto</td>';
-		$html .= '<td style="white-space: nowrap;text-align:right;padding-right:15px">'.$totnetto.'</td>';
-		$html .= '</tr>';
-		$html .= '</tbody>';		
-		$html .= '</table>';		
-		*/
 		$q = $this->db->query("
 								select * from (
 								select salesamn.nama_salesman,salesamn.salesmanid,
@@ -167,21 +121,6 @@ class App_dashboard extends BaseController
 				$icon = base_url().'assets/mapIcon/kiosk/png/store_35.png';
 			}
 			
-			/*$flag = $value['flag'];
-			if ($flag == 'EffectiveCall') {
-				$icon = base_url().'assets/mapIcon/res/drawable-hdpi/eff_call.png';
-			} else if ($flag == 'ExtraCall') {
-				$icon = base_url().'assets/mapIcon/res/drawable-hdpi/ext_call.png';
-			} else if ($flag == 'Call') {
-				$icon = base_url().'assets/mapIcon/res/drawable-hdpi/call.png';			
-			} else if ($flag == 'InvalidCall') { 
-				$icon = base_url().'assets/mapIcon/res/drawable-hdpi/inv_call.png';
-			} else if ($flag == 'Noo') {
-				$icon = base_url().'assets/mapIcon/res/drawable-hdpi/noo.png';
-			} else if ($flag == 'Schedule') {
-				$icon = base_url().'assets/mapIcon/map-pin-31.png';
-			} */
-			
 			$html .= '<tr>';
 			$html .= '<td>'.$i.'</td>';
 			$html .= '<td style="white-space: nowrap;"><a class="btn btn-primary btn-xs" href="#" onclick="toggle_visibility(\'tr_detail_'.$i.'\'); return false;">Detail</a></td>';
@@ -200,15 +139,9 @@ class App_dashboard extends BaseController
 			$customerid = $value['customerid'];
 			$html .= '<div id="detail_product_"'.$i.' style="overflow-y: auto; max-height: 300px; max-width: 900px; white-space: nowrap; ">';
 			
-			//$get_tagihan = $this->dashboard->get_tagihan_sales($siteid,$sid,$date,$customerid);
 			$d_rrk = $this->dashboard->get_detail_rrk($siteid,$customerid,$sid,$date);
 			$d_img_checkin = $this->dashboard->get_image_checkin($siteid,$date,$sid,$customerid);
 			$d_detailing = $this->dashboard->get_detailing($siteid,$date,$sid,$customerid);
-								/*<th width="70">Order Time</th>
-								<th width="70">Tagihan Time</th>*/
-
-								/*<td class="active" style="text-align:center;">'.@$d_rrk->order_time.'</td>
-								<td class="active" style="text-align:center;">'.@$d_rrk->tagihan_time.'</td>*/
 
 			$html .='<table class="table table-striped table-bordered table-condensed" style="width:1000px;">
 						<thead>
@@ -246,17 +179,17 @@ class App_dashboard extends BaseController
 								<tbody>';
 								foreach ($d_detailing as $rowsdetailing){
 									$html .=' <tr>
-												<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>
-												<td valign="center" style="text-align:left;">
-												<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>
-												<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>
-												<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>
-												<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>
-												<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>
-												<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>
-												<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>
-												</td>
-												</tr>';
+										<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>
+										<td valign="center" style="text-align:left;">
+										<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>
+										<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>
+										<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>
+										<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>
+										<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>
+										<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>
+										<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>
+										</td>
+									</tr>';
 								}
 								$html .= '</tbody>
 							</table>
@@ -266,10 +199,10 @@ class App_dashboard extends BaseController
 				$html .= '<thead>';
 				$html .= '<tr>';
 					$html .= '<th style="white-space: nowrap;padding-left:10px">Product ID </th>';
-					$html .= '<th style="white-space: nowrap;padding-left:10px" >Product</th>';
-					$html .= '<th style="white-space: nowrap;text-align:right;padding-right:10px;" >QTY PCS</th>';
-					$html .= '<th style="white-space: nowrap;text-align:right;padding-right:10px;" >Harga</th>';
-					$html .= '<th style="white-space: nowrap;text-align:right;padding-right:10px;" >Total Neto</th>';	
+					$html .= '<th style="white-space: nowrap;padding-left:10px">Product</th>';
+					$html .= '<th style="white-space: nowrap;text-align:right;padding-right:10px;">QTY PCS</th>';
+					$html .= '<th style="white-space: nowrap;text-align:right;padding-right:10px;">Harga</th>';
+					$html .= '<th style="white-space: nowrap;text-align:right;padding-right:10px;">Total Neto</th>';	
 				$html .= '</tr>';
 				$html .= '</thead>';
 				$html .= '<tbody>';
@@ -347,18 +280,71 @@ class App_dashboard extends BaseController
 		}
 		$html .= '</tbody>';
 		$html .= '</table></div>';
+
+		$html .='
+			<script type="text/javascript">
+				function preview_image_checkin(siteid,periode,cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_checkin",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Image Check In"};
+								tempFile.push(tempFileElemet);
+							});
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
+
+				function preview_image_detailing(siteid,periode,customerid,salesmanid) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_detailing",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid, periode, customerid, salesmanid },
+						success: function (result) {
+							var tempFile = [];
+							$.each(result, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.url_img_detailing, title: `Product: ${value.brands}, Keterangan: ${value.keterangan}`};
+								tempFile.push(tempFileElemet);
+							});
+
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
+			</script>
+		';
 				
 		echo $html;
-
 	}
     
 	function get_gmaptracking() {
-		
 		$html 		= '';
 		$sid 		= $this->input->post("sid");
 		$get_date 	= $this->input->post("get_date");
 		
-		//print_r($get_map); die();
 		$total = 0 ;
 		$marker 	= "";
 		$marker_sales = "";
@@ -383,16 +369,11 @@ class App_dashboard extends BaseController
 
 			TxtOverlay.prototype = new google.maps.OverlayView();
 
-
-
 			TxtOverlay.prototype.onAdd = function() {
-
-			 
 			  var div = document.createElement(\'DIV\');
 			  div.className = this.cls_;
 
 			  div.innerHTML = this.txt_;
-
 			  
 			  this.div_ = div;
 			  var overlayProjection = this.getProjection();
@@ -405,7 +386,6 @@ class App_dashboard extends BaseController
 			}
 			
 			TxtOverlay.prototype.draw = function() {
-
 				var overlayProjection = this.getProjection();
 				var position = overlayProjection.fromLatLngToDivPixel(this.pos);
 
@@ -413,8 +393,7 @@ class App_dashboard extends BaseController
 				var div = this.div_;
 				div.style.left = (position.x-15) + \'px\';
 				div.style.top = (position.y-10) + \'px\';
-
-			 }
+			}
 			 
 			TxtOverlay.prototype.onRemove = function() {
 			  this.div_.parentNode.removeChild(this.div_);
@@ -452,7 +431,6 @@ class App_dashboard extends BaseController
 			}
 			
 			function MakeControl(controlDiv, label, outletList) {
-			  
 			  // Set up the control border.
 			  var controlUI = document.createElement(\'div\');
 			  controlUI.title = label;
@@ -464,9 +442,7 @@ class App_dashboard extends BaseController
 			  controlText.innerHTML = outletList;
 			  controlText.className = \'controlText\';
 			  controlUI.appendChild(controlText);
-			  
 			}
-
 		</script>';
 		$numtrans = 0;
 		$num = 1;
@@ -509,50 +485,38 @@ class App_dashboard extends BaseController
 					  
 						marker_'.$i.'.addListener(\'click\', function() {
 						infowindow_'.$i.'.open(map, marker_'.$i.');
-					   });
-
-
-					  //customTxt_'.$i.' = "<div>'.$waktu.'</div>";
-					  //txt = new TxtOverlay(latlng, customTxt_'.$i.', "customBox2", map);
-					  
-					  ';
+					});
+				';
 			}
-			
 			$numpos++;
 		}
-		//echo $numpos."|".$cnttracking; 
-		//echo $marker;
+		
 		$get_latlong = $this->dashboard->get_lat_long();
 		$html .='<script type="text/javascript">
 					var directionDisplay;
 					var directionsService = new google.maps.DirectionsService();
 					var map;
 					function initialize() {
-					  directionsDisplay = new google.maps.DirectionsRenderer({
-						  suppressMarkers : true
-					  });
+						directionsDisplay = new google.maps.DirectionsRenderer({
+							suppressMarkers : true
+						});
 
+						var myOptions = {
+							zoom: 7,
+							center: new google.maps.LatLng('.$get_latlong->latitude.','.$get_latlong->longitude.'),  
+							mapTypeId: google.maps.MapTypeId.ROADMAP,
+							zoomControl: true,
+						}
 
-					  var myOptions = {
-						  zoom: 7,
-						  center: new google.maps.LatLng('.$get_latlong->latitude.','.$get_latlong->longitude.'),  
-						  mapTypeId: google.maps.MapTypeId.ROADMAP,
-						  zoomControl: true,
-					  }
+						map = new google.maps.Map(document.getElementById("maps"), myOptions);
+						'.$marker.'
 
-
-					map = new google.maps.Map(document.getElementById("maps"), myOptions);
-					'.$marker.'
-
-					directionsDisplay.setMap(map);
-						
-					calcRoute();
-
+						directionsDisplay.setMap(map);
+							
+						calcRoute();
 					}
-					
 
 					function calcRoute() {
-
 						var waypts=[];
 						var start="";
 						var end=""
@@ -566,9 +530,6 @@ class App_dashboard extends BaseController
 							$lat = $map['latitude_cell'];
 							$long = $map['longitude_cell'];
 							$waktu = $map['waktu'];
-							//$flag = $map['flag'];
-							//$sales_lat = $d_posisisales['latitude_cell'];
-							//$sales_long = $d_posisisales['longitude_cell'];
 							
 								$numtrans++;
 								if (($lat != "0") and ($long !="0")) {
@@ -608,16 +569,11 @@ class App_dashboard extends BaseController
 						}
 					}
 					initialize();					
-	
 			</script>';
-		
 		echo $html;
-			
-				
 	}
 
 	function open_crc() {
-	
 		$customerid = $this->input->post('cusid');
 		$salesmanid = $this->input->post('salesid');
 		$date = $this->input->post('dateTime');
@@ -626,11 +582,9 @@ class App_dashboard extends BaseController
 		$year = $dateTime[0];
 		$html = $this->dashboard->get_record_month($customerid,$salesmanid,$month,$year);
 		echo $html;
-		
 	}
 	
 	function get_gmap() {
-		
 		$html 		= '';
 		$html .= '<script>
 	
@@ -650,11 +604,7 @@ class App_dashboard extends BaseController
 
 			TxtOverlay.prototype = new google.maps.OverlayView();
 
-
-
 			TxtOverlay.prototype.onAdd = function() {
-
-			 
 			  var div = document.createElement(\'DIV\');
 			  div.className = this.cls_;
 
@@ -672,7 +622,6 @@ class App_dashboard extends BaseController
 			}
 			
 			TxtOverlay.prototype.draw = function() {
-
 				var overlayProjection = this.getProjection();
 				var position = overlayProjection.fromLatLngToDivPixel(this.pos);
 
@@ -680,8 +629,7 @@ class App_dashboard extends BaseController
 				var div = this.div_;
 				div.style.left = (position.x-15) + \'px\';
 				div.style.top = (position.y-10) + \'px\';
-
-			 }
+			}
 			 
 			TxtOverlay.prototype.onRemove = function() {
 			  this.div_.parentNode.removeChild(this.div_);
@@ -735,7 +683,6 @@ class App_dashboard extends BaseController
 			}
 			
 			function open_modal(cusid,salesid) {
-				
 				var dateTime = document.getElementsByName("get_date")[0].value;
 				
 				$.ajax({
@@ -748,20 +695,15 @@ class App_dashboard extends BaseController
 						$(\'div .modal-header .modal-title\').text(\'CRC Sales Reporting\');			
 						$(\'#crc_modal\').find(\'.modal-body\').html(response);
 						$("#crc_modal").modal(\'show\');
-						
 					}
-					
 				});
 			}
-
-			
 		</script>';
 
 		$sid 		= $this->input->post("sid");
 		$get_date 	= $this->input->post("get_date");
 		$get_map 	= $this->dashboard->get_node($sid,$get_date);
 		
-		//print_r($get_map); die();
 		$marker 	= "";
 		$marker_sales = "";
 		$i = 0;
@@ -788,20 +730,9 @@ class App_dashboard extends BaseController
 			$d_img = $this->dashboard->get_image_cust($siteid,$customerid,$customerid_m,$salesmanid);
 			$d_img_checkin = $this->dashboard->get_image_checkin($siteid,$get_date,$salesmanid,$customerid);
 			$d_detailing = $this->dashboard->get_detailing($siteid,$get_date,$salesmanid,$customerid);
-			//$d_img_before = $this->dashboard->get_image_before($siteid,$get_date,$salesmanid,$customerid);
-			//$d_img_after = $this->dashboard->get_image_after($siteid,$get_date,$salesmanid,$customerid);
-			//$d_img_sell_1 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_I');
-			//$d_img_sell_2 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_II');
-			//$d_img_sell_3 = $this->dashboard->get_image_dokumentasi($siteid,$get_date,$salesmanid,$customerid,'IMG_SELL_OUT_III');
-			//$d_img_sos = $this->dashboard->get_image_sos($siteid,$get_date,$salesmanid,$customerid);
-			//$d_img_competitor = $this->dashboard->get_image_competitor($siteid,$get_date,$salesmanid,$customerid);
-			//$d_img_npd = $this->dashboard->get_image_npd($siteid,$get_date,$salesmanid,$customerid);
-			//$d_img_promo_gsk = $this->dashboard->get_image_promo_gsk($siteid,$get_date,$salesmanid,$customerid);
 			
 			$icon = '';
-			//$icon_sales = $icon = base_url().'assets/mapIcon/res/drawable-hdpi/jadwal.png';//"https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png";
 			$urlimage = URL_IMAGE;
-			//$urlimageoutlet = URL_IMAGE."imageoutlet/";
 			
 			$lat = $map['latitude_cell'];
 			$long = $map['longitude_cell'];			
@@ -811,14 +742,10 @@ class App_dashboard extends BaseController
 			$flag = $map['flag'];
 			if ($flag == 'EffectiveCall') {
 				$icon = base_url().'assets/images/ic_call_48.png';
-				//$icon = base_url().'assets/mapIcon/res/drawable-hdpi/eff_call.png';
 			} else if ($flag == 'ExtraCall') {
 				$icon = base_url().'assets/images/ic_extra_call_48.png';
-				//$icon = base_url().'assets/mapIcon/numbers/png/extra_call.png';
 			} else if ($flag == 'Jadwal') {
 				$icon = base_url().'assets/images/ic_store_48.png';
-				//$icon = base_url().'assets/mapIcon/res/drawable-hdpi/jadwal.png';
-				//$icon = 'https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png';
 			} 
 					
 			if ($flag != 'Jadwal') {
@@ -896,7 +823,7 @@ class App_dashboard extends BaseController
 								\'<tbody>';
 								foreach ($d_detailing as $rowsdetailing){
 									$marker .=' <tr>\'+
-												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>\'+
+												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
 												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
@@ -926,8 +853,6 @@ class App_dashboard extends BaseController
 							content: contentString_'.$i.'
 						  });
 
-						
-							
 						  var markerOptions = {  
 								map: map,  
 								position: new google.maps.LatLng('.$lat.','.$long.'),
@@ -959,9 +884,7 @@ class App_dashboard extends BaseController
 			}
 			
 			if ($flag == 'Jadwal') {
-				
 				if (($lat_sales != "0") and ($long_sales !="0")) {
-
 					$marker_sales .=' var latlng = new google.maps.LatLng('.$lat.','.$long.');
 							var link_image = "\''.$customerid.'\',\''.$salesmanid.'\'";	
 							var param_link_image = "\''.$siteid.'\',\''.$periode.'\',\''.$customerid.'\',\''.$salesmanid.'\'";	
@@ -1034,15 +957,15 @@ class App_dashboard extends BaseController
 								\'<tbody>';
 								foreach ($d_detailing as $rowsdetailing){
 									$marker .=' <tr>\'+
-												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>\'+
+												\'<td valign="top" style="text-align:center;"><img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'"></td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
 												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
 												\'<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>\'+
-												\'<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
-												\'<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
-												\'<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>\'+
-												\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>\'+
+												\'<p>Channel - Class : '.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
+												\'<p>PIC : '.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
+												\'<p>Detailing Product : '.@$rowsdetailing['brands'].'</p>\'+
+												\'<p>Description : '.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>\'+
 												\'</td>\'+
 												\'</tr>';
 								}
@@ -1063,8 +986,6 @@ class App_dashboard extends BaseController
 						  var infowindow_'.$i.' = new google.maps.InfoWindow({
 							content: contentString_'.$i.'
 						  });
-
-						
 							
 						  var markerOptions = {  
 								map: map,  
@@ -1095,28 +1016,27 @@ class App_dashboard extends BaseController
 						  $num++;			
 				}
 			}
-			//$outlet .='<a href=\"javascript:void(0)\" onclick=\"open_modal('.$customerid.','.$salesmanid.');\">'.$map['nama_customer'].'</a><br>';
 			
 			$i++;
 		}
 		$get_latlong = $this->dashboard->get_lat_long();
-		$html .='<script type="text/javascript">
-					var directionDisplay;
-					var directionsService = new google.maps.DirectionsService();
-					var map;
-					function initialize() {
-					  directionsDisplay = new google.maps.DirectionsRenderer({
-						  suppressMarkers : true
-					  });
+		$html .='
+			<script type="text/javascript">
+				var directionDisplay;
+				var directionsService = new google.maps.DirectionsService();
+				var map;
+				function initialize() {
+					directionsDisplay = new google.maps.DirectionsRenderer({
+						suppressMarkers : true
+					});
 
 
-					  var myOptions = {
-						  zoom: 7,
-						  center: new google.maps.LatLng('.@$get_latlong->latitude.','.@$get_latlong->longitude.'),  
-						  mapTypeId: google.maps.MapTypeId.ROADMAP,
-						  zoomControl: true,
-					  }
-
+					var myOptions = {
+						zoom: 7,
+						center: new google.maps.LatLng('.@$get_latlong->latitude.','.@$get_latlong->longitude.'),  
+						mapTypeId: google.maps.MapTypeId.ROADMAP,
+						zoomControl: true,
+					}
 
 					map = new google.maps.Map(document.getElementById("maps"), myOptions);
 					'.$marker.'
@@ -1125,305 +1045,312 @@ class App_dashboard extends BaseController
 					directionsDisplay.setMap(map);
 						
 					calcRoute();
+				}	
 
-					}
+				function calcRoute() {
+					var waypts=[];
+					var start="";
+					var end=""
+					';
 					
-
-					function calcRoute() {
-
-						var waypts=[];
-						var start="";
-						var end=""
-						';
+					$vstart="";
+					$vstop="";
+					$i=1;
+					$numtrans=0;
+					foreach ($get_map as $map) {
+						$lat = $map['latitude_cell'];
+						$long = $map['longitude_cell'];
+						$flag = $map['flag'];
 						
-						$vstart="";
-						$vstop="";
-						$i=1;
-						$numtrans=0;
-						foreach ($get_map as $map) {
-							$lat = $map['latitude_cell'];
-							$long = $map['longitude_cell'];
-							$flag = $map['flag'];
-							//$sales_lat = $d_posisisales['latitude_cell'];
-							//$sales_long = $d_posisisales['longitude_cell'];
-							
-							if ($flag != 'Jadwal' or $flag != 'Noo') {
-								$numtrans++;
-								if (($lat != "0") and ($long !="0")) {
-									
-									if ($vstart== "")
-									{
-									$vstart=$lat.','.$long;
-									$html .='start = new google.maps.LatLng('.@$lat.','.@$long.');';
-									}
-									
-									if ($numtrans>=2 && $numtrans<=9){
-									$html .='waypts.push({ location: \''.@$lat.','.@$long.'\',stopover: true});';
-									}
-									
+						if ($flag != 'Jadwal' or $flag != 'Noo') {
+							$numtrans++;
+							if (($lat != "0") and ($long !="0")) {
+								
+								if ($vstart== "")
+								{
+								$vstart=$lat.','.$long;
+								$html .='start = new google.maps.LatLng('.@$lat.','.@$long.');';
 								}
-								$vstop=$lat.','.$long;
+								
+								if ($numtrans>=2 && $numtrans<=9){
+								$html .='waypts.push({ location: \''.@$lat.','.@$long.'\',stopover: true});';
+								}
+								
 							}
-							$i++;
+							$vstop=$lat.','.$long;
 						}
-					$html .='end = new google.maps.LatLng('.$vstop.');';
-					$html .='
-					if(start!=""){	
-						  var request = {
-							  origin: start,
-							  destination: end,
-							  waypoints: waypts,
-							  optimizeWaypoints: true,
-							  travelMode: google.maps.DirectionsTravelMode.DRIVING
-						  };
-						  /*
-							posisi = new google.maps.LatLng(-6.9452394,107.6160295);
-							var marker = new google.maps.Marker({
-								position: posisi,
-								label:\'S\',
-								map: map
+						$i++;
+					}
+				$html .='end = new google.maps.LatLng('.$vstop.');';
+				$html .='
+				if(start!=""){	
+						var request = {
+							origin: start,
+							destination: end,
+							waypoints: waypts,
+							optimizeWaypoints: true,
+							travelMode: google.maps.DirectionsTravelMode.DRIVING
+						};
+
+						directionsService.route(request, function(response, status) {
+							if (status == google.maps.DirectionsStatus.OK) {
+								directionsDisplay.setDirections(response);
+								var route = response.routes[0];
+
+							}
+						});
+					}
+				}
+				initialize();					
+								
+				function preview_image(cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_image",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: {cusid: cusid, sales: sales},
+						success: function (result) {
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Image Outlet"};
+								tempFile.push(tempFileElemet);
 							});
 							
-							var marker = new google.maps.Marker({
-								position: end,
-								label:\'E\',
-								map: map
-							});*/
-						  directionsService.route(request, function(response, status) {
-							  if (status == google.maps.DirectionsStatus.OK) {
-								  directionsDisplay.setDirections(response);
-								  var route = response.routes[0];
-
-							  }
-						  });
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
 						}
-					}
-					initialize();					
-					
-					function preview_image(cusid,sales) {
-						$.ajax({
-						   url: "'.site_url().'/app_dashboard/get_fancy_image",
-						   type: "POST",
-						   async: false,
-						   dataType: "json",
-						   data: {cusid: cusid, sales: sales},
-						   success: function (result) {
-							   var tempFile = [];
-							   $.each(result.images, function (index, value) {
-								   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Image Outlet"};
-								   tempFile.push(tempFileElemet);
-							   });
-							  
-							   
-							   $.fancybox.open(tempFile, {
-								   helpers: {
-									   thumbs: {
-										   width: 75,
-										   height: 50
-									   }
-								   }
-							   });
-						   }
-					   });
-				   }
+					});
+				}
 
-				   function preview_image_checkin(siteid,periode,cusid,sales) {
+				function preview_image_checkin(siteid,periode,cusid,sales) {
 					$.ajax({
-					   url: "'.site_url().'/app_dashboard/get_fancy_checkin",
-					   type: "POST",
-					   async: false,
-					   dataType: "json",
-					   data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
-					   success: function (result) {
-						   // var p = result.images;
-						   var tempFile = [];
-						   $.each(result.images, function (index, value) {
-							   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Image Check In"};
-							   tempFile.push(tempFileElemet);
-						   });
-						  
-						   
-						   $.fancybox.open(tempFile, {
-							   helpers: {
-								   thumbs: {
-									   width: 75,
-									   height: 50
-								   }
-							   }
-						   });
-					   }
-				   });
-			   }
+						url: "'.site_url().'/app_dashboard/get_fancy_checkin",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Image Check In"};
+								tempFile.push(tempFileElemet);
+							});
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
 
-			   function preview_image_before(siteid,periode,cusid,sales) {
-				$.ajax({
-				   url: "'.site_url().'/app_dashboard/get_fancy_before",
-				   type: "POST",
-				   async: false,
-				   dataType: "json",
-				   data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
-				   success: function (result) {
-					   // var p = result.images;
-					   var tempFile = [];
-					   $.each(result.images, function (index, value) {
-						   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Keterangan : "+value.description};
-						   tempFile.push(tempFileElemet);
-					   });
-					  
-					   
-					   $.fancybox.open(tempFile, {
-						   helpers: {
-							   thumbs: {
-								   width: 75,
-								   height: 50
-							   }
-						   }
-					   });
-				   }
-			   });
-		   }
+				function preview_image_before(siteid,periode,cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_before",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							// var p = result.images;
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Keterangan : "+value.description};
+								tempFile.push(tempFileElemet);
+							});
+							
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
 
-		   function preview_image_after(siteid,periode,cusid,sales) {
-			$.ajax({
-			   url: "'.site_url().'/app_dashboard/get_fancy_after",
-			   type: "POST",
-			   async: false,
-			   dataType: "json",
-			   data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
-			   success: function (result) {
-				   // var p = result.images;
-				   var tempFile = [];
-				   $.each(result.images, function (index, value) {
-					   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Keterangan : "+value.description};
-					   tempFile.push(tempFileElemet);
-				   });
-				  
-				   
-				   $.fancybox.open(tempFile, {
-					   helpers: {
-						   thumbs: {
-							   width: 75,
-							   height: 50
-						   }
-					   }
-				   });
-			   }
-		   });
-	   }
+				function preview_image_after(siteid,periode,cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_after",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							// var p = result.images;
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Keterangan : "+value.description};
+								tempFile.push(tempFileElemet);
+							});
+							
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
 
-	   function preview_image_dokumentasi(siteid,periode,cusid,sales) {
-		$.ajax({
-		   url: "'.site_url().'/app_dashboard/get_fancy_sellout",
-		   type: "POST",
-		   async: false,
-		   dataType: "json",
-		   data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
-		   success: function (result) {
-			   // var p = result.images;
-			   var tempFile = [];
-			   $.each(result.images, function (index, value) {
-				   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Keterangan : "+value.description};
-				   tempFile.push(tempFileElemet);
-			   });
-			  
-			   
-			   $.fancybox.open(tempFile, {
-				   helpers: {
-					   thumbs: {
-						   width: 75,
-						   height: 50
-					   }
-				   }
-			   });
-		   }
-	   });
-   }
+				function preview_image_dokumentasi(siteid,periode,cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_sellout",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							// var p = result.images;
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Keterangan : "+value.description};
+								tempFile.push(tempFileElemet);
+							});
+							
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
 
-	function preview_image_promo_gsk(siteid,periode,cusid,sales) {
-		$.ajax({
-		   url: "'.site_url().'/app_dashboard/get_fancy_promo_gsk",
-		   type: "POST",
-		   async: false,
-		   dataType: "json",
-		   data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
-		   success: function (result) {
-			   // var p = result.images;
-			   var tempFile = [];
-			   $.each(result.images, function (index, value) {
-				   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Promo : "+value.promo};
-				   tempFile.push(tempFileElemet);
-			   });
-			  
-			   
-			   $.fancybox.open(tempFile, {
-				   helpers: {
-					   thumbs: {
-						   width: 75,
-						   height: 50
-					   }
-				   }
-			   });
-		   }
-	   	});
-   	}
+				function preview_image_promo_gsk(siteid,periode,cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_promo_gsk",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							// var p = result.images;
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Promo : "+value.promo};
+								tempFile.push(tempFileElemet);
+							});
+							
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
 
-	   function preview_image_promo_gsk_gimmick(siteid,periode,cusid,sales) {
-		$.ajax({
-		   url: "'.site_url().'/app_dashboard/get_fancy_promo_gsk_gimmick",
-		   type: "POST",
-		   async: false,
-		   dataType: "json",
-		   data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
-		   success: function (result) {
-			   // var p = result.images;
-			   var tempFile = [];
-			   $.each(result.images, function (index, value) {
-				   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Promo : "+value.promo};
-				   tempFile.push(tempFileElemet);
-			   });
-			  
-			   
-			   $.fancybox.open(tempFile, {
-				   helpers: {
-					   thumbs: {
-						   width: 75,
-						   height: 50
-					   }
-				   }
-			   });
-		   }
-	   	});
-   	}
+				function preview_image_promo_gsk_gimmick(siteid,periode,cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_promo_gsk_gimmick",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							// var p = result.images;
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "Promo : "+value.promo};
+								tempFile.push(tempFileElemet);
+							});
+							
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
 
-	   function preview_image_sos(siteid,periode,cusid,sales) {
-		$.ajax({
-		   url: "'.site_url().'/app_dashboard/get_fancy_sos",
-		   type: "POST",
-		   async: false,
-		   dataType: "json",
-		   data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
-		   success: function (result) {
-			   // var p = result.images;
-			   var tempFile = [];
-			   $.each(result.images, function (index, value) {
-				   var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "SOS : "+value.sos+" %"};
-				   tempFile.push(tempFileElemet);
-			   });
-			  
-			   
-			   $.fancybox.open(tempFile, {
-				   helpers: {
-					   thumbs: {
-						   width: 75,
-						   height: 50
-					   }
-				   }
-			   });
-		   }
-	   });
-   }
+				function preview_image_sos(siteid,periode,cusid,sales) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_sos",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid: siteid, periode:periode, cusid: cusid, sales: sales },
+						success: function (result) {
+							// var p = result.images;
+							var tempFile = [];
+							$.each(result.images, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.image, title: "SOS : "+value.sos+" %"};
+								tempFile.push(tempFileElemet);
+							});
+							
+							
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
 
-</script>';
+				function preview_image_detailing(siteid,periode,customerid,salesmanid) {
+					$.ajax({
+						url: "'.site_url().'/app_dashboard/get_fancy_detailing",
+						type: "POST",
+						async: false,
+						dataType: "json",
+						data: { siteid, periode, customerid, salesmanid },
+						success: function (result) {
+							var tempFile = [];
+							$.each(result, function (index, value) {
+								var tempFileElemet = {href: "'.URL_IMAGE.'" + value.url_img_detailing, title: `Product: ${value.brands}, Keterangan: ${value.keterangan}`};
+								tempFile.push(tempFileElemet);
+							});
+
+							$.fancybox.open(tempFile, {
+								helpers: {
+									thumbs: {
+										width: 75,
+										height: 50
+									}
+								}
+							});
+						}
+					});
+				}
+			</script>
+		';
 		
 		echo $html;
 	}
@@ -1488,4 +1415,9 @@ class App_dashboard extends BaseController
         echo json_encode($list);
 	}
 
+	function get_fancy_detailing() {
+		header('Content-Type: application/json'); // parsing json
+        $list = $this->dashboard->get_image_detailing();
+        echo json_encode($list);
+	}
 }
