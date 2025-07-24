@@ -193,6 +193,7 @@ class Rep_productivity_model extends CI_Model
 									   salesamn.nama_salesman,
 									   sls.customerid,
 									   cst.latest_jjid,
+									   cst.cust_id_map,
 									   cst.nama_customer,
 									   e.nama_class as account,
 									   cst.alamat,
