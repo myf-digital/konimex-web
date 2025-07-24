@@ -108,17 +108,19 @@ class App_dashboard_model extends CI_Model
 		}
 
 		$field = " a.* ";
-		$table = " (select distinct z.siteid, z.periode, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area city,
-					(select count(1) from t_sales_rrk where periode=z.periode and salesmanid=z.salesmanid) _jadwal, 
+		$table = " (
+					select distinct a.siteid, a.periode, a.salesmanid, b.nama_salesman, b.tipe_sales,c.nama_area city,
+					(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) _jadwal, 
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
-					(select count(1) from t_sales_master where tanggal=z.periode and salesmanid=z.salesmanid and bruto>0) _order
-					from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
-					left join m_sales_salesman b on z.salesmanid=b.salesmanid
+					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and order_time is not null) _order
+					from t_sales_rrk a left join t_sales_rrk_trans z on a.salesmanid=z.salesmanid and a.periode=z.periode
+					left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_areasite c on c.areaid=b.areaid
-					where z.periode = '".($data["get_date"] ?? today())."' $strquery
-					group by z.siteid, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area) a
+					where a.periode = '".($data["get_date"] ?? today())."' $strquery
+					group by a.siteid, a.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area
+					) a
 					";
         return easy_pagging($data, $field, $table);
     }
