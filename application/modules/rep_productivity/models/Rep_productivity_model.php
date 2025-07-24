@@ -266,7 +266,7 @@ class Rep_productivity_model extends CI_Model
 									   sls.productid,
 									   product.nama_invoice,
                                        product.nama_brand,
-									   casse when sls.qty_akhir = 0 then sls.stock_buffer else sls.qty_akhir end qty_akhir
+									   case when sls.qty_akhir = 0 then sls.stock_buffer else sls.qty_akhir end qty_akhir
 									from 
 									t_sales_crc sls left join
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
