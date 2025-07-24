@@ -34,6 +34,50 @@ class Rep_productivity_model extends CI_Model
     
     function getProductivity($data)
     {
+		$sqlrecon = " 
+                    replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
+												effective_call, `call`, extra_call, invalid_call, crc, promo, competitor, `order`, sos, image)
+					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
+													   when a.type='ICT' then 'C' 
+													   when a.type='AHR' then 'H'
+													   else 'HF' end tipe, 
+							check_in checkin, check_out checkout, ifnull(b.flag_adjust,0) as flag_adjust,
+							concat(ifnull(a.description,''),ifnull(concat('-',a.description_in),''),ifnull(concat('-',a.description_out),'')) as keterangan, 
+							case when a.type='ICT' then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
+							when b.flag_adjust=1 then 0
+							else 0 
+							end _pjp, 0 _effective_call,
+							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
+					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
+					where a.date between DATE_ADD(?, INTERVAL -7 DAY) and ?
+					union
+					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
+						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
+						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
+						case when b.flag_adjust=0 then 
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+							else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
+						end _extra_call,
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid not in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+						as _invalid_call,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
+					(select count(1) from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid) _order,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image
+					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
+					where a.periode between  DATE_ADD(?, INTERVAL -7 DAY) and ?
+					group by a.periode,a.salesmanid;
+                    ";
+			$res_ss = $this->db->query($sqlrecon, array($data['periode'],$data['periode'],$data['periode'],$data['periode']));
+	
 
         if ($data['restrict_level']=='4'){
             $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
@@ -74,7 +118,7 @@ class Rep_productivity_model extends CI_Model
                                             (select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')) as sakit, 
                                             round((count(1)/(date_format('$periode','%d')-FLOOR(date_format('$periode','%d')/7)-(case when date_format('$periode','%d') > 25 
                                             then (select jml_libur from setup_jumlah_harilibur where tahun='$year' and bulan='$month') else 0 end)))*100,0) as persentasi,
-                                            sum(a.pjp) as pjp, sum(a.effective_call) as effective_call, sum(a.call) as `call`, sum(a.extra_call) as extra_call,
+                                            sum(a.pjp) as pjp, sum(a.effective_call) as effective_call, sum(a.call) as `call`, sum(a.extra_call) as extra_call, sum(a.invalid_call) as invalid_call,
                                             ifnull((
                                             select GROUP_CONCAT(x.reason_rrk SEPARATOR ' , ') from ( 
                                                SELECT z.salesmanid, CONCAT(y.reason, '(', count(y.reason), ')') AS reason_rrk 
@@ -89,12 +133,12 @@ class Rep_productivity_model extends CI_Model
                                                from t_sales_rrk_trans z left join trx_visit_detailing y on z.customerid=y.customerid and z.salesmanid=y.salesmanid 
                                                where z.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
                                                group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
-                                            ),'-') as rrk_detailing, e.jumlah_customer,e.total_penjualan
+                                            ),'-') as rrk_detailing, sum(e.jumlah_customer) as jumlah_customer, sum(e.total_penjualan) as total_penjualan
 									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
 									left join m_area_areasite c on c.areaid=b.areaid left join m_area_regional d on d.regionalid=c.regionalid
                                     left join (SELECT salesmanid,tanggal,
-										  COUNT(*) AS total_transaksi,
-										  COUNT(DISTINCT customerid) AS jumlah_customer,
+										  COUNT(customerid) AS total_transaksi,
+										  COUNT(customerid) AS jumlah_customer,
 										  SUM(netto) AS total_penjualan
 										FROM t_sales_master where tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')
 										group by salesmanid,tanggal) as e on a.salesmanid=e.salesmanid and a.periode =e.tanggal
@@ -222,7 +266,7 @@ class Rep_productivity_model extends CI_Model
 									   sls.productid,
 									   product.nama_invoice,
                                        product.nama_brand,
-									   sls.qty_akhir
+									   casse when sls.qty_akhir = 0 then sls.stock_buffer else sls.qty_akhir end qty_akhir
 									from 
 									t_sales_crc sls left join
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
@@ -276,19 +320,53 @@ class Rep_productivity_model extends CI_Model
         $month=$data['month'];
         $tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		$query = $this->db->query(" 
-									select a.periode, a.salesmanid, a.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
+                                    select a.periode, a.salesmanid, a.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
                                             c.typeid as channel, e.nama_class as account,
-											DATE_FORMAT(a.check_in, '%H:%i:%s') check_in, DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
-											timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan, 
-											(select reason from t_sales_rrk_reason where call_reasonid=a.call_reasonid) alasan, REGEXP_REPLACE(a.keterangan, '\n', ' ') keterangan
-									from t_sales_rrk_trans a
-									left join m_sales_salesman b on a.salesmanid = b.salesmanid
-									left join m_customer c on a.customerid= c.customerid 
+                                            DATE_FORMAT(a.check_in, '%H:%i:%s') check_in, DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
+                                            timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan, 
+                                            (select reason from t_sales_rrk_reason where call_reasonid=a.call_reasonid) alasan, REGEXP_REPLACE(a.keterangan, '\n', ' ') keterangan,
+                                            case when 
+                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
+                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
+                                                then 'Effective Call' 
+                                                when 
+                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
+                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
+                                                then 'Extra Call' 
+                                                when 
+                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
+                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
+                                                then 'Invalid Call' 
+                                                when 
+                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
+                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
+                                                then 'Call' 
+                                            end as flag
+                                    from t_sales_rrk_trans a
+                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                                    left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
-									left join m_area_subarea d on c.subareaid = d.subareaid
-									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                    left join m_area_areasite d on c.areaid = d.areaid
+                                    where between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
 									and b.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
 									$area $regional
+                                    union all
+                                    select a.periode, a.salesmanid, a.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
+                                            c.typeid as channel, e.nama_class as account,
+                                            0 check_in, 0 check_out,
+                                            0 lama_kunjungan, 
+                                            '' alasan, '' keterangan,
+                                            'FJP Tidak Terkunjungi' as flag
+                                    from t_sales_rrk a
+                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                                    left join m_customer c on a.customerid= c.customerid 
+                                    left join m_customer_class e on e.classid=c.classid
+                                    left join m_area_areasite d on c.areaid = d.areaid
+									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                    and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01'))
+                                    and b.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+									$area $regional 
+                                    ;
 									");
         return $query->result_array();
     }

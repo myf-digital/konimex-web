@@ -84,7 +84,7 @@ class Rep_productivity extends BaseController
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">User PARMA</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 300px;">Nama PARMA</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Position</th>';
-		$html .= '<th colspan="11" style="vertical-align : middle;text-align:center;width: 2200px;">Kuantitatif</th>';
+		$html .= '<th colspan="13" style="vertical-align : middle;text-align:center;width: 2600px;">Kuantitatif</th>';
 		$html .= '</tr><tr>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">HK</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Absensi</th>';
@@ -92,7 +92,9 @@ class Rep_productivity extends BaseController
 		$html .= '<th style="vertical-align : middle;text-align:center;">Keterangan</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Target Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Call on PJP</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Effective Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Extra Call</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Invalid Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Actual Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">%PJP Compliance</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Keterangan</th>';
@@ -121,7 +123,9 @@ class Rep_productivity extends BaseController
 			$html .= '<td style="text-align:right;width: 200px">Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').') </td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['pjp'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call'], 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['effective_call'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['extra_call'], 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['invalid_call'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call']+$value['extra_call'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call']/$value['pjp']*100, 2, '.', ',').' %</td>';
 			$html .= '<td style="text-align:right; width: 200px;">'.$value['rrk_keterangan'].'</td>';
@@ -354,6 +358,7 @@ class Rep_productivity extends BaseController
                     ->setCellValue('M1', 'Time Visit')
                     ->setCellValue('N1', 'Reason')
                     ->setCellValue('O1', 'Description')
+                    ->setCellValue('P1', 'Flag')
 					;
 
         $datavisit = $this->report_productivity->getVisit_salesman($params);
@@ -376,6 +381,7 @@ class Rep_productivity extends BaseController
                         ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'])
                         ->setCellValue('N'.$row, $valuevisit['alasan'])
                         ->setCellValue('O'.$row, $valuevisit['keterangan'])
+                        ->setCellValue('P'.$row, $valuevisit['flag'])
 						;
 			$i++;
             $row++;
@@ -390,14 +396,17 @@ class Rep_productivity extends BaseController
                     ->setCellValue('D1', 'PARMA Name')
                     ->setCellValue('E1', 'OutletID')
                     ->setCellValue('F1', 'Latest JJid')
-                    ->setCellValue('G1', 'Outlet Name')
-                    ->setCellValue('H1', 'Account')
-                    ->setCellValue('I1', 'No SP')
-                    ->setCellValue('J1', 'ProductID')
-                    ->setCellValue('K1', 'Product Name')
-                    ->setCellValue('L1', 'Qty')
-                    ->setCellValue('M1', 'Price')
-                    ->setCellValue('N1', 'Total')
+                    ->setCellValue('G1', 'ID Dist')
+                    ->setCellValue('H1', 'Outlet Name')
+                    ->setCellValue('I1', 'Account')
+                    ->setCellValue('J1', 'No SP')
+                    ->setCellValue('K1', 'No Sales Order')
+                    ->setCellValue('L1', 'ProductID')
+                    ->setCellValue('M1', 'Product Name')
+                    ->setCellValue('N1', 'Qty')
+                    ->setCellValue('O1', 'Price')
+                    ->setCellValue('P1', 'Total')
+                    ->setCellValue('Q1', 'Status')
                     ;
         $dataorder = $this->report_productivity->getOrder_salesman($params);
         $i = 1;
@@ -410,14 +419,17 @@ class Rep_productivity extends BaseController
                         ->setCellValue('D'.$row, $valueorder['nama_salesman'])
                         ->setCellValue('E'.$row, $valueorder['customerid'])
                         ->setCellValue('F'.$row, $valueorder['latest_jjid'])
-                        ->setCellValue('G'.$row, $valueorder['nama_customer'])
-                        ->setCellValue('H'.$row, $valueorder['account'])
-                        ->setCellValue('I'.$row, $valueorder['no_po'])
-                        ->setCellValue('J'.$row, $valueorder['productid'])
-                        ->setCellValue('K'.$row, $valueorder['nama_invoice'])
-                        ->setCellValue('L'.$row, $valueorder['qty_jual_in_pcs'])
-                        ->setCellValue('M'.$row, $valueorder['h_jual'])
-                        ->setCellValue('N'.$row, '=M'.$row.'*L'.$row)
+                        ->setCellValue('G'.$row, $valueorder['cust_id_map'])
+                        ->setCellValue('H'.$row, $valueorder['nama_customer'])
+                        ->setCellValue('I'.$row, $valueorder['account'])
+                        ->setCellValue('J'.$row, $valueorder['no_po'])
+                        ->setCellValue('K'.$row, $valueorder['no_sales'])
+                        ->setCellValue('L'.$row, $valueorder['productid'])
+                        ->setCellValue('M'.$row, $valueorder['nama_invoice'])
+                        ->setCellValue('N'.$row, $valueorder['qty_jual_in_pcs'])
+                        ->setCellValue('O'.$row, $valueorder['h_jual'])
+                        ->setCellValue('P'.$row, '=M'.$row.'*L'.$row)
+                        ->setCellValue('Q'.$row, $valueorder['status'])
 						;
 			$i++;
             $row++;
