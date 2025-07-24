@@ -199,9 +199,13 @@ class Rep_productivity_model extends CI_Model
                                        sls.no_po,
 									   dtl.productid,
 									   product.nama_invoice,
-									   sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
+									   sum(dtl.qty_kecil) as qty_jual_in_pcs,
 									   dtl.h_jual,
-									   sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
+									   sum(dtl.qty_kecil*dtl.h_jual) as total_netto,
+                                       case when dtl.status_send='3' then 'Delivered'
+                                            when dtl.status_send='2' then 'Sales Order'
+                                            Else 'Purchase Order'
+                                        end as status
 									from 
 									t_sales_master sls left join
 									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
@@ -323,7 +327,7 @@ class Rep_productivity_model extends CI_Model
         $month=$data['month'];
         $tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		$query = $this->db->query(" 
-                                    select a.periode, a.salesmanid, a.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
+                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
                                             c.typeid as channel, e.nama_class as account,
                                             DATE_FORMAT(a.check_in, '%H:%i:%s') check_in, DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
                                             timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan, 
@@ -354,7 +358,7 @@ class Rep_productivity_model extends CI_Model
 									and b.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
 									$area $regional
                                     union all
-                                    select a.periode, a.salesmanid, a.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
+                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
                                             c.typeid as channel, e.nama_class as account,
                                             0 check_in, 0 check_out,
                                             0 lama_kunjungan, 

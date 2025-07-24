@@ -324,8 +324,8 @@ class Rep_productivity extends BaseController
                         ->setCellValue('L'.$row, $value['call'])
                         ->setCellValue('M'.$row, $value['extra_call'])
                         ->setCellValue('N'.$row, $value['invalid_call'])
-                        ->setCellValue('O'.$row, '=K'.$row.'+L'.$row)
-                        ->setCellValue('P'.$row, '=L'.$row.'/J'.$row)
+                        ->setCellValue('O'.$row, '=K'.$row.'+L'.$row.'+M'.$row)
+                        ->setCellValue('P'.$row, '=(K'.$row.'+L'.$row.')/J'.$row)
                         ->setCellValue('Q'.$row, $value['jumlah_customer'])
                         ->setCellValue('R'.$row, $value['total_penjualan'])
                         ->setCellValue('S'.$row, $value['rrk_keterangan'])
@@ -334,7 +334,7 @@ class Rep_productivity extends BaseController
 			
 			$objPHPExcel->getActiveSheet()->getStyle('H'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
 			$objPHPExcel->getActiveSheet()->getStyle('P'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
-			$objPHPExcel->getActiveSheet()->getStyle('R'.$row)->getNumberFormat()->setFormatCode('"Rp"#,##0.00');
+			$objPHPExcel->getActiveSheet()->getStyle('R'.$row)->getNumberFormat()->setFormatCode('"Rp. "#,##0.00');
 			$i++;
             $row++;
         }
@@ -428,7 +428,7 @@ class Rep_productivity extends BaseController
                         ->setCellValue('M'.$row, $valueorder['nama_invoice'])
                         ->setCellValue('N'.$row, $valueorder['qty_jual_in_pcs'])
                         ->setCellValue('O'.$row, $valueorder['h_jual'])
-                        ->setCellValue('P'.$row, '=M'.$row.'*L'.$row)
+                        ->setCellValue('P'.$row, '=N'.$row.'*O'.$row)
                         ->setCellValue('Q'.$row, $valueorder['status'])
 						;
 			$i++;
