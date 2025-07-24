@@ -97,7 +97,7 @@ class Rep_productivity_model extends CI_Model
 										  COUNT(DISTINCT customerid) AS jumlah_customer,
 										  SUM(netto) AS total_penjualan
 										FROM t_sales_master where tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')
-										group by salesmanid,tanggal) as e on a.salesmanid=e.salesmanid 
+										group by salesmanid,tanggal) as e on a.salesmanid=e.salesmanid and a.periode =e.tanggal
 									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') and b.tipe_sales not in ('ADMIN','SPV') $tipesales
                                     $strquery $area $regional
 									group by d.regionalid, d.nama_regional, c.areaid, c.nama_area, b.salesmanid,b.nama_salesman,b.tipe_sales
