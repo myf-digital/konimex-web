@@ -347,7 +347,7 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
-                                    where between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                    where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
 									and b.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
 									$area $regional
                                     union all
