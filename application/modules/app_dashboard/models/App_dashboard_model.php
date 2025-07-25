@@ -86,19 +86,19 @@ class App_dashboard_model extends CI_Model
             $strquery = "";
 		}*/
 		if ($data["restrict_level"]=='4'){
-			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 												where a.username='".$data["usersession"]."')
 												)";
 		}
 		else if ($data["restrict_level"]=='3'){
-			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
 											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 											where a.username='".$data["usersession"]."')
 												)";
 		}
 		else if ($data["restrict_level"]=='2'){
-			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 												where a.username='".$data["usersession"]."')
 												) ";
