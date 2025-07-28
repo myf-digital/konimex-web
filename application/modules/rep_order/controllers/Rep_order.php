@@ -214,8 +214,8 @@ class Rep_order extends BaseController
                 $value['total_discount'],
                 $value['total_netto'],
             ];
-			img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
-            $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
+			// img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
+            // $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
 
             $i++;
@@ -328,8 +328,8 @@ class Rep_order extends BaseController
                 $value['total_discount'],
                 $value['total_netto'],
             ];
-			img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
-            $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
+			// img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
+            // $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
 
             $i++;

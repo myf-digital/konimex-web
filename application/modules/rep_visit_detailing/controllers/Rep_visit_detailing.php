@@ -378,8 +378,8 @@ class Rep_visit_detailing extends BaseController
 				$value['reason'],
 				$value['url_img_detailing'],
 			];
-			img_url_to_sheet($sheet, $value['url_img_detailing'], 'N'.$row);
-            $sheet->getStyle('N'.$row)->getAlignment()->setWrapText(true);
+			// img_url_to_sheet($sheet, $value['url_img_detailing'], 'N'.$row);
+            // $sheet->getStyle('N'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
             $i++;
             $row++;
