@@ -42,11 +42,11 @@ class Rep_order_model extends CI_Model
                     b.nama_salesman,
                     b.tipe_sales,
                     c.nama_area city,
-                    (select count(1) from t_sales_rrk where periode=z.periode and salesmanid=z.salesmanid) _jadwal, 
-                    (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
-                    (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
-                    (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
-                    (select sum(tsm.netto) from t_sales_master tsm where tsm.tanggal=z.periode and tsm.salesmanid=z.salesmanid) _order
+                    (select count(1) from t_sales_rrk where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=z.salesmanid) _jadwal, 
+                    (select count(1) from t_sales_rrk_trans where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
+                    (select count(1) from t_sales_rrk_trans where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
+                    (select count(1) from t_sales_rrk_trans where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=z.salesmanid and crc_time is not null) _crc,
+                    (select sum(tsm.netto) from t_sales_master tsm where tsm.tanggal between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and tsm.salesmanid=z.salesmanid) _order
                 from t_sales_rrk_trans z
                 left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
                 left join m_sales_salesman b on z.salesmanid=b.salesmanid
