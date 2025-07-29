@@ -58,25 +58,19 @@
                 nama_customer: {
                     required: true
                 },
-                salesmanid: {
+                /*salesmanid: {
                     required: true
-                },
+                },*/
                 regionalid: {
                     required: true
                 },
                 areaid: {
                     required: true
                 },
-                // subareaid: {
-                //     required: true
-                // },
-                classid: {
-                    required: true
-                },
                 typeid: {
                     required: true
                 },
-                segmentid: {
+                classid: {
                     required: true
                 }
             }
