@@ -89,7 +89,11 @@ class Rep_order extends BaseController
         $totnetto = 0;
         
         foreach ($orders as $v_detail) {
-            $image = $v_detail['url_img_po'] ? '<a href="'.$v_detail['url_img_po'].'" target="_blank">Show</a>' : '';
+            $image = '';
+			$param_link = '\''.$v_detail['tanggal'].'\',\''.@$v_detail['no_po'].'\',\''.$v_detail['salesmanid'].'\'';	
+            if (isset($v_detail['url_img_po']) && $v_detail['url_img_po']) {
+                $image = '<img class="img-rounded" onclick="preview_image_order('.$param_link.'); " alt="Image Order" style="width:100px; height:100px;" src="'.@$v_detail['url_img_po'].'">';
+            }
             $html .= '<tr">
                        <td style="width: 100px">'.$image.'</td>
                        <td style="width: 250px">'.$v_detail['customerid'].'</td>
@@ -138,6 +142,33 @@ class Rep_order extends BaseController
                         $(".container-table-content").scrollLeft($(this).scrollLeft());
                     });
 
+                    function preview_image_order(tanggal,no_po,salesmanid) {
+                        $.ajax({
+                            url: "'.site_url().'/rep_order/get_fancy_order",
+                            type: "POST",
+                            async: false,
+                            dataType: "json",
+                            data: { tanggal, no_po, salesmanid },
+                            success: function (result) {
+                                var tempFile = [];
+                                $.each(result, function (index, value) {
+                                    var title = `No PO: ${value.no_po}`;
+                                    if (value.nama_customer) title += `<br /> Customer: ${value.nama_customer}`;
+                                    var tempFileElemet = {href: value.url_img_po, title };
+                                    tempFile.push(tempFileElemet);
+                                });
+
+                                $.fancybox.open(tempFile, {
+                                    helpers: {
+                                        thumbs: {
+                                            width: 75,
+                                            height: 50
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
                 </script>
                     ';
 
@@ -431,6 +462,11 @@ class Rep_order extends BaseController
             $total_tunai += $value['bayar_tunai'];
             $total_all += $total;
         }
-	} 
+	}
 
+	function get_fancy_order() {
+		header('Content-Type: application/json'); // parsing json
+        $list = $this->order->get_fancy_order();
+        echo json_encode($list);
+	}
 }

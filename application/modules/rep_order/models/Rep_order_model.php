@@ -508,5 +508,22 @@ class Rep_order_model extends CI_Model
         return $this->db->query($sqltagihan)->result_array();	
     }		
 
-    
+	function get_fancy_order() {
+		$tanggal = $_POST['tanggal'];
+		$no_po = $_POST['no_po'];
+		$salesmanid = $_POST['salesmanid'];
+	
+		$sql = "
+            select
+                concat('".URL_IMAGE."', tsm.url_img_po) as url_img_po,
+                tsm.no_po,
+                mc.nama_customer
+            from t_sales_master tsm
+            left join m_customer mc on mc.customerid = tsm.customerid
+            where tsm.tanggal = ? and tsm.no_po = ? and tsm.salesmanid = ?
+        ";
+		$result_array = $this->db->query($sql, [$tanggal, $no_po, $salesmanid]);
+		$response = $result_array->result();
+		return $response;	
+	}
 }
