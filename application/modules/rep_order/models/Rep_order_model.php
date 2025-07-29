@@ -36,25 +36,23 @@ class Rep_order_model extends CI_Model
         $field = " a.* ";
         $table = " (
                 select
-                    distinct z.siteid,
-                    z.periode,
                     z.salesmanid,
                     b.nama_salesman,
                     b.tipe_sales,
                     c.nama_area city,
-                    (select count(1) from t_sales_rrk where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=z.salesmanid) _jadwal, 
-                    (select count(1) from t_sales_rrk_trans where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=a.salesmanid 
-                            and customerid in (select customerid from t_sales_rrk where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=a.salesmanid)) _call,
-                    (select count(1) from t_sales_rrk_trans where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=z.salesmanid 
-                            and customerid not in (select customerid from t_sales_rrk where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=a.salesmanid) ) _extra_call,
-                    (select count(1) from t_sales_rrk_trans where periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and salesmanid=z.salesmanid and crc_time is not null) _crc,
-                    (select sum(tsm.netto) from t_sales_master tsm where tsm.tanggal between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' and tsm.salesmanid=z.salesmanid) _order
-                from t_sales_rrk_trans z
-                left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
+                    sum(z.pjp) as _jadwal,
+                    sum(z.call) as _call,
+                    sum(z.extra_call) as _extra_call,
+                    sum(z.crc) as _crc,
+                    (select sum(tsm.netto) from t_sales_master tsm 
+                    where tsm.tanggal between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' 
+                    and tsm.salesmanid=z.salesmanid) _order
+                from t_sales_absensi z
                 left join m_sales_salesman b on z.salesmanid=b.salesmanid
                 left join m_area_subarea c on c.subareaid=b.subareaid
                 where z.periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' ".$regional.$area.$subarea.$strquery."
-                group by z.siteid, z.salesmanid, b.nama_salesman) a
+                group by z.salesmanid, b.nama_salesman
+                ) a
             ";
 
         return easy_pagging($data, $field, $table);
