@@ -286,7 +286,8 @@ class Rep_productivity_model extends CI_Model
 									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid left JOIN  
 									m_product product on sls.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
-									where sls.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') $tipesales $strquery
+									where sls.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                    and salesamn.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
 									$area $regional
 									group by sls.siteid, 
 										   sls.salesmanid,
