@@ -145,7 +145,9 @@ class Rep_productivity_model extends CI_Model
 										  SUM(netto) AS total_penjualan
 										FROM t_sales_master where tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')
 										group by salesmanid,tanggal) as e on a.salesmanid=e.salesmanid and a.periode =e.tanggal
-									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') and b.tipe_sales not in ('ADMIN','SPV') $tipesales
+									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                        and b.tipe_sales not in ('ADMIN','FC') 
+                                        $tipesales
                                     $strquery $area $regional
 									group by d.regionalid, d.nama_regional, c.areaid, c.nama_area, b.salesmanid,b.nama_salesman,b.tipe_sales
 									order by regionalid asc, areaid asc, subareaid asc, tipe_sales asc, nama_salesman asc;								
@@ -216,7 +218,8 @@ class Rep_productivity_model extends CI_Model
 									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
 									m_product product on dtl.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
-									where sls.tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') and salesamn.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+									where sls.tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                        and salesamn.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
 									$area $regional
 									group by sls.siteid, 
 										   sls.salesmanid,
@@ -357,7 +360,8 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
                                     where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
-									and b.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+									and b.tipe_sales not in ('ADMIN','FC') 
+                                    and b.aktif = 1 $tipesales $strquery
 									$area $regional
                                     union all
                                     select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
@@ -373,7 +377,8 @@ class Rep_productivity_model extends CI_Model
                                     left join m_area_areasite d on c.areaid = d.areaid
 									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
                                     and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01'))
-                                    and b.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+                                    and b.tipe_sales not in ('ADMIN','FC') 
+                                    and b.aktif = 1 $tipesales $strquery
 									$area $regional 
                                     ;
 									");
