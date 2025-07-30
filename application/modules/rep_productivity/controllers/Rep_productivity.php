@@ -391,6 +391,57 @@ class Rep_productivity extends BaseController
         $objPHPExcel->setActiveSheetIndex(2)->setTitle('Order PARMA');
 		$objPHPExcel->setActiveSheetIndex(2)
 					->setCellValue('A1', 'No')
+                    ->setCellValue('B1', 'OutletID')
+                    ->setCellValue('C1', 'Latest JJid')
+                    ->setCellValue('D1', 'ID Dist   ')
+                    ->setCellValue('E1', 'Outlet Name')
+                    ->setCellValue('F1', 'Account')
+                    ->setCellValue('G1', 'No SP')
+                    ->setCellValue('H1', 'No Sales Order')
+                    ->setCellValue('I1', 'ProductID')
+                    ->setCellValue('J1', 'Product Name')
+                    ->setCellValue('K1', 'Qty (PARMA Apps)')
+                    ->setCellValue('L1', 'Price')
+                    ->setCellValue('M1', 'Total GTS (PARMA Apps)')
+                    ->setCellValue('N1', 'Status')
+                    ->setCellValue('O1', 'JJID + Product Name')
+                    ->setCellValue('P1', 'Qty Actual (Tableau Kenvue)')
+                    ->setCellValue('Q1', 'Total GTS (Tableau Kenvue)')
+                    ->setCellValue('R1', 'Gap Qty')
+                    ->setCellValue('S1', 'Gap Total GTS')
+                    ;
+        $dataorder = $this->report_productivity->getOrder_salesman($params);
+        $i = 1;
+        $row = 2;
+        foreach ($dataorder as $valueorder) {
+            $objPHPExcel->setActiveSheetIndex(2)
+                        ->setCellValue('A'.$row, $i)
+                        ->setCellValue('B'.$row, $valueorder['customerid'])
+                        ->setCellValue('C'.$row, $valueorder['latest_jjid'])
+                        ->setCellValue('D'.$row, $valueorder['cust_id_map'])
+                        ->setCellValue('E'.$row, $valueorder['nama_customer'])
+                        ->setCellValue('F'.$row, $valueorder['account'])
+                        ->setCellValue('G'.$row, $valueorder['no_po'])
+                        ->setCellValue('H'.$row, $valueorder['no_sales'])
+                        ->setCellValue('I'.$row, $valueorder['productid'])
+                        ->setCellValue('J'.$row, $valueorder['nama_invoice'])
+                        ->setCellValue('K'.$row, $valueorder['qty_jual_in_pcs'])
+                        ->setCellValue('L'.$row, $valueorder['h_jual'])
+                        ->setCellValue('M'.$row, '=K'.$row.'*L'.$row)
+                        ->setCellValue('N'.$row, $valueorder['status'])
+                        ->setCellValue('O'.$row, '=C'.$row.'&J'.$row)
+                        ->setCellValue('P'.$row, '')
+                        ->setCellValue('Q'.$row, '')
+                        ->setCellValue('R'.$row, '=K'.$row.'-P'.$row)
+                        ->setCellValue('S'.$row, '=M'.$row.'-Q'.$row)
+						;
+			$i++;
+            $row++;
+        }        
+		/*$objWorkSheet = $objPHPExcel->createSheet(2);
+        $objPHPExcel->setActiveSheetIndex(2)->setTitle('Order PARMA');
+		$objPHPExcel->setActiveSheetIndex(2)
+					->setCellValue('A1', 'No')
                     ->setCellValue('B1', 'Period')
                     ->setCellValue('C1', 'User PARMA')
                     ->setCellValue('D1', 'PARMA Name')
@@ -433,7 +484,7 @@ class Rep_productivity extends BaseController
 						;
 			$i++;
             $row++;
-        }
+        }*/
 
 		$objWorkSheet = $objPHPExcel->createSheet(3);
         $objPHPExcel->setActiveSheetIndex(3)->setTitle('CRC');
