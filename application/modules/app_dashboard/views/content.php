@@ -58,9 +58,6 @@
           <div class="col-md-12">
             <!-- /.col -->
 
-            <div id="maps" style="height:500px;">
-              <!-- /.progress-group -->
-            </div>
             <div id="tbl-content" class="box-table box-success">
               <div class="box-body">
                 <table id="tbl">
@@ -68,6 +65,9 @@
               </div>
             </div>
             <!-- /.col -->
+            <div id="maps" style="height:500px;">
+              <!-- /.progress-group -->
+            </div>
           </div>
             <!-- /.row -->
         </div>
