@@ -33,10 +33,7 @@
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayHighlight: true
-        }).datepicker("setDate", new Date())
-        .on('change', function(){
-            $('.datepicker').hide();
-        });
+        }).datepicker("setDate", new Date());
         
         uiStartPeriode.on('changeDate', function(selected) {
             var startDate = new Date(selected.date.valueOf());

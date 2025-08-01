@@ -52,10 +52,7 @@
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayHighlight: true
-        }).datepicker("setDate", new Date())
-        .on('change', function(){
-            $('.datepicker').hide();
-        });
+        }).datepicker("setDate", new Date());
 
         uiSelectRegional.on('select2:select', function (e) {
             regional = e.params.data;
