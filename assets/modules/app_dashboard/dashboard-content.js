@@ -35,7 +35,7 @@
     //alert(baseurl);
     function initializeGrid() {
       let option = {
-          title: "Table Performance Sales",
+          title: "Table Performance PAR-MA",
           toolbar: toolbar(),
           url: common.baseURL("app_dashboard/load"),
           queryParams: {

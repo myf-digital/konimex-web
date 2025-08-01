@@ -23,9 +23,13 @@
 						<input name="siteid" type=hidden>
 						<input name="customerid_m" type=hidden>
 						<input name="customerid" type=hidden>
-						<div class="form-group col-md-3">
+						<!--<div class="form-group col-md-3">
 							<label for="kode_outlet">Kode Outlet</label>
 							<input name="kode_outlet" class="form-control" placeholder="Kode Outlet">
+						</div>-->
+						<div class="form-group col-md-3">
+							<label for="latest_jjid">Latest JJID</label>
+							<input name="latest_jjid" class="form-control" placeholder="Latest JJID">
 						</div>
 						<div class="form-group col-md-9">
 							<label for="nama_customer">Nama Outlet</label>
@@ -47,10 +51,10 @@
 							<label for="subareaid">Sub Area</label>
 							<select id="subareaid-id" name="subareaid" class="form-control" placeholder="Sub Area"></select>
 						</div> -->
-						<div class="form-group col-md-2">
+						<!--<div class="form-group col-md-2">
 							<label for="segmentid">Business Unit</label>
 							<select id="segmentid-id" name="segmentid" class="form-control" placeholder="Business Unit"></select>
-						</div>
+						</div>-->
 						<div class="form-group col-md-4">
 							<label for="typeid">Channel</label>
 							<select id="typeid-id" name="typeid" class="form-control" placeholder="Channel"></select>
@@ -63,7 +67,7 @@
 							<label for="outlet-type">Outlet Type</label>
 							<select id="outlet-type-id" name="spot_id" class="form-control" placeholder="Outlet Type"></select>
 						</div>
-						<div class="form-group col-md-6">
+						<!--<div class="form-group col-md-6">
 							<label for="propinsiid">Propinsi</label>
 							<select id="propinsiid-id" name="propinsiid" class="form-control" placeholder="Propinsi"></select>
 						</div>
@@ -78,7 +82,7 @@
 						<div class="form-group col-md-6">
 							<label for="kelurahanid">Kelurahan</label>
 							<select id="kelurahanid-id" name="kelurahanid" class="form-control" placeholder="Kelurahan"></select>
-						</div>
+						</div>-->
 						<!--<div class="form-group">
 							<label for="createdate">Createdate</label>
 							<input name="createdate" class="form-control" placeholder="Createdate">

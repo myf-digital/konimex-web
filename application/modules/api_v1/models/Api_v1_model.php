@@ -605,7 +605,7 @@ class Api_v1_model extends CI_Model
 
 	function get_tipesalesman()
     {
-		$sql = " select 'PARMA' as idtipesales, 'PARMA' as tipesales
+		$sql = " select 'PAR' as idtipesales, 'PAR' as tipesales
 				union
 				select 'SPV' as idtipesales, 'SPV' as tipesales
 				union
