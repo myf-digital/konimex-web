@@ -120,4 +120,14 @@ if (!function_exists('today')) {
         return date('Y-m-d');
     }
 }
+
+if (!function_exists('payload')) {
+    function payload($fields = [], $data) {
+        $result = [];
+        foreach ($fields as $f) {
+            if (isset($data[$f]) && $data[$f]) $result[$f] = $data[$f];
+        }
+        return $result;
+    }
+}
 ?>

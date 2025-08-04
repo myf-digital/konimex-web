@@ -568,6 +568,59 @@ class Rep_productivity extends BaseController
 			$i++;
             $row++;
         }
+
+        $objPHPExcel->createSheet(5);
+		$objPHPExcel->setActiveSheetIndex(5)->setTitle('Progress Listing');
+        $objPHPExcel->setActiveSheetIndex(5)
+					->setCellValue('A1', 'No')
+					->setCellValue('B1', 'Periode')
+					->setCellValue('C1', 'Salesman ID')
+					->setCellValue('D1', 'Salesman Name')
+					->setCellValue('E1', 'Customer ID')
+					->setCellValue('F1', 'Customer Name')
+					->setCellValue('G1', 'Brand ID')
+					->setCellValue('H1', 'Brand Name')
+					->setCellValue('I1', 'Progress')
+					->setCellValue('J1', 'Ambil Dokumen Register')
+					->setCellValue('K1', 'Melengkapi Dokumen Register')
+					->setCellValue('L1', 'Sign Dokter 1')
+					->setCellValue('M1', 'Sign Dokter 2')
+					->setCellValue('N1', 'Sign Dokter 3')
+					->setCellValue('O1', 'Sign Dokter 4')
+					->setCellValue('P1', 'Sign Dokter 5')
+					->setCellValue('Q1', 'Dokumen Registrasi Lengkap')
+					->setCellValue('R1', 'Estimasi PO')
+					->setCellValue('S1', 'PO Release')
+					;
+
+        $progressListing = $this->report_productivity->get_progress_listing($params);
+        $i = 1;
+        $row = 2;
+        foreach ($progressListing as $value) {
+            $objPHPExcel->setActiveSheetIndex(5)
+                        ->setCellValue('A'.$row, $i)
+                        ->setCellValue('B'.$row, $value['periode'])
+                        ->setCellValue('C'.$row, $value['salesmanid'])
+                        ->setCellValue('D'.$row, $value['nama_salesman'])
+                        ->setCellValue('E'.$row, $value['customerid'])
+                        ->setCellValue('F'.$row, $value['nama_customer'])
+                        ->setCellValue('G'.$row, $value['brandid'])
+                        ->setCellValue('H'.$row, $value['brand'])
+                        ->setCellValue('I'.$row, $value['progress'])
+                        ->setCellValue('J'.$row, $this->signFormat($value['ambil_dok_registrasi']))
+                        ->setCellValue('K'.$row, $this->signFormat($value['melengkapi_dok_registrasi']))
+                        ->setCellValue('L'.$row, $this->signFormat($value['sign_dokter_1']))
+                        ->setCellValue('M'.$row, $this->signFormat($value['sign_dokter_2']))
+                        ->setCellValue('N'.$row, $this->signFormat($value['sign_dokter_3']))
+                        ->setCellValue('O'.$row, $this->signFormat($value['sign_dokter_4']))
+                        ->setCellValue('P'.$row, $this->signFormat($value['sign_dokter_5']))
+                        ->setCellValue('Q'.$row, $this->signFormat($value['dok_registrasi_lengkap']))
+                        ->setCellValue('R'.$row, $this->signFormat($value['estimasi_po']))
+                        ->setCellValue('S'.$row, $this->signFormat($value['po_release']))
+						;
+			$i++;
+            $row++;
+        }
 		        
 		// Redirect output to a client's web browser (Excel2007)
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -584,7 +637,10 @@ class Rep_productivity extends BaseController
 		$objWriter->save('php://output');
 		unset($objPHPExcel);
 		return true;
-
 	}
 
+    function signFormat($value) {
+        if ($value && $value == 1) return 'Sudah';
+        return '';
+    }
 }

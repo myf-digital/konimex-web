@@ -464,4 +464,73 @@ class Rep_productivity_model extends CI_Model
         return $query->result_array();
     }
 
+    function get_progress_listing($data)
+    {
+        if ($data['restrict_level'] == '4') {
+            $strquery = " AND tpl.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE subareaid IN (
+                                SELECT DISTINCT b.subareaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " AND tpl.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE areaid IN (
+                                SELECT DISTINCT b.areaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " AND tplb.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE regionalid IN (
+                                SELECT DISTINCT b.regionalid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        ) ";
+        } else $strquery = "";
+
+        $where = "";
+        if (isset($data['year']) && isset($data['month'])) {
+            $where .= " tpl.periode BETWEEN '".$data['year']."-".$data['month']."-01' AND LAST_DAY('".$data['year']."-".$data['month']."-01')";
+        }
+        if (isset($data['tipe_sales'])) {
+            $where .= " AND mss.tipe_sales ='".$data['tipe_sales']."'";
+        }
+        if (isset($data['regionalid'])) {
+            $where .= " AND mss.regionalid ='".$data['regionalid']."'";
+        }
+        if (isset($data['areaid'])) {
+            $where .= " AND mss.areaid ='".$data['areaid']."'";
+        }
+
+		$query = $this->db->query("
+            SELECT t.*
+            FROM trx_progress_listing t
+            JOIN (
+                SELECT tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid, MAX(tpl.periode) AS max_periode
+                FROM trx_progress_listing tpl
+                LEFT JOIN m_sales_salesman mss ON mss.salesmanid = tpl.salesmanid
+                WHERE ".$where . $strquery ."
+                GROUP BY tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid
+            ) latest
+                ON t.siteid = latest.siteid
+                AND t.salesmanid = latest.salesmanid
+                AND t.customerid = latest.customerid
+                AND t.brandid = latest.brandid
+                AND t.periode = latest.max_periode;
+        ");
+        return $query->result_array();
+    }
 }
