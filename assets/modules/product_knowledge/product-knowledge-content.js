@@ -41,7 +41,7 @@
             ]],
             columns: [[
 				{field:'judul', title:'Judul', halign: 'left', align: 'left', sortable:"true", width:200},
-				{field:'brandid', title:'Brand ID', halign: 'left', align: 'center', sortable:"true", width:75},
+				{field:'brandid', title:'Brand ID', halign: 'center', align: 'center', sortable:"true", width:75},
 				{field:'brand', title:'Brand', halign: 'center', align: 'center', sortable:"true", width:100},
 				{field:'files', title:'File', halign: 'center', align: 'center', sortable:"true", width:75, formatter: formatterFile},
             ]],
