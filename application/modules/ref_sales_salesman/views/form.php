@@ -53,8 +53,26 @@
                                 <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Sales Type"></select>
 							</div>
 							<div class="form-group col-md-2">
+								<label for="join_date">Join Date</label>
+								<div class="input-group date">
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+									<input id="join_date" placeholder="Join Date" type="text" class="form-control datepicker" name="join_date" readonly>
+								</div>
+							</div>
+							<div class="form-group col-md-2">
 								<label for="aktif">Status</label>
                                 <select id="aktif-id" name="aktif" class="form-control" placeholder="Active/Not Active"></select>
+							</div>
+							<div class="form-group col-md-2">
+								<label for="resign_date">Resign Date</label>
+								<div class="input-group date">
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+									<input id="resign_date" placeholder="Resign Date" type="text" class="form-control datepicker" name="resign_date" readonly>
+								</div>
 							</div>
 							
 							<div class="form-group col-md-4">

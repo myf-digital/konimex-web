@@ -13,6 +13,9 @@
     let uiSelectRegional = $("#regionalid-id");
     let uiSelectArea = $("#areaid-id");
     let uiSelectSubarea = $("#subareaid-id");
+    let uiJoinDate = $("#join_date"); 
+    let uiResignDate = $("#resign_date"); 
+
     /*let uiSelectRamRsm = $("#ram_rsm-id");
     let uiSelectAasaamTsstsm = $("#aas_aam_tss_tsm-id");
     let uiSelectFc = $("#fc-id");*/
@@ -63,9 +66,9 @@
                 areaid: {
                     required: true
                 },
-                // subareaid: {
-                //     required: true
-                // }
+                join_date: {
+                     required: true
+                }
             },
             messages : {
 				salesmanid : {
@@ -88,6 +91,26 @@
             placeholder: 'Select Sales Type',
             allowClear: true
         });
+        
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+        });
+
+
+        uiJoinDate.datepicker();
+        uiResignDate.datepicker();
+
+        /*uiJoinDate.on('changeDate', function(selected) {
+            var startDate = new Date(selected.date.valueOf());
+            endDate.setDate(endDate.getDate() + 31);
+            uiJoinDate.datepicker('setStartDate', startDate);
+            if(uiStartPeriode.val() > uiEndPeriode.val()){
+                uiEndPeriode.val(uiStartPeriode.val());
+            }
+        });*/
+
 
         //loadRegional();
         loadRegional({usersession:paramsession.username,idjabatan:paramsession.idjabatan,restrict_level:paramsession.restrict_level,restrict_bu:paramsession.restrict_bu});
