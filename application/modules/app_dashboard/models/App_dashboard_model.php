@@ -86,40 +86,40 @@ class App_dashboard_model extends CI_Model
             $strquery = "";
 		}*/
 		if ($data["restrict_level"]=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."')
+												where a.username='".$data["usersession"]."') and tipe_sales='PAR' and aktif=1
 												)";
 		}
 		else if ($data["restrict_level"]=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
 											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 											where a.username='".$data["usersession"]."') and tipe_sales='PAR' and aktif=1
 												)";
 		}
 		else if ($data["restrict_level"]=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 												where a.username='".$data["usersession"]."') and tipe_sales='PAR' and aktif=1
 												) ";
 		}
 		else {
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where tipe_sales='PAR' and aktif=1)";
+			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where tipe_sales='PAR' and aktif=1)";
 		}
 
 		$field = " a.* ";
 		$table = " (
-					select distinct a.siteid, a.periode, a.salesmanid, b.nama_salesman, b.tipe_sales,c.nama_area city,
+					select distinct b.siteid, z.periode, z.salesmanid, b.nama_salesman, b.tipe_sales,c.nama_area city,
 					(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) _jadwal, 
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and order_time is not null) _order
-					from t_sales_rrk_trans z left join t_sales_rrk a on a.salesmanid=z.salesmanid and a.periode=z.periode
-					left join m_sales_salesman b on a.salesmanid=b.salesmanid
+					from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
+					left join m_sales_salesman b on z.salesmanid=b.salesmanid
 					left join m_area_areasite c on c.areaid=b.areaid
-					where a.periode = '".($data["get_date"] ?? today())."' $strquery
-					group by a.siteid, a.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area
+					where z.periode = '".($data["get_date"] ?? today())."' $strquery
+					group by b.siteid, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area
 					) a
 					";
         return easy_pagging($data, $field, $table);
