@@ -118,7 +118,7 @@ class Ref_customer extends BaseController
                   ";
         $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
                         ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='PAR'),'') as gffmd
+                                    where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='PAR'),'') as gffmd
                         from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                         left join m_area_areasite c on a.areaid = c.areaid
                         left join m_area_subarea d on a.subareaid = d.subareaid
