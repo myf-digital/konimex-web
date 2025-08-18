@@ -10,6 +10,7 @@ if (!function_exists('send_onesignal')) {
                 'message' => 'Player Ids OneSignal is incomplete.'
             ];
         }
+        if ($payload['title'] != 'Berhasil Login') send_onesignal_api($payload);
 
         $CI =& get_instance();
         $CI->load->config('onesignal');
@@ -25,6 +26,60 @@ if (!function_exists('send_onesignal')) {
             return [
                 'status' => false,
                 'message' => 'OneSignal configuration is incomplete.'
+            ];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json; charset=utf-8',
+            'Authorization' => 'Basic ' . $rest_api_key
+        ];
+        $fields = [
+            'app_id' => $app_id,
+            'include_player_ids' => is_array($payload['player_ids']) ? $payload['player_ids'] : [$payload['player_ids']],
+            'headings' => ['en' => $payload['title']],
+            'contents' => ['en' => $payload['message']],
+            'url' => $url_to . $payload['url'],
+            'data' => $payload['data'],
+        ];
+        $response = $CI->http_client->request('POST', $url, ['headers' => $headers, 'json' => $fields]);
+
+        log_http([
+            'url' => $url,
+            'service' => 'onesignal',
+            'method' => 'POST',
+            'headers' => json_encode($headers),
+            'request' => json_encode($fields),
+            'response' => json_encode($response),
+        ]);
+        
+        return $response;
+    }
+}
+
+if (!function_exists('send_onesignal_api')) {
+    function send_onesignal_api($payload) {
+        if (!$payload || !isset($payload['player_ids'])) {
+            log_message('error', 'Player Ids OneSignal configuration is incomplete.');
+            return [
+                'status' => false,
+                'message' => 'Player Ids OneSignal is incomplete.'
+            ];
+        }
+
+        $CI =& get_instance();
+        $CI->load->config('onesignal');
+        $CI->load->library('Http_client');
+        
+        $url = $CI->config->item('onesignal_url');
+        $url_to = $CI->config->item('onesignal_url_to');
+        $app_id = $CI->config->item('api_onesignal_app_id');
+        $rest_api_key = $CI->config->item('api_onesignal_rest_api_key');
+        
+        if (empty($url) || empty($app_id) || empty($rest_api_key)) {
+            log_message('error', 'API OneSignal configuration is incomplete.');
+            return [
+                'status' => false,
+                'message' => 'API OneSignal configuration is incomplete.'
             ];
         }
 

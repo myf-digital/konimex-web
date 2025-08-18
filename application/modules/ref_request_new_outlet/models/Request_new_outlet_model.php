@@ -118,9 +118,8 @@ class Request_new_outlet_model extends CI_Model
         $execreturncustob = $this->db->insert('m_customer_ob', $data_custob);
 
         // notif onesignal
-        $customer_ob = $this->get_customer_ob($data['customerid']);
-        if (count($customer_ob) > 0) {
-            $x_players = $this->get_x_player(array_column($customer_ob, 'salesmanid'));
+        if (count($data_custob) > 0) {
+            $x_players = $this->get_x_player([$data_custob['salesmanid']]);
             if (count($x_players) > 0) {
                 foreach ($x_players as $xp) {
                     if (isset($xp->player_id)) {
