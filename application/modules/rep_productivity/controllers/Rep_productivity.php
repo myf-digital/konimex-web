@@ -294,13 +294,12 @@ class Rep_productivity extends BaseController
                     ->setCellValue('K1', 'Effective Call')
                     ->setCellValue('L1', 'Call')
                     ->setCellValue('M1', 'Extra Call')
-                    ->setCellValue('N1', 'Invalid Call')
-                    ->setCellValue('O1', 'Actual Call')
-                    ->setCellValue('P1', '%PJP Compliance')
-                    ->setCellValue('Q1', 'Outlet Order')
-                    ->setCellValue('R1', 'Total Order')
-                    ->setCellValue('S1', 'Keterangan')
-                    ->setCellValue('T1', 'Detailing')
+                    ->setCellValue('N1', 'Actual Call')
+                    ->setCellValue('O1', '%PJP Compliance')
+                    ->setCellValue('P1', 'Outlet Order')
+                    ->setCellValue('Q1', 'Total Order')
+                    ->setCellValue('R1', 'Keterangan')
+                    ->setCellValue('S1', 'Detailing')
 					;
 		
         $data = $this->report_productivity->getProductivity($params);
@@ -321,13 +320,12 @@ class Rep_productivity extends BaseController
                         ->setCellValue('K'.$row, $value['effective_call'])
                         ->setCellValue('L'.$row, $value['call'])
                         ->setCellValue('M'.$row, $value['extra_call'])
-                        ->setCellValue('N'.$row, $value['invalid_call'])
-                        ->setCellValue('O'.$row, '=K'.$row.'+L'.$row.'+M'.$row)
-                        ->setCellValue('P'.$row, '=(K'.$row.'+L'.$row.')/J'.$row)
-                        ->setCellValue('Q'.$row, $value['jumlah_customer'])
-                        ->setCellValue('R'.$row, $value['total_penjualan'])
-                        ->setCellValue('S'.$row, $value['rrk_keterangan'])
-                        ->setCellValue('T'.$row, $value['rrk_detailing'])
+                        ->setCellValue('N'.$row, '=K'.$row.'+L'.$row.'+M'.$row)
+                        ->setCellValue('O'.$row, '=(K'.$row.'+L'.$row.')/J'.$row)
+                        ->setCellValue('P'.$row, $value['jumlah_customer'])
+                        ->setCellValue('Q'.$row, $value['total_penjualan'])
+                        ->setCellValue('R'.$row, $value['rrk_keterangan'])
+                        ->setCellValue('S'.$row, $value['rrk_detailing'])
 						;
 			
 			$objPHPExcel->getActiveSheet()->getStyle('H'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
