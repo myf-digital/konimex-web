@@ -94,7 +94,6 @@ class Rep_productivity extends BaseController
 		$html .= '<th style="vertical-align : middle;text-align:center;">Call on PJP</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Effective Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Extra Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Invalid Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Actual Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">%PJP Compliance</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Keterangan</th>';
@@ -125,7 +124,6 @@ class Rep_productivity extends BaseController
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['effective_call'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['extra_call'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['invalid_call'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call']+$value['extra_call'], 0, '.', ',').'</td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call']/$value['pjp']*100, 2, '.', ',').' %</td>';
 			$html .= '<td style="text-align:right; width: 200px;">'.$value['rrk_keterangan'].'</td>';
@@ -391,24 +389,26 @@ class Rep_productivity extends BaseController
         $objPHPExcel->setActiveSheetIndex(2)->setTitle('Order PARMA');
 		$objPHPExcel->setActiveSheetIndex(2)
 					->setCellValue('A1', 'No')
-                    ->setCellValue('B1', 'OutletID')
-                    ->setCellValue('C1', 'Latest JJid')
-                    ->setCellValue('D1', 'ID Dist   ')
-                    ->setCellValue('E1', 'Outlet Name')
-                    ->setCellValue('F1', 'Account')
-                    ->setCellValue('G1', 'No SP')
-                    ->setCellValue('H1', 'No Sales Order')
-                    ->setCellValue('I1', 'ProductID')
-                    ->setCellValue('J1', 'Product Name')
-                    ->setCellValue('K1', 'Qty (PARMA Apps)')
-                    ->setCellValue('L1', 'Price')
-                    ->setCellValue('M1', 'Total GTS (PARMA Apps)')
-                    ->setCellValue('N1', 'Status')
-                    ->setCellValue('O1', 'JJID + Product Name')
-                    ->setCellValue('P1', 'Qty Actual (Tableau Kenvue)')
-                    ->setCellValue('Q1', 'Total GTS (Tableau Kenvue)')
-                    ->setCellValue('R1', 'Gap Qty')
-                    ->setCellValue('S1', 'Gap Total GTS')
+                    ->setCellValue('B1', 'Tanggal')
+                    ->setCellValue('C1', 'User PARMA')
+                    ->setCellValue('D1', 'OutletID')
+                    ->setCellValue('E1', 'Latest JJid')
+                    ->setCellValue('F1', 'ID Dist   ')
+                    ->setCellValue('G1', 'Outlet Name')
+                    ->setCellValue('H1', 'Account')
+                    ->setCellValue('I1', 'No SP')
+                    ->setCellValue('J1', 'No Sales Order')
+                    ->setCellValue('K1', 'ProductID')
+                    ->setCellValue('L1', 'Product Name')
+                    ->setCellValue('M1', 'Qty (PARMA Apps)')
+                    ->setCellValue('N1', 'Price')
+                    ->setCellValue('O1', 'Total GTS (PARMA Apps)')
+                    ->setCellValue('P1', 'Status')
+                    ->setCellValue('Q1', 'JJID + Product Name')
+                    ->setCellValue('R1', 'Qty Actual (Tableau Kenvue)')
+                    ->setCellValue('S1', 'Total GTS (Tableau Kenvue)')
+                    ->setCellValue('T1', 'Gap Qty')
+                    ->setCellValue('U1', 'Gap Total GTS')
                     ;
         $dataorder = $this->report_productivity->getOrder_salesman($params);
         $i = 1;
@@ -416,24 +416,26 @@ class Rep_productivity extends BaseController
         foreach ($dataorder as $valueorder) {
             $objPHPExcel->setActiveSheetIndex(2)
                         ->setCellValue('A'.$row, $i)
-                        ->setCellValue('B'.$row, $valueorder['customerid'])
-                        ->setCellValue('C'.$row, $valueorder['latest_jjid'])
-                        ->setCellValue('D'.$row, $valueorder['cust_id_map'])
-                        ->setCellValue('E'.$row, $valueorder['nama_customer'])
-                        ->setCellValue('F'.$row, $valueorder['account'])
-                        ->setCellValue('G'.$row, $valueorder['no_po'])
-                        ->setCellValue('H'.$row, $valueorder['no_sales'])
-                        ->setCellValue('I'.$row, $valueorder['productid'])
-                        ->setCellValue('J'.$row, $valueorder['nama_invoice'])
-                        ->setCellValue('K'.$row, $valueorder['qty_jual_in_pcs'])
-                        ->setCellValue('L'.$row, $valueorder['h_jual'])
-                        ->setCellValue('M'.$row, '=K'.$row.'*L'.$row)
-                        ->setCellValue('N'.$row, $valueorder['status'])
-                        ->setCellValue('O'.$row, '=C'.$row.'&J'.$row)
-                        ->setCellValue('P'.$row, '')
-                        ->setCellValue('Q'.$row, '')
-                        ->setCellValue('R'.$row, '=K'.$row.'-P'.$row)
-                        ->setCellValue('S'.$row, '=M'.$row.'-Q'.$row)
+                        ->setCellValue('B'.$row, $valueorder['period'])
+                        ->setCellValue('C'.$row, $valueorder['nama_salesman']." (".$valueorder['salesmanid'].")")
+                        ->setCellValue('D'.$row, $valueorder['customerid'])
+                        ->setCellValue('E'.$row, $valueorder['latest_jjid'])
+                        ->setCellValue('F'.$row, $valueorder['cust_id_map'])
+                        ->setCellValue('G'.$row, $valueorder['nama_customer'])
+                        ->setCellValue('H'.$row, $valueorder['account'])
+                        ->setCellValue('I'.$row, $valueorder['no_po'])
+                        ->setCellValue('J'.$row, $valueorder['no_sales'])
+                        ->setCellValue('K'.$row, $valueorder['productid'])
+                        ->setCellValue('L'.$row, $valueorder['nama_invoice'])
+                        ->setCellValue('M'.$row, $valueorder['qty_jual_in_pcs'])
+                        ->setCellValue('N'.$row, $valueorder['h_jual'])
+                        ->setCellValue('O'.$row, '=K'.$row.'*L'.$row)
+                        ->setCellValue('P'.$row, $valueorder['status'])
+                        ->setCellValue('Q'.$row, '=C'.$row.'&J'.$row)
+                        ->setCellValue('R'.$row, '')
+                        ->setCellValue('S'.$row, '')
+                        ->setCellValue('T'.$row, '=K'.$row.'-P'.$row)
+                        ->setCellValue('U'.$row, '=M'.$row.'-Q'.$row)
 						;
 			$i++;
             $row++;

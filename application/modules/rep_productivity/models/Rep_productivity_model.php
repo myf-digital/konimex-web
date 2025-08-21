@@ -62,8 +62,7 @@ class Rep_productivity_model extends CI_Model
 							else 0 end _call,
 						case when b.flag_adjust=0 then 
 							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
-							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))
 							else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
 						end _extra_call,
 							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
