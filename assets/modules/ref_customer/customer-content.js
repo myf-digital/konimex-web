@@ -61,8 +61,8 @@
                 }
             ]],
             columns: [[
-				{field:'customerid', title:'OutletID_DRC', halign: 'center', align: 'left', sortable:"true", width:120},
-				//{field:'kode_outlet', title:'Kode Outlet', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'customerid', title:'Outlet ID', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'cust_id_map', title:'Customer Id Map', halign: 'center', align: 'left', sortable:"true", width:120},
 				{field:'latest_jjid', title:'Latest JJID', halign: 'center', align: 'left', sortable:"true", width:120},
 				//{field:'customerid', title:'CUSTOMERID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'nama_customer', title:'Nama Outlet', halign: 'center', align: 'left', sortable:"true", width:200},
@@ -84,10 +84,10 @@
 				{field:'nama_account', title:'Sub Channel', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'latitude', title:'LATITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'longitude', title:'LONGITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
-                //{field:'spot_id', title:'Type', halign: 'center', align: 'left', sortable:"true", width:100},
+                {field:'spot_id', title:'Type', halign: 'center', align: 'left', sortable:"true", width:100},
                 {field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'usergff', title:'Kode GFF', halign: 'center', align: 'left', sortable:"true", width:100},
-                {field:'nama_gff', title:'User PARMA', halign: 'center', align: 'left', sortable:"true", width:150},
+                {field:'usergff', title:'User PARMA', halign: 'center', align: 'left', sortable:"true", width:150},
 				//{field:'detail', title:'Detail', halign: 'center', align: 'left', width:150, formatter: formatterButtonDetail},
 				//{field:'position', title:'Position', halign: 'center', align: 'left', sortable:"true", width:100},
 				]],
