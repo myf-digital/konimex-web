@@ -138,7 +138,7 @@ class Customer_model extends CI_Model
         }*/
 
         $field = "a.* ";
-        $table_old = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
+        $table = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
                             ifnull((select GROUP_CONCAT(salesmanid SEPARATOR ',') from m_customer_ob where customerid=a.customerid),'') AS usergff,
                             ifnull((select GROUP_CONCAT(nama_salesman SEPARATOR ',') from m_sales_salesman 
                             where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid)),'') as nama_gff,
@@ -150,7 +150,7 @@ class Customer_model extends CI_Model
                             left join m_sales_salesman f on a.salesmanid = f.salesmanid
                             where a.customerid <> '' ".$strquery."
                     ) a";
-        $table = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account
+        $table_new = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account
                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                             left join m_area_areasite c on a.areaid = c.areaid
                             left join m_area_subarea d on a.subareaid = d.subareaid
