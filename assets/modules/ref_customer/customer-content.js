@@ -87,7 +87,7 @@
                 //{field:'spot_id', title:'Type', halign: 'center', align: 'left', sortable:"true", width:100},
                 {field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'usergff', title:'Kode GFF', halign: 'center', align: 'left', sortable:"true", width:100},
-                {field:'nama_gff', title:'GFF Name', halign: 'center', align: 'left', sortable:"true", width:150},
+                {field:'nama_gff', title:'User PARMA', halign: 'center', align: 'left', sortable:"true", width:150},
 				//{field:'detail', title:'Detail', halign: 'center', align: 'left', width:150, formatter: formatterButtonDetail},
 				//{field:'position', title:'Position', halign: 'center', align: 'left', sortable:"true", width:100},
 				]],
