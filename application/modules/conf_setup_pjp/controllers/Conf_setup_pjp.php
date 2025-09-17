@@ -110,7 +110,7 @@ class Conf_setup_pjp extends BaseController
             $strquery = "where a.salesmanid = '$salesmanid'";
         }
             
-            $filename = "PJP_".$filename.".xlsx";
+            $filename = "FJP_".$filename.".xlsx";
             $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, 
                                 a.customerid, b.typeid channel, GROUP_CONCAT(a.minggu ORDER BY a.minggu ASC SEPARATOR ',') as minggu, a.hari,
                                 b.kode_outlet, b.latest_jjid, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
@@ -134,16 +134,16 @@ class Conf_setup_pjp extends BaseController
 
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active '.$weekaktif)
-                        ->setCellValue('A2', 'USER GFF')
-                        ->setCellValue('B2', 'KE USER GFF')
-                        ->setCellValue('C2', 'NAMA GFF')
+                        ->setCellValue('A2', 'USER PARMA')
+                        ->setCellValue('B2', 'KE USER PARMA')
+                        ->setCellValue('C2', 'NAMA PARMA')
                         ->setCellValue('D2', 'POSITION')
-                        ->setCellValue('E2', 'ID OUTLET')
+                        ->setCellValue('E2', 'PARMA ID OUTLET')
                         ->setCellValue('F2', 'LATEST JJID')
-                        ->setCellValue('G2', 'NAMA OUTLET')
+                        ->setCellValue('G2', 'PARMA NAMA OUTLET')
                         ->setCellValue('H2', 'ALAMAT')
-                        ->setCellValue('I2', 'CHANNEL')
-                        ->setCellValue('J2', 'SUB CHANNEL/ACCOUNT')
+                        ->setCellValue('I2', 'CLUSTER')
+                        ->setCellValue('J2', 'TIER')
                         ->setCellValue('K2', 'MINGGU')
                         ->setCellValue('L2', 'HARI')
                         ->setCellValue('M2', 'KOTA')

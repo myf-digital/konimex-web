@@ -237,7 +237,7 @@ class Setup_pjp_model extends CI_Model
                     b.kode_outlet, b.nama_customer, b.alamat, e.nama_area as city,b.mcc, c.nama_class
                     from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
                     left join m_sales_salesman d on d.salesmanid=a.salesmanid
-                    left join m_area_subarea e on e.subareaid = b.subareaid
+                    left join m_area_areasite e on e.areaid = b.areaid
                     ".$strquery."
                     limit 0,200000
                     ) x

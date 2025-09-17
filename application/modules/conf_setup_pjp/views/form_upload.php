@@ -122,7 +122,7 @@ function validasiFile(){
 
 
     const common = new Common();
-    common.setTitle("Upload Setup Pjp");
+    common.setTitle("Upload Setup FJP");
     let uiForm = $("#fm-upload-setup-pjp");
     let uiBtnCancel = $("#btn-cancel-form");
     let uiBtnUpload = $("#btn-upload-form");

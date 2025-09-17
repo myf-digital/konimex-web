@@ -68,7 +68,7 @@ class Ref_customer extends BaseController
         $restrict_level = $this->uri->segment('6');
         $filename = $this->uri->segment('7');
         ini_set("memory_limit","2048M");
-        ini_set('max_execution_time', '3600');
+        ini_set('max_execution_time', '0');
         
         if ($account=='' or empty($account) or $account=='null'){
             $account='All';
@@ -117,14 +117,23 @@ class Ref_customer extends BaseController
                     where a.customerid <> '' ".$strquery."
                   ";
         $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='PAR'),'') as gffmd
+                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') 
+                        from m_sales_salesman 
+                        where salesmanid in (select salesmanid from m_customer_ob 
+                                            where customerid=a.customerid) and tipe_sales='PAR'),'') as gffmd,
+                        MAX(CASE WHEN f.minggu = 1 THEN f.hari END) AS minggu_1,
+                        MAX(CASE WHEN f.minggu = 2 THEN f.hari END) AS minggu_2,
+                        MAX(CASE WHEN f.minggu = 3 THEN f.hari END) AS minggu_3,
+                        MAX(CASE WHEN f.minggu = 4 THEN f.hari END) AS minggu_4
                         from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                         left join m_area_areasite c on a.areaid = c.areaid
                         left join m_area_subarea d on a.subareaid = d.subareaid
                         left join m_customer_class e on a.classid = e.classid
+                        left join t_sales_setup_rrk f on a.customerid = f.customerid 
                         where a.customerid <> '' ".$strquery."
-                  ";
+                    GROUP BY
+                    a.customerid, b.nama_regional, c.nama_area, d.nama_area, e.nama_class
+                    ;";
 
         $query1 = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
                   (select count(1) from m_sales_salesman 
@@ -146,52 +155,63 @@ class Ref_customer extends BaseController
         $execquery = $this->db->query($query);
         $lovoutlet = $execquery->result_array();
 		
-		$filename = "Outlet_".$filename.".xlsx";
+		$filename = "Master_Data_Outlet.xlsx";
 
         $this->load->library('excel');
     
         //$objDrawing = new PHPExcel_Worksheet_Drawing();
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'Outlet ID')
-                    ->setCellValue('B1', 'Customer Id Map')
-                    ->setCellValue('C1', 'Latest JJID')
-                    ->setCellValue('D1', 'Nama Outlet')
-                    ->setCellValue('E1', 'Alamat')
-                    ->setCellValue('F1', 'Regional')
-                    ->setCellValue('G1', 'Area')
-                    ->setCellValue('H1', 'Channel')
-                    ->setCellValue('I1', 'SubChannel/Account')
-                    ->setCellValue('J1', 'TYPE')
-                    ->setCellValue('K1', 'DC')
-                    ->setCellValue('L1', 'User PARMA')
-                    ->setCellValue('M1', 'Latitude')
-                    ->setCellValue('N1', 'Longitude')
+                    ->setCellValue('A2', 'PARMA ID Outlet')
+                    ->setCellValue('B2', 'ID Outlet Distributor')
+                    ->setCellValue('C2', 'Latest JJID')
+                    ->setCellValue('D2', 'Latest Customer Name')
+                    ->setCellValue('E2', 'PARMA Nama Outlet')
+                    ->setCellValue('F2', 'Alamat')
+                    ->setCellValue('G2', 'Regional')
+                    ->setCellValue('H2', 'Area')
+                    ->setCellValue('I2', 'Cluster')
+                    ->setCellValue('J2', 'Tier')
+                    ->setCellValue('K2', 'Tipe Kepemilikan')
+                    ->setCellValue('L2', 'Distributir')
+                    ->setCellValue('M2', 'PARMA')
+                    ->setCellValue('N2', 'Minggu 1')
+                    ->setCellValue('O2', 'Minggu 2')
+                    ->setCellValue('P2', 'Minggu 3')
+                    ->setCellValue('Q2', 'Minggu 4')
+                    ->setCellValue('R2', 'Latitude')
+                    ->setCellValue('S2', 'Longitude')
+                    ->setCellValue('N1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active ')
                     ;
-        $i = 2;
+        $i = 3;
         foreach ($lovoutlet as $voutlet) {
             //if ($voutlet['gffmd']!='' or $voutlet['gffspg']!='' or $voutlet['gffmt']!='' or $voutlet['gffgt']!=''){
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('A'.$i, $voutlet['customerid'])
                         ->setCellValue('B'.$i, $voutlet['cust_id_map'])
                         ->setCellValue('C'.$i, $voutlet['latest_jjid'])
-                        ->setCellValue('D'.$i, $voutlet['nama_customer'])
-                        ->setCellValue('E'.$i, $voutlet['alamat'])
-                        ->setCellValue('F'.$i, $voutlet['nama_regional'])
-                        ->setCellValue('G'.$i, $voutlet['nama_area'])
-                        ->setCellValue('H'.$i, $voutlet['typeid'])
-                        ->setCellValue('I'.$i, $voutlet['nama_account'])
-                        ->setCellValue('J'.$i, $voutlet['spot_id'])
-                        ->setCellValue('K'.$i, $voutlet['mcc'])
-                        ->setCellValue('L'.$i, $voutlet['gffmd'])
-                        ->setCellValue('M'.$i, $voutlet['latitude'])
-                        ->setCellValue('N'.$i, $voutlet['longitude'])
+                        ->setCellValue('D'.$i, $voutlet['latest_customer_name'])
+                        ->setCellValue('E'.$i, $voutlet['nama_customer'])
+                        ->setCellValue('F'.$i, $voutlet['alamat'])
+                        ->setCellValue('G'.$i, $voutlet['nama_regional'])
+                        ->setCellValue('H'.$i, $voutlet['nama_area'])
+                        ->setCellValue('I'.$i, $voutlet['typeid'])
+                        ->setCellValue('J'.$i, $voutlet['nama_account'])
+                        ->setCellValue('K'.$i, $voutlet['spot_id'])
+                        ->setCellValue('L'.$i, $voutlet['mcc'])
+                        ->setCellValue('M'.$i, $voutlet['gffmd'])
+                        ->setCellValue('N'.$i, $voutlet['minggu_1'])
+                        ->setCellValue('O'.$i, $voutlet['minggu_2'])
+                        ->setCellValue('P'.$i, $voutlet['minggu_3'])
+                        ->setCellValue('Q'.$i, $voutlet['minggu_4'])
+                        ->setCellValue('R'.$i, $voutlet['latitude'])
+                        ->setCellValue('S'.$i, $voutlet['longitude'])
 						;
                 $i++;
                 //}
             }
 
-        $objPHPExcel->getActiveSheet()->setTitle('Outlet');
+        $objPHPExcel->getActiveSheet()->setTitle('Data Outlet');
         $objPHPExcel->createSheet();
 
             /*$execquery = $this->db->query($query1);

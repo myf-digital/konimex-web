@@ -24,26 +24,58 @@
 						<input name="customerid_m" type=hidden>
 						<input name="customerid" type=hidden>
 						<!--<div class="form-group col-md-3">
-							<label for="kode_outlet">Kode Outlet</label>
+							<label for="kode_outlet"></label>
 							<input name="kode_outlet" class="form-control" placeholder="Kode Outlet">
 						</div>-->
-						<div class="form-group col-md-3">
+						<div class="form-group col-md-4">
+							<label for="nama_customer">PARMA Nama Outlet</label>
+							<input name="nama_customer" class="form-control" placeholder="PARMA Nama Outlet">
+						</div>
+						<div class="form-group col-md-4">
+							<label for="latest_customer_name">Latest Customer Name</label>
+							<input name="latest_customer_name" class="form-control" placeholder="Latest Customer Name">
+						</div>
+						<div class="form-group col-md-2">
 							<label for="latest_jjid">Latest JJID</label>
 							<input name="latest_jjid" class="form-control" placeholder="Latest JJID">
 						</div>
-						<div class="form-group col-md-9">
-							<label for="nama_customer">Nama Outlet</label>
-							<input name="nama_customer" class="form-control" placeholder="Nama Customer">
+						<div class="form-group col-md-4">
+							<label for="typeid">Cluster</label>
+							<select id="typeid-id" name="typeid" class="form-control" placeholder="Channel"></select>
 						</div>
-						<div class="form-group col-md-12">
+						<div class="form-group col-md-4">
+							<label for="classid">Tier</label>
+							<select id="classid-id" name="classid" class="form-control" placeholder="SubChannel"></select>
+						</div>
+						<div class="form-group col-md-4">
+							<label for="spot_id">Tipe Kepemilikan </label>
+							<input name="spot_id" class="form-control" placeholder="Tipe Kepemilikan">
+						</div>
+						<div class="form-group col-md-3">
+							<label for="mcc">Distributor</label>
+							<input name="mcc" class="form-control" placeholder="DC">
+						</div>
+						<div class="form-group col-md-3">
+							<label for="cust_id_map">ID Outlet Distributor</label>
+							<input name="cust_id_map" class="form-control" placeholder="ID Outlet Distributor">
+						</div>
+						<div class="form-group col-md-3">
+							<label for="telp">Telpon</label>
+							<input name="telp" class="form-control" placeholder="Telpon">
+						</div>
+						<div class="form-group col-md-3">
+							<label for="email">Email</label>
+							<input name="email" class="form-control" placeholder="Email">
+						</div>
+						<div class="form-group col-md-6">
 							<label for="alamat">Alamat</label>
 							<input name="alamat" class="form-control" placeholder="Alamat">
 						</div>
-						<div class="form-group col-md-4">
+						<div class="form-group col-md-3">
 							<label for="regionalid">Regional</label>
 							<select id="regionalid-id" name="regionalid" class="form-control" placeholder="Regional"></select>
 						</div>
-						<div class="form-group col-md-4">
+						<div class="form-group col-md-3">
 							<label for="areaid">Area</label>
 							<select id="areaid-id" name="areaid" class="form-control" placeholder="Area"></select>
 						</div>
@@ -55,18 +87,10 @@
 							<label for="segmentid">Business Unit</label>
 							<select id="segmentid-id" name="segmentid" class="form-control" placeholder="Business Unit"></select>
 						</div>-->
-						<div class="form-group col-md-4">
-							<label for="typeid">Channel</label>
-							<select id="typeid-id" name="typeid" class="form-control" placeholder="Channel"></select>
-						</div>
-						<div class="form-group col-md-4">
-							<label for="classid">SubChannel</label>
-							<select id="classid-id" name="classid" class="form-control" placeholder="SubChannel"></select>
-						</div>
-						<div class="form-group col-md-2">
+						<!--<div class="form-group col-md-2">
 							<label for="outlet-type">Outlet Type</label>
 							<select id="outlet-type-id" name="spot_id" class="form-control" placeholder="Outlet Type"></select>
-						</div>
+						</div>-->
 						<!--<div class="form-group col-md-6">
 							<label for="propinsiid">Propinsi</label>
 							<select id="propinsiid-id" name="propinsiid" class="form-control" placeholder="Propinsi"></select>
@@ -99,10 +123,6 @@
 							<label for="nilai_sales">Nilai Sales</label>
 							<input name="nilai_sales" class="form-control" placeholder="Nilai Sales">
 						</div>-->
-						<div class="form-group col-md-4">
-							<label for="mcc">DC</label>
-							<input name="mcc" class="form-control" placeholder="DC">
-						</div>
 						<div class="form-group col-md-6">
 							<label for="salesmanid">Kode GFF - Double Cover <input id="doublecover-id" type = "checkbox" name="doublecover"></label>  
 							<select id="salesmanid-id" name="salesmanid[]" class="form-control" placeholder="Salesman"></select>
@@ -134,11 +154,11 @@
 						<div class="form-group">
 							<label for="cid">Cid</label>
 							<input name="cid" class="form-control" placeholder="Cid">
-						</div>-->
+						</div>
 						<div class="form-group col-md-12">
 							<label for="googleMap">Peta</label>
 							<div id="googleMap" style="width:100%;height:380px;"></div>
-						</div>
+						</div>-->
                     </div>
 
                     <div class="box-footer">
