@@ -75,7 +75,7 @@ class Rep_productivity_model extends CI_Model
 					(select count(1) from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid) _order,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image
 					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
-					where a.periode between  DATE_ADD(?, INTERVAL -7 DAY) and ?
+					where a.periode between  DATE_ADD(?, INTERVAL -3 DAY) and ?
 					group by a.periode,a.salesmanid;
                     ";
 			$res_ss = $this->db->query($sqlrecon, array($data['periode'],$data['periode'],$data['periode'],$data['periode']));
