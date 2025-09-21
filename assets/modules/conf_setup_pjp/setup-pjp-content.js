@@ -56,7 +56,7 @@
                 {
                     field: 'options',
                     title: 'ACTION',
-                    width: 100,
+                    width: 50,
                     halign: 'center',
                     align: 'center',
                     formatter: formatterButton
@@ -65,14 +65,15 @@
             columns: [[
 				//{field:'siteid', title:'SITEID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'salesmanid', title:'USER PARMA', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'gffname', title:'NAMA PARMA', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'gffname', title:'NAMA PARMA', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'position', title:'POSITION', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'ram_rsm', title:'RAM/RSM', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'aas_aam_tss_tsm', title:'AAS/AAM/TSS/TSM', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'customerid', title:'PARMA ID OUTLET', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'latest_jjid', title:'LATEST JJID', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'nama_customer', title:'PARMA OUTLET NAME', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'latest_customer_name', title:'LATEST CUSTOMER NAME', halign: 'center', align: 'left', sortable:"true", width:150},
+				{field:'nama_customer', title:'PARMA OUTLET NAME', halign: 'center', align: 'left', sortable:"true", width:150},
+				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'group_account', title:'GROUP ACCOUNT', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'city', title:'Area', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:100},
