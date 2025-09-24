@@ -76,8 +76,25 @@
 
                 <form id="fm-report-productivity" role="form" method="post">
                     <div class="box-body col-md-12">
-                            <div class="form-group col-md-2">
-								<label for="year">Year</label>
+                        <div class="form-group col-md-2">
+                            <label for="start_periode">Start Periode</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                                <input id="start_periode" placeholder="Periode" type="text" class="form-control datepicker" name="start_periode" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="end_periode">End Periode</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                                <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
+                            </div>
+                        </div>
+                                <!--<label for="year">Year</label>
                                 <select id="year-id" name="year" class="form-control" placeholder="Select Year Period">
                                     <?php
                                         for ($i=0; $i < 5; $i++) { 
@@ -106,7 +123,7 @@
                             <div class="form-group  col-md-2">
 								<label for="tipe_sales">Position</label>
                                 <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Position"></select>
-							</div>
+							</div>-->
                             <div class="form-group col-md-2">
                                 <label for="regional">Regional</label>
                                 <select id="regional-id" name="regional" class="form-control" placeholder="Select Regional"></select>

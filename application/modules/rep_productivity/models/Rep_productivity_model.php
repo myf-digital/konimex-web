@@ -49,7 +49,7 @@ class Rep_productivity_model extends CI_Model
 							end _pjp, 0 _effective_call,
 							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
 					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
-					where a.date between DATE_ADD(?, INTERVAL -7 DAY) and ?
+					where a.date between DATE_ADD(?, INTERVAL -3 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
 						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
@@ -78,7 +78,7 @@ class Rep_productivity_model extends CI_Model
 					where a.periode between  DATE_ADD(?, INTERVAL -3 DAY) and ?
 					group by a.periode,a.salesmanid;
                     ";
-			$res_ss = $this->db->query($sqlrecon, array($data['periode'],$data['periode'],$data['periode'],$data['periode']));
+			$res_ss = $this->db->query($sqlrecon, array($data['start_period'],$data['end_period'],$data['start_period'],$data['end_period']));
 	
 
         if ($data['restrict_level']=='4'){
@@ -105,27 +105,26 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
-        $periode=$data['periode'];
-        $year=$data['year'];
-        $month=$data['month'];
-        $tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+        $start=$data['start_period'];
+        $end=$data['end_period'];
+        //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
 		$query = $this->db->query(" 
 									select d.regionalid, d.nama_regional, c.areaid, c.nama_area, c.nama_area city,
                                             b.salesmanid,b.nama_salesman,b.tipe_sales, 
-											date_format('$periode','%d')-FLOOR(date_format('$periode','%d')/7)-(case when date_format('$periode','%d') > 15 
+											date_format('$end','%d')-FLOOR(date_format('$end','%d')/7)-(case when date_format('$end','%d') > 15 
                                             then (select jml_libur from setup_jumlah_harilibur where tahun='$year' and bulan='$month') else 0 end) as 'PARMA Aktif', 
-                                            (select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')) as 'PARMA Hadir',
-                                            (select count(1) from t_sales_absensi where status='C' and salesmanid=a.salesmanid and periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')) as cuti,
-                                            (select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')) as sakit, 
-                                            round((count(1)/(date_format('$periode','%d')-FLOOR(date_format('$periode','%d')/7)-(case when date_format('$periode','%d') > 25 
+                                            (select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as 'PARMA Hadir',
+                                            (select count(1) from t_sales_absensi where status='C' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as cuti,
+                                            (select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as sakit, 
+                                            round((count(1)/(date_format('$end','%d')-FLOOR(date_format('$end','%d')/7)-(case when date_format('$end','%d') > 25 
                                             then (select jml_libur from setup_jumlah_harilibur where tahun='$year' and bulan='$month') else 0 end)))*100,0) as persentasi,
                                             sum(a.pjp) as pjp, sum(a.effective_call) as effective_call, sum(a.call) as `call`, sum(a.extra_call) as extra_call, sum(a.invalid_call) as invalid_call,
                                             ifnull((
                                             select GROUP_CONCAT(x.reason_rrk SEPARATOR ' , ') from ( 
                                                SELECT z.salesmanid, CONCAT(y.reason, '(', count(y.reason), ')') AS reason_rrk 
                                                from t_sales_rrk_trans z left join t_sales_rrk_reason y on z.call_reasonid=y.call_reasonid 
-                                               where z.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                               where z.periode between '".$start."' and '".$end."' 
                                                and z.call_reasonid is not null 
                                                group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
                                             ),'-') as rrk_keterangan,
@@ -133,7 +132,7 @@ class Rep_productivity_model extends CI_Model
                                             select GROUP_CONCAT(x.reason_detailing SEPARATOR ' , ') from (
                                                SELECT z.salesmanid, CONCAT(y.reason, '(', count(y.reason), ')') AS reason_detailing
                                                from t_sales_rrk_trans z left join trx_visit_detailing y on z.customerid=y.customerid and z.salesmanid=y.salesmanid 
-                                               where z.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
+                                               where z.periode between '".$start."' and '".$end."' 
                                                group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
                                             ),'-') as rrk_detailing, sum(e.jumlah_customer) as jumlah_customer, sum(e.total_penjualan) as total_penjualan
 									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
@@ -142,11 +141,10 @@ class Rep_productivity_model extends CI_Model
 										  COUNT(customerid) AS total_transaksi,
 										  COUNT(customerid) AS jumlah_customer,
 										  SUM(netto) AS total_penjualan
-										FROM t_sales_master where tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01')
+										FROM t_sales_master where tanggal between '".$start."' and '".$end."'
 										group by salesmanid,tanggal) as e on a.salesmanid=e.salesmanid and a.periode =e.tanggal
-									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
-                                        and b.tipe_sales not in ('ADMIN','FC') 
-                                        $tipesales
+									where a.periode between '".$start."' and '".$end."' 
+                                        and b.tipe_sales not in ('ADMIN','SPV','FC') 
                                     $strquery $area $regional
 									group by d.regionalid, d.nama_regional, c.areaid, c.nama_area, b.salesmanid,b.nama_salesman,b.tipe_sales
 									order by regionalid asc, areaid asc, subareaid asc, tipe_sales asc, nama_salesman asc;								
@@ -181,10 +179,10 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
-        $periode=$data['periode'];
-        $year=$data['year'];
-        $month=$data['month'];
-        $tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+        //$end=$data['periode'];
+        $start=$data['start_period'];
+        $end=$data['end_period'];
+        //$tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
 		$query = $this->db->query(" 
 									select 
@@ -217,8 +215,8 @@ class Rep_productivity_model extends CI_Model
 									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
 									m_product product on dtl.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
-									where sls.tanggal between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
-                                        and salesamn.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+									where sls.tanggal between '".$start."' and '".$end."' 
+                                        and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
 									$area $regional
 									group by sls.siteid, 
 										   sls.salesmanid,
@@ -259,10 +257,9 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
-        $periode=$data['periode'];
-        $year=$data['year'];
-        $month=$data['month'];
-        $tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+        $start=$data['start_period'];
+        $end=$data['end_period'];
+        //$tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
 		$query = $this->db->query(" 
 									select 
@@ -285,8 +282,8 @@ class Rep_productivity_model extends CI_Model
 									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid left JOIN  
 									m_product product on sls.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
-									where sls.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
-                                    and salesamn.tipe_sales not in ('ADMIN','FC') $tipesales $strquery
+									where sls.periode between '".$start."' and '".$end."' 
+                                    and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
 									$area $regional
 									group by sls.siteid, 
 										   sls.salesmanid,
@@ -327,10 +324,9 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
-        $periode=$data['periode'];
-        $year=$data['year'];
-        $month=$data['month'];
-        $tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+        $start=$data['start_period'];
+        $end=$data['end_period'];
+        //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		$query = $this->db->query(" 
                                     select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
                                             c.typeid as channel, e.nama_class as account,
@@ -359,9 +355,9 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
-                                    where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
-									and b.tipe_sales not in ('ADMIN','FC') 
-                                    and b.aktif = 1 $tipesales $strquery
+                                    where a.periode between '".$start."' and '".$end."' 
+									and b.tipe_sales not in ('ADMIN','SPV','FC') 
+                                    and b.aktif = 1 $strquery
 									$area $regional
                                     union all
                                     select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
@@ -375,10 +371,10 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
-									where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
-                                    and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01'))
+									where a.periode between '".$start."' and '".$end."' 
+                                    and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$start."' and '".$end."')
                                     and b.tipe_sales not in ('ADMIN','FC') 
-                                    and b.aktif = 1 $tipesales $strquery
+                                    and b.aktif = 1 $strquery
 									$area $regional 
                                     ;
 									");
@@ -412,10 +408,9 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
-        $periode=$data['periode'];
-        $year=$data['year'];
-        $month=$data['month'];
-        $tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
+        $start=$data['start_period'];
+        $end=$data['end_period'];
+        //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		$query = $this->db->query(" select
                                         a.periode,
                                         a.siteid,
@@ -457,8 +452,8 @@ class Rep_productivity_model extends CI_Model
                                     from trx_visit_detailing a
                                     left join v_gff_info b on a.salesmanid=b.salesmanid 
                                     left join v_outlet_all c on a.customerid=c.customerid
-                                    where a.periode between '".$year."-".$month."-01' and LAST_DAY('".$year."-".$month."-01') 
-                                            $tipesales $strquery
+                                    where a.periode between '".$start."' and '".$end."' 
+                                            $strquery
                                             $area $regional;");
         return $query->result_array();
     }
@@ -501,11 +496,8 @@ class Rep_productivity_model extends CI_Model
         } else $strquery = "";
 
         $where = "";
-        if (isset($data['year']) && isset($data['month'])) {
-            $where .= " tpl.periode BETWEEN '".$data['year']."-".$data['month']."-01' AND LAST_DAY('".$data['year']."-".$data['month']."-01')";
-        }
-        if (isset($data['tipe_sales'])) {
-            $where .= " AND mss.tipe_sales ='".$data['tipe_sales']."'";
+        if (isset($data['start_period']) && isset($data['end_period'])) {
+            $where .= " tpl.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
         }
         if (isset($data['regionalid'])) {
             $where .= " AND mss.regionalid ='".$data['regionalid']."'";

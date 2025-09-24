@@ -38,9 +38,9 @@ class Rep_productivity extends BaseController
     }
 
     function open_detail() {
-		$year = $this->input->post("year");
-		$month = $this->input->post("month");
-        $position = $this->input->post("position");
+		$start = $this->input->post("start_periode");
+		$end = $this->input->post("end_periode");
+        //$position = $this->input->post("position");
 
 		$idjabatan = $this->input->post("idjabatan");
 		$restrict_level = $this->input->post("restrict_level");
@@ -49,19 +49,17 @@ class Rep_productivity extends BaseController
         $regionalid = $this->input->post("regionalid");
         $areaid = $this->input->post("areaid");
 
-		if ($year.'-'.$month==date("Y-m")){
+		/*if ($year.'-'.$month==date("Y-m")){
 			$periodedate= date("Y-m-d");
 			//$periodedate= date("Y-m-d",strtotime($periode));
 		}else{
 			$periode = $year.'-'.$month.'-01';
 			$periodedate=date("Y-m-t",strtotime($periode));
-		}
+		}*/
 
         $params = [
-        	'year' => $year,
-        	'month' => $month,
-        	'periode' => $periodedate,
-			'tipe_sales' => $position,
+        	'start_period' => $start,
+        	'end_period' => $end,
         	'idjabatan' => $idjabatan,
         	'restrict_level' => $restrict_level,
         	'usersession' => $usersession,
@@ -149,28 +147,25 @@ class Rep_productivity extends BaseController
     public function savetoxlsx($data)
     {
 		ini_set('memory_limit', '512M');
-        $year = $this->uri->segment('3');
-        $month = $this->uri->segment('4');
-        $position = $this->uri->segment('5');
-        $regionalid = $this->uri->segment('6');
-        $areaid = $this->uri->segment('7');
+        $start = $this->uri->segment('3');
+        $end = $this->uri->segment('4');
+        $regionalid = $this->uri->segment('5');
+        $areaid = $this->uri->segment('6');
 
-        $usersession = $this->uri->segment('8');
-        $restrict_level = $this->uri->segment('9');
-        $idjabatan = $this->uri->segment('10');
+        $usersession = $this->uri->segment('7');
+        $restrict_level = $this->uri->segment('8');
+        $idjabatan = $this->uri->segment('9');
 
-		if ($year.'-'.$month==date("Y-m")){
+		/*if ($year.'-'.$month==date("Y-m")){
 			$periodedate= date("Y-m-d");
 		}else{
 			$periode = $year.'-'.$month.'-01';
 			$periodedate=date("Y-m-t",strtotime($periode));
-		}
+		}*/
 
         $params = [
-        	'year' => $year,
-        	'month' => $month,
-        	'periode' => $periodedate,
-        	'tipe_sales' => $position,
+        	'start_period' => $start,
+        	'end_period' => $end,
         	'idjabatan' => $idjabatan,
         	'restrict_level' => $restrict_level,
         	'usersession' => $usersession,
@@ -180,7 +175,7 @@ class Rep_productivity extends BaseController
 
         $data = $this->report_productivity->getProductivity($params);
 
-        $filename = "Report_Productivity_".$year."-".$month;
+        $filename = "Report_Productivity_".$start."_".$end;
 
         $spreadsheet = new Spreadsheet();
 
@@ -234,28 +229,18 @@ class Rep_productivity extends BaseController
         ini_set("memory_limit","1024M");
         ini_set('max_execution_time', '0');
 		
-        $year = $this->uri->segment('3');
-        $month = $this->uri->segment('4');
-        $position = $this->uri->segment('5');
-        $regionalid = $this->uri->segment('6');
-        $areaid = $this->uri->segment('7');
+        $start = $this->uri->segment('3');
+        $end = $this->uri->segment('4');
+        $regionalid = $this->uri->segment('5');
+        $areaid = $this->uri->segment('6');
 
-        $usersession = $this->uri->segment('8');
-        $restrict_level = $this->uri->segment('9');
-        $idjabatan = $this->uri->segment('10');
-
-		if ($year.'-'.$month==date("Y-m")){
-			$periodedate= date("Y-m-d");
-		}else{
-			$periode = $year.'-'.$month.'-01';
-			$periodedate=date("Y-m-t",strtotime($periode));
-		}
+        $usersession = $this->uri->segment('7');
+        $restrict_level = $this->uri->segment('8');
+        $idjabatan = $this->uri->segment('9');
 
         $params = [
-        	'year' => $year,
-        	'month' => $month,
-        	'periode' => $periodedate,
-        	'tipe_sales' => $position,
+        	'start_period' => $start,
+        	'end_period' => $end,
         	'idjabatan' => $idjabatan,
         	'restrict_level' => $restrict_level,
         	'usersession' => $usersession,
@@ -263,7 +248,7 @@ class Rep_productivity extends BaseController
         	'areaid' => $areaid
         ];
         
-        $filename = "Report-Productivity-".$year."-".$month.".xlsx";
+        $filename = "Report-Productivity-".$start."_".$end.".xlsx";
 
         $this->load->library('excel');
     

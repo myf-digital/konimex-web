@@ -8,12 +8,14 @@
     let uiBtnDownload = $("#btn-download-form");
     let uiBtnDownloadAllData = $("#btn-download-all-data-form");
 
-    let uiSelectMonth = $("#month-id");
-    let uiSelectYear = $("#year-id");
-    let uiSelectPosition = $("#tipe_sales-id"); 
+    let uiStartPeriode = $("#start_periode"); 
+    let uiEndPeriode = $("#end_periode");
+    //let uiSelectMonth = $("#month-id");
+    //let uiSelectYear = $("#year-id");
+    //let uiSelectPosition = $("#tipe_sales-id"); 
     let uiSelectRegional = $("#regional-id");
     let uiSelectArea = $("#area-id");
-    let uiSelectCity = $("#city-id");
+    //let uiSelectCity = $("#city-id");
 
     let paramsession = common.getCookie("session");
     
@@ -38,33 +40,78 @@
 
         uiBtnPreview.click(function () {
 
-            if (uiSelectYear.val()===null){
+            /*if (uiSelectYear.val()===null){
                 alert ('Tahun harus di isi...!');
             }else if (uiSelectMonth.val()===null){
                 alert ('Bulan harus di isi...!');
-            }else{
+            } else*/
+            if ( uiStartPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
+            } else if ( uiEndPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
+            } else{
                 open_preview();
             }
         });
 
         uiBtnDownload.click(function () {
-            if (uiSelectYear.val()===null){
+            /*if (uiSelectYear.val()===null){
                 alert ('Tahun harus di isi...!');
             }else if (uiSelectMonth.val()===null){
                 alert ('Bulan harus di isi...!');
+            } else*/
+            if ( uiStartPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
+            } else if ( uiEndPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
             }else{
                 save_xls();
             }
         });
 		
         uiBtnDownloadAllData.click(function () {
-            if (uiSelectYear.val()===null){
+            /*if (uiSelectYear.val()===null){
                 alert ('Tahun harus di isi...!');
             }else if (uiSelectMonth.val()===null){
                 alert ('Bulan harus di isi...!');
+            } else*/ 
+            if ( uiStartPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
+            } else if ( uiEndPeriode.val()===''){
+                $.alert({
+                    title: 'Error ',
+                    content: 'Periode harus di isi...!',
+                    containerFluid: true
+                });
             }else{
                 save_xls_all_data();
             }
+        });
+
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
         });
 
         uiSelectRegional.on('select2:select', function (e) {
@@ -72,6 +119,18 @@
 
             loadArea(regional);
         });
+
+        uiStartPeriode.on('changeDate', function(selected) {
+            var startDate = new Date(selected.date.valueOf());
+            var endDate = new Date(selected.date.valueOf());
+            endDate.setDate(endDate.getDate() + 90);
+            uiEndPeriode.datepicker('setStartDate', startDate);
+            uiEndPeriode.datepicker('setEndDate', endDate);
+            if(uiStartPeriode.val() > uiEndPeriode.val()){
+                uiEndPeriode.val(uiStartPeriode.val());
+            }
+        });
+
         load_tipegff();
     }
 
@@ -88,21 +147,8 @@
             }),
         });
 
-        uiSelectYear.select2({
-            placeholder: 'Select Year Period'
-        });
-
-        uiSelectMonth.select2({
-            placeholder: 'Select Month Period'
-        });
-
         uiSelectArea.select2({
             placeholder: 'Select Area',
-            allowClear: true
-        });
-
-        uiSelectCity.select2({
-            placeholder: 'Select City',
             allowClear: true
         });
 
@@ -111,11 +157,13 @@
 
     function open_preview() {
 		
-        var year = uiSelectYear.val();
-        var month = uiSelectMonth.val();
+        //var year = uiSelectYear.val();
+        //var month = uiSelectMonth.val();
+        let start = uiStartPeriode.val();
+        let end = uiEndPeriode.val();
         var regionalid = uiSelectRegional.val();
         var areaid = uiSelectArea.val();
-        var position = uiSelectPosition.val();
+        //var position = uiSelectPosition.val();
 
         var idjabatan = paramsession.idjabatan;
         var usersession = paramsession.username;
@@ -128,7 +176,7 @@
                 //$("#map-content").html('Populating data, please wait..');
             },
             url: common.baseURL("rep_productivity/open_detail"),
-            data : "year="+year+"&month="+month+"&position="+position+"&regionalid="+regionalid+"&areaid="+areaid+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrict_level,
+            data : "start_period="+start+"&end_period="+end+"&regionalid="+regionalid+"&areaid="+areaid+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrict_level,
             success:function(res){
                 response = res;
                 //$('div .modal-header .modal-title').text('Detail Productifity Sales');            
@@ -161,7 +209,7 @@
 
     }
 	
-    function load_tipegff() {
+    /*function load_tipegff() {
         common.loading();
         $.post(common.baseURL("api_v1/call_tipesalesman"), function (res) {
             uiSelectPosition.empty();
@@ -178,13 +226,14 @@
             uiSelectPosition.val(null).trigger('change');
             common.loadingClose();
         });
-    }
+    }*/
 
     function save_xls() {
-		
-        var year = uiSelectYear.val();
-        var month = uiSelectMonth.val();
-        var position = uiSelectPosition.val();
+        //var year = uiSelectYear.val();
+        //var month = uiSelectMonth.val();
+        let start = uiStartPeriode.val();
+        let end = uiEndPeriode.val();
+        //var position = uiSelectPosition.val();
         var regionalid = uiSelectRegional.val();
         var areaid = uiSelectArea.val();
 
@@ -192,14 +241,16 @@
         var usersession = paramsession.username;
         var restrict_level = paramsession.restrict_level;
         
-        common.direct("rep_productivity/savetoxlsx/"+year+"/"+month+"/"+position+"/"+regionalid+"/"+areaid+"/"+usersession+"/"+restrict_level+"/"+idjabatan);
+        common.direct("rep_productivity/savetoxlsx/"+start+"/"+end+"/"+regionalid+"/"+areaid+"/"+usersession+"/"+restrict_level+"/"+idjabatan);
     }
 
     function save_xls_all_data() {
 		
-        var year = uiSelectYear.val();
-        var month = uiSelectMonth.val();
-        var position = uiSelectPosition.val();
+        //var year = uiSelectYear.val();
+        //var month = uiSelectMonth.val();
+        let start = uiStartPeriode.val();
+        let end = uiEndPeriode.val();
+        //var position = uiSelectPosition.val();
         var regionalid = uiSelectRegional.val();
         var areaid = uiSelectArea.val();
 
@@ -207,7 +258,7 @@
         var usersession = paramsession.username;
         var restrict_level = paramsession.restrict_level;
         
-        common.direct("rep_productivity/savexls_visit_and_order/"+year+"/"+month+"/"+position+"/"+regionalid+"/"+areaid+"/"+usersession+"/"+restrict_level+"/"+idjabatan);
+        common.direct("rep_productivity/savexls_visit_and_order/"+start+"/"+end+"/"+regionalid+"/"+areaid+"/"+usersession+"/"+restrict_level+"/"+idjabatan);
     }
 
 })();
