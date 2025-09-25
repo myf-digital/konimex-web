@@ -107,6 +107,9 @@ class Rep_productivity_model extends CI_Model
         $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
         $start=$data['start_period'];
         $end=$data['end_period'];
+        $year=date('Y', strtotime($end));
+        $month=date('m', strtotime($end));
+        
         //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
 		$query = $this->db->query(" 
@@ -149,6 +152,7 @@ class Rep_productivity_model extends CI_Model
 									group by d.regionalid, d.nama_regional, c.areaid, c.nama_area, b.salesmanid,b.nama_salesman,b.tipe_sales
 									order by regionalid asc, areaid asc, subareaid asc, tipe_sales asc, nama_salesman asc;								
 									");
+                                    
         return $query->result_array();
     }
 

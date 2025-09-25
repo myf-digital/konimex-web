@@ -38,8 +38,8 @@ class Rep_productivity extends BaseController
     }
 
     function open_detail() {
-		$start = $this->input->post("start_periode");
-		$end = $this->input->post("end_periode");
+		$start = $this->input->post("start_period");
+		$end = $this->input->post("end_period");
         //$position = $this->input->post("position");
 
 		$idjabatan = $this->input->post("idjabatan");
