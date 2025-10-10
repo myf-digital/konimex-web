@@ -89,11 +89,11 @@ class Rep_productivity extends BaseController
 		$html .= '<th style="vertical-align : middle;text-align:center;">%Kehadiran</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Keterangan</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Target Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Call on PJP</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Call on FJP</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Effective Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Extra Call</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Actual Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">%PJP Compliance</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">%FJP Compliance</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Keterangan</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Detailing</th>';
 		$html .= '</tr>';
@@ -179,7 +179,7 @@ class Rep_productivity extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Area', 'User PARMA', 'Nama PARMA', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan', 'Target Call', 'Call on PJP', 'Extra Call', 'Actual Call', '%PJP Compliance', 'Keterangan', 'Detailing'];
+        $header = ['No', 'Area', 'User PARMA', 'Nama PARMA', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan', 'Target Call', 'Call on FJP', 'Extra Call', 'Actual Call', '%FJP Compliance', 'Keterangan', 'Detailing'];
 
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -280,7 +280,7 @@ class Rep_productivity extends BaseController
                     ->setCellValue('L1', 'Call')
                     ->setCellValue('M1', 'Extra Call')
                     ->setCellValue('N1', 'Actual Call')
-                    ->setCellValue('O1', '%PJP Compliance')
+                    ->setCellValue('O1', '%FJP Compliance')
                     ->setCellValue('P1', 'Outlet Order')
                     ->setCellValue('Q1', 'Total Order')
                     ->setCellValue('R1', 'Keterangan')

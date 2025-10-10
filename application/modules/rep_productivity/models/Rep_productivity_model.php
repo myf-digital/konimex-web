@@ -348,7 +348,7 @@ class Rep_productivity_model extends CI_Model
                                                 when 
                                                 (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
                                                 (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
-                                                then 'Invalid Call' 
+                                                then 'Extra Call' 
                                                 when 
                                                 (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
                                                 (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
@@ -377,7 +377,7 @@ class Rep_productivity_model extends CI_Model
                                     left join m_area_areasite d on c.areaid = d.areaid
 									where a.periode between '".$start."' and '".$end."' 
                                     and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$start."' and '".$end."')
-                                    and b.tipe_sales not in ('ADMIN','FC') 
+                                    and b.tipe_sales not in ('ADMIN','SPV','FC') 
                                     and b.aktif = 1 $strquery
 									$area $regional 
                                     ;

@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Sales Salesman <small>Control panel</small>
+        User PARMA <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Sales Salesman</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> User PARMA</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Sales Salesman</h3>
+                    <h3 class="box-title">Form User PARMA</h3>
                 </div>
 
                 <form id="fm-sales-salesman" role="form" method="post">
@@ -25,16 +25,16 @@
                                 <select id="siteid-id" name="siteid" class="form-control" placeholder="SiteID"></select>
 							</div>-->
 							<div class="form-group col-md-3">
-								<label for="salesmanid">USER GFF</label>
-								<input name="salesmanid" id="salesmanid-id" class="form-control" value="" placeholder="User GFF">
+								<label for="salesmanid">User PARMA</label>
+								<input name="salesmanid" id="salesmanid-id" class="form-control" value="" placeholder="User PARMA">
 							</div>
 							<div class="form-group col-md-3">
 								<label for="password">Password</label>
 								<input name="password" id="password-id" type="password" class="form-control" value="" placeholder="Password">
 							</div>
 							<div class="form-group col-md-7">
-								<label for="nama_salesman">Nama GFF</label>
-								<input name="nama_salesman" class="form-control" placeholder="Nama GFF">
+								<label for="nama_salesman">Nama User PARMA</label>
+								<input name="nama_salesman" class="form-control" placeholder="Nama User PARMA">
 							</div>
 							<!--<div class="form-group col-md-3">
 								<label for="supervisorid">Supervisorid</label>
@@ -49,8 +49,8 @@
 								<input name="tipe_db" class="form-control" placeholder="Tipe Db">
 							</div>-->
 							<div class="form-group  col-md-3">
-								<label for="tipe_sales">Tipe GFF</label>
-                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Sales Type"></select>
+								<label for="tipe_sales">Tipe User PARMA</label>
+                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="PARMA Type"></select>
 							</div>
 							<div class="form-group col-md-2">
 								<label for="join_date">Join Date</label>
