@@ -261,7 +261,7 @@ if (!function_exists('sending_email')) {
 
         $message = $CI->load->view($template, $data, TRUE);
 
-        $CI->email->from('noreply@par-web.product-act.com', 'PAR-MA');
+        $CI->email->from('noreply@alphaciptatech.com', 'PAR-MA');
         $CI->email->to($to);
         $CI->email->subject($subject);
         $CI->email->message($message);
