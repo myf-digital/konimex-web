@@ -267,7 +267,7 @@ if (!function_exists('sending_email')) {
         $CI->email->message($message);
 
         if (!empty($attachments)) {
-            foreach ((array)$attachments as $file) {
+            foreach ((array) $attachments as $file) {
                 if (file_exists($file)) {
                     $CI->email->attach($file);
                 }
@@ -290,7 +290,7 @@ if (!function_exists('render_tables_html')) {
             $html .= "<h3>Outlet Coverage</h3>";
             $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
             $html .= "<thead><tr style='background:#eee'>";
-            $html .= "<th>Parma</th><th>Nama Parma</th><th>Area</th><th>Apotik</th><th>Clinic</th><th>Hospital</th></tr></thead><tbody>";
+            $html .= "<th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Apotik</th><th>Clinic</th><th>Hospital</th></tr></thead><tbody>";
             foreach ($tables['outlet_coverage'] as $oc) {
                 $html .= "<tr>
                             <td>{$oc->parma}</td>
@@ -309,7 +309,7 @@ if (!function_exists('render_tables_html')) {
             $html .= "<h3>Target Call Daily</h3>";
             $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
             $html .= "<thead><tr style='background:#eee'>";
-            $html .= "<th>Tanggal</th><th>Parma</th><th>Nama Parma</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
+            $html .= "<th>Tanggal</th><th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
             foreach ($tables['target_call_daily'] as $tcd) {
                 $periode = format_date_id($tcd->periode, true, false);
                 $html .= "<tr>
@@ -331,7 +331,7 @@ if (!function_exists('render_tables_html')) {
             $html .= "<h3>Target Call Monthly</h3>";
             $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
             $html .= "<thead><tr style='background:#eee'>";
-            $html .= "<th>Parma</th><th>Nama Parma</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
+            $html .= "<th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
             foreach ($tables['target_call_monthly'] as $tcm) {
                 $html .= "<tr>
                             <td>{$tcm->parma}</td>

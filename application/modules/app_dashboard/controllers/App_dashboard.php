@@ -1463,33 +1463,4 @@ class App_dashboard extends BaseController
         $list = $this->dashboard->get_image_detailing();
         echo json_encode($list);
 	}
-
-	function send_email() {
-		$email = $this->input->post("email");
-		
-		if ($email) $emails = [
-			(object) ['send_to' => $email]
-		];
-		else $emails = $this->dashboard->get_all_send_to();
-        
-		$result = [];
-		foreach ($emails as $val) {
-			if (!$val->send_to) continue;
-
-			$tables = $this->dashboard->get_data_send_email($val->send_to);
-
-			$data = [
-				'nama' => explode('@', $val->send_to)[0] ?? $val->send_to,
-				'subject' => "Laporan Aktivitas Parma - " . date('d M Y'),
-				'pesan' => render_tables_html($tables),
-			];
-			if (sending_email($val->send_to, $data['subject'], 'emails/template', $data)) {
-				$result[] = $val->send_to . ': ✅ Email berhasil dikirim!';
-			} else {
-				$result[] = $val->send_to . ': ❌ Gagal mengirim email.';
-			}
-		}
-
-		responseJSON($result);
-	}
 }
