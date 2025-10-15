@@ -249,3 +249,103 @@ if (!function_exists('number_to_alphabet')) {
         return $result;
     }
 }
+
+if (!function_exists('sending_email')) {
+    function sending_email($to, $subject, $template, $data = [], $attachments = [])
+    {
+        $CI =& get_instance();
+        
+        $CI->load->config('email');
+        $CI->load->library('email');
+        $CI->email->initialize($CI->config->item('email'));
+
+        $message = $CI->load->view($template, $data, TRUE);
+
+        $CI->email->from('noreply@par-web.product-act.com', 'PAR-MA');
+        $CI->email->to($to);
+        $CI->email->subject($subject);
+        $CI->email->message($message);
+
+        if (!empty($attachments)) {
+            foreach ((array)$attachments as $file) {
+                if (file_exists($file)) {
+                    $CI->email->attach($file);
+                }
+            }
+        }
+
+        $sent = $CI->email->send();
+        $CI->email->clear(TRUE);
+
+        return $sent;
+    }
+}
+
+if (!function_exists('render_tables_html')) {
+    function render_tables_html($tables)
+    {
+        $html = "";
+        // OUTLET COVERAGE
+        if (!empty($tables['outlet_coverage'])) {
+            $html .= "<h3>Outlet Coverage</h3>";
+            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
+            $html .= "<thead><tr style='background:#eee'>";
+            $html .= "<th>Parma</th><th>Nama Parma</th><th>Area</th><th>Apotik</th><th>Clinic</th><th>Hospital</th></tr></thead><tbody>";
+            foreach ($tables['outlet_coverage'] as $oc) {
+                $html .= "<tr>
+                            <td>{$oc->parma}</td>
+                            <td>{$oc->nama_parma}</td>
+                            <td>{$oc->nama_area}</td>
+                            <td>{$oc->Apotik}</td>
+                            <td>{$oc->Clinic}</td>
+                            <td>{$oc->Hospital}</td>
+                          </tr>";
+            }
+            $html .= "</tbody></table><br>";
+        }
+
+        // TARGET CALL DAILY
+        if (!empty($tables['target_call_daily'])) {
+            $html .= "<h3>Target Call Daily</h3>";
+            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
+            $html .= "<thead><tr style='background:#eee'>";
+            $html .= "<th>Tanggal</th><th>Parma</th><th>Nama Parma</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
+            foreach ($tables['target_call_daily'] as $tcd) {
+                $periode = format_date_id($tcd->periode, true, false);
+                $html .= "<tr>
+                            <td>{$periode}</td>
+                            <td>{$tcd->parma}</td>
+                            <td>{$tcd->nama_parma}</td>
+                            <td>{$tcd->nama_area}</td>
+                            <td>{$tcd->target_call}</td>
+                            <td>{$tcd->Call}</td>
+                            <td>{$tcd->ExtraCall}</td>
+                            <td>{$tcd->actual_call}</td>
+                          </tr>";
+            }
+            $html .= "</tbody></table><br>";
+        }
+
+        // TARGET CALL MONTHLY
+        if (!empty($tables['target_call_monthly'])) {
+            $html .= "<h3>Target Call Monthly</h3>";
+            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
+            $html .= "<thead><tr style='background:#eee'>";
+            $html .= "<th>Parma</th><th>Nama Parma</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
+            foreach ($tables['target_call_monthly'] as $tcm) {
+                $html .= "<tr>
+                            <td>{$tcm->parma}</td>
+                            <td>{$tcm->nama_parma}</td>
+                            <td>{$tcm->nama_area}</td>
+                            <td>{$tcm->target_call}</td>
+                            <td>{$tcm->Call}</td>
+                            <td>{$tcm->ExtraCall}</td>
+                            <td>{$tcm->actual_call}</td>
+                          </tr>";
+            }
+            $html .= "</tbody></table><br>";
+        }
+
+        return $html ?: "<p>Tidak ada data tersedia.</p>";
+    }
+}
