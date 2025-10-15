@@ -172,3 +172,80 @@ if (!function_exists('log_http')) {
         return $CI->db->insert('log_http', $data);
     }
 }
+
+if (!function_exists('format_date_id')) {
+    function format_date_id($datetime, $short = false, $time = true)
+    {
+        if (!$datetime) return '-';
+
+        $bulan = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        if ($short) {
+            $bulan = [
+                1 => 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+            ];
+        }
+
+        $timestamp = strtotime($datetime);
+        $tgl = date('j', $timestamp);
+        $bln = $bulan[(int)date('n', $timestamp)];
+        $thn = date('Y', $timestamp);
+
+        if ($time) {
+            $jam = date('H:i:s', $timestamp);
+            return "$tgl $bln $thn $jam";
+        } else {
+            return "$tgl $bln $thn";
+        }
+    }
+}
+
+if (!function_exists('cal_duration_date')) {
+    function cal_duration_date($start, $end)
+    {
+        if ($start && $end) {
+            $awal  = new DateTime($start);
+            $akhir = new DateTime($end);
+            $diff  = $awal->diff($akhir);
+
+            return sprintf('%d jam %d menit %d detik', $diff->h, $diff->i, $diff->s);
+        }
+        return '-';
+    }
+}
+
+if (!function_exists('date_interval')) {
+    function date_interval($start, $end)
+    {
+        if ($start && $end) {
+            $period = new DatePeriod(
+                new DateTime($start),
+                new DateInterval('P1D'),
+                (new DateTime($end))->modify('+1 day')
+            );
+
+            $tanggal_array = [];
+            foreach ($period as $date) {
+                $tanggal_array[] = $date->format('Y-m-d');
+            }
+            return $tanggal_array;
+        }
+        return [];
+    }
+}
+
+if (!function_exists('number_to_alphabet')) {
+    function number_to_alphabet($number)
+    {
+        $result = '';
+        while ($number > 0) {
+            $mod = ($number - 1) % 26;
+            $result = chr(65 + $mod) . $result;
+            $number = (int)(($number - $mod) / 26);
+        }
+        return $result;
+    }
+}

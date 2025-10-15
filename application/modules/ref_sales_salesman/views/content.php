@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        User PARMA <small>Control panel</small>
+        User PAR-MA <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> User PARMA</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> User PAR-MA</a></li>
         <li class="active">Content</li>
     </ol>
 </section>

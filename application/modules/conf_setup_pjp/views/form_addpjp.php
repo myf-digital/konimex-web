@@ -25,8 +25,8 @@
 								<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 							</div>-->
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">User (PARMA)</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="User (PARMA)"></select>
+								<label for="salesmanid">User (PAR-MA)</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="User (PAR-MA)"></select>
 							</div>
 							<!-- <div class="form-group col-xs-12 col-sm-12 col-md-6">
 								<label for="customerid">Outlet</label>

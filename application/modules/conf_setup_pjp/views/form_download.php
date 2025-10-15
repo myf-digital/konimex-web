@@ -29,7 +29,7 @@
 </style>
 <div id="alertnotif" class="alert warning" style="display:none;">
   <span class="closebtn">&times;</span>  
-  <strong></strong> User (PARMA) harus di isi...
+  <strong></strong> User (PAR-aMA) harus di isi...
 </div>
 <script>
 // Get all elements with class="closebtn"
@@ -81,8 +81,8 @@ for (i = 0; i < close.length; i++) {
 								<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 							</div>-->
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">User (PARMA)</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="User (PARMA)"></select>
+								<label for="salesmanid">User (PAR-MA)</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="User (PAR-MA)"></select>
 							</div>
                     </div>
                     <div class="box-footer">

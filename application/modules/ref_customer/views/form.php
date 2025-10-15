@@ -28,8 +28,8 @@
 							<input name="kode_outlet" class="form-control" placeholder="Kode Outlet">
 						</div>-->
 						<div class="form-group col-md-4">
-							<label for="nama_customer">PARMA Nama Outlet</label>
-							<input name="nama_customer" class="form-control" placeholder="PARMA Nama Outlet">
+							<label for="nama_customer">PAR-MA Nama Outlet</label>
+							<input name="nama_customer" class="form-control" placeholder="PAR-MA Nama Outlet">
 						</div>
 						<div class="form-group col-md-4">
 							<label for="latest_customer_name">Latest Customer Name</label>

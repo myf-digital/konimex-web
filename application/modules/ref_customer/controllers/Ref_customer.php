@@ -162,11 +162,11 @@ class Ref_customer extends BaseController
         //$objDrawing = new PHPExcel_Worksheet_Drawing();
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A2', 'PARMA ID Outlet')
+                    ->setCellValue('A2', 'PAR-MA ID Outlet')
                     ->setCellValue('B2', 'ID Outlet Distributor')
                     ->setCellValue('C2', 'Latest JJID')
                     ->setCellValue('D2', 'Latest Customer Name')
-                    ->setCellValue('E2', 'PARMA Nama Outlet')
+                    ->setCellValue('E2', 'PAR-MA Nama Outlet')
                     ->setCellValue('F2', 'Alamat')
                     ->setCellValue('G2', 'Regional')
                     ->setCellValue('H2', 'Area')
@@ -174,7 +174,7 @@ class Ref_customer extends BaseController
                     ->setCellValue('J2', 'Tier')
                     ->setCellValue('K2', 'Tipe Kepemilikan')
                     ->setCellValue('L2', 'Distributir')
-                    ->setCellValue('M2', 'PARMA')
+                    ->setCellValue('M2', 'PAR-MA')
                     ->setCellValue('N2', 'Minggu 1')
                     ->setCellValue('O2', 'Minggu 2')
                     ->setCellValue('P2', 'Minggu 3')
@@ -283,8 +283,8 @@ class Ref_customer extends BaseController
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-        $html .= '<th style="white-space: nowrap;">User PARMA</th>';
-		$html .= '<th style="white-space: nowrap;">Nama PARMA</th>';
+        $html .= '<th style="white-space: nowrap;">User PAR-MA</th>';
+		$html .= '<th style="white-space: nowrap;">Nama PAR-MA</th>';
 		$html .= '<th style="white-space: nowrap;">Posisi</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';

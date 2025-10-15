@@ -61,11 +61,11 @@
                 }
             ]],
             columns: [[
-				{field:'customerid', title:'PARMA ID Outlet', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'customerid', title:'PAR-MA ID Outlet', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'cust_id_map', title:'ID Outlet Distributor', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'latest_jjid', title:'Latest JJID', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'latest_customer_name', title:'Latest Cust Name', halign: 'center', align: 'left', sortable:"true", width:120},
-				{field:'nama_customer', title:'PARMA Nama Outlet', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'nama_customer', title:'PAR-MA Nama Outlet', halign: 'center', align: 'left', sortable:"true", width:120},
 				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:120},
 				//{field:'top_cust', title:'TOP CUST', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'tipe_bayar', title:'TIPE BAYAR', halign: 'center', align: 'left', sortable:"true", width:200},
@@ -87,7 +87,7 @@
                 {field:'spot_id', title:'Tipe Kepemilikan', halign: 'center', align: 'left', sortable:"true", width:100},
                 {field:'mcc', title:'Distributor', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'usergff', title:'Kode GFF', halign: 'center', align: 'left', sortable:"true", width:100},
-                {field:'usergff', title:'User PARMA', halign: 'center', align: 'left', sortable:"true", width:150},
+                {field:'usergff', title:'User PAR-MA', halign: 'center', align: 'left', sortable:"true", width:150},
 				//{field:'detail', title:'Detail', halign: 'center', align: 'left', width:150, formatter: formatterButtonDetail},
 				//{field:'position', title:'Position', halign: 'center', align: 'left', sortable:"true", width:100},
 				]],

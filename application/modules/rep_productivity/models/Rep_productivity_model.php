@@ -116,8 +116,8 @@ class Rep_productivity_model extends CI_Model
 									select d.regionalid, d.nama_regional, c.areaid, c.nama_area, c.nama_area city,
                                             b.salesmanid,b.nama_salesman,b.tipe_sales, 
 											date_format('$end','%d')-FLOOR(date_format('$end','%d')/7)-(case when date_format('$end','%d') > 15 
-                                            then (select jml_libur from setup_jumlah_harilibur where tahun='$year' and bulan='$month') else 0 end) as 'PARMA Aktif', 
-                                            (select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as 'PARMA Hadir',
+                                            then (select jml_libur from setup_jumlah_harilibur where tahun='$year' and bulan='$month') else 0 end) as 'PAR-MA Aktif', 
+                                            (select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as 'PAR-MA Hadir',
                                             (select count(1) from t_sales_absensi where status='C' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as cuti,
                                             (select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as sakit, 
                                             round((count(1)/(date_format('$end','%d')-FLOOR(date_format('$end','%d')/7)-(case when date_format('$end','%d') > 25 
@@ -487,7 +487,7 @@ class Rep_productivity_model extends CI_Model
                             )
                         )";
         } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND tplb.salesmanid IN (
+            $strquery = " AND tpl.salesmanid IN (
                             SELECT salesmanid
                             FROM m_sales_salesman
                             WHERE regionalid IN (
@@ -503,10 +503,10 @@ class Rep_productivity_model extends CI_Model
         if (isset($data['start_period']) && isset($data['end_period'])) {
             $where .= " tpl.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
         }
-        if (isset($data['regionalid'])) {
+        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
             $where .= " AND mss.regionalid ='".$data['regionalid']."'";
         }
-        if (isset($data['areaid'])) {
+        if (isset($data['areaid']) && $data['areaid'] != 'null') {
             $where .= " AND mss.areaid ='".$data['areaid']."'";
         }
 
@@ -525,6 +525,63 @@ class Rep_productivity_model extends CI_Model
                 AND t.customerid = latest.customerid
                 AND t.brandid = latest.brandid
                 AND t.periode = latest.max_periode;
+        ");
+        return $query->result_array();
+    }
+
+    function get_attendance_parma($data)
+    {
+        if ($data['restrict_level'] == '4') {
+            $strquery = " AND ap.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE subareaid IN (
+                                SELECT DISTINCT b.subareaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " AND ap.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE areaid IN (
+                                SELECT DISTINCT b.areaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " AND ap.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE regionalid IN (
+                                SELECT DISTINCT b.regionalid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        ) ";
+        } else $strquery = "";
+
+        $where = "";
+        if (isset($data['start_period']) && isset($data['end_period'])) {
+            $where .= " ap.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+        }
+        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND mss.regionalid ='".$data['regionalid']."'";
+        }
+        if (isset($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND mss.areaid ='".$data['areaid']."'";
+        }
+
+		$query = $this->db->query("
+            SELECT mss.nama_salesman, ap.*
+            FROM attendance_parma ap
+            LEFT JOIN m_sales_salesman mss ON mss.salesmanid = ap.salesmanid
+            WHERE ".$where . $strquery ." 
         ");
         return $query->result_array();
     }

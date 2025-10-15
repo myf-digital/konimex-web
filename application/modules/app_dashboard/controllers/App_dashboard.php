@@ -122,7 +122,7 @@ class App_dashboard extends BaseController
 			$html .= '<td>'.$i.'</td>';
 			$html .= '<td style="white-space: nowrap;"><a class="btn btn-primary btn-xs" href="#" onclick="toggle_visibility(\'tr_detail_'.$i.'\'); return false;">Detail</a></td>';
 			$html .= '<td style="white-space: nowrap;">'.$value['customerid'].'</td>';
-			$html .= '<td style="white-space: nowrap;">'.$value['nama_customer'].'</td>';
+			$html .= '<td style="white-space: nowrap;">'.htmlspecialchars(@$value['nama_customer'], ENT_QUOTES, 'UTF-8').'</td>';
 			$html .= '<td>'.$value['alamat'].'</td>';
 			$html .= '<td class="success" style="text-align:center;">'.$value['check_in'].'</td>';
 			$html .= '<td class="success" style="text-align:center;">'.$value['jarak'].'</td>';
@@ -150,7 +150,7 @@ class App_dashboard extends BaseController
 			$html .='<table class="table table-striped table-bordered table-condensed" style="width:1000px;">
 						<thead>
 							<tr style="align:center;">
-								<th width="70">User PARMA</th>
+								<th width="70">User PAR-MA</th>
 								<th width="70">Foto Checkin</th>
 								<th width="70">Check IN</th>
 								<th width="70">Check OUT</th>
@@ -191,7 +191,7 @@ class App_dashboard extends BaseController
 										<td valign="center" style="text-align:left;">
 										<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>
 										<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>
-										<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>
+										<p>Nama Customer : '.htmlspecialchars(@$rowsdetailing['nama_customer'], ENT_QUOTES, 'UTF-8').'</p>
 										<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>
 										<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>
 										<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>
@@ -473,27 +473,32 @@ class App_dashboard extends BaseController
 			}
 			
 			if (($latpos) and ($longpos !="0")) {
-			$marker .=' var latlng = new google.maps.LatLng('.$latpos.','.$longpos.');
-						var markerOptions = {  
-							map: map,  
-							position: new google.maps.LatLng('.$latpos.','.$longpos.'),
-							icon: {
-								url: \''.$icon.'\',
-								labelOrigin: { x: 17, y: 40}
-							  },
-							  title: \''.@$waktu.'\',
-							  label: {
-								text: \''.@$waktu.'\',
-								color: "#222222",
-								fontSize: "10px"
-							  }
-						};
+				$marker .=' var latlng = new google.maps.LatLng('.$latpos.','.$longpos.');
+					var markerOptions = {  
+						map: map,  
+						position: new google.maps.LatLng('.$latpos.','.$longpos.'),
+						icon: {
+							url: \''.$icon.'\',
+							labelOrigin: { x: 17, y: 40}
+							},
+							title: \''.@$waktu.'\',
+							label: {
+							text: \''.@$waktu.'\',
+							color: "#222222",
+							fontSize: "10px"
+							}
+					};
 					  
-						marker_'.$i.' = new google.maps.Marker(markerOptions);
+					marker_'.$i.' = new google.maps.Marker(markerOptions);
 					  
-						marker_'.$i.'.addListener(\'click\', function() {
-						infowindow_'.$i.'.open(map, marker_'.$i.');
-					});
+					// marker_'.$i.'.addListener(\'click\', function() {
+					//	infowindow_'.$i.'.open(map, marker_'.$i.');
+					// });
+
+					// var contentString_'.$i.' = <div id="content" style="max-width:1000px;">;
+					// var infowindow_'.$i.' = new google.maps.InfoWindow({
+					//	content: contentString_'.$i.'
+					// });
 				';
 			}
 			$numpos++;
@@ -711,6 +716,7 @@ class App_dashboard extends BaseController
 		$sid 		= $this->input->post("sid");
 		$get_date 	= $this->input->post("get_date");
 		$get_map 	= $this->dashboard->get_node($sid,$get_date);
+		$attendance = $this->dashboard->get_attendance_parma($sid,$get_date);
 		
 		$marker 	= "";
 		$marker_sales = "";
@@ -767,12 +773,12 @@ class App_dashboard extends BaseController
 							var param_link_image = "\''.$siteid.'\',\''.$periode.'\',\''.$customerid.'\',\''.$salesmanid.'\'";	
 							var contentString_'.$i.' = \'<div id="content" style="max-width:1000px;" >\'+
 							\'<div id="siteNotice"><h3>Outlet</h3>\'+
-							\'<table cellspacing="1" cellpadding="1">\'+
+							\'<table width="100%" cellspacing="1" cellpadding="1">\'+
 							\'<tbody>\'+
 								\'<tr>\'+
 									\'<td>\'+
 										\'<div class="well bg-info" style="min-width:355px; border:none !important;">\'+
-											\'<table cellspacing="1" cellpadding="1">\'+
+											\'<table width="100%" class="table-outlet-info" cellspacing="1" cellpadding="1">\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">OutletId</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
@@ -781,25 +787,34 @@ class App_dashboard extends BaseController
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Nama Outlet</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_customer'].'</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'</td>\'+	
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Alamat</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted">'.@$map['alamat'].'</td>\'+	
-												\'</tr>\'+											
+												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Nama Salesman</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
 												\'</tr>\'+
+												\'<tr>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">Presensi</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">\'+
+														\'<p class="m-0">Check In : <b>'.format_date_id($attendance->start_time ?? null).'</b></p>\'+
+														\'<p class="m-0">Check Out : <b>'.format_date_id($attendance->end_time ?? null).'</b></p>\'+
+														\'<p class="m-0">Duration : <b>'.cal_duration_date(($attendance->start_time ?? null), ($attendance->end_time ?? null)).'</b></p>\'+
+													\'</td>\'+
+												\'</tr>\'+
 											\'</table>\'+
 										\'<\div>\'+
-									\'</td>\'+										
-								\'</tr>\'+														
+									\'</td>\'+
+								\'</tr>\'+
 							\'</tbody>\'+
-							\'</table>\'+							
-							\'</div>\'+	
+							\'</table>\'+
+							\'</div>\'+
 							\'<hr>\'+
 							\'<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">\'+
 								\'<thead>\'+
@@ -815,10 +830,10 @@ class App_dashboard extends BaseController
 								\'<tbody>\'+
 									\'<tr>\'+
 										\'<td valign="top" style="text-align:center;">'.$img_checkin.'</td>\'+
-										\'<td class="success" style="text-align:center;">'.$d_rrk->check_in.'</td>\'+	
-										\'<td class="success" style="text-align:center;">'.$d_rrk->check_out.'</td>\'+	
-										\'<td class="danger" style="text-align:center;">'.$d_rrk->lama_kunjungan.'</td>\'+
-										\'<td class="info" style="text-align:left;">'.$d_rrk->alasan.'</td>\'+	
+										\'<td class="success" style="text-align:center;">'.@$d_rrk->check_in.'</td>\'+	
+										\'<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>\'+	
+										\'<td class="danger" style="text-align:center;">'.@$d_rrk->lama_kunjungan.'</td>\'+
+										\'<td class="info" style="text-align:left;">'.@$d_rrk->alasan.'</td>\'+	
 										\'<td class="info" style="text-align:left;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan)).'</td>\'+	
 									\'</tr>\'+
 								\'</tbody>\'+
@@ -843,7 +858,7 @@ class App_dashboard extends BaseController
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
 												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
-												\'<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>\'+
+												\'<p>Nama Customer : '.htmlspecialchars(@$rowsdetailing['nama_customer'], ENT_QUOTES, 'UTF-8').'</p>\'+
 												\'<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
 												\'<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>\'+
@@ -876,9 +891,9 @@ class App_dashboard extends BaseController
 									url: \''.$icon.'\',
 									labelOrigin: { x: 17, y: 45}
 								  },
-								  title: \''.@$numtrans.' - '.@$map['nama_customer'].'\',
+								  title: \''.@$numtrans.' - '.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'\',
 								  label: {
-									text: \''.@$numtrans.' - '.@$map['nama_customer'].'\',
+									text: \''.@$numtrans.' - '.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'\',
 									color: "#222222",
 									fontSize: "10px"
 								  }
@@ -886,12 +901,12 @@ class App_dashboard extends BaseController
 						  
 						  marker_'.$i.' = new google.maps.Marker(markerOptions);
 						  
-							marker_'.$i.'.addListener(\'click\', function() {
+						  marker_'.$i.'.addListener(\'click\', function() {
 							infowindow_'.$i.'.open(map, marker_'.$i.');
-						   });
+						  });
 
 
-						  //customTxt_'.$i.' = "<div style=\'font-size:8px;color:black;background:white;\'>'.$numtrans.' - '.$map['nama_customer'].'</div>";
+						  //customTxt_'.$i.' = "<div style=\'font-size:8px;color:black;background:white;\'>'.$numtrans.' - '.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'</div>";
 						  //txt = new TxtOverlay(latlng, customTxt_'.$i.', "customBox2", map);
 						  
 						  ';
@@ -906,12 +921,12 @@ class App_dashboard extends BaseController
 							var param_link_image = "\''.$siteid.'\',\''.$periode.'\',\''.$customerid.'\',\''.$salesmanid.'\'";	
 							var contentString_'.$i.' = \'<div id="content" style="max-width:1000px;">\'+
 							\'<div style="z-index: -1;" id="siteNotice"><h3>Outlet</h3>\'+
-							\'<table cellspacing="1" cellpadding="1">\'+
+							\'<table width="100%" cellspacing="1" cellpadding="1">\'+
 							\'<tbody>\'+
 								\'<tr>\'+									
 									\'<td>\'+
 										\'<div class="well bg-info" style="min-width:355px; border: none !important;">\'+
-											\'<table cellspacing="1" cellpadding="1" >\'+
+											\'<table width="100%" class="table-outlet-info" cellspacing="1" cellpadding="1" >\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">OutletId</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
@@ -920,7 +935,7 @@ class App_dashboard extends BaseController
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Nama Outlet</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_customer'].'</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'</td>\'+	
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Alamat</td>\'+
@@ -932,13 +947,21 @@ class App_dashboard extends BaseController
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
 												\'</tr>\'+
+												\'<tr>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">Presensi</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">\'+
+														\'<p class="m-0">Check In : <b>'.format_date_id($attendance->start_time ?? null).'</b></p>\'+
+														\'<p class="m-0">Check Out : <b>'.format_date_id($attendance->end_time ?? null).'</b></p>\'+
+														\'<p class="m-0">Duration : <b>'.cal_duration_date(($attendance->start_time ?? null), ($attendance->end_time ?? null)).'</b></p>\'+
+													\'</td>\'+
 											\'</table>\'+
-										\'</div>\'+											
-									\'</td>\'+							
-								\'</tr>\'+														
+										\'</div>\'+
+									\'</td>\'+
+								\'</tr>\'+
 							\'</tbody>\'+
 							\'</table>\'+
-							\'<hr>\'+	
+							\'<hr>\'+
 							\'<table class="table table-striped table-bordered table-condensed" style="white-space: nowrap;">\'+
 								\'<thead>\'+
 									\'<tr style="align:center;">\'+
@@ -953,10 +976,10 @@ class App_dashboard extends BaseController
 								\'<tbody>\'+
 									\'<tr>\'+
 										\'<td valign="top" style="text-align:center;">'.$img_checkin.'</td>\'+
-										\'<td class="success" style="text-align:center;">'.$d_rrk->check_in.'</td>\'+	
-										\'<td class="success" style="text-align:center;">'.$d_rrk->check_out.'</td>\'+	
-										\'<td class="danger" style="text-align:center;">'.$d_rrk->lama_kunjungan.'</td>\'+
-										\'<td class="info" style="text-align:left;">'.$d_rrk->alasan.'</td>\'+	
+										\'<td class="success" style="text-align:center;">'.@$d_rrk->check_in.'</td>\'+	
+										\'<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>\'+	
+										\'<td class="danger" style="text-align:center;">'.@$d_rrk->lama_kunjungan.'</td>\'+
+										\'<td class="info" style="text-align:left;">'.@$d_rrk->alasan.'</td>\'+	
 										\'<td class="info" style="text-align:left;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan)).'</td>\'+	
 									\'</tr>\'+
 								\'</tbody>\'+
@@ -981,7 +1004,7 @@ class App_dashboard extends BaseController
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
 												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
-												\'<p>Nama Customer : '.@$rowsdetailing['nama_customer'].'</p>\'+
+												\'<p>Nama Customer : '.htmlspecialchars(@$rowsdetailing['nama_customer'], ENT_QUOTES, 'UTF-8').'</p>\'+
 												\'<p>Channel - Class : '.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC : '.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
 												\'<p>Detailing Product : '.@$rowsdetailing['brands'].'</p>\'+
@@ -1014,9 +1037,9 @@ class App_dashboard extends BaseController
 									url: \''.@$icon.'\',
 									labelOrigin: { x: 17, y: 45}
 								  },
-								  title: \''.@$num.' - '.@$map['nama_customer'].'\',
+								  title: \''.@$num.' - '.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'\',
 								  label: {
-									text: \''.@$num.' - '.@$map['nama_customer'].'\',
+									text: \''.@$num.' - '.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'\',
 									color: "#222222",
 									fontSize: "10px"
 								  }
@@ -1029,7 +1052,7 @@ class App_dashboard extends BaseController
 						   });
 
 
-						  //customTxt_'.$i.' = "<div style=\'font-size:8px;color:black;background:white;\'>'.$num.' - '.$map['nama_customer'].'</div>";
+						  //customTxt_'.$i.' = "<div style=\'font-size:8px;color:black;background:white;\'>'.$num.' - '.htmlspecialchars(@$map['nama_customer'], ENT_QUOTES, 'UTF-8').'</div>";
 						  //txt = new TxtOverlay(latlng, customTxt_'.$i.', "customBox2", map);
 						  
 						  ';

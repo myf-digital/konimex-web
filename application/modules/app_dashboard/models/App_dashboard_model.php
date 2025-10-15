@@ -115,11 +115,25 @@ class App_dashboard_model extends CI_Model
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
 					(select count(1) from t_sales_rrk_trans tsrt join t_sales_master tsm on tsrt.periode =tsm.tanggal and tsrt.salesmanid =tsm.salesmanid and tsrt.customerid =tsm.customerid
-						where tsrt.periode=z.periode and tsrt.salesmanid=z.salesmanid and tsm.bruto >0) _order
+						where tsrt.periode=z.periode and tsrt.salesmanid=z.salesmanid and tsm.bruto >0) _order,
+						ap.start_time,
+						ap.start_image,
+						IF(ap.start_image IS NULL OR ap.start_image = '',
+							ap.start_image,
+							CONCAT('".URL_IMAGE."', ap.start_image)
+						) AS url_start_image,
+						ap.start_keterangan,
+						ap.end_time,
+						IF(ap.end_image IS NULL OR ap.end_image = '',
+							ap.end_image,
+							CONCAT('".URL_IMAGE."', ap.end_image)
+						) AS url_end_image,
+						ap.end_keterangan
 					from m_sales_salesman b
 					left join t_sales_rrk a on b.salesmanid=a.salesmanid and a.periode = '".($data["get_date"] ?? today())."'
 					left join t_sales_rrk_trans z  on b.salesmanid=z.salesmanid and z.periode = '".($data["get_date"] ?? today())."'
 					left join m_area_areasite c on b.areaid=c.areaid
+					left join attendance_parma ap on ap.salesmanid = b.salesmanid and ap.periode = '".($data["get_date"] ?? today())."'
 					$strquery
 					) a
 					";
@@ -610,6 +624,15 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		//$this->db->order_by('check_in', 'ASC');
 		//$q=$this->db->get();
 		return $q->result_array();
+	}
+
+	function get_attendance_parma($sid,$get_date) {
+		$this->db->select("ap.*");
+		$this->db->from("attendance_parma ap");
+		$this->db->where("ap.salesmanid",$sid);
+		$this->db->where("ap.periode",$get_date);
+		$data = $this->db->get()->row();
+		return $data;
 	}
 
 	function get_detail_rrk($siteid,$customerid,$salesmanid,$get_date) {

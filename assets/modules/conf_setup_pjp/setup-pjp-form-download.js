@@ -43,7 +43,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession, restrict_level: data.restrict_level}, function (res) {
             uiSelectSalesman.empty();
             uiSelectSalesman.select2({
-                placeholder: "All PARMA",
+                placeholder: "All PAR-MA",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

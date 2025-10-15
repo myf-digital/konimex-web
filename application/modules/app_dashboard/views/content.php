@@ -37,6 +37,12 @@
     padding-left: 5px;
     padding-right: 5px;
   }
+  table.table-outlet-info tbody tr td {
+    padding: 5px 0;
+  }
+  .m-0 {
+    margin: 0;
+  }
 </style>
 
 <section class="content-header">
@@ -83,7 +89,7 @@
 </section>
 <div class="modal fade" id="modal_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" >
-    <div class="modal-content" style="overflow-y: auto; width:9x`00px; max-height: 500px;" >
+    <div class="modal-content" style="overflow-y: auto; width: 900px; max-height: 500px;" >
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title" id="myModalLabel">List Data</h4>

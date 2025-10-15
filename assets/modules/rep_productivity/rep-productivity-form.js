@@ -25,16 +25,16 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
+		// console.log(filter);
         
         $.when(
             $.post(common.baseURL("rep_productivity/load_regional"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
+            // console.log("done");
             //console.log(d);
         }).then(function (r1) {
             common.loadingClose();
-            console.log("then");
+            // console.log("then");
             setupForm(r1);
         }).fail(resolver.fail);
 
@@ -131,7 +131,7 @@
             }
         });
 
-        load_tipegff();
+        // load_tipegff();
     }
 
     function setupForm(r1) {
