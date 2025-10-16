@@ -3,12 +3,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Scheduler extends BaseController
 {
+    protected $super_email;
+
     public function __construct() {
         parent::__construct();
         $this->load->model('Scheduler_model', 'scheduler');
         $this->load->library('email');
         $this->load->library('pdf');
         $this->load->library('excel');
+        $this->load->config('email');
+        $this->super_email = $this->config->item('email')['cc'] ?? [];
     }
 
     public function send_daily_report() {
@@ -23,7 +27,16 @@ class Scheduler extends BaseController
 		foreach ($emails as $val) {
 			if (!$val->send_to) continue;
 
-			$tables = $this->scheduler->get_data_send_email($val->send_to);
+            $tables = [
+                'outlet_coverage' => [],
+                'target_call_daily' => [],
+                'target_call_monthly' => [],
+            ];
+            if (in_array($val->send_to, $this->super_email)) {
+                $tables = $this->scheduler->get_data_send_email();
+            } else {
+                $tables = $this->scheduler->get_data_send_email($val->send_to);
+            }
 
 			$data = [
 				'name' => explode('@', $val->send_to)[0] ?? $val->send_to,
@@ -60,7 +73,16 @@ class Scheduler extends BaseController
             $pdf->SetDrawColor(255, 255, 255);
             $pdf->SetLineWidth(0);
 
-			$tables = $this->scheduler->get_data_send_email($val->send_to);
+            $tables = [
+                'outlet_coverage' => [],
+                'target_call_daily' => [],
+                'target_call_monthly' => [],
+            ];
+            if (in_array($val->send_to, $this->super_email)) {
+                $tables = $this->scheduler->get_data_send_email();
+            } else {
+                $tables = $this->scheduler->get_data_send_email($val->send_to);
+            }
 
 			$data = [
 				'name' => explode('@', $val->send_to)[0] ?? $val->send_to,
@@ -97,7 +119,16 @@ class Scheduler extends BaseController
 		foreach ($emails as $val) {
 			if (!$val->send_to) continue;
 
-			$tables = $this->scheduler->get_data_send_email($val->send_to);
+            $tables = [
+                'outlet_coverage' => [],
+                'target_call_daily' => [],
+                'target_call_monthly' => [],
+            ];
+            if (in_array($val->send_to, $this->super_email)) {
+                $tables = $this->scheduler->get_data_send_email();
+            } else {
+                $tables = $this->scheduler->get_data_send_email($val->send_to);
+            }
 
             $objPHPExcel = new PHPExcel();
 

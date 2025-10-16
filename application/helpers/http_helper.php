@@ -266,6 +266,14 @@ if (!function_exists('sending_email')) {
         $CI->email->subject($subject);
         $CI->email->message($message);
 
+        $cc = $CI->config->item('email')['cc'] ?? [];
+        if (!is_array($cc)) {
+            $cc = explode(',', $cc);
+        }
+        if (!empty($cc)) {
+            $CI->email->cc($cc);
+        }
+
         if (!empty($attachments)) {
             foreach ((array) $attachments as $file) {
                 if (file_exists($file)) {

@@ -13,4 +13,7 @@ $config['email'] = [
     'crlf'          => "\r\n",
     'newline'       => "\r\n",
     'wordwrap'      => TRUE,
+    'cc'            => [
+        'yudi.wahyudi154@gmail.com',
+    ],
 ];
