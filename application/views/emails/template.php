@@ -21,6 +21,15 @@
             margin: 20px auto;
             box-sizing: border-box;
         }
+        .container-no-border {
+            width: 90%;
+            padding: 20px;
+            border: 1px solid #fff;
+            border-radius: 6px;
+            background: #fff;
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
         h2 {
             color: #007bff;
             margin-top: 0;
@@ -58,7 +67,7 @@
     </style>
 </head>
 <body>
-<div class="container">
+<div class="<?= isset($is_pdf) && $is_pdf ? 'container-no-border' : 'container' ?>">
     <h2><?= $subject ?? 'Informasi' ?></h2>
     <p>Halo <b><?= $name ?? 'Pengguna' ?></b>,</p>
 
