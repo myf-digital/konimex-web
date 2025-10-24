@@ -556,27 +556,29 @@ class Rep_productivity extends BaseController
         $objPHPExcel->createSheet(6);
         $sheetAttendance = $objPHPExcel->setActiveSheetIndex(6);
 		$sheetAttendance->setTitle('Attendance');
-        $sheetAttendance->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Salesman ID')
-            ->setCellValue('C1', 'Salesman Name');
+        $sheetAttendance->setCellValue('A1', 'No.')
+            ->setCellValue('B1', 'Parma')
+            ->setCellValue('C1', 'Parma Name')
+            ->setCellValue('D1', 'Area');
+        $sheetAttendance->mergeCells('A1:A2');
+        $sheetAttendance->mergeCells('B1:B2');
+        $sheetAttendance->mergeCells('C1:C2');
+        $sheetAttendance->mergeCells('D1:D2');
 
-        $sheetAttendance->setCellValue('A2', '')
-            ->setCellValue('B2', '')
-            ->setCellValue('C2', '');
-
-        $colIndex = 4;
+        $colIndex = 5;
         foreach ($date_interval as $dateObj) {
             $dateStr = format_date_id($dateObj, true, false);
             $colBase = number_to_alphabet($colIndex);
 
-            $sheetAttendance->mergeCells("{$colBase}1:" . number_to_alphabet($colIndex+2) . '1');
+            $sheetAttendance->mergeCells("{$colBase}1:" . number_to_alphabet($colIndex+3) . '1');
             $sheetAttendance->setCellValue("{$colBase}1", $dateStr);
 
-            $sheetAttendance->setCellValue(number_to_alphabet($colIndex)   . '2', 'In');
-            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+1) . '2', 'Out');
-            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+2) . '2', 'Duration');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex)   . '2', 'Status');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+1) . '2', 'In');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+2) . '2', 'Out');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+3) . '2', 'Duration');
 
-            $colIndex += 3;
+            $colIndex += 4;
         }
 
         $attendanceParma = $this->report_productivity->get_attendance_parma($params);
@@ -588,16 +590,20 @@ class Rep_productivity extends BaseController
                 });
 
                 $checkIn = [];
-                foreach (array_column($filtered, 'start_time') as $st) {
-                    $checkIn[date('Y-m-d', strtotime($st))] = $st;
-                }
                 $checkOut = [];
-                foreach (array_column($filtered, 'end_time') as $et) {
-                    $checkOut[date('Y-m-d', strtotime($et))] = $et;
-                }
+                $status = [];
+
+                foreach ($filtered as $row) {
+                    $tgl = date('Y-m-d', strtotime($row['periode']));
+                    $checkIn[$tgl] = $row['start_time'];
+                    $checkOut[$tgl] = $row['end_time'];
+                    $status[$tgl] = $row['status'];
+                }                
                 $salesman[] = [
                     'salesmanid' => $ap['salesmanid'],
                     'nama_salesman' => $ap['nama_salesman'],
+                    'nama_area' => $ap['nama_area'],
+                    'status' => $status,
                     'check_in' => $checkIn,
                     'check_out' => $checkOut,
                 ];
@@ -609,9 +615,10 @@ class Rep_productivity extends BaseController
         foreach ($salesman as $s) {
             $sheetAttendance->setCellValue('A'.$row, $i)
                 ->setCellValue('B'.$row, $s['salesmanid'] ?? '')
-                ->setCellValue('C'.$row, $s['nama_salesman'] ?? '');
+                ->setCellValue('C'.$row, $s['nama_salesman'] ?? '')
+                ->setCellValue('D'.$row, $s['nama_area'] ?? '');
 
-            $colIdx = 4;
+            $colIdx = 5;
             foreach ($date_interval as $date_int) {
                 $in = $s['check_in'][$date_int] ?? null;
                 if ($in) $in = date('H:i:s', strtotime($s['check_in'][$date_int]));
@@ -620,12 +627,14 @@ class Rep_productivity extends BaseController
                 if ($out) $out = date('H:i:s', strtotime($s['check_out'][$date_int]));
 
                 $duration = cal_duration_date($s['check_in'][$date_int] ?? null, $s['check_out'][$date_int] ?? null);
+                $status = $s['status'][$date_int] ?? null;
+                
+                $sheetAttendance->setCellValue(number_to_alphabet($colIdx)   . $row, $status);
+                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+1) . $row, $in);
+                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+2) . $row, $out);
+                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+3) . $row, $duration);
 
-                $sheetAttendance->setCellValue(number_to_alphabet($colIdx)   . $row, $in);
-                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+1) . $row, $out);
-                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+2) . $row, $duration);
-
-                $colIdx += 3;
+                $colIdx += 4;
             }
 			$i++;
             $row++;

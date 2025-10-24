@@ -216,7 +216,7 @@ class Rep_productivity_model extends CI_Model
 									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 									m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid and salesman.salesmanid not in ('PAR100', 'PAR101') left JOIN  
+									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid and salesamn.salesmanid not in ('PAR100', 'PAR101') left JOIN  
 									m_product product on dtl.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.tanggal between '".$start."' and '".$end."' 
@@ -283,7 +283,7 @@ class Rep_productivity_model extends CI_Model
 									t_sales_crc sls left join
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 									m_customer cst on sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid and salesman.salesmanid not in ('PAR100', 'PAR101') left JOIN  
+									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid and salesamn.salesmanid not in ('PAR100', 'PAR101') left JOIN  
 									m_product product on sls.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.periode between '".$start."' and '".$end."' 
@@ -454,9 +454,9 @@ class Rep_productivity_model extends CI_Model
                                             ELSE a.array_product
                                         END as brands
                                     from trx_visit_detailing a
-                                    left join v_gff_info b on a.salesmanid=b.salesmanid and b.salesmanid not in ('PAR100', 'PAR101')
+                                    left join v_gff_info b on a.salesmanid=b.salesmanid
                                     left join v_outlet_all c on a.customerid=c.customerid
-                                    where a.periode between '".$start."' and '".$end."' 
+                                    where a.periode between '".$start."' and '".$end."' and b.salesmanid not in ('PAR100', 'PAR101')
                                             $strquery
                                             $area $regional;");
         return $query->result_array();
@@ -516,8 +516,8 @@ class Rep_productivity_model extends CI_Model
             JOIN (
                 SELECT tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid, MAX(tpl.periode) AS max_periode
                 FROM trx_progress_listing tpl
-                LEFT JOIN m_sales_salesman mss ON mss.salesmanid = tpl.salesmanid and mss.salesmanid not in ('PAR100', 'PAR101')
-                WHERE ".$where . $strquery ."
+                LEFT JOIN m_sales_salesman mss ON mss.salesmanid = tpl.salesmanid
+                WHERE ".$where . $strquery ." and mss.salesmanid not in ('PAR100', 'PAR101')
                 GROUP BY tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid
             ) latest
                 ON t.siteid = latest.siteid
@@ -532,7 +532,7 @@ class Rep_productivity_model extends CI_Model
     function get_attendance_parma($data)
     {
         if ($data['restrict_level'] == '4') {
-            $strquery = " AND ap.salesmanid IN (
+            $strquery = " AND tsa.salesmanid IN (
                             SELECT salesmanid
                             FROM m_sales_salesman
                             WHERE subareaid IN (
@@ -543,7 +543,7 @@ class Rep_productivity_model extends CI_Model
                             )
                         )";
         } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND ap.salesmanid IN (
+            $strquery = " AND tsa.salesmanid IN (
                             SELECT salesmanid
                             FROM m_sales_salesman
                             WHERE areaid IN (
@@ -554,7 +554,7 @@ class Rep_productivity_model extends CI_Model
                             )
                         )";
         } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND ap.salesmanid IN (
+            $strquery = " AND tsa.salesmanid IN (
                             SELECT salesmanid
                             FROM m_sales_salesman
                             WHERE regionalid IN (
@@ -568,7 +568,7 @@ class Rep_productivity_model extends CI_Model
 
         $where = "";
         if (isset($data['start_period']) && isset($data['end_period'])) {
-            $where .= " ap.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+            $where .= " tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
         }
         if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
             $where .= " AND mss.regionalid ='".$data['regionalid']."'";
@@ -578,10 +578,12 @@ class Rep_productivity_model extends CI_Model
         }
 
 		$query = $this->db->query("
-            SELECT mss.nama_salesman,mss. ap.*
-            FROM attendance_parma ap
-            LEFT JOIN v_gff_info mss ON mss.salesmanid = ap.salesmanid and mss.salesmanid not in ('PAR100', 'PAR101')
-            WHERE ".$where . $strquery ." 
+        SELECT mss.nama_salesman, mss.salesmanid, mss.nama_area,tsa.status, tsa.periode, ap.start_time, ap.start_image, ap.end_time, ap.end_image
+        FROM t_sales_absensi tsa 
+            LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
+            left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
+            WHERE ".$where . $strquery ."and mss.salesmanid not in ('PAR100', 'PAR101')
+            order by tsa.periode, tsa.salesmanid 
         ");
         return $query->result_array();
     }
@@ -685,7 +687,7 @@ class Rep_productivity_model extends CI_Model
                 left join v_outlet_all b on
                     (b.customerid = a.customerid))
                 left join v_gff_info c on
-                    (c.salesmanid = a.salesmanid and c.tipe_sales = 'PAR' and c.salesmanid not in ('PAR100', 'PAR101')))
+                    (c.salesmanid = a.salesmanid and c.tipe_sales = 'PAR'))
                 left join t_sales_rrk d on
                     (d.customerid = a.customerid and d.salesmanid = a.salesmanid and d.periode = a.periode))
                 left join (
@@ -704,7 +706,7 @@ class Rep_productivity_model extends CI_Model
                     where
                         m.idjabatan = 24) e on
                     (e.areaid = c.areaid))
-            WHERE ".$where . $strquery ." 
+            WHERE ".$where . $strquery ." and c.salesmanid not in ('PAR100', 'PAR101')
             ) x
             group by
                 x.periode,
