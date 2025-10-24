@@ -48,7 +48,7 @@ class Rep_productivity_model extends CI_Model
 							else 0 
 							end _pjp, 0 _effective_call,
 							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
-					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
+					from s_absensi a left join t_sales_absensi b on a.date=b.periode and a.salesman_id =b.salesmanid 
 					where a.date between DATE_ADD(?, INTERVAL -3 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
@@ -585,4 +585,134 @@ class Rep_productivity_model extends CI_Model
         ");
         return $query->result_array();
     }
+
+    function get_daily_target_call($data)
+    {
+        if ($data['restrict_level'] == '4') {
+            $strquery = " AND a.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE subareaid IN (
+                                SELECT DISTINCT b.subareaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " AND a.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE areaid IN (
+                                SELECT DISTINCT b.areaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " AND a.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE regionalid IN (
+                                SELECT DISTINCT b.regionalid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        ) ";
+        } else $strquery = "";
+
+        $where = "";
+        if (isset($data['start_period']) && isset($data['end_period'])) {
+            $where .= " a.periode BETWEEN '".$data['start_period']."' AND '".$data['end_period']."'";
+        }
+        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND c.regionalid ='".$data['regionalid']."'";
+        }
+        if (isset($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND c.areaid ='".$data['areaid']."'";
+        }
+
+		$query = $this->db->query("
+            select
+                z.periode AS periode,
+                z.salesmanid AS parma,
+                z.nama_salesman AS nama_parma,
+                z.nama_area AS nama_area,
+                z.send_to AS send_to,
+                z.target_call AS target_call,
+                z.Call AS `Call`,
+                z.ExtraCall AS ExtraCall,
+                z.Call + z.ExtraCall AS actual_call
+            from
+                (
+                select
+                    x.periode AS periode,
+                    x.salesmanid AS salesmanid,
+                    x.nama_salesman AS nama_salesman,
+                    x.nama_area AS nama_area,
+                    x.email AS send_to,
+                    (
+                    select
+                        count(1)
+                    from
+                        t_sales_rrk
+                    where
+                        t_sales_rrk.salesmanid = x.salesmanid
+                        and t_sales_rrk.periode = x.periode) AS target_call,
+                    sum(case when x.flag = 'Call' then x.jml_outlet else 0 end) AS `Call`,
+                sum(case when x.flag = 'ExtraCall' then x.jml_outlet else 0 end) AS ExtraCall
+            from
+                (
+                select
+                    a.periode AS periode,
+                    a.salesmanid AS salesmanid,
+                    a.nama_salesman AS nama_salesman,
+                    c.nama_area AS nama_area,
+                    e.email AS email,
+                    a.customerid AS customerid,
+                    b.nama_customer AS nama_customer,
+                    b.typeid AS cluster,
+                    b.nama_area AS nama_area_outlet,
+                    case
+                        when d.customerid is not null then 'Call'
+                        else 'ExtraCall'
+                    end AS flag,
+                    1 AS jml_outlet
+                from
+                    ((((t_sales_rrk_trans a
+                left join v_outlet_all b on
+                    (b.customerid = a.customerid))
+                left join v_gff_info c on
+                    (c.salesmanid = a.salesmanid and c.tipe_sales = 'PAR' and c.salesmanid not in ('PAR100', 'PAR101')))
+                left join t_sales_rrk d on
+                    (d.customerid = a.customerid and d.salesmanid = a.salesmanid and d.periode = a.periode))
+                left join (
+                    select
+                        m.username AS username,
+                        m.name AS name,
+                        m.email AS email,
+                        n.areaid AS areaid,
+                        o.nama_area AS nama_area
+                    from
+                        ((app_resource m
+                    left join app_restrict_location n on
+                        (m.resource_id = n.resource_id))
+                    left join m_area_areasite o on
+                        (o.areaid = n.areaid))
+                    where
+                        m.idjabatan = 24) e on
+                    (e.areaid = c.areaid))
+            WHERE ".$where . $strquery ." 
+            ) x
+            group by
+                x.periode,
+                x.salesmanid,
+                x.nama_salesman) z
+        ");
+        return $query->result_array();
+        
+    }
+
 }

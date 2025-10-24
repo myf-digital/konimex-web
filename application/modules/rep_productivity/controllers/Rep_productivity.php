@@ -271,7 +271,7 @@ class Rep_productivity extends BaseController
         $sheetProductivity
             ->setCellValue('A1', 'No')
             ->setCellValue('B1', 'City/Area')
-            ->setCellValue('C1', 'Code PAR-MA')
+            ->setCellValue('C1', 'PAR-MA')
             ->setCellValue('D1', 'PAR-MA Name')
             ->setCellValue('E1', 'Position')
             ->setCellValue('F1', 'HK')
@@ -328,12 +328,12 @@ class Rep_productivity extends BaseController
             ->setCellValue('B1', 'Period')
             ->setCellValue('C1', 'PAR-MA')
             ->setCellValue('D1', 'PAR-MA Name')
-            ->setCellValue('E1', 'OutletID')
+            ->setCellValue('E1', 'PAR-MA ID Outlet')
             ->setCellValue('F1', 'Latest JJid')
-            ->setCellValue('G1', 'Outlet Name')
-            ->setCellValue('H1', 'Channel')
-            ->setCellValue('I1', 'Account')
-            ->setCellValue('J1', 'City')
+            ->setCellValue('G1', 'PAR-MA Nama Outlet')
+            ->setCellValue('H1', 'Cluster')
+            ->setCellValue('I1', 'Tier')
+            ->setCellValue('J1', 'Area')
             ->setCellValue('K1', 'CheckIn')
             ->setCellValue('L1', 'CheckOut')
             ->setCellValue('M1', 'Time Visit')
@@ -372,11 +372,11 @@ class Rep_productivity extends BaseController
 		$sheetOrder->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Tanggal')
             ->setCellValue('C1', 'User PAR-MA')
-            ->setCellValue('D1', 'OutletID')
+            ->setCellValue('D1', 'PAR-MA ID Outlet')
             ->setCellValue('E1', 'Latest JJid')
-            ->setCellValue('F1', 'ID Dist   ')
-            ->setCellValue('G1', 'Outlet Name')
-            ->setCellValue('H1', 'Account')
+            ->setCellValue('F1', 'ID Outlet Distributor')
+            ->setCellValue('G1', 'PAR-MA Nama Outlet')
+            ->setCellValue('H1', 'Tier')
             ->setCellValue('I1', 'No SP')
             ->setCellValue('J1', 'No Sales Order')
             ->setCellValue('K1', 'ProductID')
@@ -428,10 +428,10 @@ class Rep_productivity extends BaseController
             ->setCellValue('B1', 'Period')
             ->setCellValue('C1', 'User PAR-MA')
             ->setCellValue('D1', 'PAR-MA Name')
-            ->setCellValue('E1', 'OutletID')
+            ->setCellValue('E1', 'PAR-MA ID Outlet')
             ->setCellValue('F1', 'Latest JJid')
-            ->setCellValue('G1', 'Outlet Name')
-            ->setCellValue('H1', 'Account')
+            ->setCellValue('G1', 'PAR-MA Nama Outlet')
+            ->setCellValue('H1', 'Tier')
             ->setCellValue('I1', 'ProductID')
             ->setCellValue('J1', 'Product Name')
             ->setCellValue('K1', 'Brand')
@@ -465,12 +465,12 @@ class Rep_productivity extends BaseController
             ->setCellValue('B1', 'Period')
             ->setCellValue('C1', 'PAR-MA')
             ->setCellValue('D1', 'PAR-MA Name')
-            ->setCellValue('E1', 'OutletID')
+            ->setCellValue('E1', 'PAR-MA ID Outlet')
             ->setCellValue('F1', 'Latest JJid')
-            ->setCellValue('G1', 'Outlet Name')
-            ->setCellValue('H1', 'Channel')
-            ->setCellValue('I1', 'Account')
-            ->setCellValue('J1', 'City')
+            ->setCellValue('G1', 'PAR-MA Nama Outlet')
+            ->setCellValue('H1', 'Cluster')
+            ->setCellValue('I1', 'Tier')
+            ->setCellValue('J1', 'Area')
             ->setCellValue('K1', 'PIC Name')
             ->setCellValue('L1', 'Brand Detailing')
             ->setCellValue('M1', 'Time Detailing')
@@ -506,10 +506,10 @@ class Rep_productivity extends BaseController
 		$sheetProgressListing->setTitle('Progress Listing');
         $sheetProgressListing->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Periode')
-            ->setCellValue('C1', 'Salesman ID')
-            ->setCellValue('D1', 'Salesman Name')
-            ->setCellValue('E1', 'Customer ID')
-            ->setCellValue('F1', 'Customer Name')
+            ->setCellValue('C1', 'PAR-MA')
+            ->setCellValue('D1', 'PAR-MA Name')
+            ->setCellValue('E1', 'PAR-MA ID Outlet')
+            ->setCellValue('F1', 'PAR-MA Nama Outlet')
             ->setCellValue('G1', 'Brand ID')
             ->setCellValue('H1', 'Brand Name')
             ->setCellValue('I1', 'Progress')
@@ -631,6 +631,84 @@ class Rep_productivity extends BaseController
             $row++;
         }
         
+        // target call daily
+        $date_interval = date_interval($params['start_period'], $params['end_period']);
+        $objPHPExcel->createSheet(7);
+        $sheetcall = $objPHPExcel->setActiveSheetIndex(7);
+		$sheetcall->setTitle('Call Daily');
+        $sheetcall->setCellValue('A1', 'No.')
+            ->setCellValue('B1', 'Parma')
+            ->setCellValue('C1', 'Parma Name')
+            ->setCellValue('D1', 'Area');
+        $sheetcall->mergeCells('A1:A2');
+        $sheetcall->mergeCells('B1:B2');
+        $sheetcall->mergeCells('C1:C2');
+        $sheetcall->mergeCells('D1:D2');
+        //$sheetAttendance->getStyle('A1')->getAlignment()->setHorizontal('center');
+        //$sheetAttendance->getStyle('B1')->getAlignment()->setHorizontal('center');
+        //$sheetAttendance->getStyle('C1')->getAlignment()->setHorizontal('center');
+
+        $colIndex = 5;
+        foreach ($date_interval as $dateObj) {
+            $dateStr = format_date_id($dateObj, true, false);
+            $colBase = number_to_alphabet($colIndex);
+
+            $sheetcall->mergeCells("{$colBase}1:" . number_to_alphabet($colIndex+3) . '1');
+            $sheetcall->setCellValue("{$colBase}1", $dateStr);
+
+            $sheetcall->setCellValue(number_to_alphabet($colIndex)   . '2', 'Target Call');
+            $sheetcall->setCellValue(number_to_alphabet($colIndex+1) . '2', 'Call');
+            $sheetcall->setCellValue(number_to_alphabet($colIndex+2) . '2', 'Extra Call');
+            $sheetcall->setCellValue(number_to_alphabet($colIndex+3) . '2', 'Actual Call');
+            $colIndex += 4;
+        }
+
+        $callParma = $this->report_productivity->get_daily_target_call($params);
+        $parmalist = [];
+        foreach ($callParma as $ap) {
+            $parmaKey = $ap['parma'];
+
+            if (!isset($parmalist[$parmaKey])) {
+                $parmalist[$parmaKey] = [
+                    'parma' => $ap['parma'],
+                    'parma_name' => $ap['nama_parma'],
+                    'area' => $ap['nama_area'],
+                    'daily' => [] // simpan per tanggal
+                ];
+            }
+
+            $parmalist[$parmaKey]['daily'][$ap['periode']] = [
+                'target_call' => $ap['target_call'],
+                'Call' => $ap['Call'],
+                'ExtraCall' => $ap['ExtraCall'],
+                'actual_call' => $ap['actual_call']
+            ];
+        }
+
+        $i = 1;
+        $row = 3;
+        foreach ($parmalist as $s) {
+            $sheetcall->setCellValue('A'.$row, $i)
+                ->setCellValue('B'.$row, $s['parma'])
+                ->setCellValue('C'.$row, $s['parma_name'])
+                ->setCellValue('D'.$row, $s['area']);
+
+            $colIndex = 5;
+            foreach ($date_interval as $date_int) {
+                $dateStr = $date_int; // pastikan format sama dengan kunci di $s['daily']
+                $daily = $s['daily'][$dateStr] ?? ['target_call' => 0, 'Call' => 0, 'ExtraCall' => 0, 'actual_call' => 0];
+
+                $sheetcall->setCellValue(number_to_alphabet($colIndex)   . $row, $daily['target_call']);
+                $sheetcall->setCellValue(number_to_alphabet($colIndex+1) . $row, $daily['Call']);
+                $sheetcall->setCellValue(number_to_alphabet($colIndex+2) . $row, $daily['ExtraCall']);
+                $sheetcall->setCellValue(number_to_alphabet($colIndex+3) . $row, $daily['actual_call']);
+
+                $colIndex += 4;
+            }
+
+            $i++;
+            $row++;
+        }
         // Hentikan output apa pun sebelum membuat file
         ob_end_clean();
         ob_start();
