@@ -7,3 +7,4 @@
 /application/config/wa_zawa.php
 /application/config/email.php
 /composer.lock
+/scripts/*.log

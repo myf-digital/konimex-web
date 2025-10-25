@@ -48,7 +48,7 @@ class Rep_productivity_model extends CI_Model
 							else 0 
 							end _pjp, 0 _effective_call,
 							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
-					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
+					from s_absensi a left join t_sales_absensi b on a.date=b.periode and a.salesman_id =b.salesmanid 
 					where a.date between DATE_ADD(?, INTERVAL -3 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
@@ -138,7 +138,7 @@ class Rep_productivity_model extends CI_Model
                                                where z.periode between '".$start."' and '".$end."' 
                                                group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
                                             ),'-') as rrk_detailing, sum(e.jumlah_customer) as jumlah_customer, sum(e.total_penjualan) as total_penjualan
-									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
+									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.salesmanid not in ('PAR100', 'PAR101') and b.aktif=1
 									left join m_area_areasite c on c.areaid=b.areaid left join m_area_regional d on d.regionalid=c.regionalid
                                     left join (SELECT salesmanid,tanggal,
 										  COUNT(customerid) AS total_transaksi,
@@ -216,7 +216,7 @@ class Rep_productivity_model extends CI_Model
 									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 									m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
+									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid and salesamn.salesmanid not in ('PAR100', 'PAR101') left JOIN  
 									m_product product on dtl.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.tanggal between '".$start."' and '".$end."' 
@@ -283,7 +283,7 @@ class Rep_productivity_model extends CI_Model
 									t_sales_crc sls left join
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 									m_customer cst on sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid left JOIN  
+									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid and salesamn.salesmanid not in ('PAR100', 'PAR101') left JOIN  
 									m_product product on sls.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.periode between '".$start."' and '".$end."' 
@@ -355,7 +355,7 @@ class Rep_productivity_model extends CI_Model
                                                 then 'Call' 
                                             end as flag
                                     from t_sales_rrk_trans a
-                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid and b.salesmanid not in ('PAR100', 'PAR101')
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
@@ -371,7 +371,7 @@ class Rep_productivity_model extends CI_Model
                                             '' alasan, '' keterangan,
                                             'FJP Tidak Terkunjungi' as flag
                                     from t_sales_rrk a
-                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid and b.salesmanid not in ('PAR100', 'PAR101')
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
@@ -454,9 +454,9 @@ class Rep_productivity_model extends CI_Model
                                             ELSE a.array_product
                                         END as brands
                                     from trx_visit_detailing a
-                                    left join v_gff_info b on a.salesmanid=b.salesmanid 
+                                    left join v_gff_info b on a.salesmanid=b.salesmanid
                                     left join v_outlet_all c on a.customerid=c.customerid
-                                    where a.periode between '".$start."' and '".$end."' 
+                                    where a.periode between '".$start."' and '".$end."' and b.salesmanid not in ('PAR100', 'PAR101')
                                             $strquery
                                             $area $regional;");
         return $query->result_array();
@@ -517,7 +517,7 @@ class Rep_productivity_model extends CI_Model
                 SELECT tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid, MAX(tpl.periode) AS max_periode
                 FROM trx_progress_listing tpl
                 LEFT JOIN m_sales_salesman mss ON mss.salesmanid = tpl.salesmanid
-                WHERE ".$where . $strquery ."
+                WHERE ".$where . $strquery ." and mss.salesmanid not in ('PAR100', 'PAR101')
                 GROUP BY tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid
             ) latest
                 ON t.siteid = latest.siteid
@@ -532,7 +532,7 @@ class Rep_productivity_model extends CI_Model
     function get_attendance_parma($data)
     {
         if ($data['restrict_level'] == '4') {
-            $strquery = " AND ap.salesmanid IN (
+            $strquery = " AND tsa.salesmanid IN (
                             SELECT salesmanid
                             FROM m_sales_salesman
                             WHERE subareaid IN (
@@ -543,7 +543,7 @@ class Rep_productivity_model extends CI_Model
                             )
                         )";
         } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND ap.salesmanid IN (
+            $strquery = " AND tsa.salesmanid IN (
                             SELECT salesmanid
                             FROM m_sales_salesman
                             WHERE areaid IN (
@@ -554,7 +554,7 @@ class Rep_productivity_model extends CI_Model
                             )
                         )";
         } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND ap.salesmanid IN (
+            $strquery = " AND tsa.salesmanid IN (
                             SELECT salesmanid
                             FROM m_sales_salesman
                             WHERE regionalid IN (
@@ -568,7 +568,7 @@ class Rep_productivity_model extends CI_Model
 
         $where = "";
         if (isset($data['start_period']) && isset($data['end_period'])) {
-            $where .= " ap.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+            $where .= " tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
         }
         if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
             $where .= " AND mss.regionalid ='".$data['regionalid']."'";
@@ -578,11 +578,143 @@ class Rep_productivity_model extends CI_Model
         }
 
 		$query = $this->db->query("
-            SELECT mss.nama_salesman, ap.*
-            FROM attendance_parma ap
-            LEFT JOIN m_sales_salesman mss ON mss.salesmanid = ap.salesmanid
-            WHERE ".$where . $strquery ." 
+        SELECT mss.nama_salesman, mss.salesmanid, mss.nama_area,tsa.status, tsa.periode, ap.start_time, ap.start_image, ap.end_time, ap.end_image
+        FROM t_sales_absensi tsa 
+            LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
+            left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
+            WHERE ".$where . $strquery ."and mss.salesmanid not in ('PAR100', 'PAR101')
+            order by tsa.periode, tsa.salesmanid 
         ");
         return $query->result_array();
     }
+
+    function get_daily_target_call($data)
+    {
+        if ($data['restrict_level'] == '4') {
+            $strquery = " AND a.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE subareaid IN (
+                                SELECT DISTINCT b.subareaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " AND a.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE areaid IN (
+                                SELECT DISTINCT b.areaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " AND a.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE regionalid IN (
+                                SELECT DISTINCT b.regionalid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        ) ";
+        } else $strquery = "";
+
+        $where = "";
+        if (isset($data['start_period']) && isset($data['end_period'])) {
+            $where .= " a.periode BETWEEN '".$data['start_period']."' AND '".$data['end_period']."'";
+        }
+        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND c.regionalid ='".$data['regionalid']."'";
+        }
+        if (isset($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND c.areaid ='".$data['areaid']."'";
+        }
+
+		$query = $this->db->query("
+            select
+                z.periode AS periode,
+                z.salesmanid AS parma,
+                z.nama_salesman AS nama_parma,
+                z.nama_area AS nama_area,
+                z.send_to AS send_to,
+                z.target_call AS target_call,
+                z.Call AS `Call`,
+                z.ExtraCall AS ExtraCall,
+                z.Call + z.ExtraCall AS actual_call
+            from
+                (
+                select
+                    x.periode AS periode,
+                    x.salesmanid AS salesmanid,
+                    x.nama_salesman AS nama_salesman,
+                    x.nama_area AS nama_area,
+                    x.email AS send_to,
+                    (
+                    select
+                        count(1)
+                    from
+                        t_sales_rrk
+                    where
+                        t_sales_rrk.salesmanid = x.salesmanid
+                        and t_sales_rrk.periode = x.periode) AS target_call,
+                    sum(case when x.flag = 'Call' then x.jml_outlet else 0 end) AS `Call`,
+                sum(case when x.flag = 'ExtraCall' then x.jml_outlet else 0 end) AS ExtraCall
+            from
+                (
+                select
+                    a.periode AS periode,
+                    a.salesmanid AS salesmanid,
+                    a.nama_salesman AS nama_salesman,
+                    c.nama_area AS nama_area,
+                    e.email AS email,
+                    a.customerid AS customerid,
+                    b.nama_customer AS nama_customer,
+                    b.typeid AS cluster,
+                    b.nama_area AS nama_area_outlet,
+                    case
+                        when d.customerid is not null then 'Call'
+                        else 'ExtraCall'
+                    end AS flag,
+                    1 AS jml_outlet
+                from
+                    ((((t_sales_rrk_trans a
+                left join v_outlet_all b on
+                    (b.customerid = a.customerid))
+                left join v_gff_info c on
+                    (c.salesmanid = a.salesmanid and c.tipe_sales = 'PAR'))
+                left join t_sales_rrk d on
+                    (d.customerid = a.customerid and d.salesmanid = a.salesmanid and d.periode = a.periode))
+                left join (
+                    select
+                        m.username AS username,
+                        m.name AS name,
+                        m.email AS email,
+                        n.areaid AS areaid,
+                        o.nama_area AS nama_area
+                    from
+                        ((app_resource m
+                    left join app_restrict_location n on
+                        (m.resource_id = n.resource_id))
+                    left join m_area_areasite o on
+                        (o.areaid = n.areaid))
+                    where
+                        m.idjabatan = 24) e on
+                    (e.areaid = c.areaid))
+            WHERE ".$where . $strquery ." and c.salesmanid not in ('PAR100', 'PAR101')
+            ) x
+            group by
+                x.periode,
+                x.salesmanid,
+                x.nama_salesman) z
+        ");
+        return $query->result_array();
+        
+    }
+
 }
