@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div id="tbl-content" class="box-table box-success">
-                <div class="box-body">
+                <div class="box-body" style="overflow: auto hidden;">
                     <table id="tbl-customer">
                     </table>
                 </div>
@@ -24,23 +24,40 @@
 </section>
 
 <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="ModalLabel">List GFF</h4>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="ModalLabel">List GFF</h4>
+            </div>
+            <div class="modal-body">
+                <div id="tbl-listgff" class="box-table box-success">
                 </div>
-                <div class="modal-body">
-                    <div id="tbl-listgff" class="box-table box-success">
-                    </div>
-                    <div class="modal-footer">
-                        <a  class="btn btn-secondary" data-dismiss="modal">Close</a>
-                    </div>
+                <div class="modal-footer">
+                    <a  class="btn btn-secondary" data-dismiss="modal">Close</a>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="modalMaps" tabindex="-1" role="dialog" aria-labelledby="myModalMapsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalMapsLabel"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="maps" style="width: 100%; height: 400px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>      
+            </div>
+        </div>
+    </div>
+</div>
 <!-- JS content -->
 <script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-content.js' ?>"></script>

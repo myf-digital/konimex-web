@@ -312,6 +312,26 @@ if (!function_exists('render_tables_html')) {
             $html .= "</tbody></table><br>";
         }
 
+        // TARGET CALL MONTHLY
+        if (!empty($tables['target_call_monthly'])) {
+            $html .= "<h3>Target Call Monthly</h3>";
+            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
+            $html .= "<thead><tr style='background:#eee'>";
+            $html .= "<th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
+            foreach ($tables['target_call_monthly'] as $tcm) {
+                $html .= "<tr>
+                            <td>{$tcm->parma}</td>
+                            <td>{$tcm->nama_parma}</td>
+                            <td>{$tcm->nama_area}</td>
+                            <td>{$tcm->target_call}</td>
+                            <td>{$tcm->Call}</td>
+                            <td>{$tcm->ExtraCall}</td>
+                            <td>{$tcm->actual_call}</td>
+                          </tr>";
+            }
+            $html .= "</tbody></table><br>";
+        }
+
         // TARGET CALL DAILY
         if (!empty($tables['target_call_daily'])) {
             $html .= "<h3>Target Call Daily</h3>";
@@ -329,26 +349,6 @@ if (!function_exists('render_tables_html')) {
                             <td>{$tcd->Call}</td>
                             <td>{$tcd->ExtraCall}</td>
                             <td>{$tcd->actual_call}</td>
-                          </tr>";
-            }
-            $html .= "</tbody></table><br>";
-        }
-
-        // TARGET CALL MONTHLY
-        if (!empty($tables['target_call_monthly'])) {
-            $html .= "<h3>Target Call Monthly</h3>";
-            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
-            $html .= "<thead><tr style='background:#eee'>";
-            $html .= "<th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
-            foreach ($tables['target_call_monthly'] as $tcm) {
-                $html .= "<tr>
-                            <td>{$tcm->parma}</td>
-                            <td>{$tcm->nama_parma}</td>
-                            <td>{$tcm->nama_area}</td>
-                            <td>{$tcm->target_call}</td>
-                            <td>{$tcm->Call}</td>
-                            <td>{$tcm->ExtraCall}</td>
-                            <td>{$tcm->actual_call}</td>
                           </tr>";
             }
             $html .= "</tbody></table><br>";

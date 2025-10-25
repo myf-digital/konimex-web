@@ -54,7 +54,7 @@
                 {
                     field: 'options',
                     title: 'ACTION',
-                    width: 100,
+                    width: 175,
                     halign: 'center',
                     align: 'center',
                     formatter: formatterButton
@@ -139,11 +139,15 @@
             const param = data.rows[index];
             const btnEdit = $(btns).find("a.btn-success");
             const btnDelete = $(btns).find("a.btn-danger");
+            const btnLocation = $(btns).find("a.btn-info");
             btnEdit.click(function () {
                 updateRow(param);
             });
             btnDelete.click(function () {
                 deleteRow(param);
+            });
+            btnLocation.click(function () {
+                showLocation(param);
             });
             index++;
         }
@@ -166,7 +170,8 @@
     function formatterButton(val, row, index) {
         const btnUpdate = commonGrid.btnBuilderText('btn-update', 'success', 'fa fa-edit', ' Edit');
         const btnDelete = commonGrid.btnBuilderText('btn-delete', 'danger', 'fa fa-times', ' Delete');
-        return '<div class="action-grid">' + btnUpdate + ' ' + btnDelete +'</div>';
+        const btnLokasi = commonGrid.btnBuilderText('btn-maps', 'info', 'fa fa-map-marker', ' Lokasi');
+        return '<div class="action-grid">' + btnUpdate + btnDelete + btnLokasi + '</div>';
     }
 
     function formatterButtonDetail(val, row, index) {
@@ -198,6 +203,62 @@
                 }
             })
         });
+    }
+
+    function showLocation(val) {
+        if (val.latitude && val.latitude != '0' && val.longitude && val.longitude != '0') {
+            get_map(val);
+            return;
+        }
+        $.alert('Latitude Longitude kosong!');
+    }
+
+    function get_map(data) {
+        $('#myModalMapsLabel').html(`Outlet: ${data.nama_customer}`);
+
+        // maps
+        setTimeout(function() {
+            let lat =  parseFloat(data.latitude);
+            let lng = parseFloat(data.longitude);
+            let map = new google.maps.Map(document.getElementById('maps'), {
+                zoom: 15,
+                center: { lat, lng },
+            });
+            let marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                icon: {
+                    url: `${window.location.origin}/assets/images/ic_store_48.png`,
+                    labelOrigin: {
+                        x: 17,
+                        y: 45,
+                    }
+                },
+                title: data.nama_customer,
+                label: {
+                    text: data.nama_customer,
+                    color: '#222222',
+                    fontSize: '10px'
+                }
+            });
+
+            let infoContent = `
+                <div style="font-size:13px; line-height:1.4;">
+                    <strong>${data.nama_customer}</strong><br>
+                    Latitude: ${lat}<br>
+                    Longitude: ${lng}
+                </div>
+            `;
+            let infoWindow = new google.maps.InfoWindow({
+                content: infoContent
+            });
+
+            marker.addListener('click', function() {
+                infoWindow.open(map, marker);
+            });
+
+            $('#modalMaps').modal('show');
+        }, 500);
     }
 
     function viewGff(val) {

@@ -31,8 +31,8 @@ class Scheduler extends BaseController
 
             $tables = [
                 'outlet_coverage' => [],
-                'target_call_daily' => [],
                 'target_call_monthly' => [],
+                'target_call_daily' => [],
             ];
             if (in_array($val->send_to, $this->super_email)) {
                 $tables = $this->scheduler->get_data_send_email();
