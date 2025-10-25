@@ -231,7 +231,7 @@
                 map: map,
                 draggable: true,
                 icon: {
-                    url: common.baseURL('/assets/images/ic_store_48.png'),
+                    url: `${window.location.origin}/assets/images/ic_store_48.png`,
                     labelOrigin: {
                         x: 17,
                         y: 45,
