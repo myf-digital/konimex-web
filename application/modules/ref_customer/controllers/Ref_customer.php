@@ -37,6 +37,13 @@ class Ref_customer extends BaseController
         response($this->customer->update($data));
     }
 
+    public function update_location()
+    {
+        $data = param_input();
+        response($this->customer->update_location($data));
+    }
+
+
     public function delete()
     {
         $data = param_input();
