@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Scheduler extends BaseController
 {
     protected $super_email;
+    protected $email_template;
 
     public function __construct() {
         parent::__construct();
@@ -13,7 +14,9 @@ class Scheduler extends BaseController
         $this->load->library('email');
         $this->load->config('email');
         $this->load->helper('email');
+
         $this->super_email = $this->config->item('email')['cc'] ?? [];
+        $this->email_template = 'emails/template';
     }
 
     public function send_daily_report() {
@@ -30,7 +33,6 @@ class Scheduler extends BaseController
 		foreach ($emails as $val) {
 			if (!$val->send_to) continue;
 
-            $cc_to = null;
             $tables = [
                 'outlet_coverage' => [],
                 'target_call_monthly' => [],
@@ -40,13 +42,11 @@ class Scheduler extends BaseController
                 $tables = $this->scheduler->get_data_send_email();
             } else {
                 $tables = $this->scheduler->get_data_send_email($val->send_to);
-                $cc_to = $tables['order_pending'][0]->cc_to ?? null;
             }
 			$data = [
 				'name' => explode('@', $val->send_to)[0] ?? $val->send_to,
 				'subject' => 'Laporan Aktivitas PAR-MA - ' . format_date_id(date('Y-m-d'), true, false),
 				'message' => render_tables_html($tables),
-                'cc_to' => $cc_to ? explode(',', $cc_to) : [],
 			];
 
             $fileAttach = [];
@@ -62,7 +62,7 @@ class Scheduler extends BaseController
                 $pdf->SetLineWidth(0);
 
                 $dataPDF = array_merge($data, ['is_pdf' => true]);
-                $html = $this->load->view('emails/template', $dataPDF, TRUE);
+                $html = $this->load->view($this->email_template, $dataPDF, TRUE);
 
                 $pdf->writeHTML($html, true, false, true, false, '');
                 $filePdf = FCPATH . 'uploads/laporan_aktivitas_PAR-MA_' . date('Ymd') . '.pdf';
@@ -169,46 +169,6 @@ class Scheduler extends BaseController
                     }
                 }
 
-                // Order Pending
-                $objPHPExcel->createSheet(3);
-                $sheetOrderPending = $objPHPExcel->setActiveSheetIndex(3);
-                $sheetOrderPending->setTitle('Order Pending');
-                $sheetOrderPending
-                    ->setCellValue('A1', 'No')
-                    ->setCellValue('B1', 'Tanggal')
-                    ->setCellValue('C1', 'Code PAR-MA')
-                    ->setCellValue('D1', 'PAR-MA Name')
-                    ->setCellValue('E1', 'No PO')
-                    ->setCellValue('F1', 'Area')
-                    ->setCellValue('G1', 'Outlet')
-                    ->setCellValue('H1', 'Brand')
-                    ->setCellValue('I1', 'Produk')
-                    ->setCellValue('J1', 'Qty')
-                    ->setCellValue('K1', 'Total');
-                if (!empty($tables['order_pending'])) {
-                    $i = 1;
-                    $row = 2;
-                    foreach ($tables['order_pending'] as $op) {
-                        $tanggal = format_date_id($op->tanggal, true, false);
-                        $qty = number_format($op->qty_kecil,0,'.',',');
-                        $total = number_format(($op->qty_kecil * $op->h_jual),0,'.',',');
-                        $sheetOrderPending->setCellValue('A'.$row, $i)
-                            ->setCellValue('B'.$row, $tanggal ?? '')
-                            ->setCellValue('C'.$row, $op->salesman_id ?? '')
-                            ->setCellValue('D'.$row, $op->nama_salesman ?? '')
-                            ->setCellValue('E'.$row, $op->no_po ?? '')
-                            ->setCellValue('F'.$row, $op->nama_area ?? '')
-                            ->setCellValue('G'.$row, $op->nama_customer ?? '')
-                            ->setCellValue('H'.$row, $op->nama_brand ?? '')
-                            ->setCellValue('I'.$row, $op->nama_invoice ?? '')
-                            ->setCellValue('J'.$row, $qty ?? '')
-                            ->setCellValue('K'.$row, $total ?? '');
-                        
-                        $i++;
-                        $row++;
-                    }
-                }
-
                 $fileExcel = FCPATH . 'uploads/laporan_aktivitas_PAR-MA_' . date('Ymd') . '.xlsx';
                 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
                 $objWriter->save($fileExcel);
@@ -218,8 +178,135 @@ class Scheduler extends BaseController
             }
 
             $textInfoAttach = count($infoAttach) > 0 ? ' (Attach: ' . implode(', ', $infoAttach) . ')' : '';
-			if (sending_email($val->send_to, $data['subject'], 'emails/template', $data, $fileAttach)) {
+			if (sending_email($val->send_to, $data['subject'], $this->email_template, $data, $fileAttach)) {
                 log_message('info', 'Laporan harian terkirim' . $textInfoAttach . ' : '  . date('Y-m-d H:i:s'));
+				$result[] = $val->send_to . ': ✅ Email berhasil dikirim!' . $textInfoAttach;
+			} else {
+                log_message('error', 'Gagal mengirim laporan' . $textInfoAttach . ' : ' . $this->email->print_debugger());
+				$result[] = $val->send_to . ': ❌ Gagal mengirim email.' . $textInfoAttach;
+			}
+            if ($filePdf) @unlink($filePdf);
+            if ($fileExcel) @unlink($fileExcel);
+		}
+		responseJSON($result);
+    }
+
+    public function send_pending_order() {
+		$email = $this->input->get('email');
+		$attach = $this->input->get('attach');
+        $arrAttach = $attach ? explode(',', $attach): [];
+		
+		if ($email) $emails = [
+			(object) ['send_to' => $email]
+		];
+		else $emails = $this->scheduler->get_all_order_send_to();
+        
+		$result = [];
+		foreach ($emails as $val) {
+			if (!$val->send_to) continue;
+
+            $cc_to = null;
+            $list = [
+                'order_pending' => [],
+            ];
+            if (in_array($val->send_to, $this->super_email)) {
+                $list = $this->scheduler->get_data_order_send_email();
+            } else {
+                $list = $this->scheduler->get_data_order_send_email($val->send_to);
+            }
+            $dataOrders = group_order_by_no_po($list['order_pending']);
+
+			$data = [
+				'name' => explode('@', $val->send_to)[0] ?? $val->send_to,
+				'subject' => 'Laporan Pending Order PAR-MA - ' . format_date_id(date('Y-m-d'), true, false),
+				'message' => render_order_pending_html($dataOrders),
+                'cc_to' => $cc_to ? explode(',', $cc_to) : [],
+			];
+
+            $fileAttach = [];
+            $infoAttach = [];
+            $filePdf = null;
+            $fileExcel = null;
+            if (in_array('pdf', $arrAttach)) {
+                $title = 'Laporan Pending Order PAR-MA - ' . format_date_id(date('Y-m-d'), true, false);
+                $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+                $pdf->SetTitle($title);
+                $pdf->AddPage();
+                $pdf->SetDrawColor(255, 255, 255);
+                $pdf->SetLineWidth(0);
+
+                $dataPDF = array_merge($data, ['is_pdf' => true]);
+                $html = $this->load->view($this->email_template, $dataPDF, TRUE);
+
+                $pdf->writeHTML($html, true, false, true, false, '');
+                $filePdf = FCPATH . 'uploads/laporan_pending_order_PAR-MA_' . date('Ymd') . '.pdf';
+                $pdf->Output($filePdf, 'F');
+                
+                $fileAttach[] = $filePdf;
+                $infoAttach[] = 'pdf';
+            }
+
+            if (in_array('excel', $arrAttach)) {
+                $objPHPExcel = new PHPExcel();
+                $objPHPExcel->createSheet(0);
+                $sheet = $objPHPExcel->setActiveSheetIndex(0);
+                $sheet->setTitle('Pending Order');
+
+                $row = 1;
+                foreach ($dataOrders as $od) {
+                    $header = $od['headers'];
+
+                    $sheet->setCellValue("A{$row}", "No PO");
+                    $sheet->setCellValue("B{$row}", $header['no_po']);
+                    $sheet->setCellValue("D{$row}", "Customer");
+                    $sheet->setCellValue("E{$row}", $header['nama_customer']);
+                    $row++;
+
+                    $sheet->setCellValue("A{$row}", "No Sales");
+                    $sheet->setCellValue("B{$row}", $header['no_sales']);
+                    $sheet->setCellValue("D{$row}", "Parma");
+                    $sheet->setCellValue("E{$row}", $header['salesman']);
+                    $row++;
+
+                    $sheet->setCellValue("A{$row}", "Tanggal");
+                    $sheet->setCellValue("B{$row}", $header['tanggal']);
+                    $sheet->setCellValue("D{$row}", "Status");
+                    $sheet->setCellValue("E{$row}", $header['status']);
+                    $row += 2;
+
+                    $sheet->fromArray(
+                        ['No', 'Produk', 'Brand', 'Qty', 'Harga', 'Total'],
+                        NULL,
+                        "A{$row}"
+                    );
+                    $sheet->getStyle("A{$row}:F{$row}")->getFont()->setBold(true);
+                    $sheet->getStyle("A{$row}:F{$row}")->getBorders()->getAllBorders()
+                        ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                    $row++;
+
+                    foreach ($od['details'] as $key => $v_detail) {
+                        $sheet->setCellValue("A{$row}", ($key+1));
+                        $sheet->setCellValue("B{$row}", $v_detail->nama_invoice);
+                        $sheet->setCellValue("C{$row}", $v_detail->nama_brand);
+                        $sheet->setCellValue("D{$row}", number_format($v_detail->qty_kecil, 0, '.', ','));
+                        $sheet->setCellValue("E{$row}", number_format($v_detail->h_jual, 0, '.', ','));
+                        $sheet->setCellValue("F{$row}", number_format(($v_detail->qty_kecil * $v_detail->h_jual), 0, '.', ','));
+                        $row++;
+                    }
+                    $row += 3;
+                }
+
+                $fileExcel = FCPATH . 'uploads/laporan_pending_order_PAR-MA_' . date('Ymd') . '.xlsx';
+                $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+                $objWriter->save($fileExcel);
+
+                $fileAttach[] = $fileExcel;
+                $infoAttach[] = 'excel';
+            }
+
+            $textInfoAttach = count($infoAttach) > 0 ? ' (Attach: ' . implode(', ', $infoAttach) . ')' : '';
+			if (sending_email($val->send_to, $data['subject'], $this->email_template, $data, $fileAttach)) {
+                log_message('info', 'Laporan terkirim' . $textInfoAttach . ' : '  . date('Y-m-d H:i:s'));
 				$result[] = $val->send_to . ': ✅ Email berhasil dikirim!' . $textInfoAttach;
 			} else {
                 log_message('error', 'Gagal mengirim laporan' . $textInfoAttach . ' : ' . $this->email->print_debugger());

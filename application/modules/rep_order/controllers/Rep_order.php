@@ -56,73 +56,131 @@ class Rep_order extends BaseController
 		);
 
 		$orders = $this->order->get_order_all($data);
+        $dataOrders = group_order_by_no_po($orders);
 
-		$html = '<div class="container-table">
-                    <table class="table table-bordered table-condensed fixed-table">
-                        <tbody>
+        $html = "";
+        if (!empty($dataOrders) && count($dataOrders) > 0) {
+            foreach ($dataOrders as $od) {
+                $header = $od['headers'];
+                
+                $html .= "
+                    <div class='row'>
+                        <div class='col-md-6'>
+                            <table class='no-border'>
+                                <tr>
+                                    <td width='25%'>No PO</td>
+                                    <td width='1%'>:</td>
+                                    <td class='text-bold'>{$header['no_po']}</td>
+                                </tr>
+                                <tr>
+                                    <td width='25%'>No Sales</td>
+                                    <td width='1%'>:</td>
+                                    <td class='text-bold'>{$header['no_sales']}</td>
+                                </tr>
+                                <tr>
+                                    <td width='25%'>Tanggal</td>
+                                    <td width='1%'>:</td>
+                                    <td class='text-bold'>{$header['tanggal']}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class='col-md-6'>
+                            <table class='no-border'>
+                                <tr>
+                                    <td width='25%'>Customer</td>
+                                    <td width='1%'>:</td>
+                                    <td class='text-bold'>{$header['nama_customer']}</td>
+                                </tr>
+                                <tr>
+                                    <td width='25%'>Parma</td>
+                                    <td width='1%'>:</td>
+                                    <td class='text-bold'>{$header['salesman']}</td>
+                                </tr>
+                                <tr>
+                                    <td width='25%'>Status</td>
+                                    <td width='1%'>:</td>
+                                    <td class='text-bold'>{$header['status']}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                ";
+
+                $details = $od['details'];
+                if (!empty($details) && count($details) > 0) {
+                    $html .= '
+                        <div class="container-table">
+                            <table class="table table-bordered table-condensed fixed-table">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 100px">Image</th>
+                                        <th style="width: 100px">Product ID</th>
+                                        <th style="width: 200px">Product Name</th>
+                                        <th style="width: 100px;text-align:right;">QTY PCS</th>
+                                        <th style="width: 200px;text-align:right;">Price</th>
+                                        <th style="width: 200px;text-align:right;">Gross</th>
+                                        <th style="width: 200px;text-align:right;">Discount</th>
+                                        <th style="width: 200px;text-align:right;">Net</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="container-table-content">
+                            <table class="table table-striped table-bordered table-condensed fixed-table">
+                                <tbody>
+                    ';
+                    
+                    $totbruto = 0;
+                    $totdisc  = 0;
+                    $totnetto = 0;
+                    
+                    foreach ($details as $v_detail) {
+                        $image = '';
+                        $param_link = '\''.$v_detail->tanggal.'\',\''.@$v_detail->no_po.'\',\''.$v_detail->salesmanid.'\'';	
+                        if (isset($v_detail->url_img_po) && $v_detail->url_img_po) {
+                            $image = '
+                                <img
+                                    class="img-rounded"
+                                    onclick="preview_image_order('.$param_link.');"
+                                    alt="Image Order"
+                                    style="width:100px; height:100px;"
+                                    src="'.@$v_detail->url_img_po.'"
+                                >
+                            ';
+                        }
+                        $html .= '
                             <tr>
-                                <th style="width: 100px">Image</th>
-                                <th style="width: 250px">Customer ID</th>
-                                <th style="width: 200px">Customer Name</th>
-                                <th style="width: 600px">No PO</th>
-                                <th style="width: 200px">Salesman Name</th>
-                                <th style="width: 150px">Sales Type</th>
-                                <th style="width: 100px">Date</th>
-                                <th style="width: 100px">Product ID</th>
-                                <th style="width: 200px">Product Name</th>
-                                <th style="width: 100px;text-align:right;">QTY PCS</th>
-                                <th style="width: 200px;text-align:right;">Price</th>
-                                <th style="width: 200px;text-align:right;">Gross</th>
-                                <th style="width: 200px;text-align:right;">Discount</th>
-                                <th style="width: 200px;text-align:right;">Net</th>
+                                <td style="width: 100px" align="center">'.$image.'</td>
+                                <td style="width: 100px">'.$v_detail->productid.'</td>
+                                <td style="width: 200px">'.$v_detail->nama_invoice.'</td>
+                                <td style="width: 100px;text-align:right;">'.number_format($v_detail->qty_jual_in_pcs, 0, '.', ',').'</td>
+                                <td style="width: 200px;text-align:right;">'.number_format($v_detail->h_jual, 0, '.', ',').'</td>
+                                <td style="width: 200px;text-align:right;">'.number_format($v_detail->total_bruto, 2, '.', ',').'</td>
+                                <td style="width: 200px;text-align:right;">'.number_format($v_detail->total_discount, 2, '.', ',').'</td>			
+                                <td style="width: 200px;text-align:right;">'.number_format($v_detail->total_netto, 2, '.', ',').'</td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="container-table-content">
-                    <table class="table table-striped table-bordered table-condensed fixed-table">
-                        <tbody>
-            ';
-
-		$totbruto = 0;
-        $totdisc  = 0;
-        $totnetto = 0;
-        
-        foreach ($orders as $v_detail) {
-            $image = '';
-			$param_link = '\''.$v_detail['tanggal'].'\',\''.@$v_detail['no_po'].'\',\''.$v_detail['salesmanid'].'\'';	
-            if (isset($v_detail['url_img_po']) && $v_detail['url_img_po']) {
-                $image = '<img class="img-rounded" onclick="preview_image_order('.$param_link.'); " alt="Image Order" style="width:100px; height:100px;" src="'.@$v_detail['url_img_po'].'">';
+                        ';        
+                        $totbruto = $totbruto+$v_detail->total_bruto;
+                        $totdisc = $totdisc+$v_detail->total_discount;
+                        $totnetto = $totnetto+$v_detail->total_netto;
+                    }
+                    
+                    $html .='
+                                <tr>
+                                    <th colspan="5" style="text-align:right;">Total</th>
+                                    <th style="width: 200px;text-align:right;">'.number_format($totbruto, 2, '.', ',').'</th>
+                                    <th style="width: 200px;text-align:right;">'.number_format($totdisc, 2, '.', ',').'</th>
+                                    <th style="width: 200px;text-align:right;">'.number_format($totnetto, 2, '.', ',').'</th>	
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    ';
+                }
             }
-            $html .= '<tr">
-                       <td style="width: 100px">'.$image.'</td>
-                       <td style="width: 250px">'.$v_detail['customerid'].'</td>
-                       <td style="width: 200px">'.$v_detail['nama_customer'].'</td>
-                       <td style="width: 600px">'.$v_detail['no_po'].'</td>
-                       <td style="width: 200px">'.$v_detail['nama_salesman'].'</td>
-                       <td style="width: 150px">'.$v_detail['tipe_sales'].'</td>
-                       <td style="width: 100px">'.$v_detail['tanggal'].'</td>
-                       <td style="width: 100px">'.$v_detail['productid'].'</td>
-                       <td style="width: 200px">'.$v_detail['nama_invoice'].'</td>
-                       <td style="width: 100px;text-align:right;">'.number_format($v_detail['qty_jual_in_pcs'], 0, '.', ',').'</td>
-                       <td style="width: 200px;text-align:right;">'.number_format($v_detail['h_jual'], 0, '.', ',').'</td>
-                       <td style="width: 200px;text-align:right;">'.number_format($v_detail['total_bruto'], 2, '.', ',').'</td>
-                       <td style="width: 200px;text-align:right;">'.number_format($v_detail['total_discount'], 2, '.', ',').'</td>			
-                       <td style="width: 200px;text-align:right;">'.number_format($v_detail['total_netto'], 2, '.', ',').'</td>
-                    </tr>';        
-            $totbruto = $totbruto+$v_detail['total_bruto'];
-            $totdisc = $totdisc+$v_detail['total_discount'];
-            $totnetto = $totnetto+$v_detail['total_netto'];
         }
-        $html .='<tr>
-                    <th colspan="11" style="text-align:right;">Total</th>
-                    <th style="width: 200px;text-align:right;">'.number_format($totbruto, 2, '.', ',').'</th>
-                    <th style="width: 200px;text-align:right;">'.number_format($totdisc, 2, '.', ',').'</th>
-                    <th style="width: 200px;text-align:right;">'.number_format($totnetto, 2, '.', ',').'</th>	
-                </tr>
-            </tbody>
-        </table>
-        </div>
+
+        $html .='
         <div class="box-footer">
             <a id="btn-home-form" href="javascript:void(0)" onclick="savexls(\''.$salesmanid.'\');" class="btn btn-success fa fa-download"> Save Excel</a>
         </div>';
@@ -170,7 +228,7 @@ class Rep_order extends BaseController
                         });
                     }
                 </script>
-                    ';
+            ';
 
 		echo $html;
 	} 
@@ -188,88 +246,82 @@ class Rep_order extends BaseController
         	"startdate2" => $startdate2
         );
 
+        $orders = $this->order->get_order_all_xls($data);
+        $dataOrders = group_order_by_no_po($orders);
+
+
         $filename = "Order_All_".$salesmanid."_".$startdate1."_".$startdate2;
 
         $spreadsheet = new Spreadsheet();
-
-        $header = [
-            'No',
-            'Customer ID',
-            'Customer Name',
-            'Customer Address',
-            'Customer Phone',
-            'Customer Area',
-            'No PO',
-            'Salesman Name',
-            'Sales Type',
-            'Date',
-            'Product ID',
-            'Product Name',
-            'Image',
-            'QTY PCS',
-            'Price',
-            'Gross',
-            'Discount',
-            'Net',
-        ];
-
         $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->fromArray($header,NULL,'A1');
-
-        $orders = $this->order->get_order_all_xls($data);
-
-        $i = 1;
-        $row = 2;
-        $totbruto = 0;
-        $totdisc  = 0;
-        $totnetto = 0;
-        foreach ($orders as $value) {
-            $content = [
-                $i, 
-                $value['customerid'], 
-                $value['nama_customer'],
-                $value['alamat'],
-                $value['telp'],
-                $value['area'],
-                $value['no_po'],
-                $value['nama_salesman'],
-                $value['tipe_sales'],
-                $value['tanggal'],
-                $value['productid'],
-                $value['nama_invoice'],
-                $value['url_img_po'],
-                $value['qty_jual_in_pcs'],
-                $value['h_jual'],
-                $value['total_bruto'],
-                $value['total_discount'],
-                $value['total_netto'],
-            ];
-			// img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
-            // $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
-            $sheet->fromArray($content,NULL,'A'.$row);
-
-            $i++;
-            $row++;
-            $totbruto += $value['total_bruto'];
-            $totdisc += $value['total_discount'];
-            $totnetto += $value['total_netto'];
-        }
-
-        $total = [
-        	'Total',
-        	$totbruto,
-        	$totdisc,
-        	$totnetto
-        ];
-
-        $sheet->fromArray($total,NULL,'N'.$row);
- 
-		// Ambil range seluruh worksheet
 		$highestRow = $sheet->getHighestRow();
 		$highestColumn = $sheet->getHighestColumn();
 		$fullRange = 'A1:' . $highestColumn . $highestRow;
 		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+        $row = 1;
+        foreach ($dataOrders as $od) {
+            $header = $od['headers'];
+
+            $sheet->setCellValue("A{$row}", "No PO");
+            $sheet->setCellValue("B{$row}", $header['no_po']);
+            $sheet->setCellValue("D{$row}", "Customer");
+            $sheet->setCellValue("E{$row}", $header['nama_customer']);
+            $row++;
+
+            $sheet->setCellValue("A{$row}", "No Sales");
+            $sheet->setCellValue("B{$row}", $header['no_sales']);
+            $sheet->setCellValue("D{$row}", "Parma");
+            $sheet->setCellValue("E{$row}", $header['salesman']);
+            $row++;
+
+            $sheet->setCellValue("A{$row}", "Tanggal");
+            $sheet->setCellValue("B{$row}", $header['tanggal']);
+            $sheet->setCellValue("D{$row}", "Status");
+            $sheet->setCellValue("E{$row}", $header['status']);
+            $row += 2;
+
+            $sheet->fromArray(
+                ['Product ID', 'Product Name', 'Qty (pcs)', 'Price', 'Gross', 'Discount', 'Net', 'Image'],
+                NULL,
+                "A{$row}"
+            );
+            $sheet->getStyle("A{$row}:H{$row}")->getFont()->setBold(true);
+            $sheet->getStyle("A{$row}:H{$row}")->getBorders()->getAllBorders()
+                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $row++;
+
+            $totBruto = $totDisc = $totNet = 0;
+            foreach ($od['details'] as $v_detail) {
+                $sheet->setCellValue("A{$row}", $v_detail->productid);
+                $sheet->setCellValue("B{$row}", $v_detail->nama_invoice);
+                $sheet->setCellValue("C{$row}", number_format($v_detail->qty_jual_in_pcs, 0, '.', ','));
+                $sheet->setCellValue("D{$row}", number_format($v_detail->h_jual, 0, '.', ','));
+                $sheet->setCellValue("E{$row}", number_format($v_detail->total_bruto, 0, '.', ','));
+                $sheet->setCellValue("F{$row}", number_format($v_detail->total_discount, 0, '.', ','));
+                $sheet->setCellValue("G{$row}", number_format($v_detail->total_netto, 0, '.', ','));
+                $sheet->setCellValue("H{$row}", $v_detail->url_img_po ?: '');
+
+                $totBruto += $v_detail->total_bruto;
+                $totDisc  += $v_detail->total_discount;
+                $totNet   += $v_detail->total_netto;
+                $row++;
+            }
+
+            $sheet->setCellValue("D{$row}", "Total");
+            $sheet->setCellValue("E{$row}", number_format($totBruto, 0, '.', ','));
+            $sheet->setCellValue("F{$row}", number_format($totDisc, 0, '.', ','));
+            $sheet->setCellValue("G{$row}", number_format($totNet, 0, '.', ','));
+            $sheet->getStyle("D{$row}:G{$row}")->getFont()->setBold(true);
+
+            $row += 3;
+        }
+
+        foreach (range('A','H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $sheet->getStyle("C:G")->getNumberFormat()->setFormatCode('#,##0.00');
         
         $writer = new Xlsx($spreadsheet);
         

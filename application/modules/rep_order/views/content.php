@@ -73,6 +73,11 @@
     font-size: 12px;
     margin-left: 0px;
   }
+  .no-border td {
+    border: none !important;
+    padding: 1rem;
+    font-size: 1.2em;
+  }
 </style>
 
 <section class="content-header">

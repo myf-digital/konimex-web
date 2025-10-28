@@ -399,47 +399,193 @@ if (!function_exists('render_tables_html')) {
             $html .= "</tbody></table><br>";
         }
 
-        // ORDER PENDING
-        if (!empty($tables['order_pending'])) {
-            $html .= "<h3>Order Pending</h3>";
-            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
-            $html .= "
-                <thead>
-                    <tr style='background:#eee'>
-                        <th>Tanggal</th>
-                        <th>PAR-MA</th>
-                        <th>Nama PAR-MA</th>
-                        <th>No PO</th>
-                        <th>Area</th>
-                        <th>Outlet</th>
-                        <th>Brand</th>
-                        <th>Produk</th>
-                        <th>Qty</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-            ";
-            foreach ($tables['order_pending'] as $op) {
-                $tanggal = format_date_id($op->tanggal, true, false);
-                $qty = number_format($op->qty_kecil,0,'.',',');
-                $total = number_format(($op->qty_kecil * $op->h_jual),0,'.',',');
-                $html .= "<tr>
-                            <td>{$tanggal}</td>
-                            <td>{$op->salesmanid}</td>
-                            <td>{$op->nama_salesman}</td>
-                            <td>{$op->no_po}</td>
-                            <td>{$op->nama_area}</td>
-                            <td>{$op->nama_customer}</td>
-                            <td>{$op->nama_brand}</td>
-                            <td>{$op->nama_invoice}</td>
-                            <td>{$qty}</td>
-                            <td>{$total}</td>
-                          </tr>";
+        return $html ?: "<p>Tidak ada data tersedia.</p>";
+    }
+}
+
+if (!function_exists('render_order_pending_html')) {
+    function render_order_pending_html($list)
+    {
+        $html = "
+            <style>
+                body {
+                    font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
+                    font-size: 10pt;
+                    color: #000;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin-bottom: 8px;
+                }
+                td, th {
+                    padding: 6px 8px;
+                    vertical-align: top;
+                }
+                .no-border td {
+                    border: none !important;
+                }
+                .header-table td {
+                    border: none !important;
+                    font-size: 10pt;
+                }
+                .details th {
+                    background-color: #f3f3f3;
+                    border: 1px solid #444;
+                    text-align: left;
+                }
+                .details td {
+                    border: 1px solid #444;
+                }
+                .details td, .details th {
+                    padding: 5px 8px;
+                }
+                .spacer {
+                    height: 15px;
+                }
+                hr {
+                    border: none;
+                    border-top: 1px solid #999;
+                    margin: 12px 0;
+                }
+            </style>
+        ";
+        if (!empty($list) && count($list) > 0) {
+            foreach ($list as $op) {
+                $header = $op['headers'];
+
+                $html .= "
+                    <table class='header-table'>
+                        <tr>
+                            <td width='50%'>
+                                <table class='no-border'>
+                                    <tr>
+                                        <td width='25%'>No PO</td>
+                                        <td width='1%'>:</td>
+                                        <td>{$header['no_po']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>No Sales</td>
+                                        <td>:</td>
+                                        <td>{$header['no_sales']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tanggal</td>
+                                        <td>:</td>
+                                        <td>{$header['tanggal']}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width='50%'>
+                                <table class='no-border'>
+                                    <tr>
+                                        <td width='25%'>Customer</td>
+                                        <td width='1%'>:</td>
+                                        <td>{$header['nama_customer']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Parma</td>
+                                        <td>:</td>
+                                        <td>{$header['salesman']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status</td>
+                                        <td>:</td>
+                                        <td>{$header['status']}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                ";
+
+                // Detail produk
+                $details = $op['details'];
+                if (!empty($details) && count($details) > 0) {
+                    $html .= "
+                    <table border='1' class='details'>
+                        <thead>
+                            <tr>
+                                <th width='30'>No</th>
+                                <th>Produk</th>
+                                <th>Brand</th>
+                                <th width='50' style='text-align:right;'>Qty</th>
+                                <th width='80' style='text-align:right;'>Harga</th>
+                                <th width='90' style='text-align:right;'>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    ";
+
+                    $n = 1;
+                    foreach ($details as $d) {
+                        $qty   = number_format($d->qty_kecil, 0, '.', ',');
+                        $h_jual = number_format($d->h_jual, 0, '.', ',');
+                        $total = number_format(($d->qty_kecil * $d->h_jual), 0, '.', ',');
+
+                        $html .= "
+                            <tr>
+                                <td align='center'>{$n}</td>
+                                <td>{$d->nama_invoice}</td>
+                                <td>{$d->nama_brand}</td>
+                                <td align='right'>{$qty}</td>
+                                <td align='right'>{$h_jual}</td>
+                                <td align='right'>{$total}</td>
+                            </tr>
+                        ";
+                        $n++;
+                    }
+
+                    $html .= "</tbody></table>";
+                }
+
+                $html .= "<div class='spacer'></div><hr>";
             }
-            $html .= "</tbody></table><br>";
+        } else {
+            $html = "<p>Tidak ada data tersedia.</p>";
         }
 
-        return $html ?: "<p>Tidak ada data tersedia.</p>";
+        return $html;
+    }
+}
+
+if (!function_exists('group_order_by_no_po')) {
+    function group_order_by_no_po($orders)
+    {
+        $result = [];
+        if (empty($orders)) return $result;
+
+        foreach ($orders as $row) {;
+            $no_po = $row->no_po;
+
+            if (!isset($result[$no_po])) {
+                $result[$no_po] = [
+                    'headers' => [
+                        'no_po'          => $row->no_po,
+                        'no_sales'       => $row->no_sales,
+                        'tanggal'        => format_date_id($row->tanggal, true, false),
+                        'nama_customer'  => $row->nama_customer,
+                        'salesman'       => $row->salesmanid . ' - ' . $row->nama_salesman,
+                        'status'         => get_status_po_label($row->status_po ?? null),
+                    ],
+                    'details' => []
+                ];
+            }
+
+            $result[$no_po]['details'][] = $row;
+        }
+        return $result;
+    }
+}
+
+if (!function_exists('get_status_po_label')) {
+    function get_status_po_label($status_po)
+    {
+        switch ($status_po) {
+            case '1': return 'Pending';
+            case '2': return 'On Progress';
+            case '3': return 'Closing';
+            default:  return 'Pending';
+        }
     }
 }

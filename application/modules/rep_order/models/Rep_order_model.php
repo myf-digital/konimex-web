@@ -214,6 +214,7 @@ class Rep_order_model extends CI_Model
                 sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
                 sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto,
                 sls.no_po,
+                sls.status_po,
                 concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
             from t_sales_master sls
             left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
@@ -237,7 +238,7 @@ class Rep_order_model extends CI_Model
                 dtl.disc_cod		
         ");
 
-        return $q_detail->result_array();
+        return $q_detail->result();
     }
 
     function get_order_all_xls($data) {
@@ -276,6 +277,7 @@ class Rep_order_model extends CI_Model
                 sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
                 sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto,
                 sls.no_po,
+                sls.status_po,
                 concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
             from t_sales_master sls
             left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
@@ -298,7 +300,7 @@ class Rep_order_model extends CI_Model
                 dtl.disc_xtra,
                 dtl.disc_cod		
             ");
-        return $q_detail->result_array();	
+        return $q_detail->result();	
     }
 
     function get_order_all_salesman_xls($data) {
