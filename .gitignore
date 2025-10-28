@@ -6,5 +6,6 @@
 /application/config/onesignal.php
 /application/config/wa_zawa.php
 /application/config/email.php
+application/config/email.php
 /composer.lock
 /scripts/*.log
