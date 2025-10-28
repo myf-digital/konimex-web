@@ -257,6 +257,7 @@ if (!function_exists('sending_email')) {
         
         $CI->load->config('email');
         $CI->load->library('email');
+        $CI->load->helper('email');
         $CI->email->initialize($CI->config->item('email'));
 
         $message = $CI->load->view($template, $data, TRUE);
@@ -270,7 +271,15 @@ if (!function_exists('sending_email')) {
         if (!is_array($cc)) {
             $cc = explode(',', $cc);
         }
-        if (!empty($cc)) {
+
+        if (isset($data['cc_to']) && count($data['cc_to']) > 0) {
+            foreach ($data['cc_to'] as $cc_to) {
+                if (valid_email($cc_to) && !in_array($cc_to, $cc)) {
+                    $cc[] = $cc_to;
+                }
+            }
+        }
+        if (!empty($cc) && count($cc) > 0) {
             $CI->email->cc($cc);
         }
 
@@ -295,10 +304,21 @@ if (!function_exists('render_tables_html')) {
         $html = "";
         // OUTLET COVERAGE
         if (!empty($tables['outlet_coverage'])) {
-            $html .= "<h3>Outlet Coverage</h3>";
-            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
-            $html .= "<thead><tr style='background:#eee'>";
-            $html .= "<th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Apotik</th><th>Clinic</th><th>Hospital</th></tr></thead><tbody>";
+            $html .= "
+                <h3>Outlet Coverage</h3>
+                <table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>
+                    <thead>
+                        <tr style='background:#eee'>
+                            <th>PAR-MA</th>
+                            <th>Nama PAR-MA</th>
+                            <th>Area</th>
+                            <th>Apotik</th>
+                            <th>Clinic</th>
+                            <th>Hospital</th>
+                        </tr>
+                    </thead>
+                <tbody>
+            ";
             foreach ($tables['outlet_coverage'] as $oc) {
                 $html .= "<tr>
                             <td>{$oc->parma}</td>
@@ -314,10 +334,22 @@ if (!function_exists('render_tables_html')) {
 
         // TARGET CALL MONTHLY
         if (!empty($tables['target_call_monthly'])) {
-            $html .= "<h3>Target Call Monthly</h3>";
-            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
-            $html .= "<thead><tr style='background:#eee'>";
-            $html .= "<th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
+            $html .= "
+                <h3>Target Call Monthly</h3>
+                <table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>
+                <thead>
+                    <tr style='background:#eee'>
+                        <th>PAR-MA</th>
+                        <th>Nama PAR-MA</th>
+                        <th>Area</th>
+                        <th>Target</th>
+                        <th>Call</th>
+                        <th>Extra Call</th>
+                        <th>Actual</th>
+                    </tr>
+                </thead>
+                <tbody>
+            ";
             foreach ($tables['target_call_monthly'] as $tcm) {
                 $html .= "<tr>
                             <td>{$tcm->parma}</td>
@@ -334,10 +366,23 @@ if (!function_exists('render_tables_html')) {
 
         // TARGET CALL DAILY
         if (!empty($tables['target_call_daily'])) {
-            $html .= "<h3>Target Call Daily</h3>";
-            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
-            $html .= "<thead><tr style='background:#eee'>";
-            $html .= "<th>Tanggal</th><th>PAR-MA</th><th>Nama PAR-MA</th><th>Area</th><th>Target</th><th>Call</th><th>Extra Call</th><th>Actual</th></tr></thead><tbody>";
+            $html .= "
+                <h3>Target Call Daily</h3>
+                <table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>
+                    <thead>
+                        <tr style='background:#eee'>
+                            <th>Tanggal</th>
+                            <th>PAR-MA</th>
+                            <th>Nama PAR-MA</th>
+                            <th>Area</th>
+                            <th>Target</th>
+                            <th>Call</th>
+                            <th>Extra Call</th>
+                            <th>Actual</th>
+                        </tr>
+                    </thead>
+                <tbody>
+            ";
             foreach ($tables['target_call_daily'] as $tcd) {
                 $periode = format_date_id($tcd->periode, true, false);
                 $html .= "<tr>
@@ -349,6 +394,47 @@ if (!function_exists('render_tables_html')) {
                             <td>{$tcd->Call}</td>
                             <td>{$tcd->ExtraCall}</td>
                             <td>{$tcd->actual_call}</td>
+                          </tr>";
+            }
+            $html .= "</tbody></table><br>";
+        }
+
+        // ORDER PENDING
+        if (!empty($tables['order_pending'])) {
+            $html .= "<h3>Order Pending</h3>";
+            $html .= "<table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>";
+            $html .= "
+                <thead>
+                    <tr style='background:#eee'>
+                        <th>Tanggal</th>
+                        <th>PAR-MA</th>
+                        <th>Nama PAR-MA</th>
+                        <th>No PO</th>
+                        <th>Area</th>
+                        <th>Outlet</th>
+                        <th>Brand</th>
+                        <th>Produk</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+            ";
+            foreach ($tables['order_pending'] as $op) {
+                $tanggal = format_date_id($op->tanggal, true, false);
+                $qty = number_format($op->qty_kecil,0,'.',',');
+                $total = number_format(($op->qty_kecil * $op->h_jual),0,'.',',');
+                $html .= "<tr>
+                            <td>{$tanggal}</td>
+                            <td>{$op->salesmanid}</td>
+                            <td>{$op->nama_salesman}</td>
+                            <td>{$op->no_po}</td>
+                            <td>{$op->nama_area}</td>
+                            <td>{$op->nama_customer}</td>
+                            <td>{$op->nama_brand}</td>
+                            <td>{$op->nama_invoice}</td>
+                            <td>{$qty}</td>
+                            <td>{$total}</td>
                           </tr>";
             }
             $html .= "</tbody></table><br>";

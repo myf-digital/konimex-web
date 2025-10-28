@@ -30,6 +30,9 @@ class Scheduler_model extends CI_Model
 		$res_tcd = $this->db->query("SELECT vtcdp.* FROM v_target_call_daily_parma vtcdp" . ($email ? " WHERE vtcdp.send_to = '" . $email . "'" : "") . " ORDER BY vtcdp.periode DESC");
 		$result['target_call_daily'] = $res_tcd->result();
 
+		$res_op = $this->db->query("SELECT vpop.* FROM v_pending_order_parma vpop" . ($email ? " WHERE vpop.send_to = '" . $email . "'" : "") . " ORDER BY vpop.tanggal DESC");
+		$result['order_pending'] = $res_op->result();
+
 		return $result;
 	}
 }
