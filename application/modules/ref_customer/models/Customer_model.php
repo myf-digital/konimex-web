@@ -252,7 +252,8 @@ class Customer_model extends CI_Model
                 }
             }*/
 
-        $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position
+        $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position,
+                            case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo
                                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                                     left join m_area_areasite c on a.areaid = c.areaid
                                     left join m_area_subarea d on a.subareaid = d.subareaid

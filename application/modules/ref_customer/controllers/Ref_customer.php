@@ -115,7 +115,8 @@ class Ref_customer extends BaseController
         }
         
 
-        $query_old = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position
+        $query_old = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position,
+                            case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo        
                                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                                     left join m_area_areasite c on a.areaid = c.areaid
                                     left join m_area_subarea d on a.subareaid = d.subareaid
@@ -131,7 +132,8 @@ class Ref_customer extends BaseController
                         MAX(CASE WHEN f.minggu = 1 THEN f.hari END) AS minggu_1,
                         MAX(CASE WHEN f.minggu = 2 THEN f.hari END) AS minggu_2,
                         MAX(CASE WHEN f.minggu = 3 THEN f.hari END) AS minggu_3,
-                        MAX(CASE WHEN f.minggu = 4 THEN f.hari END) AS minggu_4
+                        MAX(CASE WHEN f.minggu = 4 THEN f.hari END) AS minggu_4,
+                        case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo
                         from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                         left join m_area_areasite c on a.areaid = c.areaid
                         left join m_area_subarea d on a.subareaid = d.subareaid
@@ -188,6 +190,7 @@ class Ref_customer extends BaseController
                     ->setCellValue('Q2', 'Minggu 4')
                     ->setCellValue('R2', 'Latitude')
                     ->setCellValue('S2', 'Longitude')
+                    ->setCellValue('T2', 'Flag Noo')
                     ->setCellValue('N1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active ')
                     ;
         $i = 3;
@@ -213,6 +216,7 @@ class Ref_customer extends BaseController
                         ->setCellValue('Q'.$i, $voutlet['minggu_4'])
                         ->setCellValue('R'.$i, $voutlet['latitude'])
                         ->setCellValue('S'.$i, $voutlet['longitude'])
+                        ->setCellValue('T'.$i, $voutlet['flag_noo'])
 						;
                 $i++;
                 //}
