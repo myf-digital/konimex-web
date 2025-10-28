@@ -249,7 +249,6 @@ class Rep_order extends BaseController
         $orders = $this->order->get_order_all_xls($data);
         $dataOrders = group_order_by_no_po($orders);
 
-
         $filename = "Order_All_".$salesmanid."_".$startdate1."_".$startdate2;
 
         $spreadsheet = new Spreadsheet();
@@ -354,87 +353,81 @@ class Rep_order extends BaseController
 			"subareaid" => $subareaid
 		);
 
+        $orders = $this->order->get_order_all_salesman_xls($data);
+        $dataOrders = group_order_by_no_po($orders);
+
 		$filename = "Order_All_Salesman_".$start."_".$end;
 
         $spreadsheet = new Spreadsheet();
-
-        $header = [
-            'No',
-            'Customer ID',
-            'Customer Name',
-            'Customer Address',
-            'Customer Phone',
-            'Customer Area',
-            'No PO',
-            'Salesman Name',
-            'Sales Type',
-            'Date',
-            'Product ID',
-            'Product Name',
-            'Image',
-            'QTY PCS',
-            'Price',
-            'Gross',
-            'Discount',
-            'Net',
-        ];
-
         $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->fromArray($header,NULL,'A1');
-
-        $orders = $this->order->get_order_all_salesman_xls($data);
-
-        $i = 1;
-        $row = 2;
-        $totbruto = 0;
-        $totdisc  = 0;
-        $totnetto = 0;
-        foreach ($orders as $value) {
-            $content = [
-                $i, 
-                $value['customerid'], 
-                $value['nama_customer'],
-                $value['alamat'],
-                $value['telp'],
-                $value['area'],
-                $value['no_sales'],
-                $value['nama_salesman'],
-                $value['tipe_sales'],
-                $value['tanggal'],
-                $value['productid'],
-                $value['nama_invoice'],
-                $value['url_img_po'],
-                $value['qty_jual_in_pcs'],
-                $value['h_jual'],
-                $value['total_bruto'],
-                $value['total_discount'],
-                $value['total_netto'],
-            ];
-			// img_url_to_sheet($sheet, $value['url_img_po'], 'M'.$row);
-            // $sheet->getStyle('M'.$row)->getAlignment()->setWrapText(true);
-            $sheet->fromArray($content,NULL,'A'.$row);
-
-            $i++;
-            $row++;
-            $totbruto += $value['total_bruto'];
-            $totdisc += $value['total_discount'];
-            $totnetto += $value['total_netto'];
-        }
-
-        $total = [
-        	'Total',
-        	$totbruto,
-        	$totdisc,
-        	$totnetto
-        ];
-
-        $sheet->fromArray($total,NULL,'N'.$row);
-		// Ambil range seluruh worksheet
 		$highestRow = $sheet->getHighestRow();
 		$highestColumn = $sheet->getHighestColumn();
 		$fullRange = 'A1:' . $highestColumn . $highestRow;
 		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+        $row = 1;
+        foreach ($dataOrders as $od) {
+            $header = $od['headers'];
+
+            $sheet->setCellValue("A{$row}", "No PO");
+            $sheet->setCellValue("B{$row}", $header['no_po']);
+            $sheet->setCellValue("D{$row}", "Customer");
+            $sheet->setCellValue("E{$row}", $header['nama_customer']);
+            $row++;
+
+            $sheet->setCellValue("A{$row}", "No Sales");
+            $sheet->setCellValue("B{$row}", $header['no_sales']);
+            $sheet->setCellValue("D{$row}", "Parma");
+            $sheet->setCellValue("E{$row}", $header['salesman']);
+            $row++;
+
+            $sheet->setCellValue("A{$row}", "Tanggal");
+            $sheet->setCellValue("B{$row}", $header['tanggal']);
+            $sheet->setCellValue("D{$row}", "Status");
+            $sheet->setCellValue("E{$row}", $header['status']);
+            $row += 2;
+
+            $sheet->fromArray(
+                ['Product ID', 'Product Name', 'Qty (pcs)', 'Price', 'Gross', 'Discount', 'Net', 'Image'],
+                NULL,
+                "A{$row}"
+            );
+            $sheet->getStyle("A{$row}:H{$row}")->getFont()->setBold(true);
+            $sheet->getStyle("A{$row}:H{$row}")->getBorders()->getAllBorders()
+                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $row++;
+
+            $totBruto = $totDisc = $totNet = 0;
+            foreach ($od['details'] as $v_detail) {
+                $sheet->setCellValue("A{$row}", $v_detail->productid);
+                $sheet->setCellValue("B{$row}", $v_detail->nama_invoice);
+                $sheet->setCellValue("C{$row}", number_format($v_detail->qty_jual_in_pcs, 0, '.', ','));
+                $sheet->setCellValue("D{$row}", number_format($v_detail->h_jual, 0, '.', ','));
+                $sheet->setCellValue("E{$row}", number_format($v_detail->total_bruto, 0, '.', ','));
+                $sheet->setCellValue("F{$row}", number_format($v_detail->total_discount, 0, '.', ','));
+                $sheet->setCellValue("G{$row}", number_format($v_detail->total_netto, 0, '.', ','));
+                $sheet->setCellValue("H{$row}", $v_detail->url_img_po ?: '');
+
+                $totBruto += $v_detail->total_bruto;
+                $totDisc  += $v_detail->total_discount;
+                $totNet   += $v_detail->total_netto;
+                $row++;
+            }
+
+            $sheet->setCellValue("D{$row}", "Total");
+            $sheet->setCellValue("E{$row}", number_format($totBruto, 0, '.', ','));
+            $sheet->setCellValue("F{$row}", number_format($totDisc, 0, '.', ','));
+            $sheet->setCellValue("G{$row}", number_format($totNet, 0, '.', ','));
+            $sheet->getStyle("D{$row}:G{$row}")->getFont()->setBold(true);
+
+            $row += 3;
+        }
+
+        foreach (range('A','H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $sheet->getStyle("C:G")->getNumberFormat()->setFormatCode('#,##0.00');
  
         $writer = new Xlsx($spreadsheet);
         
