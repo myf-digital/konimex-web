@@ -157,7 +157,7 @@ class Customer_model extends CI_Model
                             left join m_area_subarea d on a.subareaid = d.subareaid
                             left join m_customer_class e on a.classid = e.classid
                             left join m_sales_salesman f on a.salesmanid = f.salesmanid
-                            where a.customerid <> '' ".$strquery." and a.latitude <> 0 and a.longitude <> 0
+                            where a.customerid <> '' ".$strquery."
                     ) a";
         $table_new = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account
                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
