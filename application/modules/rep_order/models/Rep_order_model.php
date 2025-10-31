@@ -417,7 +417,7 @@ class Rep_order_model extends CI_Model
                     <th style="width: 250px">Customer ID </th>
                     <th style="width: 200px">Customer Name </th>
                     <th style="width: 600px;">No Bill</th>
-                    <th style="width: 600px;">No Sales</th>
+                    <th style="width: 600px;">No Faktur / Bill Doc</th>
                     <th style="width: 200px;">Salesman Name</th>
                     <th style="width: 150px;">Sales Type</th>
                     <th style="width: 200px; text-align: right;" >Bill Value</th>

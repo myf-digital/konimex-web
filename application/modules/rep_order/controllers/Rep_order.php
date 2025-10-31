@@ -73,7 +73,7 @@ class Rep_order extends BaseController
                                     <td class='text-bold'>{$header['no_po']}</td>
                                 </tr>
                                 <tr>
-                                    <td width='25%'>No Sales</td>
+                                    <td width='25%'>No Faktur / Bill Doc</td>
                                     <td width='1%'>:</td>
                                     <td class='text-bold'>{$header['no_sales']}</td>
                                 </tr>
@@ -268,7 +268,7 @@ class Rep_order extends BaseController
             $sheet->setCellValue("E{$row}", $header['nama_customer']);
             $row++;
 
-            $sheet->setCellValue("A{$row}", "No Sales");
+            $sheet->setCellValue("A{$row}", "No Faktur / Bill Doc");
             $sheet->setCellValue("B{$row}", $header['no_sales']);
             $sheet->setCellValue("D{$row}", "Parma");
             $sheet->setCellValue("E{$row}", $header['salesman']);
@@ -375,7 +375,7 @@ class Rep_order extends BaseController
             $sheet->setCellValue("E{$row}", $header['nama_customer']);
             $row++;
 
-            $sheet->setCellValue("A{$row}", "No Sales");
+            $sheet->setCellValue("A{$row}", "No Faktur / Bill Doc");
             $sheet->setCellValue("B{$row}", $header['no_sales']);
             $sheet->setCellValue("D{$row}", "Parma");
             $sheet->setCellValue("E{$row}", $header['salesman']);
@@ -468,7 +468,7 @@ class Rep_order extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Customer ID', 'Customer Name', 'No Invoice', 'No Sales', 'Salesman Name', 'Sales Type', 'Bill Value', 'Pay', 'Total'];
+        $header = ['No', 'Customer ID', 'Customer Name', 'No Invoice', 'No Faktur / Bill Doc', 'Salesman Name', 'Sales Type', 'Bill Value', 'Pay', 'Total'];
 
         $sheet = $spreadsheet->getActiveSheet();
 
