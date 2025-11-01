@@ -134,7 +134,8 @@ class Rep_productivity_model extends CI_Model
                                             ifnull((
                                             select GROUP_CONCAT(x.reason_detailing SEPARATOR ' , ') from (
                                                SELECT z.salesmanid, CONCAT(y.reason, '(', count(y.reason), ')') AS reason_detailing
-                                               from t_sales_rrk_trans z left join trx_visit_detailing y on z.customerid=y.customerid and z.salesmanid=y.salesmanid 
+                                               from t_sales_rrk_trans z left join trx_visit_detailing y on z.periode=y.periode and
+                                                    z.customerid=y.customerid and z.salesmanid=y.salesmanid 
                                                where z.periode between '".$start."' and '".$end."' 
                                                group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
                                             ),'-') as rrk_detailing, sum(e.jumlah_customer) as jumlah_customer, sum(e.total_penjualan) as total_penjualan
