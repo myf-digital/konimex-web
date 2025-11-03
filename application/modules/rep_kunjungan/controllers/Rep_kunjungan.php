@@ -243,32 +243,28 @@ class Rep_kunjungan extends BaseController
                                     ->setCellValue('L'.$i, $vkunjungan['check_out'])
                                     ->setCellValue('M'.$i, $vkunjungan['durasi_menit'].' Menit')
                                     ->setCellValue('N'.$i, $vkunjungan['jarak_meter'].' Meter');
-									// echo DIR_IMAGE_PATH.$vkunjungan['image'];
+									//echo DIR_IMAGE_PATH.$vkunjungan['image'];
                                     // if(file_exists(DIR_IMAGE_PATH.$vkunjungan['image']))
-                                    if (!empty($vkunjungan['image']) or $vkunjungan['image']<>''){
-                                        $arrimages = explode(',', $vkunjungan['image']);
-                                        $w=count($arrimages)*15;
-                                        $wimg=count($arrimages)*120;
-                                        foreach ($arrimages as &$images) {
+                                    if (!empty($vkunjungan['image']) or $vkunjungan['image']<>'' or $vkunjungan['image']<>NULL ){
                                             // if(file_exists($sampleimage))
-                                            if(file_exists(DIR_IMAGE_PATH.$images))	
+                                            if(file_exists(DIR_IMAGE_PATH.$vkunjungan['image']))	
                                             {
                                                 // echo DIR_IMAGE_PATH.$vkunjungan['image'];
                                                 $objDrawing = new PHPExcel_Worksheet_Drawing();
                                                 // $objDrawing->setPath($sampleimage);
-                                                $objDrawing->setPath(DIR_IMAGE_PATH.$images);
-                                                $objDrawing->setWidth($wimg); 
+                                                $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
+                                                $objDrawing->setWidth(120); 
                                                 $objDrawing->setHeight(120);
                                                 $objDrawing->setCoordinates('O'.$i);
                                                 $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
                                                 $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                                                $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth($w);
+                                                $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(25);
                                             }
                                             else
                                             {
                                                 $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
                                             }
-                                        }
+                                        
 
                                     }else
                                     {
