@@ -244,31 +244,28 @@ class Rep_kunjungan extends BaseController
                                     ->setCellValue('M'.$i, $vkunjungan['durasi_menit'].' Menit')
                                     ->setCellValue('N'.$i, $vkunjungan['jarak_meter'].' Meter');
 									//echo DIR_IMAGE_PATH.$vkunjungan['image'];
-                                    // if(file_exists(DIR_IMAGE_PATH.$vkunjungan['image']))
-                                    if (!empty($vkunjungan['image']) or $vkunjungan['image']<>'' or $vkunjungan['image']<>NULL ){
-                                            // if(file_exists($sampleimage))
-                                            if(file_exists(DIR_IMAGE_PATH.$vkunjungan['image']))	
-                                            {
-                                                // echo DIR_IMAGE_PATH.$vkunjungan['image'];
-                                                $objDrawing = new PHPExcel_Worksheet_Drawing();
-                                                // $objDrawing->setPath($sampleimage);
-                                                $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
-                                                $objDrawing->setWidth(120); 
-                                                $objDrawing->setHeight(120);
-                                                $objDrawing->setCoordinates('O'.$i);
-                                                $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                                                $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                                                $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(25);
-                                            }
-                                            else
-                                            {
-                                                $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
-                                            }
-                                        
-
-                                    }else
+                                    if (!empty($vkunjungan['image'])) {
+									if(file_exists(DIR_IMAGE_PATH.$vkunjungan['image']))	
                                     {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
+									     echo DIR_IMAGE_PATH.$vpjp['image'];
+                                        $objDrawing = new PHPExcel_Worksheet_Drawing();
+                                        // $objDrawing->setPath($sampleimage);
+                                        $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
+                                        $objDrawing->setWidth(120); 
+                                        $objDrawing->setHeight(120); 
+                                        $objDrawing->setCoordinates('O'.$i);
+                                        $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+                                        $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
+                                        $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(15);
+                                    }
+                                    else
+                                    {
+                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, DIR_IMAGE_PATH.$vpjp['image']);
+                                    }
+									}
+									else
+                                    {
+                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, DIR_IMAGE_PATH.$vpjp['image']);
                                     }
                             $i++;
                             $no++;
