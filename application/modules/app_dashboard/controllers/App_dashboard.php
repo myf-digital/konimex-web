@@ -768,7 +768,7 @@ class App_dashboard extends BaseController
 			}
 			if ($flag != 'Jadwal') {
 				if (($lat != "0") and ($long !="0")) {
-				$marker .=' var latlng = new google.maps.LatLng('.$lat.','.$long.');
+					$marker .=' var latlng = new google.maps.LatLng('.$lat.','.$long.');
 							var link_image = "\''.$customerid.'\',\''.$salesmanid.'\'";
 							var param_link_image = "\''.$siteid.'\',\''.$periode.'\',\''.$customerid.'\',\''.$salesmanid.'\'";	
 							var contentString_'.$i.' = \'<div id="content" style="max-width:1000px;" >\'+
@@ -999,7 +999,7 @@ class App_dashboard extends BaseController
 									if (isset($rowsdetailing['url_img_detailing']) && $rowsdetailing['url_img_detailing']) {
 										$img_detailing = '<img class="img-rounded" onclick="preview_image_detailing(\'+param_link_image+\'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'">';
 									}
-									$marker .=' <tr>\'+
+									$marker_sales .=' <tr>\'+
 												\'<td valign="top" style="text-align:center;">'.$img_detailing.'</td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
@@ -1012,7 +1012,7 @@ class App_dashboard extends BaseController
 												\'</td>\'+
 												\'</tr>';
 								}
-								$marker .= '</tbody>\'+
+								$marker_sales .= '</tbody>\'+
 							\'</table>\'+
 							\'</div>\'+	
 							\'<hr>\'+
@@ -1083,7 +1083,7 @@ class App_dashboard extends BaseController
 
 					map = new google.maps.Map(document.getElementById("maps"), myOptions);
 					'.$marker.'
-					'.$marker_sales.'		
+					'.$marker_sales.'
 
 					directionsDisplay.setMap(map);
 						
