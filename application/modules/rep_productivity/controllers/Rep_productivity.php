@@ -553,8 +553,8 @@ class Rep_productivity extends BaseController
 
         // Attendance
         $date_interval = date_interval($params['start_period'], $params['end_period']);
-        $objPHPExcel->createSheet(6);
-        $sheetAttendance = $objPHPExcel->setActiveSheetIndex(6);
+        $objPHPExcel->createSheet(0);
+        $sheetAttendance = $objPHPExcel->setActiveSheetIndex(0);
 		$sheetAttendance->setTitle('Attendance');
         $sheetAttendance->setCellValue('A1', 'No.')
             ->setCellValue('B1', 'Parma')
@@ -570,15 +570,17 @@ class Rep_productivity extends BaseController
             $dateStr = format_date_id($dateObj, true, false);
             $colBase = number_to_alphabet($colIndex);
 
-            $sheetAttendance->mergeCells("{$colBase}1:" . number_to_alphabet($colIndex+3) . '1');
+            $sheetAttendance->mergeCells("{$colBase}1:" . number_to_alphabet($colIndex+5) . '1');
             $sheetAttendance->setCellValue("{$colBase}1", $dateStr);
 
             $sheetAttendance->setCellValue(number_to_alphabet($colIndex)   . '2', 'Status');
             $sheetAttendance->setCellValue(number_to_alphabet($colIndex+1) . '2', 'In');
-            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+2) . '2', 'Out');
-            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+3) . '2', 'Duration');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+2) . '2', 'Image In');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+3) . '2', 'Out');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+4) . '2', 'Image Out');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+5) . '2', 'Duration');
 
-            $colIndex += 4;
+            $colIndex += 6;
         }
 
         $attendanceParma = $this->report_productivity->get_attendance_parma($params);
@@ -590,13 +592,17 @@ class Rep_productivity extends BaseController
                 });
 
                 $checkIn = [];
+                $checkInImg = [];
                 $checkOut = [];
+                $checkOutImg = [];
                 $status = [];
 
                 foreach ($filtered as $row) {
                     $tgl = date('Y-m-d', strtotime($row['periode']));
                     $checkIn[$tgl] = $row['start_time'];
+                    $checkInImg[$tgl] = $row['start_image'];
                     $checkOut[$tgl] = $row['end_time'];
+                    $checkOutImg[$tgl] = $row['end_image'];
                     $status[$tgl] = $row['status'];
                 }                
                 $salesman[] = [
@@ -605,13 +611,17 @@ class Rep_productivity extends BaseController
                     'nama_area' => $ap['nama_area'],
                     'status' => $status,
                     'check_in' => $checkIn,
+                    'check_in_img' => $checkInImg,
                     'check_out' => $checkOut,
+                    'check_out_img' => $checkOutImg,
                 ];
             }
         }
 
         $i = 1;
         $row = 3;
+        $urlimage = URL_IMAGE;
+
         foreach ($salesman as $s) {
             $sheetAttendance->setCellValue('A'.$row, $i)
                 ->setCellValue('B'.$row, $s['salesmanid'] ?? '')
@@ -621,9 +631,11 @@ class Rep_productivity extends BaseController
             $colIdx = 5;
             foreach ($date_interval as $date_int) {
                 $in = $s['check_in'][$date_int] ?? null;
+                $inimg = $s['check_in_img'][$date_int] ?? null;
                 if ($in) $in = date('H:i:s', strtotime($s['check_in'][$date_int]));
 
                 $out = $s['check_out'][$date_int] ?? null;
+                $outimg = $s['check_out_img'][$date_int] ?? null;
                 if ($out) $out = date('H:i:s', strtotime($s['check_out'][$date_int]));
 
                 $duration = cal_duration_date($s['check_in'][$date_int] ?? null, $s['check_out'][$date_int] ?? null);
@@ -631,10 +643,15 @@ class Rep_productivity extends BaseController
                 
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx)   . $row, $status);
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+1) . $row, $in);
-                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+2) . $row, $out);
-                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+3) . $row, $duration);
+                
+				if($inimg!=null && $inimg!=''){$inimg=$urlimage.$inimg;}else{$inimg='';}
+				if($outimg!=null && $outimg!=''){$outimg=$urlimage.$outimg;}else{$outimg='';}
+				$sheetAttendance->setCellValue(number_to_alphabet($colIdx+2) . $row, $inimg);
+                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+3) . $row, $out);
+                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+4) . $row, $outimg);
+                $sheetAttendance->setCellValue(number_to_alphabet($colIdx+5) . $row, $duration);
 
-                $colIdx += 4;
+                $colIdx += 6;
             }
 			$i++;
             $row++;

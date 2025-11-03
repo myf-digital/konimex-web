@@ -291,4 +291,63 @@ class Rep_gffaktif_model extends CI_Model
 		return $query->result_array();
 	}
 
+    function get_attendance_parma($data)
+    {
+        if ($data['restrict_level'] == '4') {
+            $strquery = " AND tsa.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE subareaid IN (
+                                SELECT DISTINCT b.subareaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " AND tsa.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE areaid IN (
+                                SELECT DISTINCT b.areaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " AND tsa.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE regionalid IN (
+                                SELECT DISTINCT b.regionalid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        ) ";
+        } else $strquery = "";
+
+        $where = "";
+        if (isset($data['start_period']) && isset($data['end_period'])) {
+            $where .= " tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+        }
+        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND mss.regionalid ='".$data['regionalid']."'";
+        }
+        if (isset($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND mss.areaid ='".$data['areaid']."'";
+        }
+        
+		$query = $this->db->query("
+        SELECT mss.nama_salesman, mss.salesmanid, mss.nama_area,tsa.status, tsa.periode, ap.start_time, 
+                ap.start_image, ap.end_time, ap.end_image
+        FROM t_sales_absensi tsa 
+            LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
+            left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
+            WHERE ".$where . $strquery ."and mss.salesmanid not in ('PAR100', 'PAR101')
+            order by tsa.periode, tsa.salesmanid 
+        ");
+        return $query->result_array();
+    }    
 }
