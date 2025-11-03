@@ -154,7 +154,7 @@ class Rep_kunjungan extends BaseController
 
     public function savetoxlsx($data)
     {
-		ini_set('memory_limit', '256M');
+		ini_set('memory_limit', '1024M');
         
         $start = $this->uri->segment('3');
         $end = $this->uri->segment('4');
@@ -247,7 +247,7 @@ class Rep_kunjungan extends BaseController
                                     if (!empty($vkunjungan['image'])) {
 									if(file_exists(DIR_IMAGE_PATH.$vkunjungan['image']))	
                                     {
-									     echo DIR_IMAGE_PATH.$vpjp['image'];
+									    //echo DIR_IMAGE_PATH.$vpjp['image'];
                                         $objDrawing = new PHPExcel_Worksheet_Drawing();
                                         // $objDrawing->setPath($sampleimage);
                                         $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
@@ -260,12 +260,12 @@ class Rep_kunjungan extends BaseController
                                     }
                                     else
                                     {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, DIR_IMAGE_PATH.$vpjp['image']);
+                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
                                     }
 									}
 									else
                                     {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, DIR_IMAGE_PATH.$vpjp['image']);
+                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
                                     }
                             $i++;
                             $no++;
