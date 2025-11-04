@@ -61,17 +61,12 @@ class Rep_gffaktif extends BaseController
         responseJSON($this->report_gffaktif->get_city($data));
     }
 	
-	function namahari($tanggal){
-    
-    //fungsi mencari namahari
-    //format $tgl YYYY-MM-DD
-    //harviacode.com
-    
-    $tgl=substr($tanggal,8,2);
-    $bln=substr($tanggal,5,2);
-    $thn=substr($tanggal,0,4);
- 
-    $info=date('w', mktime(0,0,0,$bln,$tgl,$thn));
+	function namahari($tanggal) {
+		$tgl=substr($tanggal,8,2);
+		$bln=substr($tanggal,5,2);
+		$thn=substr($tanggal,0,4);
+	
+		$info=date('w', mktime(0,0,0,$bln,$tgl,$thn));
     
 		switch($info){
 			case '0': return "Minggu"; break;
@@ -86,7 +81,6 @@ class Rep_gffaktif extends BaseController
 	}
 
 	function load_data_att() {
-	
 		$periode = $this->input->post("start");	
 		$until = $this->input->post("end");
         $idjabatan = $this->input->post("idjabatan");
@@ -109,7 +103,6 @@ class Rep_gffaktif extends BaseController
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Area FC</th>';
-        // $html .='<th rowspan="2" style="text-align:left;width: 200px">City</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -162,7 +155,6 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['tipe_sales'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_regional'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_area'].'</td>';
-			// $html .='<td style="text-align:left;width: 200px">'.$v_salesman['city'].'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -213,7 +205,7 @@ class Rep_gffaktif extends BaseController
 		}
 		$html .='</tr>';
 		$html .='<tr>';
-		$html .='<td colspan="7" style="text-align:right;font-size:13px;">TOTAL</td>';
+		$html .='<td colspan="6" style="text-align:right;font-size:13px;">TOTAL</td>';
 				$start = date_create($periode);
 				$end = date_create($until);
 				while($start <= $end)
@@ -313,7 +305,6 @@ class Rep_gffaktif extends BaseController
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area FC</th>';
-        // $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">City</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -365,7 +356,6 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['tipe_sales'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_regional'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_area'].'</td>';
-			// $html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['city'].'</td>';
 			
 			/******************/
 			$start = date_create($periode);

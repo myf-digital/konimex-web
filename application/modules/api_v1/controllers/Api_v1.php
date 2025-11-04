@@ -438,6 +438,23 @@ class Api_v1 extends CI_Controller
         }
     }
 
+    function outlet_pjp()
+    {
+        // $data = param_input();
+        $data = [
+            'lat_center' => $this->input->get('lat_center'),
+            'lng_center' => $this->input->get('lng_center'),
+            'radius_km' => $this->input->get('radius_km'),
+            'salesmanid' => $this->input->get('salesmanid'),
+        ];
+        $result = $this->api_v1->get_outlet_within_radius($data);
+        if (200 == $result->code) {
+            return response($result->result);
+        } else {
+            return response($result->result, $result->code, $result->message);
+        }
+    }
+
     function call_ram_rsm()
     {
         $data = param_input();

@@ -33,7 +33,6 @@ class Rep_absensi extends BaseController
     }
 
     function open_detail() {
-		
 		$start = $this->input->post("start");
 		$end = $this->input->post("end");
 		$salesmanid = $this->input->post("salesmanid");
@@ -63,7 +62,11 @@ class Rep_absensi extends BaseController
 			$strquery = "";
 		}
 
-        if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
+        if ($salesmanid != '') {
+            $addquery = " and a.salesmanid in ('".$salesmanid."') ";
+        } else {
+            $addquery = "";
+        }
         $q = $this->db->query(" 
                                 select a.periode, a.salesmanid, b.nama_salesman, b.nama_area, concat(a.salesmanid,'-',b.nama_salesman, '-',b.nama_area) as parma_user,
                                         a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
@@ -74,25 +77,25 @@ class Rep_absensi extends BaseController
                                 where a.periode between '$start' and '$end' $addquery $strquery
                                 order by a.periode desc;
                             ");
-		//echo $this->db->last_query();
+
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
 		
 		$html ='<div class="box-body"><h3>List Kunjungan</h3>';
 		$html .= '<div class="container-table">';
-        $html .= '<table class="table table-bordered table-condensed fixed-table">';
+        $html .= '<table class="table table-bordered table-bordered table-condensed fixed-table">';
 		$html .= '<tbody>';
 		$html .= '<tr>';
-        $html .= '<th style="width: 80px">No</th>';
+        $html .= '<th class="text-center" style="width: 50px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
 		$html .= '<th style="width: 150px">User Parma</th>';
 		$html .= '<th style="width: 150px">Start Time</th>';
-		$html .= '<th style="width: 150px">Foto Checkin</th>';
+		$html .= '<th style="width: 120px">Foto Checkin</th>';
 		$html .= '<th style="width: 150px">Keterangan Checkin</th>';
-		$html .= '<th style="width: 200px">End Time</th>';
-		$html .= '<th style="width: 200px">Foto Checkout</th>';
-		$html .= '<th style="width: 100px">Keterangabn Checkout</th>';
-		$html .= '<th style="width: 100px">Waktu (Menit)</th>';
+		$html .= '<th style="width: 150px">End Time</th>';
+		$html .= '<th style="width: 120px">Foto Checkout</th>';
+		$html .= '<th style="width: 150px">Keterangabn Checkout</th>';
+		$html .= '<th style="width: 100px">Durasi</th>';
         $html .= '</tr>';
 		$html .= '</tbody>';
 		$html .= '</table>';
@@ -103,32 +106,34 @@ class Rep_absensi extends BaseController
         $html .= '<tbody>';
 
         $i=1;
-		foreach ($data as $value) {
+		foreach ($data as $value) {            
 			$html .= '<tr>';
-			$html .= '<td style="width: 80px">'.$i.'</td>';
+			$html .= '<td class="text-center" style="width: 50px">'.$i.'</td>';
 			$html .= '<td style="width: 100px">'.$value['periode'].'</td>';
 			$html .= '<td style="width: 150px">'.$value['parma_user'].'</td>';
-			$html .= '<td style="width: 150px">'.$value['start_time'].'</td>';
+			$html .= '<td style="width: 150px">'.format_time($value['start_time']).'</td>';
             $html .= '<td style="width: 120px">';
             if (!empty($value['start_image']) or $value['start_image']<>''){
                 $arrimages = explode(',', $value['start_image']);
                 foreach ($arrimages as &$images) {
-                    $html .= ' <img class="img-rounded" alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.$images.'">';
+                    $imgIn = "'".$value['parma_user']."','".$urlimage.$images."','".($value['start_keterangan'] ?? '')."'";
+                    $html .= ' <img class="img-rounded" onclick="preview_image('.$imgIn.')" alt="Image CheckIn" style="width:100px; height:100px; cursor:pointer;" src="'.$urlimage.$images.'">';
                 }
             }
             $html .= '</td>';
 			$html .= '<td style="width: 150px">'.$value['start_keterangan'].'</td>';
-			$html .= '<td style="width: 150px">'.$value['end_time'].'</td>';
+			$html .= '<td style="width: 150px">'.format_time($value['end_time']).'</td>';
 			$html .= '<td style="width: 120px">';
             if (!empty($value['end_image']) or $value['end_image']<>''){
                 $arrimages = explode(',', $value['end_image']);
                 foreach ($arrimages as &$images) {
-                    $html .= ' <img class="img-rounded" alt="Image CheckOut" style="width:100px; height:100px;" src="'.$urlimage.$images.'">';
+                    $imgOut = "'".$value['parma_user']."','".$urlimage.$images."','".($value['end_keterangan'] ?? '')."'";
+                    $html .= ' <img class="img-rounded" onclick="preview_image('.$imgOut.')" alt="Image CheckOut" style="width:100px; height:100px; cursor:pointer;" src="'.$urlimage.$images.'">';
                 }
             }
             $html .= '</td>';
             $html .= '<td style="width: 150px">'.$value['end_keterangan'].'</td>';
-			$html .= '<td style="width: 100px">'.$value['durasi_menit'].' Menit.</td>';
+			$html .= '<td style="width: 100px">'.cal_duration_date($value['start_time'],$value['end_time']).'</td>';
 			
 			$i++;
 		}
@@ -141,10 +146,22 @@ class Rep_absensi extends BaseController
                 $(".container-table").on("scroll", function() {
                     $(".container-table-content").scrollLeft($(this).scrollLeft());
                 });
+                function preview_image(parma,image,ket) {
+                    let tempFile = [{
+                        href: image,
+                        title: `PAR-MA: ${parma} <br /> Keterangan: ${ket}`
+                    }];
+                    $.fancybox.open(tempFile, {
+                        helpers: {
+                            thumbs: {
+                                width: 75,
+                                height: 50
+                            }
+                        }
+                    });
+				}
             </script>';
-				
 		echo $html;
-
 	}
 
     public function savetoxlsx($data)
@@ -160,29 +177,30 @@ class Rep_absensi extends BaseController
 
 		$filename = "Report_Kunjungan_".$start."-".$end.".xlsx";
 
-        if ($restrict_level=='4'){
+        if ($restrict_level=='4') {
 			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 												where a.username='".$usersession."')
 												)";
-		}
-		else if ($restrict_level=='3'){
+		} else if ($restrict_level=='3') {
 			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
 											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 											where a.username='".$usersession."')
 												)";
-		}
-		else if ($restrict_level=='2'){
+		} else if ($restrict_level=='2') {
 			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
 												where a.username='".$usersession."')
 												) ";
-		}
-		else {
+		} else {
 			$strquery = "";
 		}
 
-        if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
+        if ($salesmanid!='') {
+            $addquery=" and a.salesmanid in ('".$salesmanid."') ";
+        } else {
+            $addquery="";
+        }
         $q = $this->db->query(" 
                                 select a.periode, a.salesmanid, b.nama_salesman, b.nama_area, concat(a.salesmanid,'-',b.nama_salesman, '-',b.nama_area) as parma_user,
                                         a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
@@ -194,93 +212,76 @@ class Rep_absensi extends BaseController
                                 order by a.periode desc;
                             ");
 
-        //echo $this->db->last_query();
         $lovkunjungan = $q->result_array();
         
         $this->load->library('excel');
-        //$objDrawing = new PHPExcel_Worksheet_Drawing();
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'List Report Absensi Parma')
-                    ->setCellValue('A2', 'No.')
-                    ->setCellValue('B2', 'Periode')
-                    ->setCellValue('C2', 'User Parma')
-                    ->setCellValue('D2', 'Start Time')
-                    ->setCellValue('E2', 'Foto Checkin')
-                    ->setCellValue('F2', 'Keterangan Checkin')
-                    ->setCellValue('G2', 'End Time')
-                    ->setCellValue('H2', 'Foto Checkout')
-                    ->setCellValue('I2', 'Keterangan Checkout')
-                    ->setCellValue('J2', 'Waktu (Menit)')
-                    ;
-        
-                    $i = 3;
-                    $no = 1;
-					foreach ($lovkunjungan as $vkunjungan) {
-                        $objPHPExcel->setActiveSheetIndex(0)
-                                    ->setCellValue('A'.$i, $no)
-                                    ->setCellValue('B'.$i, $vkunjungan['periode'])
-                                    ->setCellValue('C'.$i, $vkunjungan['parma_user'])
-                                    ->setCellValue('D'.$i, $vkunjungan['start_time'])
-                                    ->setCellValue('E'.$i, '')
-                                    ->setCellValue('F'.$i, $vkunjungan['start_keterangan'])
-                                    ->setCellValue('G'.$i, $vkunjungan['end_time'])
-                                    ->setCellValue('H'.$i, '')
-                                    ->setCellValue('I'.$i, $vkunjungan['end_keterangan'])
-                                    ->setCellValue('J'.$i, $vkunjungan['durasi_menit']);
-									//echo DIR_IMAGE_PATH.$vkunjungan['image'];
-                                    if (!empty($vkunjungan['start_image']) or $vkunjungan['start_image']<>''){ 
-                                        
-									if(file_exists(DIR_IMAGE_PATH.$vkunjungan['start_image']))	
-                                    {
-									    //echo DIR_IMAGE_PATH.$vpjp['image'];
-                                        $objDrawing = new PHPExcel_Worksheet_Drawing();
-                                        // $objDrawing->setPath($sampleimage);
-                                        $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['start_image']);
-                                        $objDrawing->setWidth(120); 
-                                        $objDrawing->setHeight(120); 
-                                        $objDrawing->setCoordinates('E'.$i);
-                                        $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                                        $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                                        $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
-                                    }
-                                    else
-                                    {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
-                                    }
-									}
-									else
-                                    {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
-                                    }
+            ->setCellValue('A1', 'List Report Absensi Parma')
+            ->setCellValue('A2', 'No.')
+            ->setCellValue('B2', 'Periode')
+            ->setCellValue('C2', 'User Parma')
+            ->setCellValue('D2', 'Start Time')
+            ->setCellValue('E2', 'Foto Checkin')
+            ->setCellValue('F2', 'Keterangan Checkin')
+            ->setCellValue('G2', 'End Time')
+            ->setCellValue('H2', 'Foto Checkout')
+            ->setCellValue('I2', 'Keterangan Checkout')
+            ->setCellValue('J2', 'Durasi')
+            ;
 
-                                    if (!empty($vkunjungan['end_image']) or $vkunjungan['end_image']<>''){
-									if(file_exists(DIR_IMAGE_PATH.$vkunjungan['end_image']))	
-                                    {
-									    //echo DIR_IMAGE_PATH.$vpjp['image'];
-                                        $objDrawing = new PHPExcel_Worksheet_Drawing();
-                                        // $objDrawing->setPath($sampleimage);
-                                        $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['end_image']);
-                                        $objDrawing->setWidth(120); 
-                                        $objDrawing->setHeight(120); 
-                                        $objDrawing->setCoordinates('H'.$i);
-                                        $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                                        $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                                        $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
-                                    }
-                                    else
-                                    {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
-                                    }
-									}
-									else
-                                    {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
-                                    }
+            $i = 3;
+            $no = 1;
+            foreach ($lovkunjungan as $vkunjungan) {
+                $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A'.$i, $no)
+                    ->setCellValue('B'.$i, $vkunjungan['periode'])
+                    ->setCellValue('C'.$i, $vkunjungan['parma_user'])
+                    ->setCellValue('D'.$i, format_time($vkunjungan['start_time']))
+                    ->setCellValue('E'.$i, '')
+                    ->setCellValue('F'.$i, $vkunjungan['start_keterangan'])
+                    ->setCellValue('G'.$i, format_time($vkunjungan['end_time']))
+                    ->setCellValue('H'.$i, '')
+                    ->setCellValue('I'.$i, $vkunjungan['end_keterangan'])
+                    ->setCellValue('J'.$i, cal_duration_date($vkunjungan['start_time'],$vkunjungan['end_time']));
 
-                            $i++;
-                            $no++;
+                    if (!empty($vkunjungan['start_image']) or $vkunjungan['start_image']<>'') { 
+                        if (file_exists(DIR_IMAGE_PATH.$vkunjungan['start_image'])) {
+                            $objDrawing = new PHPExcel_Worksheet_Drawing();
+                            $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['start_image']);
+                            $objDrawing->setWidth(120); 
+                            $objDrawing->setHeight(120); 
+                            $objDrawing->setCoordinates('E'.$i);
+                            $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+                            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
+                            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+                        } else {
+                            $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
                         }
+                    } else {
+                        $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
+                    }
+
+                    if (!empty($vkunjungan['end_image']) or $vkunjungan['end_image']<>'') {
+                        if (file_exists(DIR_IMAGE_PATH.$vkunjungan['end_image']))	 {
+                            $objDrawing = new PHPExcel_Worksheet_Drawing();
+                            $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['end_image']);
+                            $objDrawing->setWidth(120); 
+                            $objDrawing->setHeight(120); 
+                            $objDrawing->setCoordinates('H'.$i);
+                            $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+                            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
+                            $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
+                        } else {
+                            $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
+                        }
+                    } else {
+                        $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
+                    }
+
+                    $i++;
+                    $no++;
+                }
                         
         // Redirect output to a client's web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -297,7 +298,6 @@ class Rep_absensi extends BaseController
         $objWriter->save('php://output');
         unset($objPHPExcel);
         return true;
-
     }
 
 }

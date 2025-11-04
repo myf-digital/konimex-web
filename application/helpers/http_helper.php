@@ -202,6 +202,14 @@ if (!function_exists('format_date_id')) {
         }
     }
 }
+if (!function_exists('format_time')) {
+    function format_time($datetime)
+    {
+        if (!$datetime) return '-';
+        $timestamp = strtotime($datetime);
+        return date('H:i:s', $timestamp);
+    }
+}
 
 if (!function_exists('cal_duration_date')) {
     function cal_duration_date($start, $end)
@@ -211,7 +219,11 @@ if (!function_exists('cal_duration_date')) {
             $akhir = new DateTime($end);
             $diff  = $awal->diff($akhir);
 
-            return sprintf('%d jam %d menit %d detik', $diff->h, $diff->i, $diff->s);
+            $result = [];
+            if ($diff->h) $result[] = sprintf('%d jam', $diff->h);
+            if ($diff->i) $result[] = sprintf('%d menit', $diff->i);
+            if ($diff->s) $result[] = sprintf('%d detik', $diff->s);
+            return implode(' ', $result);
         }
         return '-';
     }
@@ -234,6 +246,21 @@ if (!function_exists('date_interval')) {
             return $tanggal_array;
         }
         return [];
+    }
+}
+
+if (!function_exists('format_jarak')) {
+    function format_jarak($meter)
+    {
+        if (!$meter) return '-';
+        
+        if ($meter >= 1000) {
+            $km = floor($meter / 1000);
+            $m  = $meter % 1000;
+            return number_format($km,0,'.','.') . ' km ' . number_format($m,0,'.','.') . ' m';
+        } else {
+            return number_format($meter,0,'.','.') . ' m';
+        }
     }
 }
 

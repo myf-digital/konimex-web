@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Report GFF Aktif");
+    common.setTitle("Report PAR Aktif");
     // declare dom
     let uiForm = $("#fm-report-promo");
     let uiBtnPreview = $("#btn-preview-form");
@@ -13,8 +13,6 @@
     let uiSelectArea = $("#area-id");
     let uiSelectCity = $("#city-id");
     
-    // define from *-content.js
-    //let param = common.getCookie("module.report.promo.update");
     let paramsession = common.getCookie("session");
     
     initializeParam();
@@ -69,6 +67,7 @@
         });
 
         load_tipegff();
+        open_preview();
     }
 
     function setupForm(r1) {
@@ -117,7 +116,6 @@
     }
 
     function open_preview() {
-		
         var start = uiStartPeriode.val();
         var end = uiEndPeriode.val();
         var position = uiSelectPosition.val();
@@ -127,7 +125,6 @@
 
         var regionalid = uiSelectRegional.val();
         var areaid = uiSelectArea.val();
-        //alert("start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession);
         $.ajax({
             type:"GET",
             dataType: "html",
@@ -145,14 +142,10 @@
         $.ajax({
             type:"POST",
             dataType: "html",
-            beforeSend : function() {
-                //$("#map-content").html('Populating data, please wait..');
-            },
             url: common.baseURL("rep_gffaktif/load_data_att"),
             data : "start="+start+"&end="+end+"&position="+position+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrictlevel+"&regionalid="+regionalid+"&areaid="+areaid,
             success:function(res){
-                response = res;
-                $('#tbl-content').html(response);
+                $('#tbl-content').html(res);
             },
             error:function(){
                 alert("Load failed");

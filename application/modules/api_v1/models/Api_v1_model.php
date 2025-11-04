@@ -991,6 +991,48 @@ class Api_v1_model extends CI_Model
 		}
     }
 
+	function get_outlet_within_radius($data)
+    {
+		$sql = "
+			SELECT
+				a.customerid,
+				a.kode_outlet,
+				a.nama_customer outlet,
+				b.nama_class account,
+				a.mcc dc,
+				a.latitude,
+				a.longitude,
+                (6371 * ACOS(
+                    COS(RADIANS(?)) * COS(RADIANS(a.latitude)) * 
+                    COS(RADIANS(a.longitude) - RADIANS(?)) + 
+                    SIN(RADIANS(?)) * SIN(RADIANS(a.latitude))
+                )) AS distance_km
+			FROM m_customer a
+			LEFT JOIN m_customer_class b ON b.classid = a.classid
+			JOIN m_customer_ob c ON c.customerid = a.customerid
+			WHERE latitude <> 0 AND latitude <> 0
+				AND c.salesmanid = ?
+				AND a.customerid NOT IN (SELECT customerid FROM t_sales_setup_rrk WHERE salesmanid = ?)
+			HAVING distance_km <= ?
+			ORDER BY distance_km ASC
+			LIMIT 50
+		";
+
+        $query = $this->db->query($sql, [
+			$data['lat_center'],
+			$data['lng_center'],
+			$data['lat_center'],
+			$data['salesmanid'],
+			$data['salesmanid'],
+			$data['radius_km'],
+		]);
+		if (count($query->result_array()) > 0) {
+			return result($query->result_array());
+		} else {
+			return result([], 404, 'Data not found');
+		}
+    }
+
 	function get_crc_daily($data)
     {
 		

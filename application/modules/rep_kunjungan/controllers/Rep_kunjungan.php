@@ -67,7 +67,15 @@ class Rep_kunjungan extends BaseController
         $q = $this->db->query(" 
                                 select a.periode, a.salesmanid, c.nama_salesman, c.nama_area, concat(a.salesmanid,'-',c.nama_salesman, '-',c.nama_area) as parma_user,
                                     a.customerid, b.latest_jjid,b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
-                                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,CALCULATE_DISTANCE(b.latitude,b.longitude,a.latitude_cell,a.longitude_cell)*1000 as jarak_meter,
+                                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
+                                    CASE
+                                        WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
+                                            OR b.latitude IS NULL OR b.longitude IS NULL
+                                            OR a.latitude_cell = 0 OR a.longitude_cell = 0
+                                            OR b.latitude = 0 OR b.longitude = 0
+                                        THEN NULL
+                                        ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
+                                    END AS jarak_meter,
                                     a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
                                     t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
                                     left join v_gff_info c on a.salesmanid =c.salesmanid 
@@ -75,7 +83,7 @@ class Rep_kunjungan extends BaseController
                                     where a.periode between '$start' and '$end' $addquery $strquery
                                 order by a.periode desc;
                             ");
-		//echo $this->db->last_query();
+
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
 		
@@ -122,15 +130,16 @@ class Rep_kunjungan extends BaseController
 			$html .= '<td style="width: 200px">'.$value['alamat'].'</td>';
 			$html .= '<td style="width: 100px">'.$value['city'].'</td>';
 			$html .= '<td style="width: 100px">'.$value['cluster'].'</td>';
-			$html .= '<td style="width: 100px">'.$value['check_in'].'</td>';
-			$html .= '<td style="width: 100px">'.$value['check_out'].'</td>';
-			$html .= '<td style="width: 100px">'.$value['durasi_menit'].' Menit.</td>';
-			$html .= '<td style="width: 100px">'.$value['jarak_meter'].' Meter.</td>';
+			$html .= '<td style="width: 100px">'.format_time($value['check_in']).'</td>';
+			$html .= '<td style="width: 100px">'.format_time($value['check_out']).'</td>';
+			$html .= '<td style="width: 100px">'.cal_duration_date($value['check_in'],$value['check_out']).'</td>';
+			$html .= '<td style="width: 100px">'.format_jarak($value['jarak_meter']).'</td>';
             $html .= '<td style="width: 120px">';
             if (!empty($value['image']) or $value['image']<>''){
                 $arrimages = explode(',', $value['image']);
                 foreach ($arrimages as &$images) {
-                    $html .= ' <img class="img-rounded" alt="Image CheckIn" style="width:100px; height:100px;" src="'.$urlimage.$images.'">';
+                    $imgIn = "'".$value['parma_user']."','".$urlimage.$images."','".($value['start_keterangan'] ?? '')."'";
+                    $html .= ' <img class="img-rounded" onclick="preview_image('.$imgIn.')" alt="Image CheckIn" style="width:100px; height:100px; cursor:pointer;" src="'.$urlimage.$images.'">';
                 }
             }
             $html .= '</td>';
@@ -146,10 +155,23 @@ class Rep_kunjungan extends BaseController
                 $(".container-table").on("scroll", function() {
                     $(".container-table-content").scrollLeft($(this).scrollLeft());
                 });
+                function preview_image(parma,image,ket) {
+                    let tempFile = [{
+                        href: image,
+                        title: `PAR-MA: ${parma} <br /> Keterangan: ${ket}`
+                    }];
+                    $.fancybox.open(tempFile, {
+                        helpers: {
+                            thumbs: {
+                                width: 75,
+                                height: 50
+                            }
+                        }
+                    });
+				}
             </script>';
 				
 		echo $html;
-
 	}
 
     public function savetoxlsx($data)
@@ -191,7 +213,15 @@ class Rep_kunjungan extends BaseController
         $q = $this->db->query(" 
                                 select a.periode, a.salesmanid, c.nama_salesman, c.nama_area, concat(a.salesmanid,'-',c.nama_salesman, '-',c.nama_area) as parma_user,
                                     a.customerid, b.latest_jjid,b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
-                                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,CALCULATE_DISTANCE(b.latitude,b.longitude,a.latitude_cell,a.longitude_cell)*1000 as jarak_meter,
+                                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
+                                    CASE
+                                        WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
+                                            OR b.latitude IS NULL OR b.longitude IS NULL
+                                            OR a.latitude_cell = 0 OR a.longitude_cell = 0
+                                            OR b.latitude = 0 OR b.longitude = 0
+                                        THEN NULL
+                                        ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
+                                    END AS jarak_meter,
                                     a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
                                     t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
                                     left join v_gff_info c on a.salesmanid =c.salesmanid 
@@ -200,76 +230,67 @@ class Rep_kunjungan extends BaseController
                                 order by a.periode desc;
                             ");
 
-        //echo $this->db->last_query();
         $lovkunjungan = $q->result_array();
         
         $this->load->library('excel');
-        //$objDrawing = new PHPExcel_Worksheet_Drawing();
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'List Report Kunjungan')
-                    ->setCellValue('A2', 'No.')
-                    ->setCellValue('B2', 'Periode')
-                    ->setCellValue('C2', 'User Parma')
-                    ->setCellValue('D2', 'Parma Outlet ID')
-                    ->setCellValue('E2', 'Latest JJID')
-                    ->setCellValue('F2', 'Customer ID Map')
-                    ->setCellValue('G2', 'Latest Customer Name')
-                    ->setCellValue('H2', 'Alamat')
-                    ->setCellValue('I2', 'Area')
-                    ->setCellValue('J2', 'Cluster')
-                    ->setCellValue('K2', 'CheckIn')
-                    ->setCellValue('L2', 'CheckOut')
-                    ->setCellValue('M2', 'Durasi')
-                    ->setCellValue('N2', 'Jarak')
-                    ->setCellValue('O2', 'Foto')
-                    ;
-        
-                    $i = 3;
-                    $no = 1;
-					foreach ($lovkunjungan as $vkunjungan) {
-                        $objPHPExcel->setActiveSheetIndex(0)
-                                    ->setCellValue('A'.$i, $no)
-                                    ->setCellValue('B'.$i, $vkunjungan['periode'])
-                                    ->setCellValue('C'.$i, $vkunjungan['parma_user'])
-                                    ->setCellValue('D'.$i, $vkunjungan['customerid'])
-                                    ->setCellValue('E'.$i, $vkunjungan['latest_jjid'])
-                                    ->setCellValue('F'.$i, $vkunjungan['cust_id_map'])
-                                    ->setCellValue('G'.$i, $vkunjungan['nama_customer'])
-                                    ->setCellValue('H'.$i, $vkunjungan['alamat'])
-                                    ->setCellValue('I'.$i, $vkunjungan['city'])
-                                    ->setCellValue('J'.$i, $vkunjungan['cluster'])
-                                    ->setCellValue('K'.$i, $vkunjungan['check_in'])
-                                    ->setCellValue('L'.$i, $vkunjungan['check_out'])
-                                    ->setCellValue('M'.$i, $vkunjungan['durasi_menit'].' Menit')
-                                    ->setCellValue('N'.$i, $vkunjungan['jarak_meter'].' Meter');
-									//echo DIR_IMAGE_PATH.$vkunjungan['image'];
-                                    if (!empty($vkunjungan['image'])) {
-									if(file_exists(DIR_IMAGE_PATH.$vkunjungan['image']))	
-                                    {
-									    //echo DIR_IMAGE_PATH.$vpjp['image'];
-                                        $objDrawing = new PHPExcel_Worksheet_Drawing();
-                                        // $objDrawing->setPath($sampleimage);
-                                        $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
-                                        $objDrawing->setWidth(120); 
-                                        $objDrawing->setHeight(120); 
-                                        $objDrawing->setCoordinates('O'.$i);
-                                        $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                                        $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                                        $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(15);
-                                    }
-                                    else
-                                    {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
-                                    }
-									}
-									else
-                                    {
-                                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
-                                    }
-                            $i++;
-                            $no++;
+            ->setCellValue('A1', 'List Report Kunjungan')
+            ->setCellValue('A2', 'No.')
+            ->setCellValue('B2', 'Periode')
+            ->setCellValue('C2', 'User Parma')
+            ->setCellValue('D2', 'Parma Outlet ID')
+            ->setCellValue('E2', 'Latest JJID')
+            ->setCellValue('F2', 'Customer ID Map')
+            ->setCellValue('G2', 'Latest Customer Name')
+            ->setCellValue('H2', 'Alamat')
+            ->setCellValue('I2', 'Area')
+            ->setCellValue('J2', 'Cluster')
+            ->setCellValue('K2', 'CheckIn')
+            ->setCellValue('L2', 'CheckOut')
+            ->setCellValue('M2', 'Durasi')
+            ->setCellValue('N2', 'Jarak')
+            ->setCellValue('O2', 'Foto')
+            ;
+
+            $i = 3;
+            $no = 1;
+            foreach ($lovkunjungan as $vkunjungan) {
+                $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A'.$i, $no)
+                    ->setCellValue('B'.$i, $vkunjungan['periode'])
+                    ->setCellValue('C'.$i, $vkunjungan['parma_user'])
+                    ->setCellValue('D'.$i, $vkunjungan['customerid'])
+                    ->setCellValue('E'.$i, $vkunjungan['latest_jjid'])
+                    ->setCellValue('F'.$i, $vkunjungan['cust_id_map'])
+                    ->setCellValue('G'.$i, $vkunjungan['nama_customer'])
+                    ->setCellValue('H'.$i, $vkunjungan['alamat'])
+                    ->setCellValue('I'.$i, $vkunjungan['city'])
+                    ->setCellValue('J'.$i, $vkunjungan['cluster'])
+                    ->setCellValue('K'.$i, format_time($vkunjungan['check_in']))
+                    ->setCellValue('L'.$i, format_time($vkunjungan['check_out']))
+                    ->setCellValue('M'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
+                    ->setCellValue('N'.$i, format_jarak($vkunjungan['jarak_meter']));
+
+                    if (!empty($vkunjungan['image'])) {
+                        if (file_exists(DIR_IMAGE_PATH.$vkunjungan['image'])) {
+                            $objDrawing = new PHPExcel_Worksheet_Drawing();
+                            $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
+                            $objDrawing->setWidth(120); 
+                            $objDrawing->setHeight(120); 
+                            $objDrawing->setCoordinates('O'.$i);
+                            $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+                            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
+                            $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(15);
+                        } else {
+                            $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
                         }
+                    } else {
+                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
+                    }
+                $i++;
+                $no++;
+            }
                         
         // Redirect output to a client's web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

@@ -40,6 +40,12 @@ class Conf_setup_pjp extends BaseController
         $this->template->show($this, 'form_switch');
     }
 
+    public function form_addoutlet()
+    {
+        // $this->template->show($this, 'form_addoutlet');
+        $this->load->view('form_addoutlet');
+    }
+
     public function add_switch()
     {
         $data = param_input();
