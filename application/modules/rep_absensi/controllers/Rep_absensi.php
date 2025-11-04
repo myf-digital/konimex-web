@@ -118,16 +118,16 @@ class Rep_absensi extends BaseController
             }
             $html .= '</td>';
 			$html .= '<td style="width: 150px">'.$value['start_keterangan'].'</td>';
-			$html .= '<td style="width: 150px">'.$value['End_time'].'</td>';
+			$html .= '<td style="width: 150px">'.$value['end_time'].'</td>';
 			$html .= '<td style="width: 120px">';
-            if (!empty($value['End_image']) or $value['End_image']<>''){
-                $arrimages = explode(',', $value['End_image']);
+            if (!empty($value['end_image']) or $value['end_image']<>''){
+                $arrimages = explode(',', $value['end_image']);
                 foreach ($arrimages as &$images) {
                     $html .= ' <img class="img-rounded" alt="Image CheckOut" style="width:100px; height:100px;" src="'.$urlimage.$images.'">';
                 }
             }
             $html .= '</td>';
-            $html .= '<td style="width: 150px">'.$value['End_keterangan'].'</td>';
+            $html .= '<td style="width: 150px">'.$value['end_keterangan'].'</td>';
 			$html .= '<td style="width: 100px">'.$value['durasi_menit'].' Menit.</td>';
 			
 			$i++;
@@ -222,10 +222,10 @@ class Rep_absensi extends BaseController
                                     ->setCellValue('B'.$i, $vkunjungan['periode'])
                                     ->setCellValue('C'.$i, $vkunjungan['parma_user'])
                                     ->setCellValue('D'.$i, $vkunjungan['start_time'])
-                                    ->setCellValue('E'.$i, $vkunjungan['start_image'])
+                                    ->setCellValue('E'.$i, '')
                                     ->setCellValue('F'.$i, $vkunjungan['start_keterangan'])
                                     ->setCellValue('G'.$i, $vkunjungan['end_time'])
-                                    ->setCellValue('H'.$i, $vkunjungan['end_image'])
+                                    ->setCellValue('H'.$i, '')
                                     ->setCellValue('I'.$i, $vkunjungan['end_keterangan'])
                                     ->setCellValue('J'.$i, $vkunjungan['durasi_menit']);
 									//echo DIR_IMAGE_PATH.$vkunjungan['image'];
