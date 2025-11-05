@@ -56,7 +56,7 @@
                 {
                     field: 'options',
                     title: 'ACTION',
-                    width: 50,
+                    width: 75,
                     halign: 'center',
                     align: 'center',
                     formatter: formatterButton

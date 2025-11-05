@@ -43,32 +43,24 @@
 
         uiSelectWeeks1.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
         });
         uiSelectWeeks2.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
         });
         uiSelectWeeks3.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
         });
         uiSelectWeeks4.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
@@ -80,19 +72,12 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		console.log(filter);
         
         $.when(
-            //$.post(common.baseURL("conf_setup_site/load"), filter.build()),
-            //$.post(common.baseURL("api_v1/call_frequency"), filter.build()),
-            //$.post(common.baseURL("api_v1/call_weeks"), filter.build()),
             $.post(common.baseURL("api_v1/call_days"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
-            console.log("done");
-            //console.log(d);
         }).then(function (r1) {
             common.loadingClose();
-            console.log("then");
             setupForm(r1);
         }).fail(resolver.fail);
 
@@ -105,8 +90,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -117,8 +100,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -129,8 +110,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -141,8 +120,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -203,5 +180,4 @@
             common.loadingClose();
         });
     }
-
 })();

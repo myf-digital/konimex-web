@@ -1092,7 +1092,7 @@ window.loadGoogleMaps = function() {
 		return window.gMapsCallback();
 	var script_tag = document.createElement('script');
 	script_tag.setAttribute("type", "text/javascript");
-	script_tag.setAttribute("src", "http://maps.google.com/maps/api/js?key=AIzaSyBEmppoWtgOt74tOkNo_SDy9OHonj3MMTY&sensor=false&callback=gMapsCallback");
+	script_tag.setAttribute("src", "https://maps.googleapis.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&libraries=places,marker");
 	(document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
 }
 /* ~ END: GOOGLE MAPS */

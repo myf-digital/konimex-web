@@ -993,6 +993,10 @@ class Api_v1_model extends CI_Model
 
 	function get_outlet_within_radius($data)
     {
+		$where = '';
+		if ($data['selected_outlets'] && count($data['selected_outlets']) > 0) {
+			$where = ' AND a.customerid NOT IN ('.implode(',',$data['selected_outlets']).')';
+		}
 		$sql = "
 			SELECT
 				a.customerid,
@@ -1013,6 +1017,7 @@ class Api_v1_model extends CI_Model
 			WHERE latitude <> 0 AND latitude <> 0
 				AND c.salesmanid = ?
 				AND a.customerid NOT IN (SELECT customerid FROM t_sales_setup_rrk WHERE salesmanid = ?)
+				".$where."
 			HAVING distance_km <= ?
 			ORDER BY distance_km ASC
 			LIMIT 50

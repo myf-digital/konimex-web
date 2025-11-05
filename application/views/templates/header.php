@@ -34,7 +34,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.css'); ?>"/>
 <!-- key from yudi -->
-<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyARGDPDFdKHpzeK_96fE92NihBcWGVeUYM&sensor=false"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&libraries=places,marker"></script>
 
 <!-- Add fancyBox CSS files --> 
 <link rel="stylesheet" href="<?php echo base_url('assets/fancybox/jquery.fancybox.css?v=2.1.5'); ?>" type="text/css" media="screen" />

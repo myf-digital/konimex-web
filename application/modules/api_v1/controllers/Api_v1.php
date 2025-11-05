@@ -440,13 +440,7 @@ class Api_v1 extends CI_Controller
 
     function outlet_pjp()
     {
-        // $data = param_input();
-        $data = [
-            'lat_center' => $this->input->get('lat_center'),
-            'lng_center' => $this->input->get('lng_center'),
-            'radius_km' => $this->input->get('radius_km'),
-            'salesmanid' => $this->input->get('salesmanid'),
-        ];
+        $data = param_input();
         $result = $this->api_v1->get_outlet_within_radius($data);
         if (200 == $result->code) {
             return response($result->result);
