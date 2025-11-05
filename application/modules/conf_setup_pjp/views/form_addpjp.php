@@ -148,10 +148,13 @@
 				<div id="sidebar">
 					<input id="search-input" type="text" class="form-control" placeholder="Cari lokasi...">
 					<select id="radiusSelect" class="form-control mt-5px">
+						<option value="1">Radius 1 km</option>
+						<option value="2">Radius 2 km</option>
+						<option value="3">Radius 3 km</option>
 						<option value="5" selected>Radius 5 km</option>
 						<option value="10">Radius 10 km</option>
 						<option value="20">Radius 20 km</option>
-						<option value="50">Radius 50 km</option>
+						<option value="30">Radius 30 km</option>
 					</select>
 					<button id="btnSearchArea">Telusuri area ini</button>
 					<div id="outletList"></div>

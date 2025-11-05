@@ -18,6 +18,8 @@
     let isUpdate = param !== undefined;
     let selectedParma = null;
 
+    const defaultCenter = { lat: -6.8990926, lng: 107.6578193 };
+
     initialize();
     initializeParam();
 
@@ -51,7 +53,6 @@
 
             if (selectedParma) {
                 uiBtnMaps.removeAttr('disabled');
-                loadOutlet(selectedParma);
             } else {
                 uiBtnMaps.attr('disabled', 'disabled');
                 resetSelectOutlet();
@@ -76,6 +77,8 @@
 
         uiBtnMaps.click(function () {
             if (!selectedParma) return;
+
+            loadOutlet(selectedParma);
             $('#myModalMapsLabel').html(`User (PAR-MA): ${selectedParma.text}`);
             $('#modalMaps').modal('show');
         });
@@ -88,7 +91,7 @@
 
             setTimeout(() => {
                 initMap();
-            }, 300);
+            }, 200);
         });
 
         uiSelectWeeks1.select2({
@@ -256,10 +259,13 @@
 
     function initMap() {
         try {
-        const defaultCenter = { lat: -6.8990926, lng: 107.6578193 };
+        let centerLatLong = defaultCenter;
+        if (selectedParma.latitude && selectedParma.longitude) {
+            centerLatLong = { lat: parseFloat(selectedParma.latitude), lng: parseFloat(selectedParma.longitude) };
+        }
 
         map = new google.maps.Map(document.getElementById('maps'), {
-            center: defaultCenter,
+            center: centerLatLong,
             zoom: 13,
         });
 
@@ -273,7 +279,6 @@
         }
 
         autocomplete.addListener('place_changed', () => {
-            console.log('Place changed triggered!');
             const place = autocomplete.getPlace();
             if (!place.geometry || !place.geometry.location) return;
 
@@ -300,10 +305,19 @@
             loadOutletMaps(center.lat(), center.lng(), radius);
         });
 
+        document.getElementById('radiusSelect').addEventListener('change', () => {
+            const center = map.getCenter();
+            const radius = parseFloat(document.getElementById('radiusSelect').value);
+            
+            defaultRadius = radius;
+            drawSearchRadius(center.lat(), center.lng(), radius);
+            loadOutletMaps(center.lat(), center.lng(), radius);
+        });
+
         document.getElementById('btnSave').addEventListener('click', saveSelected);
 
-        drawSearchRadius(defaultCenter.lat, defaultCenter.lng, defaultRadius);
-        loadOutletMaps(defaultCenter.lat, defaultCenter.lng, defaultRadius);
+        drawSearchRadius(centerLatLong.lat, centerLatLong.lng, defaultRadius);
+        loadOutletMaps(centerLatLong.lat, centerLatLong.lng, defaultRadius);
 
         setTimeout(() => google.maps.event.trigger(map, 'resize'), 300);
     } catch (err) {
