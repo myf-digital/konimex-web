@@ -887,29 +887,26 @@ class Api_v1_model extends CI_Model
 								";
 
 			$sqlcrc_suggest_order = "replace into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price,qty_saran_order)
-								select ?,a.salesmanid, a.customerid, c.productid, d.brandid, d.h_ritel, ifnull(e.price,0), c.qty_saran_order
-								from t_sales_rrk a join m_customer_ob b on a.customerid = b.customerid and a.salesmanid=b.salesmanid
-								join m_customer mc on b.customerid = mc.customerid
-								left join (
-										select z.customerid,z.salesmanid, x.productid, round(avg(x.qty_kecil),0) as qty_saran_order 
-										from t_sales_master z join t_sales_detail x
-										on z.no_sales =x.no_sales 
-										where z.salesmanid in (select salesmanid from m_sales_salesman where tipe_sales='SALESMAN') 
-										and z.tanggal >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
-										group by z.customerid,z.salesmanid, x.productid
-									) c on b.customerid = c.customerid
-								join m_product d on c.productid = d.productid
-								left join t_stock_all_outlet e on a.salesmanid=e.salesmanid and a.customerid = e.customerid 
-								and d.productid=e.productid and e.tahun=date_format(?,'%Y') and e.bulan=date_format(?,'%m')
-							where a.periode=?
-							;
+										select ?,b.salesmanid, b.customerid, c.productid, d.brandid, d.h_ritel, d.h_ritel, c.qty_saran_order
+										from m_customer_ob b join m_customer mc on b.customerid = mc.customerid
+										join (
+												select z.customerid,z.salesmanid, z.productid, round(avg(z.qty_akhir ),0) as qty_saran_order 
+												from t_sales_crc as z
+												where z.salesmanid in (select salesmanid from m_sales_salesman where aktif=1) 
+												and z.periode >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) and z.customerid <>''
+												group by z.customerid,z.salesmanid, z.productid
+											) c on b.customerid = c.customerid
+										join m_product d on c.productid = d.productid
+										join t_stock_all_outlet e on e.customerid = c.customerid and e.salesmanid=c.salesmanid 
+										and d.productid=e.productid and e.last_update >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+										where c.customerid <>'';
 							";
-							
+			$clearcrc="delete from t_sales_crc where date_update is null;";
 
-
+			$this->db->query($clearcrc);
 			$res_crc = $this->db->query($sqlcrc, array($vdate,$vdate,$vdate,$vdate));
 			$res_crc_sugest = $this->db->query($sqlcrc_suggest, array($vdate,$vdate,$vdate,$vdate));
-			$res_crc_sugest_order = $this->db->query($sqlcrc_suggest_order, array($vdate,$vdate,$vdate,$vdate));
+			$res_crc_sugest_order = $this->db->query($sqlcrc_suggest_order, array($vdate));
 			
 			if (!$res_crc){
 				$sqldeletecrc = "delete from t_sales_crc where periode=? and date_update is null;";

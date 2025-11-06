@@ -473,9 +473,8 @@ class Rep_productivity extends BaseController
             ->setCellValue('J1', 'Area')
             ->setCellValue('K1', 'PIC Name')
             ->setCellValue('L1', 'Brand Detailing')
-            ->setCellValue('M1', 'Time Detailing')
-            ->setCellValue('N1', 'Reason')
-            ->setCellValue('O1', 'Description');
+            ->setCellValue('M1', 'Reason')
+            ->setCellValue('N1', 'Description');
 
         $datavisit = $this->report_productivity->get_detailing_parma($params);
         $i = 1;
@@ -493,9 +492,9 @@ class Rep_productivity extends BaseController
                 ->setCellValue('J'.$row, $valuevisit['nama_area'] ?? '')
                 ->setCellValue('K'.$row, $valuevisit['professional_name'] ?? '')
                 ->setCellValue('L'.$row, $valuevisit['brands'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['start_detailing'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['reason'] ?? '')
-                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '');
+                //->setCellValue('M'.$row, $valuevisit['start_detailing'] ?? '')
+                ->setCellValue('M'.$row, $valuevisit['reason'] ?? '')
+                ->setCellValue('N'.$row, $valuevisit['keterangan'] ?? '');
 			$i++;
             $row++;
         }
