@@ -231,8 +231,8 @@ class Rep_productivity extends BaseController
 
 	function savexls_visit_and_order() {
 		//ini_set('memory_limit', '0MB');
-        ini_set('max_execution_time', '0');
-		
+        ini_set('max_execution_time', '300'); // atau set ke 300 (5 menit)
+        ini_set('memory_limit', '1G'); // tambahkan memori jika datanya besar		
         $start = $this->uri->segment('3');
         $end = $this->uri->segment('4');
         $regionalid = $this->uri->segment('5');
