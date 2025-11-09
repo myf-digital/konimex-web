@@ -149,7 +149,8 @@ class Rep_productivity extends BaseController
 
     public function savetoxlsx($data)
     {
-		ini_set('memory_limit', '512M');
+		ini_set('memory_limit', '0');
+        ini_set('max_execution_time', '0');
         $start = $this->uri->segment('3');
         $end = $this->uri->segment('4');
         $regionalid = $this->uri->segment('5');
@@ -229,7 +230,7 @@ class Rep_productivity extends BaseController
    }
 
 	function savexls_visit_and_order() {
-        ini_set("memory_limit","1024M");
+		ini_set('memory_limit', '0');
         ini_set('max_execution_time', '0');
 		
         $start = $this->uri->segment('3');
