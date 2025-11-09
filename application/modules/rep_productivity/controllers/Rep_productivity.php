@@ -230,7 +230,7 @@ class Rep_productivity extends BaseController
    }
 
 	function savexls_visit_and_order() {
-		//ini_set('memory_limit', '2048MB');
+		//ini_set('memory_limit', '0MB');
         ini_set('max_execution_time', '0');
 		
         $start = $this->uri->segment('3');
@@ -499,7 +499,7 @@ class Rep_productivity extends BaseController
 			$i++;
             $row++;
         }
-
+        
         // Progress Listing
         $objPHPExcel->createSheet(5);
         $sheetProgressListing = $objPHPExcel->setActiveSheetIndex(5);
