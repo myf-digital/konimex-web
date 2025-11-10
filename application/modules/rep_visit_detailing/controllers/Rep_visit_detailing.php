@@ -141,6 +141,8 @@ class Rep_visit_detailing extends BaseController
 			$add = $d_position['alamat'];
 			$account = $d_position['account'];
 			$pic = $d_position['professional_name'];
+			$keterangan = $d_position['keterangan'];
+			$reason = $d_position['reason'];
 			$img = '';
 			if ($d_position['url_img_detailing']) {
 				$img = '<br/><img src="'.$d_position['url_img_detailing'].'" alt="foto" width="100">';
@@ -200,19 +202,14 @@ class Rep_visit_detailing extends BaseController
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$brand.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Start</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">Keterangan</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$start_detailing.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$keterangan.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">End</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">Reason</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$end_detailing.'</td>\'+
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Lama Kunjungan</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$waktu.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$reason.'</td>\'+
 												\'</tr>\'+
 											\'</table>\'+
 										\'</div>\'+											
@@ -347,8 +344,6 @@ class Rep_visit_detailing extends BaseController
             'Outlet',
             'PIC',
             'Brand',
-            'Start Detailing',
-            'End Detailing',
             'Status',
             'Keterangan',
             'Reason',
@@ -371,8 +366,6 @@ class Rep_visit_detailing extends BaseController
 				$value['nama_customer'],
 				$value['professional_name'],
 				$value['brands'],
-				$value['start_detailing'],
-				$value['end_detailing'],
 				$value['status_label'],
 				$value['keterangan'],
 				$value['reason'],

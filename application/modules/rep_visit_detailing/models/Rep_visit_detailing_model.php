@@ -91,7 +91,8 @@ class Rep_visit_detailing_model extends CI_Model
                         WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
                     )
                     ELSE a.array_product
-                END as brands
+                END as brands,
+                a.keterangan, a.reason
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid
