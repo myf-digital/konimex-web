@@ -34,57 +34,6 @@ class App_dashboard_model extends CI_Model
 
     public function load($data)
     {
-		//IFNULL(x.cal,0) cal,IFNULL(x.effectivecall,0) effectivecall,IFNULL(x.noo,0) noo, IFNULL(x.amount,0) amount,IFNULL(x.ExtraCall,0) ExtraCall,
-                        
-        /* $field = " a.* ";
-        $table = " (select y.siteid,y.salesmanid,sls.nama_salesman,count(1) as jadwal, IFNULL(x.InvalidCall,0) InvalidCall,'17:15' ExtraCall,
-                        IFNULL(x.cal,0) cal,IFNULL(x.effectivecall,0) effectivecall,'07:45' noo, IFNULL(x.amount,0) amount,
-                        CONCAT(ROUND(((IFNULL(x.cal,0)+IFNULL(x.effectivecall,0))/count(1))*100,1),' %') eff_time,
-                        CONCAT(ROUND((IFNULL(x.effectivecall,0)/count(1))*100,1),' %') eff_order,
-                    (select count(1) from t_sales_rrk a, m_customer b where a.siteid=b.siteid and a.customerid=b.customerid and a.salesmanid=b.salesmanid
-                    and a.periode=y.periode and a.siteid=y.siteid and a.salesmanid=y.salesmanid and b.longitude=0 and b.latitude=0) longlatnull, y.periode ";
-        $join = " from t_sales_rrk y ";
-        $join .= " left join m_sales_salesman sls on y.siteid=sls.siteid and y.salesmanid=sls.salesmanid ";
-        $join .= " left join
-                    (select z.siteid,z.periode,z.salesmanid,z.nama_salesman, IFNULL(sum(z.INVCALL),0) as InvalidCall,IFNULL(sum(z.EXCALL),0) as ExtraCall,IFNULL(sum(z.CALL),0) as 'cal',IFNULL(sum(z.EFCALL),0) as effectivecall,
-                        (select count(1) from m_customer where siteid=z.siteid and salesmanid=z.salesmanid and createdate=z.periode) noo,
-                        (select sum(netto) from t_sales_master where salesmanid=z.salesmanid and tanggal=z.periode and retur=0) as amount
-                    from
-                    (
-                        select d.siteid,d.periode,d.salesmanid,d.nama_salesman,
-                        case when d.nama_colom = 'INVCALL' then d.jml end INVCALL,
-                        case when d.nama_colom = 'EXCALL' then d.jml end EXCALL,
-                        case when d.nama_colom = 'CALL' then d.jml end 'CALL',
-                        case when d.nama_colom = 'EFCALL' then d.jml end EFCALL
-                        from
-                            (
-                            select d.siteid,d.periode,d.salesmanid,d.nama_salesman,d.JML as nama_colom, count(d.JML) jml,d.perioderrk from (
-                            select distinct a.siteid,a.periode,a.salesmanid,d.nama_salesman,b.customerid,e.customerid mcust,b.periode perioderrk,
-                                case when b.customerid is null and c.no_sales is null then 'INVCALL' 
-                                when b.customerid is null and c.no_sales is not null then 'EXCALL' 
-                                when b.customerid is not null and c.no_sales is null or (c.no_sales is not null and c.retur=1) then 'CALL'
-                                when b.customerid is not null and c.no_sales is not null and c.retur=0 then 'EFCALL'
-                                end JML
-                            from t_sales_rrk_trans a left join t_sales_rrk b on 
-                            a.siteid = b.siteid and a.salesmanid = b.salesmanid and a.customerid=b.customerid and a.periode=b.periode
-                            left join t_sales_master c on a.siteid = c.siteid and a.salesmanid = c.salesmanid and a.customerid=c.customerid and a.periode=c.tanggal
-                            left join m_sales_salesman d on a.siteid = d.siteid and a.salesmanid = d.salesmanid 
-                            left join m_customer e on a.customerid = e.customerid
-                            where a.periode = '".@$data["get_date"]."'                    
-                            ) d group by d.periode,d.salesmanid,d.nama_salesman,d.salesmanid,d.JML
-                        ) d
-                    ) z group by z.salesmanid
-            ) x on y.siteid=x.siteid and y.salesmanid=x.salesmanid and y.periode=x.periode
-            where y.periode = '".@$data["get_date"]."' and sls.nama_salesman is not null
-            group by y.salesmanid,y.nama_salesman ) a"; */
-		
-		/*if ($data["idjabatan"]=='2' or $data["idjabatan"]=='3')
-			$strquery = " and a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm where a.ram_rsm = '".$data["usersession"]."') ";
-		else if($data["idjabatan"]=='16' or $data["idjabatan"]=='17'){
-			$strquery = " and a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$data["usersession"]."') ";
-		}else{
-            $strquery = "";
-		}*/
 		if ($data["restrict_level"]=='4'){
 			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
@@ -117,7 +66,7 @@ class App_dashboard_model extends CI_Model
 					from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
 					left join m_sales_salesman b on z.salesmanid=b.salesmanid
 					left join m_area_subarea c on c.subareaid=b.subareaid
-					where z.periode = '".$data["get_date"]."' $strquery
+					where z.periode = '".(@$data["get_date"] ?? date('Y-m-d'))."' $strquery
 					group by z.siteid, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area) a
 					";
         return easy_pagging($data, $field, $table);

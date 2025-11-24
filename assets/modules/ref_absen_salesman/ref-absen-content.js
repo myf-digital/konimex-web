@@ -69,7 +69,6 @@
         let uiTanggalPicker1 = $("#get_date1");
         uiTanggalPicker1.datepicker({
             format: 'yyyy-mm-dd',
-            //startDate: '-3d'
         }).on('change', function(){
             $('.datepicker').hide();
         });;
@@ -77,7 +76,6 @@
         let uiTanggalPicker2 = $("#get_date2");
         uiTanggalPicker2.datepicker({
             format: 'yyyy-mm-dd',
-            //startDate: '-3d'
         }).on('change', function(){
             $('.datepicker').hide();
         });;

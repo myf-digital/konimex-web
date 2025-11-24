@@ -43,7 +43,7 @@ class Rep_order_model extends CI_Model
                     from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
                     left join m_sales_salesman b on z.salesmanid=b.salesmanid
                     left join m_area_subarea c on c.subareaid=b.subareaid
-                    where z.periode = '".@$data["get_date1"]."' and '".@$data["get_date2"]."' ".$regional.$area.$subarea.$strquery."
+                    where z.periode = '".(@$data["get_date1"] ?? date('Y-m-d'))."' and '".(@$data["get_date2"] ?? date('Y-m-d'))."' ".$regional.$area.$subarea.$strquery."
                     group by z.siteid, z.salesmanid, b.nama_salesman) a";
 
         return easy_pagging($data, $field, $table);

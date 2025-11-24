@@ -5,3 +5,4 @@
 /application/config/onesignal.php
 /application/config/wa_zawa.php
 /composer.lock
+/uploads/*

@@ -16,9 +16,8 @@ class Rep_join_visit_model extends CI_Model
         $table = "(select a.id_eval, CONCAT('https://demo-gsk.sphere154.com/',b.image_profile) as url_image, a.periode, a.username as reviewer,c.name as nama_reviewer, a.salesmanid, b.nama_salesman as sales_name, b.tipe_sales, a.final_score as rating, a.review as review_content
 from evaluation_join_visit a left join m_sales_salesman b on a.salesmanid=b.salesmanid 
   left join app_resource c on a.username=c.username
-where a.periode between '".@$data["get_date1"]."' and '".@$data["get_date2"]."') as a ";
+where a.periode between '".(@$data["get_date1"] ?? date('Y-m-d'))."' and '".(@$data["get_date2"] ?? date('Y-m-d'))."') as a ";
         return easy_pagging($data, $field, $table);
-        // return easy_pagging($data, $field, $table);
     }
 
     function manPower($data)

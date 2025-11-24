@@ -22,42 +22,56 @@ class Rep_visit extends BaseController
 
     public function create()
     {
+		$message = 'Success';
         $data = param_input();
 
-        //file upload
+        //file upload		
         if (isset($_FILES["fileupload"])) {
+			if ($_FILES['fileupload']['size'] > (2 * 1024 * 1024)) {
+				return response("File terlalu besar. Maksimal 2MB.");
+			}
 
-        	$path = DIR_IMAGE_PATH.'absence/'.date('Ym');
+			$path = FCPATH.'uploads/absence/'.date('Ym').'/';
+			if (!is_dir($path)) {
+				mkdir($path, 0777, true);
+			}
 
-        	if (!file_exists($path)) {
-        		mkdir($path);
-        	}
-
-        	$file_name = $_FILES["fileupload"]["name"];
+			$file_name = $_FILES["fileupload"]["name"];
 			$tmp = explode('.', $file_name);
 			$file_extension = end($tmp);
 
-	        $fileName = date('YmdHis').'-'.$data['salesmanid']; 
-	        $config['upload_path'] = $path;
-	        $config['allowed_types'] = 'jpg|png|jpeg';
-	        $config['file_name'] = $fileName;
-	        $config['max_size'] = '2048';
-	        $config['max_width'] = '0';
-	        $config['max_height'] = '0';
-	         
-	        $this->load->library('upload', $config);
-	        $this->upload->initialize($config);
+	        $fileName = date('YmdHis').'-'.$data['salesmanid'].'.'.$file_extension; 
+			$config['upload_path']   = $path;
+			$config['allowed_types'] = 'jpg|jpeg|png|webp|heic|heif';
+			$config['max_size']      = 2048;
+			$this->load->library('upload', $config);
 
-	        if(! $this->upload->do_upload('fileupload') )
-	        {
-	            echo $this->upload->display_errors();
-	            return;
-	        }
+			$message = 'Success';
+			if ($this->upload->do_upload('fileupload')) {
+				$dataUpload = $this->upload->data();
 
-	        $data['image'] = 'absence/'.date('Ym').'/'.$fileName.'.'.$file_extension;
+				$source = $dataUpload['full_path'];
+				$dest   = $dataUpload['file_path'] . $fileName;
+
+				$this->load->helper('image');
+
+				$compressed = compress_image($source, $dest);
+				if ($compressed) {
+	        		$data['image'] = $compressed;
+				} else {
+					$message = "Gagal compress.";
+				}
+
+			} else {
+				$message = $this->upload->display_errors();
+			}
         }
 
-        response($this->visit->create($data));
+		if ($message != 'Success') {
+			return response($message);
+		}
+
+        response($this->visit->create($data), 200, $message);
     }
 
     public function load()
