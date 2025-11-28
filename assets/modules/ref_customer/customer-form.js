@@ -5,7 +5,7 @@
     // declare dom
     let uiForm = $("#fm-customer");
     let uiBtnCancel = $("#btn-cancel-form");
-    let uiSelectPropinsi = $("#propinsiid-id");
+    let uiSelectPropinsi = $("#propinsiid-id"); 
     let uiSelectKota = $("#kotaid-id");
     let uiSelectKecamatan = $("#kecamatanid-id");
     let uiSelectKelurahan = $("#kelurahanid-id");
@@ -252,7 +252,7 @@
         });
 
         uiSelectType.select2({
-            placeholder: 'Select Channel',
+            placeholder: 'Select Cluster',
             allowClear: true,
             data: $.map(rows3, function (o) {
                 o.id = o.typeid; // replace name with the property used for the text
@@ -262,7 +262,7 @@
         });
 
         uiSelectClass.select2({
-            placeholder: 'Select Sub Channel',
+            placeholder: 'Select Tier',
             allowClear: true,
             data: $.map(rows4, function (o) {
                 o.id = o.classid; // replace name with the property used for the text

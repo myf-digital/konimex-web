@@ -8,12 +8,14 @@
     let uiStartPeriode = $("#start_periode"); 
     let uiEndPeriode = $("#end_periode"); 
     let uiProduct = $("#productid-id");
+    let uiSelectType = $("#typeid-id");
 
     // define from *-content.js
     let param = common.getCookie("module.promo.product.update");
     let paramsession = common.getCookie("session");
     let isUpdate = param !== undefined; // flag create update
 
+    initializeParam();
     initialize();
 
     function initialize() {
@@ -57,6 +59,40 @@
         }
 
     }    
+
+    function initializeParam() {
+        common.loading();
+        let resolver = new HttpResolver();
+        let filter = new Filter();
+            
+        $.post(common.baseURL("ref_customer_type/load"), filter.build())
+            .done(function(res){
+                common.loadingClose();
+                //console.log("response:", res); // DEBUG
+                setupForm(res);                // <-- Langsung kirim
+            })
+            .fail(resolver.fail);
+    }
+
+    function setupForm(r2) {
+        let rows2 = r2.rows;
+        uiSelectType.select2({
+            placeholder: 'Select Cluster',
+            allowClear: true,
+            data: $.map(rows2, function (o) {
+                o.id = o.typeid; // replace name with the property used for the text
+                o.text = o.nama_type; // replace name with the property used for the text
+                return o;
+            }),
+        });
+
+        if (isUpdate) {
+            uiSelectType.val(param.typeid).trigger('change');
+        }else{
+            uiSelectType.val(null).trigger('change');
+        }
+
+    }
 
     function loadProduct() {
         common.loading();

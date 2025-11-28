@@ -20,7 +20,7 @@
 
                 <form id="fm-promo-product" role="form" method="post">
                     <div class="box-body">
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-2">
 								<label for="no_promo">No Promo</label>
 								<input name="no_promo" class="form-control" placeholder="No Promo">
 							</div>
@@ -46,6 +46,10 @@
                                     <input id="selesai_tanggal" placeholder="End Periode" type="text" class="form-control datepicker" name="selesai_tanggal" readonly>
                                     </div>
 							</div>
+                            <div class="form-group col-md-3">
+                                <label for="typeid">Cluster</label>
+                                <select id="typeid-id" name="typeid" class="form-control" placeholder="Channel"></select>
+                            </div>
                             <div class="form-group col-md-12">
 								<label for="productid">Pilih Product</label>  
                                 <select id="productid-id" name="productid[]" class="form-control" placeholder="Product"></select>
