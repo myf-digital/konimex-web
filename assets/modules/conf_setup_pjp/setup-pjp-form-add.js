@@ -18,6 +18,16 @@
     let isUpdate = param !== undefined;
     let selectedParma = null;
 
+    // maps
+    let map;
+    let centerMarker = null;
+    let outletMarkers = [];
+    let selectedOutlets = [];
+    let searchCircle = null;
+    let dataOutlets = [];
+    let defaultRadius = 5;
+    let mapInitialized = false;
+
     const defaultCenter = { lat: -6.8990926, lng: 107.6578193 };
 
     initialize();
@@ -50,6 +60,15 @@
         });
         uiSelectSalesman.on('change', function () {
             selectedParma = uiSelectSalesman.select2('data')[0];
+
+            // reset maps
+            centerMarker = null;
+            outletMarkers = [];
+            selectedOutlets = [];
+            dataOutlets = [];
+            searchCircle = null;
+            mapInitialized = false;
+            defaultRadius = 5;
 
             if (selectedParma) {
                 uiBtnMaps.removeAttr('disabled');
@@ -88,10 +107,18 @@
                 console.error('Google Maps belum siap!');
                 return;
             }
-
-            setTimeout(() => {
-                initMap();
-            }, 200);
+            
+            if (!mapInitialized) {
+                setTimeout(() => {
+                    initMap();
+                    mapInitialized = true;
+                }, 200);
+            } else {
+                google.maps.event.trigger(map, 'resize');
+                if (centerMarker) {
+                    map.setCenter(centerMarker.getPosition());
+                }
+            }
         });
 
         uiSelectWeeks1.select2({
@@ -254,8 +281,8 @@
     }
 
     // Start Maps
-    let map, markers = [], selectedOutlets = [], searchCircle = null, dataOutlets = [], defaultRadius = 5;
     const icon = `${window.location.origin}/assets/images/ic_store_48.png`;
+    const iconPin = `${window.location.origin}/assets/images/icon_pin_maps.png`;
 
     function initMap() {
         try {
@@ -316,8 +343,10 @@
 
         document.getElementById('btnSave').addEventListener('click', saveSelected);
 
-        drawSearchRadius(centerLatLong.lat, centerLatLong.lng, defaultRadius);
-        loadOutletMaps(centerLatLong.lat, centerLatLong.lng, defaultRadius);
+        google.maps.event.addListenerOnce(map, 'idle', () => {
+            drawSearchRadius(centerLatLong.lat, centerLatLong.lng, defaultRadius);
+            setCenterMarker(centerLatLong.lat, centerLatLong.lng);
+        });
 
         setTimeout(() => google.maps.event.trigger(map, 'resize'), 300);
     } catch (err) {
@@ -345,6 +374,36 @@
         map.fitBounds(searchCircle.getBounds());
     }
 
+    function setCenterMarker(lat, lng) {
+        if (centerMarker) {
+            centerMarker.setPosition({ lat, lng });
+        } else {
+            centerMarker = new google.maps.Marker({
+                position: { lat, lng },
+                map,
+                draggable: true,
+                icon: {
+                    url: iconPin,
+                }
+            });
+
+            centerMarker?.addListener('dragend', () => {
+                if (!centerMarker) return;
+
+                const pos = centerMarker.getPosition();
+                const newLat = pos.lat();
+                const newLng = pos.lng();
+                const radius = parseFloat(document.getElementById('radiusSelect').value);
+
+                centerMarker.setAnimation(google.maps.Animation.DROP);
+
+                drawSearchRadius(newLat, newLng, radius);
+                loadOutletMaps(newLat, newLng, radius);
+                map.panTo(pos);
+            });
+        }
+    }
+
     function loadOutletMaps(lat, lng, radiusKm) {
         common.loading();
         $.post(common.baseURL('api_v1/outlet_pjp'), {
@@ -357,6 +416,8 @@
             dataOutlets = res.result;
             clearMarkers();
             renderList(res.result);
+
+            setCenterMarker(lat, lng);
             
             res.result.forEach(d => {
                 const marker = new google.maps.Marker({
@@ -400,12 +461,13 @@
                     toggleSelectById(d.customerid);
                 });
 
-                markers.push(marker);
+                outletMarkers.push(marker);
             });
             
             common.loadingClose();
         });
     }
+    // End Maps
 
     function renderList(data) {
         const listDiv = document.getElementById('outletList');
@@ -477,12 +539,12 @@
     }
 
     function clearMarkers() {
-        markers.forEach(m => m.setMap(null));
-        markers = [];
+        outletMarkers.forEach(m => m.setMap(null));
+        outletMarkers = [];
     }
 
     function updateMarkerStyle(id, isSelected) {
-        const marker = markers.find(m => m.outletId === id);
+        const marker = outletMarkers.find(m => m.outletId === id);
         if (!marker) return;
 
         if (isSelected) {
