@@ -1,5 +1,4 @@
 (function () {
-
     const common = new Common();
     common.setTitle("Report SLOB");
     // declare dom
@@ -21,7 +20,7 @@
             $.post(common.baseURL("api_v1/call_product_brand"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
             common.loadingClose();
-            setupForm(r1);
+            setupForm(data);
         }).fail(resolver.fail);
 
         uiBtnPreview.click(function () {
