@@ -303,7 +303,7 @@
 
     const legendFooterPlugin = {
       id: "legendFooterPlugin",
-      afterRender(chart, args, opts) {
+      afterDatasetsDraw(chart, args, opts) {
         if (!opts || !opts.showFooter) return;
 
         const { ctx, legend } = chart;
@@ -312,15 +312,15 @@
         const items = legend.legendItems;
         if (!items.length) return;
 
-        const box = legend.legendHitBoxes[items.length - 1];
-        if (!box) return;
+        const lastBox = legend.legendHitBoxes[items.length - 1];
+        if (!lastBox) return;
 
         ctx.save();
         ctx.font = "bold 13px sans-serif";
         ctx.fillStyle = "#444";
 
         const x = legend.left + 20;
-        const y = box.top + box.height + 30;
+        const y = lastBox.top + lastBox.height + 30;
 
         ctx.fillText(opts.footerText, x, y);
         ctx.restore();
