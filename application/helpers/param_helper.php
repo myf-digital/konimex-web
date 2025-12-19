@@ -62,4 +62,12 @@ function filer_properties(){
     );
 }
 
+function payload($fields = [], $data) {
+    $result = [];
+    foreach ($fields as $f) {
+        if (isset($data[$f]) && $data[$f]) $result[$f] = $data[$f];
+    }
+    return $result;
+}
+
 ?>
