@@ -3,6 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class Rep_productivity extends BaseController
@@ -575,9 +577,9 @@ class Rep_productivity extends BaseController
 
             $sheetAttendance->setCellValue(number_to_alphabet($colIndex)   . '2', 'Status');
             $sheetAttendance->setCellValue(number_to_alphabet($colIndex+1) . '2', 'In');
-            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+2) . '2', 'Image In');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+2) . '2', 'Image Check-In');
             $sheetAttendance->setCellValue(number_to_alphabet($colIndex+3) . '2', 'Out');
-            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+4) . '2', 'Image Out');
+            $sheetAttendance->setCellValue(number_to_alphabet($colIndex+4) . '2', 'Image Check-Out');
             $sheetAttendance->setCellValue(number_to_alphabet($colIndex+5) . '2', 'Duration');
 
             $colIndex += 6;
@@ -644,9 +646,14 @@ class Rep_productivity extends BaseController
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx)   . $row, $status);
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+1) . $row, $in);
                 
-				if($inimg!=null && $inimg!=''){$inimg=$urlimage.$inimg;}else{$inimg='';}
-				if($outimg!=null && $outimg!=''){$outimg=$urlimage.$outimg;}else{$outimg='';}
+				if($inimg!=null && $inimg!=''){$inimg='=HYPERLINK("'.$urlimage.$inimg.'", "Show Foto Check-In")';}else{$inimg='';}
+				if($outimg!=null && $outimg!=''){$outimg='=HYPERLINK("'.$urlimage.$outimg.'", "Show Foto Check-Out")';}else{$outimg='';}
 				$sheetAttendance->setCellValue(number_to_alphabet($colIdx+2) . $row, $inimg);
+                $sheetAttendance->getStyle(number_to_alphabet($colIdx+2) . $row)
+                                ->getFont()
+                                ->setSize(11)                             // Mengatur ukuran font menjadi 12
+                                ->setItalic(true)
+                                ->setUnderline(Font::UNDERLINE_SINGLE);
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+3) . $row, $out);
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+4) . $row, $outimg);
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+5) . $row, $duration);
