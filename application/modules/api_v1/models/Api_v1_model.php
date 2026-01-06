@@ -948,21 +948,91 @@ class Api_v1_model extends CI_Model
 
 	function get_outlet_pjp($data)
     {
+		$where = '';
+		$where = " and a.customerid not in (select customerid from t_sales_setup_rrk where salesmanid = '".$data["salesmanid"]."')";
+		if (isset($data['type']) && $data['type']) $where = '';
 
-            $sql = " select a.customerid, a.kode_outlet, a.nama_customer outlet, b.nama_class account, a.mcc dc
-						from m_customer a left join m_customer_class b on a.classid = b.classid
-						join m_customer_ob c on a.customerid=c.customerid
-						where c.salesmanid = '".$data["salesmanid"]."' and a.customerid not in (select customerid from t_sales_setup_rrk where salesmanid = '".$data["salesmanid"]."')
-						";
-            $res_ss = $this->db->query($sql);
-            if (count($res_ss->result_array()) > 0) {
-                $response = new stdClass();
-                $response = $res_ss->result_array();
-                //parsing to result
-                return result($response);
-            } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
-            }
+		$sql = " select a.customerid, a.kode_outlet, a.nama_customer outlet, b.nama_class account, a.mcc dc
+			from m_customer a left join m_customer_class b on a.classid = b.classid
+			join m_customer_ob c on a.customerid=c.customerid
+			where c.salesmanid = '".$data["salesmanid"]."'" . $where
+		;
+		$res_ss = $this->db->query($sql);
+		if (count($res_ss->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res_ss->result_array();
+			//parsing to result
+			return result($response);
+		} else {
+			return result(new stdClass(), 200, "Siteid Invalid!");
+		}
+    }
+
+	function get_pjp_detail($data)
+    {
+		if (!$data['req_no']) return result(new stdClass(), 422, 'req_no is required');
+
+		$table = 'req_pjp_daily_detail';
+		if (isset($data['type']) && $data['type'] == 'weekly') {
+			$table = 'req_pjp_weekly_detail';
+		}
+		
+		$sql = 'select * from ' . $table . ' where req_no=?';
+		$res_ss = $this->db->query($sql, [$data['req_no']]);
+		if (count($res_ss->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res_ss->result_array();
+			return result($response);
+		} else {
+			return result(new stdClass(), 404, 'Data not found');
+		}
+    }
+
+	function get_outlet_within_radius($data)
+    {
+		$where = '';
+		if ($data['selected_outlets'] && count($data['selected_outlets']) > 0) {
+			$where = ' AND a.customerid NOT IN ('.implode(',',$data['selected_outlets']).')';
+		}
+		$sql = "
+			SELECT
+				a.customerid,
+				a.kode_outlet,
+				a.nama_customer outlet,
+				b.nama_class account,
+				a.mcc dc,
+				a.latitude,
+				a.longitude,
+                (6371 * ACOS(
+                    COS(RADIANS(?)) * COS(RADIANS(a.latitude)) * 
+                    COS(RADIANS(a.longitude) - RADIANS(?)) + 
+                    SIN(RADIANS(?)) * SIN(RADIANS(a.latitude))
+                )) AS distance_km
+			FROM m_customer a
+			LEFT JOIN m_customer_class b ON b.classid = a.classid
+			JOIN m_customer_ob c ON c.customerid = a.customerid
+			WHERE latitude <> 0 AND latitude <> 0
+				AND c.salesmanid = ?
+				AND a.customerid NOT IN (SELECT customerid FROM t_sales_setup_rrk WHERE salesmanid = ?)
+				".$where."
+			HAVING distance_km <= ?
+			ORDER BY distance_km ASC
+			LIMIT 50
+		";
+
+        $query = $this->db->query($sql, [
+			$data['lat_center'],
+			$data['lng_center'],
+			$data['lat_center'],
+			$data['salesmanid'],
+			$data['salesmanid'],
+			$data['radius_km'],
+		]);
+		if (count($query->result_array()) > 0) {
+			return result($query->result_array());
+		} else {
+			return result([], 404, 'Data not found');
+		}
     }
 
 	function get_crc_daily($data)

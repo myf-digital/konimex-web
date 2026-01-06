@@ -79,6 +79,16 @@ class Customer_model extends CI_Model
         return $this->db->update('m_customer', $data);
     }
 
+    public function update_location($data)
+    {
+        $payload = [
+            'latitude' => $data['latitude'],
+            'longitude' => $data['longitude'],
+        ];
+		$this->db->where('customerid', $data['customerid']);
+        return $this->db->update('m_customer', $payload);
+    }
+
     public function delete($data)
     {
         $data["deleted_by"] = $data["usersession"];

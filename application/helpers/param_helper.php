@@ -1,5 +1,7 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+
 function param_input()
 {
     $ci =& get_instance();
@@ -62,12 +64,71 @@ function filer_properties(){
     );
 }
 
-function payload($fields = [], $data) {
-    $result = [];
-    foreach ($fields as $f) {
-        if (isset($data[$f]) && $data[$f]) $result[$f] = $data[$f];
+if (!function_exists('img_url_to_sheet')) {
+	function img_url_to_sheet($sheet, $imageUrl, $cellCoordinate) {
+		$message = null;
+		try {
+			// Verify URL is valid
+			if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+				$message = "Error addImageFromUrlToSheet: Invalid URL";
+			}
+			
+			// Get image contents
+			$imageData = @file_get_contents($imageUrl);
+			if ($imageData === false) {
+				$message = "Error addImageFromUrlToSheet: Could not download image";
+			}
+			
+			// Create temporary file
+			$tempFile = tempnam(sys_get_temp_dir(), 'phpspreadsheet');
+			if (file_put_contents($tempFile, $imageData) === false) {
+				$message = "Error addImageFromUrlToSheet: Could not create temporary file";
+			}
+			
+			// Verify it's a valid image
+			if (!@getimagesize($tempFile)) {
+				$message = "Error addImageFromUrlToSheet: Downloaded file is not a valid image";
+			}
+
+			if ($message) {
+				log_message("error", $message);
+				return $message;
+			}
+			
+			// Add image to worksheet
+			$drawing = new Drawing();
+			$drawing->setPath($tempFile);
+			$drawing->setCoordinates($cellCoordinate);
+			$drawing->setWorksheet($sheet);
+			$drawing->setWidth(125);
+
+			return $drawing;
+		} catch (Exception $e) {
+			// Clean up temp file if it exists
+			if (isset($tempFile) && file_exists($tempFile)) {
+				@unlink($tempFile);
+			}
+			$message = "Error addImageFromUrlToSheet: " . $e->getMessage();
+			log_message("error", $message);
+			return $message;
+		}
+	}
+}
+
+if (!function_exists('today')) {
+	function today() {
+        return date('Y-m-d');
     }
-    return $result;
+}
+
+if (!function_exists('payload')) {
+    function payload($fields = [], $data) {
+        $result = [];
+        foreach ($fields as $f) {
+            if (isset($data[$f]) && $data[$f]) $result[$f] = $data[$f];
+        }
+        return $result;
+    }
 }
 
 ?>

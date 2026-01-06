@@ -54,7 +54,7 @@
                 {
                     field: 'options',
                     title: 'ACTION',
-                    width: 120,
+                    width: 175,
                     halign: 'center',
                     align: 'center',
                     formatter: formatterButton
@@ -138,11 +138,15 @@
             const param = data.rows[index];
             const btnEdit = $(btns).find("a.btn-success");
             const btnDelete = $(btns).find("a.btn-danger");
+            const btnLocation = $(btns).find("a.btn-info");
             btnEdit.click(function () {
                 updateRow(param);
             });
             btnDelete.click(function () {
                 deleteRow(param);
+            });
+            btnLocation.click(function () {
+                showLocation(param);
             });
             index++;
         }
@@ -165,7 +169,8 @@
     function formatterButton(val, row, index) {
         const btnUpdate = commonGrid.btnBuilderText('btn-update', 'success', 'fa fa-edit', ' Edit');
         const btnDelete = commonGrid.btnBuilderText('btn-delete', 'danger', 'fa fa-times', ' Delete');
-        return '<div class="action-grid">' + btnUpdate + ' ' + btnDelete +'</div>';
+        const btnLocation = commonGrid.btnBuilderText('btn-maps', 'info', 'fa fa-map-marker', ' Lokasi');
+        return '<div class="action-grid">' + btnUpdate + ' ' + btnDelete + btnLocation + '</div>';
     }
 
     function formatterButtonDetail(val, row, index) {
@@ -197,6 +202,126 @@
                 }
             })
         });
+    }
+
+    function showLocation(val) {
+        if (val.latitude && val.latitude != '0' && val.longitude && val.longitude != '0') {
+            get_map(val);
+            return;
+        }
+        $.alert('Latitude Longitude kosong!');
+    }
+
+    function get_map(data) {
+        $('#myModalMapsLabel').html(`Outlet: ${data.nama_customer}`);
+
+        // maps
+        setTimeout(function() {
+            let lat =  parseFloat(data.latitude);
+            let lng = parseFloat(data.longitude);
+            let newLat = lat;
+            let newLng = lng;
+            let map = new google.maps.Map(document.getElementById('maps'), {
+                zoom: 15,
+                center: { lat, lng },
+            });
+            let marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                draggable: true,
+                icon: {
+                    url: `${window.location.origin}/assets/images/ic_store_48.png`,
+                    labelOrigin: {
+                        x: 17,
+                        y: 45,
+                    }
+                },
+                title: data.nama_customer,
+                label: {
+                    text: data.nama_customer,
+                    color: '#222222',
+                    fontSize: '10px'
+                }
+            });
+
+            let infoWindow = new google.maps.InfoWindow();
+            function updateInfoWindow(lat, lng, type) {
+                let btnSave = '';
+                if (type == 'save') btnSave = '<br><br><button id="btnSaveLocation" class="btn btn-sm btn-primary mt-2">Simpan Lokasi</button>';
+                infoWindow.setContent(`
+                    <div style="font-size:13px;">
+                        <strong>${data.nama_customer}</strong><br>
+                        Latitude: <span id="info-lat">${lat.toFixed(6)}</span><br>
+                        Longitude: <span id="info-lng">${lng.toFixed(6)}</span>
+                        ${btnSave}
+                    </div>
+                `);
+                infoWindow.open(map, marker);
+            }
+
+            marker.addListener('click', function() {
+                updateInfoWindow(lat, lng, 'show');
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+                newLat = event.latLng.lat();
+                newLng = event.latLng.lng();
+                updateInfoWindow(newLat, newLng, 'save');
+            });
+
+            function dialogSaveLocation(callback) {
+                $.confirm({
+                    title: 'Konfirmasi!',
+                    content: `<b>Simpan lokasi baru?</b> <br> Latitude: ${newLat} <br> Longitude: ${newLng}`,
+                    buttons: {
+                        confirm: {
+                            btnClass: 'btn-primary',
+                            action: callback
+                        },
+                        cancel: function () {
+                            $.alert('Simpan lokasi baru, batal!');
+                        }
+                    }
+                });
+            }
+
+            $(document).on('click', '#btnSaveLocation', function() {
+                dialogSaveLocation(function () {
+                    $.ajax({
+                        url: common.baseURL('ref_customer/update_location'),
+                        method: 'POST',
+                        data: {
+                            customerid: data.customerid,
+                            latitude: newLat,
+                            longitude: newLng
+                        },
+                        success: function(res) {
+                            $.alert({
+                                title: 'Berhasil!',
+                                content: 'Lokasi berhasil disimpan!',
+                                type: 'green',
+                                buttons: {
+                                    ok: {
+                                        text: 'OK',
+                                        btnClass: 'btn-success',
+                                        action: function() {
+                                            infoWindow.close();
+                                            $('#modalMaps').modal('hide');
+                                            uiTbl.datagrid('reload');
+                                        }
+                                    }
+                                }
+                            });
+                        },
+                        error: function() {
+                            $.alert('Terjadi kesalahan saat menyimpan lokasi.');
+                        }
+                    });
+                })
+            });
+
+            $('#modalMaps').modal('show');
+        }, 500);
     }
 
     function viewGff(val) {
