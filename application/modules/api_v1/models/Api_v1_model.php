@@ -1111,12 +1111,12 @@ class Api_v1_model extends CI_Model
 					where a.date between DATE_ADD(?, INTERVAL -7 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
 						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
 							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
-						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
-						case when b.flag_adjust=0 then 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then 
 							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
 							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
@@ -1163,12 +1163,12 @@ class Api_v1_model extends CI_Model
 					where a.date between DATE_ADD(?, INTERVAL -35 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
 						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
 							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
-						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
-						case when b.flag_adjust=0 then 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then 
 							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
 							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
@@ -1214,12 +1214,12 @@ class Api_v1_model extends CI_Model
 					where a.date between DATE_ADD(?, INTERVAL -2 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
 						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
 							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
-						case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
-						case when b.flag_adjust=0 then 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then 
 							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
 							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
 							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
