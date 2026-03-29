@@ -7,11 +7,21 @@ class Stock_product_model extends CI_Model
     {
         $field = "a.* ";
         $table = " (
-                    select
+                    SELECT
                         a.*,
-                        b.cabang
-                    from stock_product a
-                    left join m_cabang b on b.cab = a.nama_cabang
+                        b.cabang,
+                        COALESCE(s.qty_terjual, 0) as qty_terjual,
+                        (a.qty_total - COALESCE(s.qty_terjual, 0)) as stock_sisa
+                    FROM stock_product a
+                    LEFT JOIN m_cabang b ON b.cab = a.nama_cabang
+                    
+                    LEFT JOIN (
+                        SELECT 
+                            productid,
+                            SUM(qty_kecil) as qty_terjual
+                        FROM t_sales_detail
+                        GROUP BY productid
+                    ) s ON s.productid = a.kode_product_principal
                 ) a ";
         return easy_pagging($data, $field, $table);
     }

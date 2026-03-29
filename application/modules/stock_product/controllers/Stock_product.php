@@ -145,6 +145,8 @@ class Stock_product extends BaseController
             $rowNumber = 0;
 
             $this->db->empty_table('stock_product');
+            $this->db->where('periode', $periode);
+            $this->db->delete('stock_product_history');
             foreach ($sheet as $index => $row) {
                 if ($index == 0) continue;
                 if (!isset($row[0], $row[1], $row[2])) continue;
@@ -170,6 +172,24 @@ class Stock_product extends BaseController
                         ['nama_cabang', 'kode_product_principal', 'batch_num', 'expired_date']
                     );
 
+                    $productData = [];
+                    foreach ($data as $row) {
+                        $productData[] = array_merge([
+                            'idproduct' => $row['kode_product_principal'],
+                            'product_name' => $row['nama_product'],
+                            'brandid' => 1,
+                            'group_product' => 'KONIMEX',
+                            'category_product' => 'OTC',
+                            'status' => 'A',
+                            'created_date' => date('Y-m-d H:i:s'),
+                        ]);
+                    }
+                    $this->stock_product->insert_batch_on_duplicate(
+                        'ref_product',
+                        $productData,
+                        ['idproduct', 'product_name', 'brandid', 'group_product']
+                    );
+
                     $historyData = [];
                     foreach ($data as $row) {
                         $historyData[] = array_merge($row, [
@@ -191,9 +211,25 @@ class Stock_product extends BaseController
                     ['nama_cabang', 'kode_product_principal', 'batch_num', 'expired_date']
                 );
 
+                $productData = [];
+                foreach ($data as $d) {
+                    $productData[] = array_merge([
+                        'idproduct' => $d['kode_product_principal'],
+                        'product_name' => $d['nama_product'],
+                        'brandid' => 1,
+                        'group_product' => 'KONIMEX',
+                        'category_product' => 'OTC',
+                        'status' => 'A',
+                        'created_date' => date('Y-m-d H:i:s'),
+                    ]);
+                }
+                $this->stock_product->insert_batch_on_duplicate(
+                    'ref_product',
+                    $productData,
+                    ['idproduct', 'product_name', 'brandid', 'group_product']
+                );
+
                 $historyData = [];
-                $this->db->where('periode', $periode);
-                $this->db->delete('stock_product_history');
                 foreach ($data as $row) {
                     $historyData[] = array_merge($row, [
                         'upload_id' => $uploadId,
