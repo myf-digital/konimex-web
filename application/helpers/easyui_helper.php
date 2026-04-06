@@ -28,65 +28,93 @@ function easy_filter($data, $current = array(), $replace = array())
 
 function easy_pagging($data, $fields, $table, $alias = array())
 {
-//    if (empty($data)) return array();
     $ci =& get_instance();
+
+    $page  = isset($data['page']) ? (int)$data['page'] : 1;
+    $limit = isset($data['rows']) ? (int)$data['rows'] : 30;
+    $offset = ($page - 1) * $limit;
+
     $response = array();
     $values = array();
     $cond = '';
-    if (isset($data['filterRules']) && !empty($data['filterRules'])) {
+
+    // ================= FILTER =================
+    if (!empty($data['filterRules'])) {
         $filter = json_decode($data['filterRules']);
-        //var_dump($filter);
         $loop = 0;
+
         foreach ($filter as $json) {
             $rules = get_object_vars($json);
             $optns = $rules['op'];
             $value = $rules['value'];
             $field = $rules['field'];
-            if (!empty($value)) {
-                if ('contains' == $optns) {
-                    $cond .= (0 == $loop ? "where $field like ? " : "and $field like ? ");
-                    array_push($values, "%$value%");
-                } else if ('greaterequal' == $optns) {
-                    $cond .= (0 == $loop ? "where $field => ? " : "and $field > ? ");
-                    array_push($values, "$value");
-                } else if ('lessequal' == $optns) {
-                    $cond .= (0 == $loop ? "where $field <= ? " : "and $field < ? ");
-                    array_push($values, "$value");
-                } else if ('greater' == $optns) {
-                    $cond .= (0 == $loop ? "where $field > ? " : "and $field > ? ");
-                    array_push($values, "$value");
-                } else if ('less' == $optns) {
-                    $cond .= (0 == $loop ? "where $field < ? " : "and $field < ? ");
-                    array_push($values, "$value");
-                } else if ('notequal' == $optns) {
-                    $cond .= (0 == $loop ? "where $field != ? " : "and $field != ? ");
-                    array_push($values, "$value");
-                } else if ('equal' == $optns) {
-                    $cond .= (0 == $loop ? "where $field = ? " : "and $field = ? ");
-                    array_push($values, "$value");
+
+            if ($value !== '' && $value !== null) {
+                $prefix = ($loop == 0) ? "WHERE" : "AND";
+
+                switch ($optns) {
+                    case 'contains':
+                        $cond .= " $prefix $field LIKE ?";
+                        $values[] = "%$value%";
+                        break;
+
+                    case 'greaterequal':
+                        $cond .= " $prefix $field >= ?";
+                        $values[] = $value;
+                        break;
+
+                    case 'lessequal':
+                        $cond .= " $prefix $field <= ?";
+                        $values[] = $value;
+                        break;
+
+                    case 'greater':
+                        $cond .= " $prefix $field > ?";
+                        $values[] = $value;
+                        break;
+
+                    case 'less':
+                        $cond .= " $prefix $field < ?";
+                        $values[] = $value;
+                        break;
+
+                    case 'notequal':
+                        $cond .= " $prefix $field != ?";
+                        $values[] = $value;
+                        break;
+
+                    case 'equal':
+                        $cond .= " $prefix $field = ?";
+                        $values[] = $value;
+                        break;
                 }
-                $loop++; // flag where
+
+                $loop++;
             }
         }
-        $cond = trim($cond);
     }
-    $sort = (empty($data['sort']) ? "" : $data['sort']);
-    $order = (empty($data['order']) ? "" : $data['order']);
-    $order_by = (empty($sort) ? "" : "order by $sort $order");
-    $fields = trim($fields);
-    if (isset($data['page']) && isset($data['rows'])) {
-        $sql_count = "select count(1) as total from $table $cond";
-        $response['total'] = $ci->db->query(trim($sql_count), $values)->result_array()[0]["total"];
-        // get row paging
-        $offset = intval(($data['page'] - 1) * $data['rows']);
-        array_push($values, $offset, intval($data['rows']));
-        $sql_rows = "select $fields from $table $cond $order_by limit ?, ?";
-        $response['rows'] = $ci->db->query(trim($sql_rows), $values)->result();
-    } else {
-        $sql_rows = "select $fields from $table $cond $order_by";
-        $response['total'] = null;
-        $response['rows'] = $ci->db->query(trim($sql_rows), $values)->result();
-    }
+
+    // ================= SORT =================
+    $sort  = $data['sort'] ?? '';
+    $order = $data['order'] ?? '';
+    $order_by = $sort ? "ORDER BY $sort $order" : "";
+
+    // ================= COUNT =================
+    $sql_count = "SELECT COUNT(1) as total FROM $table $cond";
+
+    $count_values = $values;
+
+    $response['total'] = $ci->db->query($sql_count, $count_values)->row()->total ?? 0;
+
+    // ================= DATA =================
+    $sql_rows = "SELECT $fields FROM $table $cond $order_by LIMIT ?, ?";
+
+    $row_values = $values;
+    $row_values[] = $offset;
+    $row_values[] = $limit;
+
+    $response['rows'] = $ci->db->query($sql_rows, $row_values)->result();
+
     return $response;
 }
 

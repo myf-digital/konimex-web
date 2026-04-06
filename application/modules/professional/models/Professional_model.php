@@ -25,6 +25,7 @@ class Professional_model extends CI_Model
                     LEFT JOIN m_cabang_area c ON c.subareaid = a.subareaid
                     LEFT JOIN m_cabang d ON d.kode_cab = c.kode_cab
                     RIGHT OUTER JOIN m_product mp ON mp.status = 'A'
+                    WHERE a.customerid IS NOT NULL
                 ) a ";
         return easy_pagging($data, $field, $table);
     }
