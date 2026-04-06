@@ -1,26 +1,53 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Stock_product_model extends CI_Model
+class Professional_model extends CI_Model
 {
     public function load($data)
     {
         $field = "a.* ";
         $table = " (
+                    SELECT 
+                        d.cab, 
+                        d.cabang, 
+                        a.customerid, 
+                        a.nama_customer, 
+                        b.id_professional, 
+                        b.nama_professional, 
+                        mp.productid, 
+                        mp.category_product, 
+                        mp.nama_invoice, 
+                        mp.sat_kecil, 
+                        0 as qty,
+                        0 as total
+                    FROM m_customer a 
+                    LEFT JOIN ref_professional_mapping b ON b.customerid = a.customerid
+                    LEFT JOIN m_cabang_area c ON c.subareaid = a.subareaid
+                    LEFT JOIN m_cabang d ON d.kode_cab = c.kode_cab
+                    RIGHT OUTER JOIN m_product mp ON mp.status = 'A'
+                ) a ";
+        return easy_pagging($data, $field, $table);
+    }
+
+    public function load_target($data)
+    {
+        $field = "a.* ";
+        $table = " (
                     SELECT
                         a.*,
-                        b.cabang,
-                        COALESCE(s.qty_terjual, 0) as qty_terjual,
-                        (a.qty_total - COALESCE(s.qty_terjual, 0)) as stock_sisa
-                    FROM stock_product a
-                    LEFT JOIN m_cabang b ON b.cab = a.nama_cabang
+                        COALESCE(s.total_actual, 0) as total_actual
+                    FROM target_professional a
                     LEFT JOIN (
                         SELECT 
-                            productid,
-                            SUM(qty_kecil) as qty_terjual
-                        FROM t_sales_detail
-                        GROUP BY productid
-                    ) s ON s.productid = a.kode_product_principal
+                            tsm.customerid,
+                            tsm.userid,
+                            tsd.productid,
+                            SUM(tsd.qty_kecil) as total_actual
+                        FROM t_sales_detail tsd
+                        JOIN t_sales_master tsm ON tsm.no_po = tsd.no_po
+                        GROUP BY tsd.productid
+                    ) s ON s.userid = a.id_professional AND s.customerid = a.customerid AND s.productid = a.productid
+                    WHERE a.id_professional IS NOT NULL
                 ) a ";
         return easy_pagging($data, $field, $table);
     }
@@ -30,7 +57,7 @@ class Stock_product_model extends CI_Model
         $field = "a.* ";
         $table = " (
                     select a.*
-                    from stock_uploads a
+                    from target_uploads a
                 ) a ";
         return easy_pagging($data, $field, $table);
     }
@@ -41,11 +68,8 @@ class Stock_product_model extends CI_Model
 
         $field = "a.* ";
         $table = " (
-                    select
-                        a.*,
-                        b.cabang
-                    from stock_product_history a
-                    left join m_cabang b on b.cab = a.nama_cabang
+                    select a.*
+                    from target_professional_history a
                     where a.upload_id = '{$uploadId}'
                 ) a ";
         return easy_pagging($data, $field, $table);
