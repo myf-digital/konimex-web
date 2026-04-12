@@ -59,8 +59,8 @@
               }
           ]],
           columns: [[
-            {field: 'salesmanid', title: 'Kode GFF', width: 60, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'nama_salesman', title: 'Nama GFF', width: 120, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'salesmanid', title: 'Kode MEDREP', width: 60, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'nama_salesman', title: 'Nama MEDREP', width: 120, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'tipe_sales', title: 'Posisi', width: 80, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'city', title: 'City', width: 100, sortable: 'true', halign: 'left', align: 'left'},
             {field: '_jadwal', title: 'Schedule', width: 70, sortable: 'true', halign: 'center', align: 'center'},
@@ -98,10 +98,10 @@
         uiTanggalPicker.datepicker({
             format: 'yyyy-mm-dd',
             //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
         });
- 
         let uiBtnSearch = $("#btn-search");
         uiBtnSearch.click(function () {
             //alert (paramsession.username);

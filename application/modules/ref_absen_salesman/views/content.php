@@ -1,16 +1,16 @@
 <style>
     #btn-preview {
-        margin: 6px -2px 0 7px !important;
+        margin: 5px -5px 0px 7px !important;
     }
 </style>
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Absen Salesman <small>Control panel</small>
+        Absen Medrep <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Absen Salesman</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Absen Medrep</a></li>
         <li class="active">Content</li>
     </ol>
 </section>

@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Promo Salesman <small>Control panel</small>
+        Promo Medrep <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Promo Salesman</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Promo Medrep</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,12 +15,12 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Promo Salesman</h3>
+                    <h3 class="box-title">Form Promo Medrep</h3>
                 </div>
 
                 <form id="fm-promo-product" role="form" method="post">
                     <div class="box-body">
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-2">
 								<label for="no_promo">No Promo</label>
 								<input name="no_promo" class="form-control" placeholder="No Promo">
 							</div>
@@ -46,6 +46,10 @@
                                     <input id="selesai_tanggal" placeholder="End Periode" type="text" class="form-control datepicker" name="selesai_tanggal" readonly>
                                     </div>
 							</div>
+                            <div class="form-group col-md-3">
+                                <label for="typeid">Cluster</label>
+                                <select id="typeid-id" name="typeid" class="form-control" placeholder="Channel"></select>
+                            </div>
                             <div class="form-group col-md-12">
 								<label for="productid">Pilih Product</label>  
                                 <select id="productid-id" name="productid[]" class="form-control" placeholder="Product"></select>

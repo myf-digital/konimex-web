@@ -25,6 +25,12 @@ class Rep_doi extends BaseController
         responseJSON($this->report_doi->get_regional($data));
     }
 
+    public function load_area()
+    {
+        $data = param_input();
+        responseJSON($this->report_doi->get_area($data));
+    }
+
     public function load_city()
     {
         $data = param_input();
@@ -75,7 +81,7 @@ class Rep_doi extends BaseController
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 400px">Store Name</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 80px">Channel</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px">Sub-channel</th>';
-		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 200px">City</th>';
+		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 200px">Area</th>';
 		$html .= '<th colspan="2" style="vertical-align : middle;text-align:center;width: 300px">01 Stock Awal</th>';
 		$html .= '<th colspan="2" style="vertical-align : middle;text-align:center;width: 300px">02 Sell In</th>';
 		$html .= '<th colspan="2" style="vertical-align : middle;text-align:center;width: 300px">03 Stock Akhir</th>';
@@ -183,7 +189,7 @@ class Rep_doi extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Bulan', 'Principal', 'Brand', 'SKU', 'Region', 'Store Name', 'Channel', 'Sub-channel', 'City', 'Qty', 'Value', 'Qty', 'Value', 'Qty', 'Value', 'Qty', 'Value', '05 DOI'];
+        $header = ['No', 'Bulan', 'Principal', 'Brand', 'SKU', 'Region', 'Store Name', 'Channel', 'Sub-channel', 'Area', 'Qty', 'Value', 'Qty', 'Value', 'Qty', 'Value', 'Qty', 'Value', '05 DOI'];
 
         $sheet = $spreadsheet->getActiveSheet();
 

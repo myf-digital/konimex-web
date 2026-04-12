@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("Setup Pjp");
+    common.setTitle("Setup FJP");
     // ui components
     let uiTbl = $("#tbl-setup-pjp");
     let paramsession = common.getCookie("session");
@@ -41,7 +41,7 @@
 
     function initializeGrid() {
         let option = {
-            title: "Setup Pjp",
+            title: "Setup FJP",
             toolbar: toolbar(),
             url: common.baseURL("conf_setup_pjp/load"),
             queryParams: {
@@ -56,7 +56,7 @@
                 {
                     field: 'options',
                     title: 'ACTION',
-                    width: 100,
+                    width: 75,
                     halign: 'center',
                     align: 'center',
                     formatter: formatterButton
@@ -64,19 +64,20 @@
             ]],
             columns: [[
 				//{field:'siteid', title:'SITEID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'KODE GFF', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'gffname', title:'NAMA GFF', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'USER MEDREP', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'gffname', title:'NAMA MEDREP', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'position', title:'POSITION', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'ram_rsm', title:'RAM/RSM', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'aas_aam_tss_tsm', title:'AAS/AAM/TSS/TSM', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'customerid', title:'OUTLETID', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'kode_outlet', title:'KODE OUTLET', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'nama_customer', title:'OUTLET NAME', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'customerid', title:'MEDREP ID OUTLET', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'latest_jjid', title:'LATEST JJID', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'latest_customer_name', title:'LATEST CUSTOMER NAME', halign: 'center', align: 'left', sortable:"true", width:150},
+				{field:'nama_customer', title:'MEDREP OUTLET NAME', halign: 'center', align: 'left', sortable:"true", width:150},
+				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'group_account', title:'GROUP ACCOUNT', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'city', title:'City', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'city', title:'Area', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'nama_class', title:'ACCOUNT', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'nama_class', title:'Tier', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'tgl_proses', title:'TGL PROSES', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'keterangan', title:'REMARK', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'group_nama_minggu', title:'WEEKS', halign: 'center', align: 'center', sortable:"true", width:100},
@@ -99,10 +100,10 @@
     }
 
     function toolbar() {
-        const btnCreate = commonGrid.btnBuilderText('btn-create', 'success', 'fa fa-pencil', ' Create New PJP');
-        const btnDownload = commonGrid.btnBuilderText('btn-download', 'primary', 'fa fa-download',' Download PJP');
+        const btnCreate = commonGrid.btnBuilderText('btn-create', 'success', 'fa fa-pencil', ' Create New FJP');
+        const btnDownload = commonGrid.btnBuilderText('btn-download', 'primary', 'fa fa-download',' Download FJP');
         //const btnSwitch = commonGrid.btnBuilderText('btn-switch', 'info', 'fa fa-exchange',' Switch PJP');
-        const btnUpload = commonGrid.btnBuilderText('btn-upload', 'info', 'fa fa-upload',' Upload PJP');
+        const btnUpload = commonGrid.btnBuilderText('btn-upload', 'info', 'fa fa-upload',' Upload FJP');
         return '<div class="action-grid-toolbar">' + btnCreate + btnDownload + btnUpload + ' Week Aktif : ' + paramsession.week_aktif +'</div>'; //+ btnUpload
     }
 

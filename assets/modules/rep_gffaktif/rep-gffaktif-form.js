@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Report GFF Aktif");
+    common.setTitle("Report MEDREP Aktif");
     // declare dom
     let uiForm = $("#fm-report-promo");
     let uiBtnPreview = $("#btn-preview-form");
@@ -10,10 +10,9 @@
     let uiEndPeriode = $("#end_periode"); 
     let uiSelectPosition = $("#tipe_sales-id"); 
     let uiSelectRegional = $("#regional-id");
+    let uiSelectArea = $("#area-id");
     let uiSelectCity = $("#city-id");
     
-    // define from *-content.js
-    //let param = common.getCookie("module.report.promo.update");
     let paramsession = common.getCookie("session");
     
     initializeParam();
@@ -51,7 +50,7 @@
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayHighlight: true
-        });
+        }).datepicker("setDate", new Date());
 
         uiSelectRegional.on('select2:select', function (e) {
             regional = e.params.data;
@@ -68,6 +67,7 @@
         });
 
         load_tipegff();
+        open_preview();
     }
 
     function setupForm(r1) {
@@ -83,6 +83,11 @@
             }),
         });
 
+        uiSelectArea.select2({
+            placeholder: 'Select Area',
+            allowClear: true
+        });
+
         uiSelectCity.select2({
             placeholder: 'Select City',
             allowClear: true
@@ -93,25 +98,24 @@
 
     function loadArea(data) {
         common.loading();
-        $.post(common.baseURL("rep_gffaktif/load_city"), {regionalid: data.regionalid}, function (res) {
-            uiSelectCity.empty();
-            uiSelectCity.select2({
+        $.post(common.baseURL("rep_gffaktif/load_area"), {regionalid: data.regionalid}, function (res) {
+            uiSelectArea.empty();
+            uiSelectArea.select2({
                 placeholder: "Select City",
                 allowClear: true,
                 data: $.map(res.rows, function (o) {
-                    o.id = o.subareaid; // replace name with the property used for the text
+                    o.id = o.areaid; // replace name with the property used for the text
                     o.text = o.nama_area;
                     return o;
                 }),
             });
-            uiSelectCity.val(null).trigger('change');
+            uiSelectArea.val(null).trigger('change');
             common.loadingClose();
         });
 
     }
 
     function open_preview() {
-		
         var start = uiStartPeriode.val();
         var end = uiEndPeriode.val();
         var position = uiSelectPosition.val();
@@ -120,8 +124,7 @@
         var restrictlevel = paramsession.restrict_level;
 
         var regionalid = uiSelectRegional.val();
-        var areaid = uiSelectCity.val();
-        //alert("start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession);
+        var areaid = uiSelectArea.val();
         $.ajax({
             type:"GET",
             dataType: "html",
@@ -139,14 +142,10 @@
         $.ajax({
             type:"POST",
             dataType: "html",
-            beforeSend : function() {
-                //$("#map-content").html('Populating data, please wait..');
-            },
             url: common.baseURL("rep_gffaktif/load_data_att"),
             data : "start="+start+"&end="+end+"&position="+position+"&idjabatan="+idjabatan+"&usersession="+usersession+"&restrict_level="+restrictlevel+"&regionalid="+regionalid+"&areaid="+areaid,
             success:function(res){
-                response = res;
-                $('#tbl-content').html(response);
+                $('#tbl-content').html(res);
             },
             error:function(){
                 alert("Load failed");
@@ -184,7 +183,7 @@
         var restrictlevel = paramsession.restrict_level;
 
         var regionalid = uiSelectRegional.val();
-        var areaid = uiSelectCity.val();
+        var areaid = uiSelectArea.val();
         //idpromo = idpromo.replace(",", "|");
         //var url = encodeURI();
         common.direct("rep_gffaktif/savetoxlsx/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrictlevel+"/"+position+"/"+regionalid+"/"+areaid);

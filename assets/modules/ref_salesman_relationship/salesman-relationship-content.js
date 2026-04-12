@@ -41,7 +41,7 @@
             ]],
             columns: [[
 				{field:'salesmanid', title:'Salesman Id', halign: 'left', align: 'left', sortable:"true", width:100},
-				{field:'nama_salesman', title:'Nama Salesman', halign: 'left', align: 'left', sortable:"true", width:250},
+				{field:'nama_salesman', title:'Nama Medrep', halign: 'left', align: 'left', sortable:"true", width:250},
 				{field:'relationship_desc', title:'Relationship', halign: 'left', align: 'left', sortable:"true", width:100},
 				{field:'nama_relationship', title:'Nama Relationship', halign: 'left', align: 'left', sortable:"true", width:120},
 				{field:'jenis_kelamin', title:'Jenis Kelamin', halign: 'left', align: 'left', sortable:"true", width:120},

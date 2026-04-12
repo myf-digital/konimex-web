@@ -130,5 +130,4 @@ if (!function_exists('payload')) {
         return $result;
     }
 }
-
 ?>

@@ -26,8 +26,8 @@ class Rep_join_visit_outlet_model extends CI_Model
             $strquery = "";
         }
 
-		$start_date = $data['start_date'];
-		$end_date = $data['end_date'];
+		$start_date = $data['start_date'] ?? today();
+		$end_date = $data['end_date'] ?? today();
         $field = " a.* ";
         $table = " (
 						select a.id_evaluation_outlet,a.periode,a.customerid,a.username,a.created_date,b.kode_outlet,b.nama_customer 

@@ -1,5 +1,4 @@
 (function () {
-
     const common = new Common();
     common.setTitle("Report SLOB");
     // declare dom

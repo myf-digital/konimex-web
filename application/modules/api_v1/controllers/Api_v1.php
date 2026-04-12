@@ -5,8 +5,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Api_v1 extends CI_Controller
 {
-
-
     public function __construct()
     {
 
@@ -352,8 +350,8 @@ class Api_v1 extends CI_Controller
 
     function call_product()
     {
-        //$data = param_input();
-        $result = $this->api_v1->get_product();
+        $data = param_input();
+        $result = $this->api_v1->get_product($data);
         if (200 == $result->code) {
             return response($result->result);
         } else {

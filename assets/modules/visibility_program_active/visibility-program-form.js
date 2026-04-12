@@ -47,8 +47,8 @@
 
         uiSelectArea.on('select2:select', function (e) {
             areaSelected = e.params.data;
-            let sraval = {regionalid:uiSelectRegional.val(),areaid:uiSelectArea.val()};
-            loadSubArea(sraval);
+            // let sraval = {regionalid:uiSelectRegional.val(),areaid:uiSelectArea.val()};
+            // loadSubArea(sraval);
         });
 
         $(".datepicker").datepicker({
@@ -70,15 +70,15 @@
             loadRegional();
             let srval = {regionalid:param.regionalid};
             loadArea(srval);
-            let sraval = {regionalid:param.regionalid, areaid:param.areaid};
-            loadSubArea(sraval);
+            // let sraval = {regionalid:param.regionalid, areaid:param.areaid};
+            // loadSubArea(sraval);
         }else{
             loadAccount();
             loadRegional();
             let srval = {regionalid:param.regionalid};
             loadArea(srval);
-            let sraval = {regionalid:param.regionalid, areaid:param.areaid};
-            loadSubArea(sraval);
+            // let sraval = {regionalid:param.regionalid, areaid:param.areaid};
+            // loadSubArea(sraval);
         }
 
     }

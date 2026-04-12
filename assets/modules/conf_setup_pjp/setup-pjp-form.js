@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Setup Pjp");
+    common.setTitle("Setup FJP");
     // declare dom
     let uiForm = $("#fm-setup-pjp");
     let uiBtnCancel = $("#btn-cancel-form");
@@ -43,32 +43,24 @@
 
         uiSelectWeeks1.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
         });
         uiSelectWeeks2.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
         });
         uiSelectWeeks3.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
         });
         uiSelectWeeks4.select2({
             placeholder: 'Select Hari',
-            //minimumSelectionLength: vmin,
-            //maximumSelectionLength: vmaxweeks,
             allowClear: true,
             multiple: true,
             tokenSeparators: [',']
@@ -82,9 +74,6 @@
         let filter = new Filter();
         
         $.when(
-            //$.post(common.baseURL("conf_setup_site/load"), filter.build()),
-            //$.post(common.baseURL("api_v1/call_frequency"), filter.build()),
-            //$.post(common.baseURL("api_v1/call_weeks"), filter.build()),
             $.post(common.baseURL("api_v1/call_days"), filter.build()),
         ).done(function (data, textStatus, jqXHR) {
         }).then(function (r1) {
@@ -101,8 +90,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -113,8 +100,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -125,8 +110,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -137,8 +120,6 @@
             placeholder: 'Select Hari',
             allowClear: true,
             includeSelectAllOption: true,
-            //minimumSelectionLength: 1,
-            //maximumSelectionLength: 4,
             data: $.map(rows1, function (o) {
                 o.id = o.iddays; // replace name with the property used for the text
                 o.text = o.days; // replace name with the property used for the text
@@ -182,7 +163,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession,restrict_level: data.restrict_level}, function (res) {
             uiSelectSalesman.empty();
             uiSelectSalesman.select2({
-                placeholder: "Select Salesman",
+                placeholder: "Select Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text
@@ -199,5 +180,4 @@
             common.loadingClose();
         });
     }
-
 })();

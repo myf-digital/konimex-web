@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("Absen Salesman");
+    common.setTitle("Absen Medrep");
     // ui components
     let uiTbl = $("#tbl");
 
@@ -24,7 +24,7 @@
 
     function initializeGrid() {
         let option = {
-            title: "Absen Salesman",
+            title: "Absen Medrep",
             toolbar: toolbar(),
             url: common.baseURL("ref_absen_salesman/load"),
             pageNumber: 1,
@@ -43,7 +43,7 @@
             columns: [[
               {field:'periode', title:'Periode', halign: 'left', align: 'left', sortable:"true", width:150},
               {field:'salesmanid', title:'Salesman ID', halign: 'left', align: 'left', sortable:"true", width:150},
-              {field:'nama_salesman', title:'Nama Salesman', halign: 'left', align: 'left', sortable:"true", width:250},
+              {field:'nama_salesman', title:'Nama Medrep', halign: 'left', align: 'left', sortable:"true", width:250},
               {field:'status', title:'Status', halign: 'left', align: 'left', sortable:"true", width:150},
               {field:'adjust_pjp', title:'Adjust PJP', halign: 'left', align: 'left', sortable:"true", width:150},
               {field:'checkin', title:'Check In', halign: 'left', align: 'left', sortable:"true", width:150},
@@ -69,16 +69,20 @@
         let uiTanggalPicker1 = $("#get_date1");
         uiTanggalPicker1.datepicker({
             format: 'yyyy-mm-dd',
-        }).on('change', function(){
+            //startDate: '-3d'
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         let uiTanggalPicker2 = $("#get_date2");
         uiTanggalPicker2.datepicker({
             format: 'yyyy-mm-dd',
-        }).on('change', function(){
+            //startDate: '-3d'
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         uiTanggalPicker1.on('changeDate', function(selected) {
             var startDate = new Date(selected.date.valueOf());

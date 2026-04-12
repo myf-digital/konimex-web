@@ -36,6 +36,15 @@ class Rep_gffaktif_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
 
+    public function get_area($data)
+    {
+        $field = " a.* ";
+        $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
+                        order by areaid asc
+                    ) as a";
+        return easy_pagging($data, $field, $table);
+    }
+
     public function get_city($data)
     {
         $field = " a.* ";
@@ -91,7 +100,7 @@ class Rep_gffaktif_model extends CI_Model
         }
 
 		$regional = $regionalid != 'null' ? ' and d.regionalid="'.$regionalid.'" ' : '';
-        $area = $areaid != 'null' ? ' and b.subareaid="'.$areaid.'" ' : '';
+        $area = $areaid != 'null' ? ' and b.areaid="'.$areaid.'" ' : '';
 
 		$q = $this->db->query("
                                 select a.salesmanid, a.nama_salesman, a.tipe_sales,d.nama_regional,c.nama_area,b.nama_area city from 
@@ -282,4 +291,63 @@ class Rep_gffaktif_model extends CI_Model
 		return $query->result_array();
 	}
 
+    function get_attendance_parma($data)
+    {
+        if ($data['restrict_level'] == '4') {
+            $strquery = " AND tsa.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE subareaid IN (
+                                SELECT DISTINCT b.subareaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " AND tsa.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE areaid IN (
+                                SELECT DISTINCT b.areaid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " AND tsa.salesmanid IN (
+                            SELECT salesmanid
+                            FROM m_sales_salesman
+                            WHERE regionalid IN (
+                                SELECT DISTINCT b.regionalid
+                                FROM app_resource a
+                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                                WHERE a.username='".$data['usersession']."'
+                            )
+                        ) ";
+        } else $strquery = "";
+
+        $where = "";
+        if (isset($data['start_period']) && isset($data['end_period'])) {
+            $where .= " tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+        }
+        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND mss.regionalid ='".$data['regionalid']."'";
+        }
+        if (isset($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND mss.areaid ='".$data['areaid']."'";
+        }
+        
+		$query = $this->db->query("
+        SELECT mss.nama_salesman, mss.salesmanid, mss.nama_area,tsa.status, tsa.periode, ap.start_time, 
+                ap.start_image, ap.end_time, ap.end_image
+        FROM t_sales_absensi tsa 
+            LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
+            left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
+            WHERE ".$where . $strquery ."and mss.nama_salesman NOT LIKE '%Tester%'
+            order by tsa.periode, tsa.salesmanid 
+        ");
+        return $query->result_array();
+    }    
 }

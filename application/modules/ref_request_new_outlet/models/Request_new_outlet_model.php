@@ -65,7 +65,6 @@ class Request_new_outlet_model extends CI_Model
 		$this->db->from('m_customer_ob');
         $this->db->where('customerid', $customerid);
         return $this->db->get()->result();
-        
     }
 
     public function get_x_player($ids)
@@ -119,27 +118,24 @@ class Request_new_outlet_model extends CI_Model
         $execreturncustob = $this->db->insert('m_customer_ob', $data_custob);
 
         // notif onesignal
-        $customer_ob = $this->get_customer_ob($data['customerid']);
-        if (count($customer_ob) < 1) {
-            log_message('error', 'get get_customer_ob not found (' . $data['customerid'] . ')');
-            return;
-        }
-        $x_players = $this->get_x_player(array_column($customer_ob, 'salesmanid'));
-        if (count($x_players) > 0) {
-            foreach ($x_players as $xp) {
-                if (isset($xp->player_id)) {
-                    send_onesignal([
-                        'player_ids' => $xp->player_id,
-                        'title' => 'Approve Outlet',
-                        'message' => 'Outlet ' . ($data['kode_outlet'] ? '(' . $data['kode_outlet'] : '') . ($data['nama_customer'] ? ' ' . $data['nama_customer'] : '') . ') berhasil di Approve' . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : ''),
-                        'data' => array_merge(['type' => 'Approve Outlet'], [
-                            'siteid' => $data['siteid'] ?? '',
-                            'kode_outlet' => $data['kode_outlet'] ?? '',
-                            'nama_customer' => $data['nama_customer'] ?? '',
-                            'salesmanid' => $data['salesmanid'] ?? '',
-                        ]),
-                        'url' => 'ref_customer',
-                    ]);
+        if (count($data_custob) > 0) {
+            $x_players = $this->get_x_player([$data_custob['salesmanid']]);
+            if (count($x_players) > 0) {
+                foreach ($x_players as $xp) {
+                    if (isset($xp->player_id)) {
+                        send_onesignal([
+                            'player_ids' => $xp->player_id,
+                            'title' => 'Approve Outlet',
+                            'message' => 'Outlet ' . ($data['kode_outlet'] ? '(' . $data['kode_outlet'] : '') . ($data['nama_customer'] ? ' ' . $data['nama_customer'] : '') . ') berhasil di Approve' . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : ''),
+                            'data' => array_merge(['type' => 'Approve Outlet'], [
+                                'siteid' => $data['siteid'] ?? '',
+                                'kode_outlet' => $data['kode_outlet'] ?? '',
+                                'nama_customer' => $data['nama_customer'] ?? '',
+                                'salesmanid' => $data['salesmanid'] ?? '',
+                            ]),
+                            'url' => 'ref_customer',
+                        ]);
+                    }
                 }
             }
         }

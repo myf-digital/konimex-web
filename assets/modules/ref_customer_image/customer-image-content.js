@@ -42,7 +42,7 @@
             columns: [[
 				{field:'id', title:'ID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'siteid', title:'SITEID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'SALESMANID', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'MEDREPID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'customerid', title:'CUSTOMERID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'image', title:'IMAGE', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'datecreate', title:'DATECREATE', halign: 'center', align: 'left', sortable:"true", width:200},

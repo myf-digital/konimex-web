@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("Sales Salesman Area");
+    common.setTitle("Sales Medrep Area");
     // ui components
     let uiTbl = $("#tbl-sales-salesman-area");
 
@@ -23,7 +23,7 @@
 
     function initializeGrid() {
         let option = {
-            title: "Sales Salesman Area",
+            title: "Sales Medrep Area",
             toolbar: toolbar(),
             url: common.baseURL("ref_sales_salesman_area/load"),
             pageNumber: 1,
@@ -41,7 +41,7 @@
             ]],
             columns: [[
 				{field:'siteid', title:'SITEID', halign: 'left', align: 'left', sortable:"true", width:200},
-				{field:'salesman', title:'SALESMAN', halign: 'left', align: 'left', sortable:"true", width:200},
+				{field:'salesman', title:'MEDREP', halign: 'left', align: 'left', sortable:"true", width:200},
                 //{field:'nama_area', title:'AREA', halign: 'left', align: 'left', sortable:"true", width:200},
                 {field:'group_areaname', title:'AREA', halign: 'left', align: 'left', sortable:"true", width:200},
             ]],

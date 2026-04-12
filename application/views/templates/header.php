@@ -44,6 +44,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?php echo base_url('assets/multiselect/lib/google-code-prettify/prettify.css'); ?>" />
 <link rel="stylesheet" href="<?php echo base_url('assets/multiselect/css/style.css'); ?>" />
 
+<style>
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+
 <script src="<?php echo base_url('assets/frameworks/jquery/jquery.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/jquery-ui-1.11.4/jquery-ui.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/bootstrap/js/bootstrap.min.js'); ?>"></script>

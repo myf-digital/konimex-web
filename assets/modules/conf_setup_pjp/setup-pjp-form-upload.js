@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Upload Setup Pjp");
+    common.setTitle("Upload Setup FJP");
     // declare dom
     let uiForm = $("#fm-upload-setup-pjp");
     let uiBtnCancel = $("#btn-cancel-form");
@@ -17,8 +17,6 @@
             uiAlertNotif.hide();
         }
     });
-
-    let paramsession = common.getCookie("session");
 
     initialize();
 

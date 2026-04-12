@@ -29,7 +29,7 @@
 </style>
 <div id="alertnotif" class="alert warning" style="display:none;">
   <span class="closebtn">&times;</span>  
-  <strong></strong> GFF (MD/SPG/SALESMAN) harus di isi...
+  <strong></strong> User (PAR-aMA) harus di isi...
 </div>
 <script>
 // Get all elements with class="closebtn"
@@ -57,11 +57,11 @@ for (i = 0; i < close.length; i++) {
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Download Pjp <small>Control panel</small>
+        Download FJP <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Download Pjp</a></li>
-        <li class="active">Form Download PJP</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Download FJP</a></li>
+        <li class="active">Form Download FJP</li>
     </ol>
 </section>
 
@@ -71,7 +71,7 @@ for (i = 0; i < close.length; i++) {
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Download Pjp</h3>
+                    <h3 class="box-title">Form Download FJP</h3>
                 </div>
 
                 <form id="fm-download-setup-pjp" role="form" method="post">
@@ -81,8 +81,8 @@ for (i = 0; i < close.length; i++) {
 								<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 							</div>-->
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">GFF (MD/SPG/SALESMAN)</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="GFF (MD/SPG/SALESMAN)"></select>
+								<label for="salesmanid">User (MEDREP)</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="User (MEDREP)"></select>
 							</div>
                     </div>
                     <div class="box-footer">

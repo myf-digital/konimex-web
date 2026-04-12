@@ -73,6 +73,14 @@ class Rep_promo_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
 
+    public function load_area($data)
+    {
+        $field = " a.* ";
+        $table = " ( select areaid,nama_area from m_area_areasite where regionalid='".$data['regionalid']."' order by nama_area asc
+                    ) as a";
+        return easy_pagging($data, $field, $table);
+    }
+
     public function load_city($data)
     {
         $field = " a.* ";

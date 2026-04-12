@@ -29,8 +29,7 @@
                         </li>
                         <!-- Menu Body -->
                         <li class="user-body">
-                            <div class="row">
-                            </div>
+                            <div class="row"></div>
                             <!-- /.row -->
                         </li>
                         <!-- Menu Footer-->

@@ -26,7 +26,7 @@
             //alert(uiSelectSalesman.val());
             if (uiSelectSalesman.val()===null){
                 uiAlertNotif.show();
-                //alert ('GFF (MD/SPG/SALESMAN) harus di isi...!');
+                //alert ('MEDREP (MD/SPG/MEDREP) harus di isi...!');
             }else{
                 common.direct("conf_setup_pjp/savetoxlsx/"+uiSelectSalesman.val());
             }
@@ -43,7 +43,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession}, function (res) {
             uiSelectSalesman.empty();
             uiSelectSalesman.select2({
-                placeholder: "Select GFF",
+                placeholder: "Select MEDREP",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

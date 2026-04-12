@@ -30,12 +30,12 @@
             {field: 'nama_class', title: 'Account', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'nama_regional', title: 'Regional', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'nama_area', title: 'Area', width: 60, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'city', title: 'City', width: 60, sortable: 'true', halign: 'left', align: 'left'},
+            // {field: 'city', title: 'City', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'dc', title: 'DC', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'active_mcs', title: 'MCS', width: 50, sortable: 'true', halign: 'center', align: 'center'},
             {field: 'active_sku', title: 'SKU Last3Months', width: 50, sortable: 'true', halign: 'center', align: 'center'},
             {field: '_percentage', title: 'Percentage', width: 50, sortable: 'true', halign: 'center', align: 'center'},
-			{field:'detail', title:'Detail', halign: 'center', align: 'left', width:50, formatter: formatterButtonDetail},
+			      {field:'detail', title:'Detail', halign: 'center', align: 'left', width:50, formatter: formatterButtonDetail},
             //{field: '_crc', title: 'CRC', width: 70, sortable: 'true', halign: 'center', align: 'center'},
             //{field: '_order', title: 'Order', width: 70, sortable: 'true', halign: 'center', align: 'center'},
           ]],
@@ -72,17 +72,17 @@
         let uiSelectAccount = $("#classid");
         let uiSelectRegional = $("#regional-id");
         let uiSelectArea = $("#area-id");
-        let uiSelectCity = $("#subarea-id");
+        // let uiSelectCity = $("#subarea-id");
 
         uiSelectArea.select2({
           placeholder: "Select Area",
           allowClear: true,
         });
 
-        uiSelectCity.select2({
-          placeholder: "Select City",
-          allowClear: true,
-        });
+        // uiSelectCity.select2({
+        //   placeholder: "Select City",
+        //   allowClear: true,
+        // });
 
         uiSelectRegional.on('select2:select', function (e) {
           regional = e.params.data;
@@ -91,7 +91,7 @@
 
         uiSelectArea.on('select2:select', function (e) {
           area = e.params.data;
-          loadCity(area);
+          // loadCity(area);
         });
 
         let uiBtnSearch = $("#btn-search");
@@ -107,7 +107,7 @@
               classid: uiSelectAccount.val(),
               regionalid: uiSelectRegional.val(),
               areaid: uiSelectArea.val(),
-              subareaid: uiSelectCity.val(),
+              // subareaid: uiSelectCity.val(),
               usersession: paramsession.username,
               restrict_level: paramsession.restrict_level
             });
@@ -123,10 +123,10 @@
             
             let usersession = paramsession.username;
             let restrict_level = paramsession.restrict_level;
-			let classid = uiSelectAccount.val();
+			      let classid = uiSelectAccount.val();
             let regionalid = uiSelectRegional.val();
             let areaid = uiSelectArea.val();
-            let subareaid = uiSelectCity.val();
+            // let subareaid = uiSelectCity.val();
 			
             common.direct("rep_available_mcs/savexls_available_mcs_all/"+usersession+"/"+restrict_level+"/"+classid+"/"+regionalid+"/"+areaid+"/"+subareaid);
           }
@@ -139,7 +139,7 @@
         return '<div class="action-grid-toolbar"> &nbsp;&nbsp;&nbsp; Account : &nbsp;&nbsp;&nbsp;<select id="classid" name="classid" placeholder="Account"></select>' +
                '&nbsp;&nbsp;&nbsp; Regional : &nbsp;&nbsp;&nbsp;<select id="regional-id" name="regional" placeholder="Regional"></select>' +
                '&nbsp;&nbsp; Area : &nbsp;&nbsp;&nbsp;<select id="area-id" name="area" placeholder="Area"></select>' +
-               '&nbsp;&nbsp; City : &nbsp;&nbsp;&nbsp;<select id="subarea-id" name="subarea" placeholder="City"></select>' +
+              //  '&nbsp;&nbsp; City : &nbsp;&nbsp;&nbsp;<select id="subarea-id" name="subarea" placeholder="City"></select>' +
                 btnSearch + btnDownload + '</div>';
     }
     

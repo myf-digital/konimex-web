@@ -43,7 +43,7 @@
 				{field:'siteid', title:'SITEID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'kendaraanid', title:'KENDARAANID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'keterangan', title:'KETERANGAN', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nama_salesman', title:'SALESMAN', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'nama_salesman', title:'MEDREP', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'no_polisi', title:'NO POLISI', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'nama_pemilik', title:'NAMA PEMILIK', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'alamat', title:'ALAMAT', halign: 'center', align: 'left', sortable:"true", width:200},

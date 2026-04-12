@@ -148,10 +148,9 @@ class Customer_model extends CI_Model
         }*/
 
         $field = "a.* ";
-        $table_old = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
-                            ifnull((select GROUP_CONCAT(salesmanid SEPARATOR ',') from m_customer_ob where customerid=a.customerid),'') AS usergff,
-                            ifnull((select GROUP_CONCAT(nama_salesman SEPARATOR ',') from m_sales_salesman 
-                            where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid)),'') as nama_gff,
+        $table = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
+                            ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
+                                    where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='MEDREP'),'') as usergff,
                             ifnull(f.tipe_sales,'') position
                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                             left join m_area_areasite c on a.areaid = c.areaid
@@ -160,7 +159,7 @@ class Customer_model extends CI_Model
                             left join m_sales_salesman f on a.salesmanid = f.salesmanid
                             where a.customerid <> '' ".$strquery."
                     ) a";
-        $table = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account
+        $table_new = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account
                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                             left join m_area_areasite c on a.areaid = c.areaid
                             left join m_area_subarea d on a.subareaid = d.subareaid
@@ -253,7 +252,8 @@ class Customer_model extends CI_Model
                 }
             }*/
 
-        $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position
+        $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position,
+                            case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo
                                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                                     left join m_area_areasite c on a.areaid = c.areaid
                                     left join m_area_subarea d on a.subareaid = d.subareaid
@@ -270,7 +270,7 @@ class Customer_model extends CI_Model
 		$html .= '<table id="activity_table" border="1" class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead>';
 		$html .= '<tr>';
-		$html .='<th>OUTLETID_DRC</th>';
+		$html .='<th>OUTLET ID</th>';
 		$html .='<th>KODE OUTLET</th>';
 		$html .='<th>Nama Outlet</th>';
 		$html .='<th>Alamat</th>';
@@ -282,8 +282,8 @@ class Customer_model extends CI_Model
 		$html .='<th>SubChannel/Account</th>';
 		$html .='<th>Type</th>';
 		$html .='<th>DC</th>';
-		$html .='<th>GFF</th>';
-		$html .='<th>GFF Name</th>';
+		$html .='<th>MEDREP</th>';
+		$html .='<th>MEDREP Name</th>';
 		$html .='<th>Position</th>';
 		$html .= '</tr></thead>';
         $html .= '<tbody>';

@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Switch Pjp");
+    common.setTitle("Switch FJP");
     // declare dom
     let uiForm = $("#fm-add-switch-pjp");
     let uiBtnCancel = $("#btn-cancel-form");
@@ -46,7 +46,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession,restrict_level: data.restrict_level}, function (res) {
             uiSelectSalesmanFrom.empty();
             uiSelectSalesmanFrom.select2({
-                placeholder: "Select Salesman",
+                placeholder: "Select Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text
@@ -65,7 +65,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession,restrict_level: data.restrict_level}, function (res) {
             uiSelectSalesmanTo.empty();
             uiSelectSalesmanTo.select2({
-                placeholder: "Select Salesman",
+                placeholder: "Select Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

@@ -802,7 +802,7 @@ class App_dashboard extends BaseController
 										\'<div class="well bg-info" style="min-width:355px; border:none !important;">\'+
 											\'<table cellspacing="1" cellpadding="1">\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Nama Salesman</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">Nama Medrep</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
 												\'</tr>\'+
@@ -1017,7 +1017,7 @@ class App_dashboard extends BaseController
 										\'<div class="well bg-info" style="min-width:355px; border: none !important;">\'+
 											\'<table cellspacing="1" cellpadding="1" >\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Nama Salesman</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">Nama Medrep</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
 												\'</tr>\'+

@@ -5,7 +5,7 @@
     // declare dom
     let uiForm = $("#fm-customer");
     let uiBtnCancel = $("#btn-cancel-form");
-    let uiSelectPropinsi = $("#propinsiid-id");
+    let uiSelectPropinsi = $("#propinsiid-id"); 
     let uiSelectKota = $("#kotaid-id");
     let uiSelectKecamatan = $("#kecamatanid-id");
     let uiSelectKelurahan = $("#kelurahanid-id");
@@ -58,25 +58,19 @@
                 nama_customer: {
                     required: true
                 },
-                salesmanid: {
+                /*salesmanid: {
                     required: true
-                },
+                },*/
                 regionalid: {
                     required: true
                 },
                 areaid: {
                     required: true
                 },
-                subareaid: {
-                    required: true
-                },
-                classid: {
-                    required: true
-                },
                 typeid: {
                     required: true
                 },
-                segmentid: {
+                classid: {
                     required: true
                 }
             }
@@ -125,9 +119,9 @@
             areaSelected = e.params.data;
             //siteSelected = uiSelectSiteid.val();
             regionalSelected = uiSelectRegional.val();
-            let sraval = areaSelected;
-            sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
-            loadSubArea(sraval);
+            // let sraval = areaSelected;
+            // sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
+            // loadSubArea(sraval);
         });
 
         uiSelectPropinsi.select2({
@@ -166,7 +160,7 @@
         });
 
         uiSelectSalesman.select2({
-            placeholder: 'Select GFF',
+            placeholder: 'Select MEDREP',
             allowClear: true
         });
 
@@ -184,7 +178,7 @@
             }
 
             uiSelectSalesman.select2({
-                placeholder: 'Select GFF',
+                placeholder: 'Select MEDREP',
                 minimumSelectionLength: vmin,
                 maximumSelectionLength: vmax,
                 allowClear: true,
@@ -207,7 +201,7 @@
             loadRegional({usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level: paramsession.restrict_level});
             loadSalesman({usersession: paramsession.username, idjabatan: paramsession.idjabatan,restrict_level: paramsession.restrict_level});
             loadArea({regionalid:param.regionalid, usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level:paramsession.restrict_level});
-            loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
+            // loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
 
         }
 
@@ -258,7 +252,7 @@
         });
 
         uiSelectType.select2({
-            placeholder: 'Select Channel',
+            placeholder: 'Select Cluster',
             allowClear: true,
             data: $.map(rows3, function (o) {
                 o.id = o.typeid; // replace name with the property used for the text
@@ -268,7 +262,7 @@
         });
 
         uiSelectClass.select2({
-            placeholder: 'Select Sub Channel',
+            placeholder: 'Select Tier',
             allowClear: true,
             data: $.map(rows4, function (o) {
                 o.id = o.classid; // replace name with the property used for the text
@@ -477,7 +471,7 @@
             }
 
             uiSelectSalesman.select2({
-                placeholder: "Select GFF",
+                placeholder: "Select MEDREP",
                 allowClear: true,
                 minimumSelectionLength: vmin,
                 maximumSelectionLength: vmax,

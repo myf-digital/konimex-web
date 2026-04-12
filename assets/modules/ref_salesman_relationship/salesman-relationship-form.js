@@ -66,7 +66,7 @@
         });
 
         uiSalesmanId.select2({
-            placeholder: 'Pilih Salesman',
+            placeholder: 'Pilih Medrep',
             allowClear: true
         });
 
@@ -118,7 +118,7 @@
         }, function (res) {
             uiSalesmanId.empty();
             uiSalesmanId.select2({
-                placeholder: "Pilih Salesman",
+                placeholder: "Pilih Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid;

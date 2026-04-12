@@ -34,17 +34,26 @@ class Rep_order_model extends CI_Model
         $subarea = $data['subareaid'] != '' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
 
         $field = " a.* ";
-        $table = " (select distinct z.siteid, z.periode, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area city,
-                    (select count(1) from t_sales_rrk where periode=z.periode and salesmanid=z.salesmanid) _jadwal, 
-                    (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
-                    (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
-                    (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
-                    (select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and order_time is not null) _order
-                    from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
-                    left join m_sales_salesman b on z.salesmanid=b.salesmanid
-                    left join m_area_subarea c on c.subareaid=b.subareaid
-                    where z.periode = '".(@$data["get_date1"] ?? date('Y-m-d'))."' and '".(@$data["get_date2"] ?? date('Y-m-d'))."' ".$regional.$area.$subarea.$strquery."
-                    group by z.siteid, z.salesmanid, b.nama_salesman) a";
+        $table = " (
+                select
+                    z.salesmanid,
+                    b.nama_salesman,
+                    b.tipe_sales,
+                    c.nama_area city,
+                    sum(z.pjp) as _jadwal,
+                    sum(z.call) as _call,
+                    sum(z.extra_call) as _extra_call,
+                    sum(z.crc) as _crc,
+                    (select sum(tsm.netto) from t_sales_master tsm 
+                    where tsm.tanggal between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' 
+                    and tsm.salesmanid=z.salesmanid) _order
+                from t_sales_absensi z
+                left join m_sales_salesman b on z.salesmanid=b.salesmanid
+                left join m_area_subarea c on c.subareaid=b.subareaid
+                where z.periode between '".(@$data["get_date1"] ??today())."' and '".(@$data["get_date2"] ??today())."' ".$regional.$area.$subarea.$strquery."
+                group by z.salesmanid, b.nama_salesman
+                ) a
+            ";
 
         return easy_pagging($data, $field, $table);
     }
@@ -93,35 +102,36 @@ class Rep_order_model extends CI_Model
                     \'<tbody>\'+';
         $q_detail = $this->db->query("
             select 
-            sls.siteid, 
-            sls.salesmanid,
-            salesamn.nama_salesman,
-            sls.customerid,
-            cst.nama_customer,
-            cst.alamat,
-            dtl.productid,
-            product.nama_invoice,
-            sum(case when dtl.flag_bonus = 0 then 'JUAL' else 'BONUS' end) as statu_order,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
-            dtl.h_jual,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
-            dtl.disc_cabang,
-            dtl.disc_prinsipal,
-            dtl.disc_xtra,
-            dtl.disc_cod,
-            SUM(dtl.rp_cabang) AS rp_cabang,
-            SUM(dtl.rp_prinsipal) AS rp_prinsipal,
-            SUM(dtl.rp_xtra) AS rp_xtra,
-            sum(dtl.rp_cod) as rp_cod,
-            sum(case when dtl.flag_bonus = 0 then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
-            sum(case when dtl.flag_bonus = 0 then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
-            from 
-            t_sales_master sls left join
-            t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
-            m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid left JOIN
-            m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
-            m_product product on dtl.productid = product.productid 
+                sls.siteid, 
+                sls.salesmanid,
+                salesamn.nama_salesman,
+                sls.customerid,
+                cst.nama_customer,
+                cst.alamat,
+                dtl.productid,
+                product.nama_invoice,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then 'JUAL' else 'BONUS' end) as statu_order,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
+                dtl.h_jual,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
+                dtl.disc_cabang,
+                dtl.disc_prinsipal,
+                dtl.disc_xtra,
+                dtl.disc_cod,
+                SUM(dtl.rp_cabang) AS rp_cabang,
+                SUM(dtl.rp_prinsipal) AS rp_prinsipal,
+                SUM(dtl.rp_xtra) AS rp_xtra,
+                sum(dtl.rp_cod) as rp_cod,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto,
+                sls.no_po,
+                concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
+            from t_sales_master sls
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
+            left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
+            left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
+            left join m_product product on dtl.productid = product.productid 
             where sls.siteid = '".$siteid."' AND 
                 sls.salesmanid = '".$salesmanid."' AND
                 sls.retur = 0 AND
@@ -178,37 +188,39 @@ class Rep_order_model extends CI_Model
         
         $q_detail = $this->db->query("
             select 
-            sls.salesmanid,
-            salesamn.nama_salesman,
-            salesamn.tipe_sales,
-            sls.customerid,
-            cst.nama_customer,
-            cst.alamat,
-            sls.no_sales,
-            sls.tanggal,
-            dtl.productid,
-            product.nama_invoice,
-            sum(case when dtl.flag_bonus = 0 then 'JUAL' else 'BONUS' end) as statu_order,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
-            dtl.h_jual,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
-            dtl.disc_cabang,
-            dtl.disc_prinsipal,
-            dtl.disc_xtra,
-            dtl.disc_cod,
-            SUM(dtl.rp_cabang) AS rp_cabang,
-            SUM(dtl.rp_prinsipal) AS rp_prinsipal,
-            SUM(dtl.rp_xtra) AS rp_xtra,
-            sum(dtl.rp_cod) as rp_cod,
-            sum(case when dtl.flag_bonus = 0 then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
-            sum(case when dtl.flag_bonus = 0 then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
-            from 
-            t_sales_master sls left join
-            t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
-            m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid left JOIN
-            m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
-            m_product product on dtl.productid = product.productid 
+                sls.salesmanid,
+                salesamn.nama_salesman,
+                salesamn.tipe_sales,
+                sls.customerid,
+                cst.nama_customer,
+                cst.alamat,
+                sls.no_sales,
+                sls.tanggal,
+                dtl.productid,
+                product.nama_invoice,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then 'JUAL' else 'BONUS' end) as statu_order,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
+                dtl.h_jual,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
+                dtl.disc_cabang,
+                dtl.disc_prinsipal,
+                dtl.disc_xtra,
+                dtl.disc_cod,
+                SUM(dtl.rp_cabang) AS rp_cabang,
+                SUM(dtl.rp_prinsipal) AS rp_prinsipal,
+                SUM(dtl.rp_xtra) AS rp_xtra,
+                sum(dtl.rp_cod) as rp_cod,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto,
+                sls.no_po,
+                sls.status_po,
+                concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
+            from t_sales_master sls
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
+            left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
+            left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
+            left join m_product product on dtl.productid = product.productid 
             where sls.salesmanid = '".$salesmanid."' AND
                 sls.retur = 0 AND
                 date(sls.tanggal) between '".$get_date1."' and '".$get_date2."'
@@ -226,7 +238,7 @@ class Rep_order_model extends CI_Model
                 dtl.disc_cod		
         ");
 
-        return $q_detail->result_array();
+        return $q_detail->result();
     }
 
     function get_order_all_xls($data) {
@@ -237,57 +249,58 @@ class Rep_order_model extends CI_Model
         
         $q_detail = $this->db->query("
             select 
-            sls.salesmanid,
-            salesamn.nama_salesman,
-            salesamn.tipe_sales,
-            sls.customerid,
-            cst.nama_customer,
-            cst.alamat,
-            cst.telp, 
-            areasite.nama_area as area,
-            sls.no_sales,
-            sls.tanggal,
-            dtl.productid,
-            product.nama_invoice,
-            sum(case when dtl.flag_bonus = 0 then 'JUAL' else 'BONUS' end) as statu_order,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
-            dtl.h_jual,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
-            dtl.disc_cabang,
-            dtl.disc_prinsipal,
-            dtl.disc_xtra,
-            dtl.disc_cod,
-            SUM(dtl.rp_cabang) AS rp_cabang,
-            SUM(dtl.rp_prinsipal) AS rp_prinsipal,
-            SUM(dtl.rp_xtra) AS rp_xtra,
-            sum(dtl.rp_cod) as rp_cod,
-            sum(case when dtl.flag_bonus = 0 then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
-            sum(case when dtl.flag_bonus = 0 then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
-            from 
-            t_sales_master sls left join
-            t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
-            m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid left JOIN
-            m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
-            m_product product on dtl.productid = product.productid left join 
-            m_area_areasite areasite on areasite.areaid = cst.areaid 
-            where sls.salesmanid = '".$salesmanid."' AND
-            sls.retur = 0 AND
-            date(sls.tanggal) between '".$startdate1."' and '".$startdate2."'
+                sls.salesmanid,
+                salesamn.nama_salesman,
+                salesamn.tipe_sales,
+                sls.customerid,
+                cst.nama_customer,
+                cst.alamat,
+                cst.telp, 
+                areasite.nama_area as area,
+                sls.no_sales,
+                sls.tanggal,
+                dtl.productid,
+                product.nama_invoice,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then 'JUAL' else 'BONUS' end) as statu_order,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
+                dtl.h_jual,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
+                dtl.disc_cabang,
+                dtl.disc_prinsipal,
+                dtl.disc_xtra,
+                dtl.disc_cod,
+                SUM(dtl.rp_cabang) AS rp_cabang,
+                SUM(dtl.rp_prinsipal) AS rp_prinsipal,
+                SUM(dtl.rp_xtra) AS rp_xtra,
+                sum(dtl.rp_cod) as rp_cod,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto,
+                sls.no_po,
+                sls.status_po,
+                concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
+            from t_sales_master sls
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
+            left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
+            left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
+            left join m_product product on dtl.productid = product.productid
+            left join m_area_areasite areasite on areasite.areaid = cst.areaid 
+            where sls.salesmanid = '".$salesmanid."' AND sls.retur = 0
+                AND date(sls.tanggal) between '".$startdate1."' and '".$startdate2."'
             group by 
-            sls.salesmanid,
-            salesamn.nama_salesman,
-            sls.customerid,
-            cst.nama_customer,
-            cst.alamat,
-            dtl.productid,
-            product.nama_invoice,dtl.h_jual,
-            dtl.disc_cabang,
-            dtl.disc_prinsipal,
-            dtl.disc_xtra,
-            dtl.disc_cod		
+                sls.salesmanid,
+                salesamn.nama_salesman,
+                sls.customerid,
+                cst.nama_customer,
+                cst.alamat,
+                dtl.productid,
+                product.nama_invoice,dtl.h_jual,
+                dtl.disc_cabang,
+                dtl.disc_prinsipal,
+                dtl.disc_xtra,
+                dtl.disc_cod		
             ");
-        return $q_detail->result_array();	
+        return $q_detail->result();	
     }
 
     function get_order_all_salesman_xls($data) {
@@ -323,69 +336,77 @@ class Rep_order_model extends CI_Model
         
         $q_detail = $this->db->query("
             select 
-            sls.salesmanid,
-            salesamn.nama_salesman,
-            salesamn.tipe_sales,
-            sls.customerid,
-            cst.nama_customer,
-            cst.alamat,
-            cst.telp, 
-            areasite.nama_area as area,
-            sls.no_sales,
-            sls.tanggal,
-            dtl.productid,
-            product.nama_invoice,
-            sum(case when dtl.flag_bonus = 0 then 'JUAL' else 'BONUS' end) as statu_order,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
-            dtl.h_jual,
-            sum(case when dtl.flag_bonus = 0 then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
-            dtl.disc_cabang,
-            dtl.disc_prinsipal,
-            dtl.disc_xtra,
-            dtl.disc_cod,
-            SUM(dtl.rp_cabang) AS rp_cabang,
-            SUM(dtl.rp_prinsipal) AS rp_prinsipal,
-            SUM(dtl.rp_xtra) AS rp_xtra,
-            sum(dtl.rp_cod) as rp_cod,
-            sum(case when dtl.flag_bonus = 0 then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
-            sum(case when dtl.flag_bonus = 0 then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
-            from 
-            t_sales_master sls left join
-            t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
-            m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid left JOIN
-            m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
-            m_product product on dtl.productid = product.productid left join 
-            m_area_areasite areasite on areasite.areaid = cst.areaid 
-            where sls.retur = 0 AND
-            date(sls.tanggal) between '".$startdate1."' and '".$startdate2."' ".$regional.$area.$subarea.$strquery."
+                sls.salesmanid,
+                salesamn.nama_salesman,
+                salesamn.tipe_sales,
+                sls.customerid,
+                cst.nama_customer,
+                cst.alamat,
+                cst.telp, 
+                areasite.nama_area as area,
+                sls.no_sales,
+                sls.tanggal,
+                dtl.productid,
+                product.nama_invoice,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then 'JUAL' else 'BONUS' end) as statu_order,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil else dtl.qty_bonus end) as qty_jual_in_pcs,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil/product.isi_besar else dtl.qty_bonus/product.isi_besar end) as qty_jual_in_carton,
+                dtl.h_jual,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.qty_kecil*dtl.h_jual else 0 end) as total_bruto,
+                dtl.disc_cabang,
+                dtl.disc_prinsipal,
+                dtl.disc_xtra,
+                dtl.disc_cod,
+                SUM(dtl.rp_cabang) AS rp_cabang,
+                SUM(dtl.rp_prinsipal) AS rp_prinsipal,
+                SUM(dtl.rp_xtra) AS rp_xtra,
+                sum(dtl.rp_cod) as rp_cod,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod else 0 end) as total_discount,
+                sum(case when dtl.flag_bonus = 0 or dtl.flag_bonus is null then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto,
+                sls.no_po,
+                sls.status_po,
+                concat('".URL_IMAGE."', sls.url_img_po) as url_img_po
+            from t_sales_master sls
+            left join t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po
+            left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid and sls.salesmanid = cst.salesmanid
+            left join m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid
+            left join m_product product on dtl.productid = product.productid
+            left join m_area_areasite areasite on areasite.areaid = cst.areaid 
+            where sls.retur = 0 AND date(sls.tanggal) between '".$startdate1."' and '".$startdate2."' ".$regional.$area.$subarea.$strquery."
             group by 
-            sls.salesmanid,
-            salesamn.nama_salesman,
-            sls.customerid,
-            cst.nama_customer,
-            cst.alamat,
-            dtl.productid,
-            product.nama_invoice,dtl.h_jual,
-            dtl.disc_cabang,
-            dtl.disc_prinsipal,
-            dtl.disc_xtra,
-            dtl.disc_cod        
+                sls.salesmanid,
+                salesamn.nama_salesman,
+                sls.customerid,
+                cst.nama_customer,
+                cst.alamat,
+                dtl.productid,
+                product.nama_invoice,dtl.h_jual,
+                dtl.disc_cabang,
+                dtl.disc_prinsipal,
+                dtl.disc_xtra,
+                dtl.disc_cod        
             ");
-        return $q_detail->result_array();   
+        return $q_detail->result();   
     }		
 
     function get_tagihan_all($salesmanid,$get_date1,$get_date2) {
 
         $sqltagihan = "
-                      select a.salesmanid, a.customerid, b.nama_customer,a.no_sales, a.no_ink, c.nama_salesman, c.tipe_sales, 
-                                case when a.retur=1 then concat('-',a.bayar_tunai) else bayar_tunai end bayar_tunai, 
-                                case when a.retur=1 then concat('-',a.bayar) else bayar end bayar
-                        from t_ar_ink_detail a left join m_customer b on a.customerid=b.customerid 
-                        left join m_sales_salesman c on a.salesmanid=c.salesmanid
-                        where a.salesmanid = '".$salesmanid."'
-                            and a.tgl_ink between '".$get_date1."' and '".$get_date2."'
-                      ";
+                select
+                    a.salesmanid,
+                    a.customerid,
+                    b.nama_customer,
+                    a.no_sales,
+                    a.no_ink,
+                    c.nama_salesman,
+                    c.tipe_sales,
+                    case when a.retur=1 then concat('-',a.bayar_tunai) else bayar_tunai end bayar_tunai, 
+                    case when a.retur=1 then concat('-',a.bayar) else bayar end bayar
+                from t_ar_ink_detail a
+                left join m_customer b on a.customerid=b.customerid 
+                left join m_sales_salesman c on a.salesmanid=c.salesmanid
+                where a.salesmanid = '".$salesmanid."' and a.tgl_ink between '".$get_date1."' and '".$get_date2."'
+            ";
         
         $data = $this->db->query($sqltagihan)->result_array();
 
@@ -396,7 +417,7 @@ class Rep_order_model extends CI_Model
                     <th style="width: 250px">Customer ID </th>
                     <th style="width: 200px">Customer Name </th>
                     <th style="width: 600px;">No Bill</th>
-                    <th style="width: 600px;">No Sales</th>
+                    <th style="width: 600px;">No Faktur / Bill Doc</th>
                     <th style="width: 200px;">Salesman Name</th>
                     <th style="width: 150px;">Sales Type</th>
                     <th style="width: 200px; text-align: right;" >Bill Value</th>
@@ -472,17 +493,40 @@ class Rep_order_model extends CI_Model
         $startdate2 = $data['startdate2'];
         
         $sqltagihan = "
-                      select a.salesmanid, a.customerid, b.nama_customer,a.no_sales, a.no_ink, c.nama_salesman, c.tipe_sales, 
-                                case when a.retur=1 then concat('-',a.bayar_tunai) else bayar_tunai end bayar_tunai, 
-                                case when a.retur=1 then concat('-',a.bayar) else bayar end bayar
-                        from t_ar_ink_detail a left join m_customer b on a.customerid=b.customerid 
-                        left join m_sales_salesman c on a.salesmanid=c.salesmanid
-                        where a.salesmanid = '".$salesmanid."'
-                            and a.tgl_ink between '".$startdate1."' and '".$startdate2."'
-                      ";
+                select
+                    a.salesmanid,
+                    a.customerid,
+                    b.nama_customer,a.no_sales,
+                    a.no_ink,
+                    c.nama_salesman,
+                    c.tipe_sales, 
+                    case when a.retur=1 then concat('-',a.bayar_tunai) else bayar_tunai end bayar_tunai, 
+                    case when a.retur=1 then concat('-',a.bayar) else bayar end bayar
+                from t_ar_ink_detail a
+                left join m_customer b on a.customerid=b.customerid 
+                left join m_sales_salesman c on a.salesmanid=c.salesmanid
+                where a.salesmanid = '".$salesmanid."' and a.tgl_ink between '".$startdate1."' and '".$startdate2."'
+            ";
         
         return $this->db->query($sqltagihan)->result_array();	
     }		
 
-    
+	function get_fancy_order() {
+		$tanggal = $_POST['tanggal'];
+		$no_po = $_POST['no_po'];
+		$salesmanid = $_POST['salesmanid'];
+	
+		$sql = "
+            select
+                concat('".URL_IMAGE."', tsm.url_img_po) as url_img_po,
+                tsm.no_po,
+                mc.nama_customer
+            from t_sales_master tsm
+            left join m_customer mc on mc.customerid = tsm.customerid
+            where tsm.tanggal = ? and tsm.no_po = ? and tsm.salesmanid = ?
+        ";
+		$result_array = $this->db->query($sql, [$tanggal, $no_po, $salesmanid]);
+		$response = $result_array->result();
+		return $response;	
+	}
 }

@@ -29,8 +29,8 @@
 								<input name="salesmanid" class="form-control" placeholder="Salesmanid">
 							</div>
 							<div class="form-group">
-								<label for="nama_salesman">Nama Salesman</label>
-								<input name="nama_salesman" class="form-control" placeholder="Nama Salesman">
+								<label for="nama_salesman">Nama Medrep</label>
+								<input name="nama_salesman" class="form-control" placeholder="Nama Medrep">
 							</div>
 							<div class="form-group">
 								<label for="position">Position</label>

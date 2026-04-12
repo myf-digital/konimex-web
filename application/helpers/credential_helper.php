@@ -196,7 +196,7 @@ function find_menu($role_id)
 {
     $ci =& get_instance();
     $values = array($role_id);
-    $sql = "SELECT a.*, b.* FROM app_role_menu a LEFT JOIN app_menu b ON a.menu_id = b.menu_id WHERE a.role_id = ? ORDER BY b.seq_number";
+    $sql = "SELECT a.*, b.* FROM app_role_menu a JOIN app_menu b ON a.menu_id = b.menu_id WHERE a.role_id = ? AND b.status IS NULL ORDER BY b.seq_number";
     return $ci->db->query($sql, $values)->result_array();
 }
 
@@ -213,7 +213,6 @@ function selected_menu($parent, $selected)
         }
         $counter++;
     }
-//     var_dump($parent);
     return $parent;
 }
 

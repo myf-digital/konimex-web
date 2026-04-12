@@ -289,7 +289,7 @@ if (!function_exists('sending_email')) {
 
         $message = $CI->load->view($template, $data, TRUE);
 
-        $CI->email->from('noreply@alphaciptatech.com', 'PAR-MA');
+        $CI->email->from('noreply@alphaciptatech.com', 'MEDREP');
         $CI->email->to($to);
         $CI->email->subject($subject);
         $CI->email->message($message);
@@ -336,8 +336,8 @@ if (!function_exists('render_tables_html')) {
                 <table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>
                     <thead>
                         <tr style='background:#eee'>
-                            <th>PAR-MA</th>
-                            <th>Nama PAR-MA</th>
+                            <th>MEDREP</th>
+                            <th>Nama MEDREP</th>
                             <th>Area</th>
                             <th>Apotik</th>
                             <th>Clinic</th>
@@ -366,8 +366,8 @@ if (!function_exists('render_tables_html')) {
                 <table border='1' cellspacing='0' cellpadding='5' width='100%' style='border-collapse: collapse;'>
                 <thead>
                     <tr style='background:#eee'>
-                        <th>PAR-MA</th>
-                        <th>Nama PAR-MA</th>
+                        <th>MEDREP</th>
+                        <th>Nama MEDREP</th>
                         <th>Area</th>
                         <th>Target</th>
                         <th>Call</th>
@@ -399,8 +399,8 @@ if (!function_exists('render_tables_html')) {
                     <thead>
                         <tr style='background:#eee'>
                             <th>Tanggal</th>
-                            <th>PAR-MA</th>
-                            <th>Nama PAR-MA</th>
+                            <th>MEDREP</th>
+                            <th>Nama MEDREP</th>
                             <th>Area</th>
                             <th>Target</th>
                             <th>Call</th>
@@ -511,7 +511,7 @@ if (!function_exists('render_order_pending_html')) {
                                         <td>{$header['nama_customer']}</td>
                                     </tr>
                                     <tr>
-                                        <td>Parma</td>
+                                        <td>Medrep</td>
                                         <td>:</td>
                                         <td>{$header['salesman']}</td>
                                     </tr>

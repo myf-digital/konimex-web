@@ -15,60 +15,52 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
     }
 
 	function get_salesman($data)
     {
+		if ($data["restrict_level"]=='4'){ 
+			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+							app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+							where a.username='".$data["usersession"]."')
+						)";
+		} else if ($data["restrict_level"]=='3') {
+			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+							app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+							where a.username='".$data["usersession"]."')
+						)";
+		} else if ($data["restrict_level"]=='2') {
+			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+							app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+							where a.username='".$data["usersession"]."')
+						) ";
+		} else {
+			$strquery = "";
+		}
 
-			if ($data["restrict_level"]=='4'){
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-													app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-													where a.username='".$data["usersession"]."')
-													)";
-			}
-			else if ($data["restrict_level"]=='3'){
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."')
-													)";
-			}
-			else if ($data["restrict_level"]=='2'){
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-													app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-													where a.username='".$data["usersession"]."')
-													) ";
-			}
-			else {
-				$strquery = "";
-			}
-
-
-			/*if ($data["idjabatan"]=='2' or $data["idjabatan"]=='3')
-				$strquery = " where a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b 
-								on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm where a.ram_rsm = '".$data["usersession"]."') ";
-			else if($data["idjabatan"]=='16'  or $data["idjabatan"]=='17'){
-				$strquery = " where a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$data["usersession"]."') ";
-			}else{
-				$strquery = "";
-			}*/
-
-            $sql = "select a.*
-						from m_sales_salesman a
-						where a.tipe_sales<>'ADMIN' and a.aktif=1
-					".$strquery."
-						order by a.nama_salesman asc
-						";
-            $res_ss = $this->db->query($sql);
-            if (count($res_ss->result_array()) > 0) {
-                $response = new stdClass();
-                $response = $res_ss->result_array();
-                //parsing to result
-                return result($response);
-            } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
-            }
+		$sql = "select
+					a.*,
+					regional.nama_regional,
+					area.nama_area,
+					area.latitude,
+					area.longitude
+				from m_sales_salesman a
+				left join m_area_regional regional on regional.regionalid = a.regionalid
+				left join m_area_areasite area on area.areaid = a.areaid
+				where a.tipe_sales <> 'ADMIN' and a.aktif = 1
+				".$strquery."
+				order by a.nama_salesman asc
+			";
+		$res_ss = $this->db->query($sql);
+		if (count($res_ss->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res_ss->result_array();
+			return result($response);
+		} else {
+			return result(new stdClass(), 200, "Siteid Invalid!");
+		}
     }
 
 	function get_all_gff_admin($data)
@@ -119,7 +111,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
     }
 
@@ -145,7 +137,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
         }
     }
@@ -163,7 +155,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
     }
 	
@@ -203,7 +195,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
     }
 
@@ -224,7 +216,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
         }
     }
@@ -313,7 +305,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Data Invalid!");
+                return result(new stdClass(), 200, "Data Invalid!");
             }
         }
     }
@@ -341,7 +333,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
         }
 	}
@@ -365,7 +357,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
         }
     }
@@ -387,7 +379,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
         }
     }
@@ -432,7 +424,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Data Invalid!");
+                return result(new stdClass(), 200, "Data Invalid!");
             }
         }
     }
@@ -450,7 +442,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
     }
 
@@ -471,7 +463,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+                return result(new stdClass(), 200, "Siteid Invalid!");
             }
         }
     }
@@ -493,7 +485,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "Siteid or PropinsiId Invalid!");
+                return result(new stdClass(), 200, "Siteid or PropinsiId Invalid!");
             }
         }
     }
@@ -519,7 +511,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "PropinsiId or Kotaid Invalid!");
+                return result(new stdClass(), 200, "PropinsiId or Kotaid Invalid!");
             }
         }
     }
@@ -546,7 +538,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "PropinsiId or Kotaid or kecamatanid Invalid!");
+                return result(new stdClass(), 200, "PropinsiId or Kotaid or kecamatanid Invalid!");
             }
         }
 	}
@@ -564,7 +556,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -582,7 +574,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -599,21 +591,15 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
 	function get_tipesalesman()
     {
-		$sql = " select 'MERCHANDISER' as idtipesales, 'MERCHANDISER' as tipesales
+		$sql = " select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
 				union
-				select 'SPG' as idtipesales, 'SPG' as tipesales
-				union
-				select 'SALESMAN' as idtipesales, 'SALESMAN' as tipesales
-				union
-				select 'TL' as idtipesales, 'TL' as tipesales
-				union
-				select 'FC' as idtipesales, 'FC' as tipesales
+				select 'SPV' as idtipesales, 'SPV' as tipesales
 				union
 				select 'ADMIN' as idtipesales, 'ADMIN' as tipesales
 				";
@@ -624,7 +610,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -641,7 +627,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -662,7 +648,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -683,7 +669,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -710,7 +696,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -729,7 +715,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -743,7 +729,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -757,7 +743,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -771,13 +757,22 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
-	function get_product()
+	function get_product($data)
     {
-		$sql = " select * from m_product where status='A'";
+		$where = '';
+		if (isset($data['type']) && $data['type'] == 'mapping_objective') {
+			$where = ' and productid not in (
+				select productid
+				from mapping_objective
+				where date(start_periode) <= CURDATE() and date(end_periode) >= CURDATE()
+				group by productid
+			)';
+		}
+		$sql = " select * from m_product where status='A'" . $where;
 		$res_ss = $this->db->query($sql);
 		if (count($res_ss->result_array()) > 0) {
 		$response = new stdClass();
@@ -785,7 +780,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -799,7 +794,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -813,7 +808,7 @@ class Api_v1_model extends CI_Model
 		//parsing to result
 		return result($response);
 		} else {
-		return result(new stdClass(), 201, "data Invalid!");
+		return result(new stdClass(), 200, "data Invalid!");
 		}
 	}
 
@@ -884,29 +879,26 @@ class Api_v1_model extends CI_Model
 								";
 
 			$sqlcrc_suggest_order = "replace into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price,qty_saran_order)
-								select ?,a.salesmanid, a.customerid, c.productid, d.brandid, d.h_ritel, ifnull(e.price,0), c.qty_saran_order
-								from t_sales_rrk a join m_customer_ob b on a.customerid = b.customerid and a.salesmanid=b.salesmanid
-								join m_customer mc on b.customerid = mc.customerid
-								left join (
-										select z.customerid,z.salesmanid, x.productid, round(avg(x.qty_kecil),0) as qty_saran_order 
-										from t_sales_master z join t_sales_detail x
-										on z.no_sales =x.no_sales 
-										where z.salesmanid in (select salesmanid from m_sales_salesman where tipe_sales='SALESMAN') 
-										and z.tanggal >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
-										group by z.customerid,z.salesmanid, x.productid
-									) c on b.customerid = c.customerid
-								join m_product d on c.productid = d.productid
-								left join t_stock_all_outlet e on a.salesmanid=e.salesmanid and a.customerid = e.customerid 
-								and d.productid=e.productid and e.tahun=date_format(?,'%Y') and e.bulan=date_format(?,'%m')
-							where a.periode=?
-							;
+										select ?,b.salesmanid, b.customerid, c.productid, d.brandid, d.h_ritel, d.h_ritel, c.qty_saran_order
+										from m_customer_ob b join m_customer mc on b.customerid = mc.customerid
+										join (
+												select z.customerid,z.salesmanid, z.productid, round(avg(z.qty_akhir ),0) as qty_saran_order 
+												from t_sales_crc as z
+												where z.salesmanid in (select salesmanid from m_sales_salesman where aktif=1) 
+												and z.periode >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) and z.customerid <>''
+												group by z.customerid,z.salesmanid, z.productid
+											) c on b.customerid = c.customerid
+										join m_product d on c.productid = d.productid
+										join t_stock_all_outlet e on e.customerid = c.customerid and e.salesmanid=c.salesmanid 
+										and d.productid=e.productid and e.last_update >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+										where c.customerid <>'';
 							";
-							
+			$clearcrc="delete from t_sales_crc where date_update is null;";
 
-
+			$this->db->query($clearcrc);
 			$res_crc = $this->db->query($sqlcrc, array($vdate,$vdate,$vdate,$vdate));
 			$res_crc_sugest = $this->db->query($sqlcrc_suggest, array($vdate,$vdate,$vdate,$vdate));
-			$res_crc_sugest_order = $this->db->query($sqlcrc_suggest_order, array($vdate,$vdate,$vdate,$vdate));
+			$res_crc_sugest_order = $this->db->query($sqlcrc_suggest_order, array($vdate));
 			
 			if (!$res_crc){
 				$sqldeletecrc = "delete from t_sales_crc where periode=? and date_update is null;";
@@ -1011,7 +1003,7 @@ class Api_v1_model extends CI_Model
 			FROM m_customer a
 			LEFT JOIN m_customer_class b ON b.classid = a.classid
 			JOIN m_customer_ob c ON c.customerid = a.customerid
-			WHERE latitude <> 0 AND latitude <> 0
+			WHERE a.latitude <> 0 AND a.latitude <> 0
 				AND c.salesmanid = ?
 				AND a.customerid NOT IN (SELECT customerid FROM t_sales_setup_rrk WHERE salesmanid = ?)
 				".$where."
@@ -1062,7 +1054,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "data Invalid!");
+                return result(new stdClass(), 200, "data Invalid!");
             }
     }
 
@@ -1079,7 +1071,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "data Invalid!");
+                return result(new stdClass(), 200, "data Invalid!");
             }
     }
 
@@ -1096,45 +1088,51 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "data Invalid!");
+                return result(new stdClass(), 200, "data Invalid!");
             }
     }
 
 	function generate_absensi($vdate)
     {
-		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, `call`, 
-											   extra_call, crc, promo, competitor, `order`, sos, image,checkin_out_area)
+		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
+												effective_call, `call`, extra_call, invalid_call, crc, promo, competitor, `order`, sos, image)
 					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
 													   when a.type='ICT' then 'C' 
 													   when a.type='AHR' then 'H'
 													   else 'HF' end tipe, 
 							check_in checkin, check_out checkout, ifnull(b.flag_adjust,0) as flag_adjust,
 							concat(ifnull(a.description,''),ifnull(concat('-',a.description_in),''),ifnull(concat('-',a.description_out),'')) as keterangan, 
-							case when a.type='ICT' and b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
+							case when a.type='ICT' then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
 							when b.flag_adjust=1 then 0
 							else 0 
-							end _pjp, 
-							0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image, 0 _out_area
+							end _pjp, 0 _effective_call,
+							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
 					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
-					where a.date between DATE_ADD(?, INTERVAL -7 DAY) and DATE_ADD(?, INTERVAL -1 DAY)
+					where a.date between DATE_ADD(?, INTERVAL -7 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) else 0 end _call,
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-													and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) 
-						else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
-					end _extra_call,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then 
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+							else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
+						end _extra_call,
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid not in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+						as _invalid_call,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and order_time is not null) _order,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image,
-					(select count(1) from t_sales_rrk_trans z left join m_customer x on z.customerid=x.customerid where z.periode=a.periode and z.salesmanid=a.salesmanid and 
-						ROUND(CALCULATE_DISTANCE(x.latitude,x.longitude,z.latitude_cell,z.longitude_cell),2)>1) as _out_area
+					(select count(1) from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid) _order,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image
 					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
-					where a.periode between DATE_ADD(?, INTERVAL -7 DAY) and DATE_ADD(?, INTERVAL -1 DAY)
+					where a.periode between  DATE_ADD(?, INTERVAL -7 DAY) and ?
 					group by a.periode,a.salesmanid
 					;
 				";
@@ -1148,41 +1146,46 @@ class Api_v1_model extends CI_Model
 
 	function generate_absensi_monthly($vdate)
     {
-		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, `call`, 
-											   extra_call, crc, promo, competitor, `order`, sos, image,checkin_out_area)
+		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
+												effective_call, `call`, extra_call, invalid_call, crc, promo, competitor, `order`, sos, image)
 					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
 													   when a.type='ICT' then 'C' 
 													   when a.type='AHR' then 'H'
 													   else 'HF' end tipe, 
 							check_in checkin, check_out checkout, ifnull(b.flag_adjust,0) as flag_adjust,
 							concat(ifnull(a.description,''),ifnull(concat('-',a.description_in),''),ifnull(concat('-',a.description_out),'')) as keterangan, 
-							case when a.type='ICT' and b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
+							case when a.type='ICT' then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
 							when b.flag_adjust=1 then 0
 							else 0 
-							end _pjp, 
-							0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image, 0 _out_area
+							end _pjp, 0 _effective_call,
+							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
 					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
-					where a.date between DATE_ADD(?, INTERVAL -35 DAY) and DATE_ADD(?, INTERVAL -1 DAY)
+					where a.date between DATE_ADD(?, INTERVAL -35 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) else 0 end _call,
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-													and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) 
-						else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
-					end _extra_call,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then 
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+							else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
+						end _extra_call,
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid not in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+						as _invalid_call,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and order_time is not null) _order,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image,
-					(select count(1) from t_sales_rrk_trans z left join m_customer x on z.customerid=x.customerid where z.periode=a.periode and z.salesmanid=a.salesmanid and 
-						ROUND(CALCULATE_DISTANCE(x.latitude,x.longitude,z.latitude_cell,z.longitude_cell),2)>1) as _out_area
+					(select count(1) from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid) _order,
+					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image
 					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
-					where a.periode between DATE_ADD(?, INTERVAL -35 DAY) and DATE_ADD(?, INTERVAL -1 DAY)
-					group by a.periode,a.salesmanid
-					;
+					where a.periode between  DATE_ADD(?, INTERVAL -35 DAY) and ?
+					group by a.periode,a.salesmanid;
 				";
 			$res_ss = $this->db->query($sql, array($vdate,$vdate,$vdate,$vdate));
 			if (!$res_ss) {
@@ -1194,8 +1197,8 @@ class Api_v1_model extends CI_Model
 	
 	function generate_absensi_daily($vdate)
     {
-		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, `call`, 
-											   extra_call, crc, promo, competitor, `order`, sos, image)
+		$sql = " replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
+												effective_call, `call`, extra_call, invalid_call, crc, promo, competitor, `order`, sos, image)
 					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
 													   when a.type='ICT' then 'C' 
 													   when a.type='AHR' then 'H'
@@ -1205,23 +1208,31 @@ class Api_v1_model extends CI_Model
 							case when a.type='ICT' then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
 							when b.flag_adjust=1 then 0
 							else 0 
-							end _pjp, 
-							0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
+							end _pjp, 0 _effective_call,
+							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
 					from s_absensi a left join t_sales_absensi b on a.`date`=b.periode and a.salesman_id =b.salesmanid 
 					where a.date between DATE_ADD(?, INTERVAL -2 DAY) and ?
 					union
 					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp, 
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
-					case when b.flag_adjust=0 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-													and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) 
-						else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
-					end _extra_call,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
+						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
+						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))  else 0 end _call,
+						case when b.flag_adjust=0 or b.flag_adjust=1 then 
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+							else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
+						end _extra_call,
+							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
+							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
+							and customerid not in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
+						as _invalid_call,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and order_time is not null) _order,
+					(select count(1) from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid) _order,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image
 					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
 					where a.periode between  DATE_ADD(?, INTERVAL -2 DAY) and ?
@@ -1542,8 +1553,8 @@ class Api_v1_model extends CI_Model
             $sql = " select e.nama_regional, d.nama_area, c.nama_area city,
 							b.salesmanid,b.nama_salesman,b.tipe_sales, 
 							date_format('".$data["periode"]."','%d')-FLOOR(date_format('".$data["periode"]."','%d')/7)-(case when date_format('".$data["periode"]."','%d') > 15 
-							then (select jml_libur from setup_jumlah_harilibur where tahun=date_format('".$data["periode"]."','%Y') and bulan=date_format('".$data["periode"]."','%m')) else 0 end) as 'GFF Aktif', 
-							(select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as 'GFF Hadir',
+							then (select jml_libur from setup_jumlah_harilibur where tahun=date_format('".$data["periode"]."','%Y') and bulan=date_format('".$data["periode"]."','%m')) else 0 end) as 'MEDREP Aktif', 
+							(select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as 'MEDREP Hadir',
 							(select count(1) from t_sales_absensi where status='C' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as cuti,
 							(select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as sakit, 
 							round((count(1)/(date_format('".$data["periode"]."','%d')-FLOOR(date_format('".$data["periode"]."','%d')/7)-(case when date_format('".$data["periode"]."','%d') > 25 
@@ -1607,7 +1618,7 @@ class Api_v1_model extends CI_Model
                 //parsing to result
                 return result($response);
             } else {
-                return result(new stdClass(), 201, "data Invalid!");
+                return result(new stdClass(), 200, "data Invalid!");
             }
     }
 

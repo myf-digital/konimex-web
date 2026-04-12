@@ -8,13 +8,13 @@
   // ui components
   let uiChartProductivity = $('#chartProductivity');
   let uiChartPerformance = $('#chartPerformance');
-  let uiChartParmaCoverage = $('#chartParmaCoverage');
+  let uiChartMedrepCoverage = $('#chartMedrepCoverage');
   let uiChartPresensi = $('#chartPresensi');
   let labelProductivity = $('#labelProductivity');
   let labelPerformance = $('#labelPerformance');
-  let labelParmaCoverage = $('#labelParmaCoverage');
+  let labelMedrepCoverage = $('#labelMedrepCoverage');
   let labelPresensi = $('#labelPresensi');
-  let chartProductivity, chartChartPerformance, chartParmaCoverage, chartPresensi;
+  let chartProductivity, chartChartPerformance, chartMedrepCoverage, chartPresensi;
 
   let uiDateRange = $("#date_range");
   let uiSelectPeriode = $("#periode_id");
@@ -41,7 +41,7 @@
       success: function(data) {
         loadChartProductivity(data.productivity);
         loadChartPerformance(data.performance);
-        loadChartParmaCoverage(data.parma_coverage);
+        loadChartMedrepCoverage(data.parma_coverage);
         loadChartPresensi(data.presensi);
         common.loadingClose();
       },
@@ -298,8 +298,8 @@
     });
   }
 
-  function loadChartParmaCoverage(data) {
-    if (chartParmaCoverage) chartParmaCoverage.destroy();
+  function loadChartMedrepCoverage(data) {
+    if (chartMedrepCoverage) chartMedrepCoverage.destroy();
 
     const legendFooterPlugin = {
       id: "legendFooterPlugin",
@@ -329,7 +329,7 @@
 
     Chart.register(legendFooterPlugin);
 
-    chartParmaCoverage = new Chart(uiChartParmaCoverage, {
+    chartMedrepCoverage = new Chart(uiChartMedrepCoverage, {
       type: 'pie',
       data: {
         labels: data.labels,
@@ -374,13 +374,13 @@
                 let idx = ctx[0].dataIndex;
                 let total = data.counts[idx];
 
-                return [`Total : ${total} salesman`];
+                return [`Total : ${total} medrep`];
               }
             }
           },
           legendFooterPlugin: {
             showFooter: true,
-            footerText: `Total SALESMAN : ${data.total_parma}`
+            footerText: `Total MEDREP : ${data.total_parma}`
           },
         }
       },

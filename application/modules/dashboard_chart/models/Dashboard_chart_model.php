@@ -8,7 +8,7 @@ class Dashboard_chart_model extends CI_Model
         $productivity = $this->loadProductivity($data);
         $performance = $this->loadPerformance($data);
         $presensi = $this->loadPresensi($data);
-        $parma_coverage = $this->loadParmaCoverage($data);
+        $parma_coverage = $this->loadMedrepCoverage($data);
 
         return [
             'productivity' => $productivity,
@@ -26,20 +26,20 @@ class Dashboard_chart_model extends CI_Model
         if ($data["restrict_level"] == '4') {
 			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
                 app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data["usersession"]."') AND tipe_sales='PAR' AND aktif=1
+                WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
             ) ";
 		} else if ($data["restrict_level"] == '3') {
 			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
                 app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data["usersession"]."') AND tipe_sales='PAR' AND aktif=1
+                WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
             ) ";
 		} else if ($data["restrict_level" ]== '2') {
 			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
                 app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data["usersession"]."') AND tipe_sales='PAR' AND aktif=1
+                WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
             ) ";
 		} else {
-			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE tipe_sales='PAR' AND aktif=1)";
+			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE tipe_sales='MEDREP' AND aktif=1)";
 		}
 
 		$query = "
@@ -113,7 +113,7 @@ class Dashboard_chart_model extends CI_Model
                 GROUP BY tr.salesmanid
             ) ord ON ord.salesmanid = b.salesmanid
             LEFT JOIN m_area_areasite c ON b.areaid = c.areaid
-            WHERE b.tipe_sales='PAR' AND b.aktif = 1 AND b.salesmanid NOT IN ('PAR100','PAR101') $strquery
+            WHERE b.tipe_sales='MEDREP' AND b.aktif = 1 AND b.nama_salesman NOT LIKE '%Tester%' $strquery
             ORDER BY b.salesmanid
         ";
 		$data = $this->db->query($query)->result_array();
@@ -210,7 +210,7 @@ class Dashboard_chart_model extends CI_Model
                     ) x WHERE x.salesmanid=a.salesmanid GROUP BY x.salesmanid
                 ),'-') AS rrk_detailing
             FROM t_sales_absensi a
-            LEFT JOIN m_sales_salesman b ON a.salesmanid=b.salesmanid AND b.salesmanid NOT IN ('PAR100', 'PAR101') AND b.aktif=1
+            LEFT JOIN m_sales_salesman b ON a.salesmanid=b.salesmanid AND b.nama_salesman NOT LIKE '%Tester%' AND b.aktif=1
             LEFT JOIN m_area_areasite c ON c.areaid=b.areaid LEFT JOIN m_area_regional d ON d.regionalid=c.regionalid
             LEFT JOIN (
                 SELECT salesmanid,tanggal,
@@ -287,7 +287,7 @@ class Dashboard_chart_model extends CI_Model
                 a.end_keterangan
             FROM attendance_parma a
             LEFT JOIN v_gff_info b ON a.salesmanid=b.salesmanid 
-            WHERE a.periode BETWEEN '$start' AND '$end' AND a.salesmanid NOT IN ('PAR100', 'PAR101')
+            WHERE a.periode BETWEEN '$start' AND '$end' AND b.nama_salesman NOT LIKE '%Tester%'
             $strquery
             ORDER BY a.periode DESC
         ";
@@ -319,7 +319,7 @@ class Dashboard_chart_model extends CI_Model
         ];
     }
 
-    public function loadParmaCoverage($data)
+    public function loadMedrepCoverage($data)
     {
         if ($data['restrict_level'] == '4') {
 			$strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
@@ -348,7 +348,7 @@ class Dashboard_chart_model extends CI_Model
                 a.nama_salesman,
                 a.nama_area
             FROM v_gff_info a
-            WHERE a.tipe_sales='PAR' AND a.salesmanid NOT IN ('PAR100','PAR101')
+            WHERE a.tipe_sales='MEDREP' AND a.nama_salesman NOT LIKE '%Tester%'
             $strquery
             ORDER BY a.nama_regional, a.salesmanid;
         ";

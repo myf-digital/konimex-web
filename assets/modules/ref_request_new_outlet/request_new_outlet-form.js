@@ -71,9 +71,9 @@
                 areaid: {
                     required: true
                 },
-                subareaid: {
-                    required: true
-                },
+                // subareaid: {
+                //     required: true
+                // },
                 classid: {
                     required: true
                 },
@@ -129,9 +129,9 @@
             areaSelected = e.params.data;
             //siteSelected = uiSelectSiteid.val();
             regionalSelected = uiSelectRegional.val();
-            let sraval = areaSelected;
-            sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
-            loadSubArea(sraval);
+            // let sraval = areaSelected;
+            // sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
+            // loadSubArea(sraval);
         });
 
         uiSelectPropinsi.select2({
@@ -170,7 +170,7 @@
         });
 
         uiSelectSalesman.select2({
-            placeholder: 'Select GFF',
+            placeholder: 'Select MEDREP',
             allowClear: true
         });
 
@@ -221,7 +221,7 @@
             loadRegional({usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level: paramsession.restrict_level});
             loadSalesman({usersession: paramsession.username, idjabatan: paramsession.idjabatan,restrict_level: paramsession.restrict_level});
             loadArea({regionalid:param.regionalid, usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level:paramsession.restrict_level});
-            loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
+            // loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
 
         }
 
@@ -519,7 +519,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession,restrict_level: data.restrict_level}, function (res) {
             uiSelectSalesman.empty();
             uiSelectSalesman.select2({
-                placeholder: "Select Salesman",
+                placeholder: "Select Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

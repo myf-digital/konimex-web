@@ -71,8 +71,10 @@ class Rep_visit_model extends CI_Model
 					a.checkin, a.checkout, a.keterangan, concat('".URL_IMAGE."', a.image) as image, b.nama_salesman,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid) as visit 
                     from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid 
-                    where a.periode between '".(@$data["get_date1"] ?? date('Y-m-d'))."' and '".(@$data["get_date2"] ?? date('Y-m-d'))."' and b.tipe_sales ='FC'
-                    ) a";
+                    where a.periode between '".(@$data["get_date1"] ?? today())."' and '".(@$data["get_date2"] ?? today())."' and b.tipe_sales ='FC'
+                    ) a";        
+        //$field = "a.*, concat('".URL_IMAGE."', a.image) as image, b.nama_salesman";
+        //$table = "t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid where a.periode between '".@$data["get_date1"]."' and '".@$data["get_date2"]."' ";
         return easy_pagging($data, $field, $table);
     }
 

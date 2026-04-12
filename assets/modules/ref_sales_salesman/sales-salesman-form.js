@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Sales Salesman");
+    common.setTitle("Sales Medrep");
     // declare dom
     let uiForm = $("#fm-sales-salesman");
     let uiBtnCancel = $("#btn-cancel-form");
@@ -13,6 +13,9 @@
     let uiSelectRegional = $("#regionalid-id");
     let uiSelectArea = $("#areaid-id");
     let uiSelectSubarea = $("#subareaid-id");
+    let uiJoinDate = $("#join_date"); 
+    let uiResignDate = $("#resign_date"); 
+
     /*let uiSelectRamRsm = $("#ram_rsm-id");
     let uiSelectAasaamTsstsm = $("#aas_aam_tss_tsm-id");
     let uiSelectFc = $("#fc-id");*/
@@ -63,15 +66,14 @@
                 areaid: {
                     required: true
                 },
-                subareaid: {
-                    required: true
+                join_date: {
+                     required: true
                 }
-
             },
             messages : {
 				salesmanid : {
-					required : 'Isi User GFF',
-					remote   : 'User GFF Sudah terdaftar'     
+					required : 'Isi User MEDREP',
+					remote   : 'User MEDREP Sudah terdaftar'     
 						
                 }			
             }
@@ -89,6 +91,26 @@
             placeholder: 'Select Sales Type',
             allowClear: true
         });
+        
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+        });
+
+
+        uiJoinDate.datepicker();
+        uiResignDate.datepicker();
+
+        /*uiJoinDate.on('changeDate', function(selected) {
+            var startDate = new Date(selected.date.valueOf());
+            endDate.setDate(endDate.getDate() + 31);
+            uiJoinDate.datepicker('setStartDate', startDate);
+            if(uiStartPeriode.val() > uiEndPeriode.val()){
+                uiEndPeriode.val(uiStartPeriode.val());
+            }
+        });*/
+
 
         //loadRegional();
         loadRegional({usersession:paramsession.username,idjabatan:paramsession.idjabatan,restrict_level:paramsession.restrict_level,restrict_bu:paramsession.restrict_bu});
@@ -104,9 +126,9 @@
             areaSelected = e.params.data;
             //siteSelected = uiSelectSiteid.val();
             regionalSelected = uiSelectRegional.val();
-            let sraval = areaSelected;
-            sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
-            loadSubArea(sraval);
+            // let sraval = areaSelected;
+            // sraval = {regionalid:regionalSelected, areaid:sraval.areaid, usersession:paramsession.username,restrict_level:paramsession.restrict_level};
+            // loadSubArea(sraval);
         });
         
         if (isUpdate) {
@@ -122,7 +144,7 @@
 
             loadRegional({usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level: paramsession.restrict_level});
             loadArea({regionalid:param.regionalid, usersession:paramsession.username, idjabatan: paramsession.idjabatan, restrict_level:paramsession.restrict_level});
-            loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
+            // loadSubArea({regionalid:param.regionalid, areaid:param.areaid, usersession:paramsession.username, restrict_level:paramsession.restrict_level});
 
         }
     }

@@ -49,7 +49,7 @@
         });
 
         uiSelectSalesman.select2({
-            placeholder: 'Select Salesman',
+            placeholder: 'Select Medrep',
             allowClear: true
         });
 
@@ -101,7 +101,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {siteid:data.siteid}, function (res) {
             uiSelectSalesman.empty();
             uiSelectSalesman.select2({
-                placeholder: "Select Salesman",
+                placeholder: "Select Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

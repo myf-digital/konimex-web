@@ -124,7 +124,7 @@ class Rep_att_sales extends CI_Controller {
 		$html .= '<thead>';
 		$html .= '<tr>';
 		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">Salesman ID</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama Salesman</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama Medrep</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);

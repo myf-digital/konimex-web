@@ -26,8 +26,8 @@
 		  columns: [[
             {field: 'periode', title: 'Period', width:30, sortable: 'true', halign: 'center', align: 'center'},
             {field: 'review_by', title: 'Review By', width:30, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'salesmanid', title: 'GFF', width:30, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'nama_salesman', title: 'GFF Name', width:30, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'salesmanid', title: 'MEDREP', width:30, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'nama_salesman', title: 'MEDREP Name', width:30, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'tipe_sales', title: 'Type', width:30, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'review', title: 'Review', width:30, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'final_score', title: 'Score', width:30, sortable: 'true', halign: 'center', align: 'center'},
@@ -76,16 +76,18 @@
         uiTanggalPicker1.datepicker({
             format: 'yyyy-mm-dd',
             //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         uiTanggalPicker2.datepicker({
             format: 'yyyy-mm-dd',
             //startDate: '-3d'
-        }).on('change', function(){
+        }).datepicker("setDate", new Date())
+        .on('change', function(){
             $('.datepicker').hide();
-        });;
+        });
 
         uiTanggalPicker1.on('changeDate', function(selected) {
             var startDate = new Date(selected.date.valueOf());

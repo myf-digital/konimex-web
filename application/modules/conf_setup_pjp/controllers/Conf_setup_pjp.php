@@ -40,6 +40,12 @@ class Conf_setup_pjp extends BaseController
         $this->template->show($this, 'form_switch');
     }
 
+    public function form_addoutlet()
+    {
+        // $this->template->show($this, 'form_addoutlet');
+        $this->load->view('form_addoutlet');
+    }
+
     public function add_switch()
     {
         $data = param_input();
@@ -79,11 +85,11 @@ class Conf_setup_pjp extends BaseController
         $restrict_level = $this->uri->segment('6');
         //$filename = $this->uri->segment('7');
 
-        ini_set("memory_limit","1024M");
-        ini_set('max_execution_time', '360');
+        ini_set("memory_limit","2048M");
+        ini_set('max_execution_time', '0');
         
         if ($salesmanid=='' or empty($salesmanid) or $salesmanid=='null'){
-            $filename='All_GFF';
+            $filename='All_MEDREP';
             if ($restrict_level=='4'){
                 $strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
                                                     app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
@@ -110,45 +116,48 @@ class Conf_setup_pjp extends BaseController
             $strquery = "where a.salesmanid = '$salesmanid'";
         }
             
-            $filename = "PJP_".$filename.".xlsx";
-            $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, b.typeid channel, a.minggu, a.hari,
-                             b.kode_outlet, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
-                      from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
-                      left join m_sales_salesman d on d.salesmanid=a.salesmanid
-                      left join m_area_subarea e on e.subareaid = b.subareaid
-                      $strquery
-                      order by b.nama_customer, a.minggu asc
+            $filename = "FJP_".$filename.".xlsx";
+            $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, 
+                                a.customerid, b.typeid channel, GROUP_CONCAT(a.minggu ORDER BY a.minggu ASC SEPARATOR ',') as minggu, a.hari,
+                                b.kode_outlet, b.latest_jjid, b.latest_customer_name, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
+                        from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
+                        left join m_sales_salesman d on d.salesmanid=a.salesmanid
+                        left join m_area_areasite e on e.areaid = b.areaid
+                        $strquery
+                      group by a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales, a.ram_rsm, a.aas_aam_tss_tsm, a.customerid, b.typeid, a.hari
                     ";
             //echo $this->db->last_query();
             $execquery = $this->db->query($query);
             $lovpjp = $execquery->result_array();
-    
+			
+			
+			$rowweek = $this->db->query("select aktif_week from m_setup_site limit 0,1")->row();
+			$weekaktif = $rowweek->aktif_week;
             $this->load->library('excel');
         
             //$objDrawing = new PHPExcel_Worksheet_Drawing();
             $objPHPExcel = new PHPExcel();
 
             $objPHPExcel->setActiveSheetIndex(0)
-                        ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu')
-                        ->setCellValue('A2', 'USER GFF')
-                        ->setCellValue('B2', 'KE USER GFF')
-                        ->setCellValue('C2', 'NAMA GFF')
+                        ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active '.$weekaktif)
+                        ->setCellValue('A2', 'USER MEDREP')
+                        ->setCellValue('B2', 'KE USER MEDREP')
+                        ->setCellValue('C2', 'NAMA MEDREP')
                         ->setCellValue('D2', 'POSITION')
-                        ->setCellValue('E2', 'ID OUTLET')
-                        ->setCellValue('F2', 'KODE OUTLET')
-                        ->setCellValue('G2', 'NAMA OUTLET')
-                        ->setCellValue('H2', 'ALAMAT')
-                        ->setCellValue('I2', 'CHANNEL')
-                        ->setCellValue('J2', 'SUB CHANNEL/ACCOUNT')
-                        ->setCellValue('K2', 'MINGGU')
-                        ->setCellValue('L2', 'HARI')
-                        ->setCellValue('M2', 'KOTA')
-                        ->setCellValue('N2', 'TYPE')
-                        ->setCellValue('O2', 'DC')
+                        ->setCellValue('E2', 'MEDREP ID OUTLET')
+                        ->setCellValue('F2', 'LATEST JJID')
+                        ->setCellValue('G2', 'LATEST CUSTOMER NAME')
+                        ->setCellValue('H2', 'MEDREP NAMA OUTLET')
+                        ->setCellValue('I2', 'ALAMAT')
+                        ->setCellValue('J2', 'CLUSTER')
+                        ->setCellValue('K2', 'TIER')
+                        ->setCellValue('L2', 'MINGGU')
+                        ->setCellValue('M2', 'HARI')
+                        ->setCellValue('N2', 'KOTA')
                         ;
                         $objPHPExcel->getActiveSheet()->getStyle('B2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
-                        $objPHPExcel->getActiveSheet()->getStyle('K2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
                         $objPHPExcel->getActiveSheet()->getStyle('L2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
+                        $objPHPExcel->getActiveSheet()->getStyle('M2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
                         $i = 3;
                         foreach ($lovpjp as $vpjp) {
                             $objPHPExcel->setActiveSheetIndex(0)
@@ -157,16 +166,15 @@ class Conf_setup_pjp extends BaseController
                                         ->setCellValue('C'.$i, $vpjp['nama_salesman'])
                                         ->setCellValue('D'.$i, $vpjp['position'])
                                         ->setCellValue('E'.$i, $vpjp['customerid'])
-                                        ->setCellValue('F'.$i, $vpjp['kode_outlet'])
-                                        ->setCellValue('G'.$i, $vpjp['nama_customer'])
-                                        ->setCellValue('H'.$i, $vpjp['alamat'])
-                                        ->setCellValue('I'.$i, $vpjp['channel'])
-                                        ->setCellValue('J'.$i, $vpjp['nama_class'])
-                                        ->setCellValue('K'.$i, $vpjp['minggu'])
-                                        ->setCellValue('L'.$i, $vpjp['hari'])
-                                        ->setCellValue('M'.$i, $vpjp['city'])
-                                        ->setCellValue('N'.$i, $vpjp['outlet_type'])
-                                        ->setCellValue('O'.$i, $vpjp['dc']);
+                                        ->setCellValue('F'.$i, $vpjp['latest_jjid'])
+                                        ->setCellValue('G'.$i, $vpjp['latest_customer_name'])
+                                        ->setCellValue('H'.$i, $vpjp['nama_customer'])
+                                        ->setCellValue('I'.$i, $vpjp['alamat'])
+                                        ->setCellValue('J'.$i, $vpjp['channel'])
+                                        ->setCellValue('K'.$i, $vpjp['nama_class'])
+                                        ->setCellValue('L'.$i, $vpjp['minggu'])
+                                        ->setCellValue('M'.$i, $vpjp['hari'])
+                                        ->setCellValue('N'.$i, $vpjp['city']);
                                 $i++;
                             }
             // Redirect output to a client's web browser (Excel2007)
@@ -233,25 +241,53 @@ class Conf_setup_pjp extends BaseController
 				$i=0;
                 $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,NULL,TRUE,FALSE);
 				
-						$arr = explode(",",$rowData[0][10]);
-                        foreach ($arr as $item) {
-                            $datatemp = array(
-								"filename"=> $fileName,
-								"salesmanid"=> $rowData[0][0],
-								"salesmanid_to"=> $rowData[0][1],
-								"customerid"=> $rowData[0][4],
-								"minggu"=> $item,
-								"hari"=> $rowData[0][11]
-							);
+                $arr = explode(",",$rowData[0][11]);
+                $arrhari = explode(",",$rowData[0][12]);
+                $allowed_values_hari = ['0', '1', '2', '3', '4', '5', '6'];
+                $allowed_values_week = ['1', '2', '3', '4'];
+                foreach ($arr as $item) {
 
+                    foreach ($arrhari as $itemhari) {
+                        if (in_array($itemhari, $allowed_values_hari) && in_array($item, $allowed_values_week)) {
+                            $datatemp = array(
+                            "filename"=> $fileName,
+                            "salesmanid"=> $rowData[0][0],
+                            "salesmanid_to"=> $rowData[0][1],
+                            "customerid"=> $rowData[0][4],
+                            "minggu"=> $item,
+                            "hari"=> $itemhari
+                            );
                             $insert = $this->db->insert("t_pjp_upload_detail",$datatemp);
                             if (!$insert){
+                                $datatemp['reason']='Error insert query';
+                                $insert = $this->db->insert("t_pjp_upload_detail_error",$datatemp);
                                 $jmlrowfaild++;
                             }
-                            $jmlrow++;  
-
+                        }else{
+                            $datatemp = array(
+                            "filename"=> $fileName,
+                            "salesmanid"=> $rowData[0][0],
+                            "salesmanid_to"=> $rowData[0][1],
+                            "customerid"=> $rowData[0][4],
+                            "minggu"=> $item,
+                            "hari"=> $itemhari,
+                            "reason"=>'Error variable minggu atau hari'
+                            );
+                            $insert = $this->db->insert("t_pjp_upload_detail_error",$datatemp);
+                            if (!$insert){
+                                $datatemp['reason']='Error insert query';
+                                $insert = $this->db->insert("t_pjp_upload_detail_error",$datatemp);
+                                $jmlrowfaild++;
+                            }else{
+                                $jmlrowfaild++;
+                            }
                         }
+
+                        $jmlrow++;  
+                    }
+                }
             }
+            
             sleep(3);
 
             $datam = array(

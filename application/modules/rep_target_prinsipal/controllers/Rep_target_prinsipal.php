@@ -109,7 +109,7 @@ class Rep_target_prinsipal extends CI_Controller {
 					<th>No</th>
 					<th>Periode</th>
 					<th>Salesmanid</th>
-					<th>Nama Salesman</th>
+					<th>Nama Medrep</th>
 					<th>Prinsipal ID</th>
 					<th>Nama Prinsipal</th>
 					<th>Target</th>

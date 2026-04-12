@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Sales Salesman Area");
+    common.setTitle("Sales Medrep Area");
     // declare dom
     let uiForm = $("#fm-sales-salesman-area");
     let uiBtnCancel = $("#btn-cancel-form");
@@ -44,7 +44,7 @@
         });
         
         uiSelectSalesmanid.select2({
-            placeholder: 'Select Salesman',
+            placeholder: 'Select Medrep',
             allowClear: true
         });
 
@@ -113,7 +113,7 @@
         $.post(common.baseURL("api_v1/call_salesman_mapping_area"), {siteid:data.siteid, salesmanid:data.salesmanid}, function (res) {
             uiSelectSalesmanid.empty();
             uiSelectSalesmanid.select2({
-                placeholder: "Select Salesman",
+                placeholder: "Select Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

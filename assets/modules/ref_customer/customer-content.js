@@ -61,16 +61,17 @@
                 }
             ]],
             columns: [[
-				{field:'customerid', title:'OutletID_DRC', halign: 'center', align: 'left', sortable:"true", width:120},
-				{field:'kode_outlet', title:'Kode Outlet', halign: 'center', align: 'left', sortable:"true", width:120},
-				//{field:'customerid', title:'CUSTOMERID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nama_customer', title:'Nama Outlet', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'customerid', title:'MEDREP ID Outlet', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'cust_id_map', title:'ID Outlet Distributor', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'latest_jjid', title:'Latest JJID', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'latest_customer_name', title:'Latest Cust Name', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'nama_customer', title:'MEDREP Nama Outlet', halign: 'center', align: 'left', sortable:"true", width:120},
+				{field:'alamat', title:'Alamat', halign: 'center', align: 'left', sortable:"true", width:120},
 				//{field:'top_cust', title:'TOP CUST', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'tipe_bayar', title:'TIPE BAYAR', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nama_regional', title:'Regional', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nama_area', title:'Area', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nama_subarea', title:'Sub Area', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'nama_regional', title:'Regional', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'nama_area', title:'Area', halign: 'center', align: 'left', sortable:"true", width:100},
+				// {field:'nama_subarea', title:'Sub Area', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'propinsiid', title:'Propinsi', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'kotaid', title:'Kota/Kabupaten', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'kelurahanid', title:'Kelurahan', halign: 'center', align: 'left', sortable:"true", width:200},
@@ -78,15 +79,15 @@
 				//{field:'kodepos', title:'KODEPOS', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'telp', title:'TELP', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'email', title:'EMAIL', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'segmentid', title:'BU', halign: 'center', align: 'left', sortable:"true", width:40},
-				{field:'typeid', title:'Channel', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'nama_account', title:'Sub Channel', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'segmentid', title:'BU', halign: 'center', align: 'left', sortable:"true", width:40},
+				{field:'typeid', title:'Cluster', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'nama_account', title:'Tier', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'latitude', title:'LATITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'longitude', title:'LONGITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
-                {field:'spot_id', title:'Type', halign: 'center', align: 'left', sortable:"true", width:100},
-                {field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:200},
-				//{field:'usergff', title:'Kode GFF', halign: 'center', align: 'left', sortable:"true", width:100},
-                //{field:'nama_gff', title:'GFF Name', halign: 'center', align: 'left', sortable:"true", width:150},
+                {field:'spot_id', title:'Tipe Kepemilikan', halign: 'center', align: 'left', sortable:"true", width:100},
+                {field:'mcc', title:'Distributor', halign: 'center', align: 'left', sortable:"true", width:200},
+				//{field:'usergff', title:'Kode MEDREP', halign: 'center', align: 'left', sortable:"true", width:100},
+                {field:'usergff', title:'User MEDREP', halign: 'center', align: 'left', sortable:"true", width:150},
 				//{field:'detail', title:'Detail', halign: 'center', align: 'left', width:150, formatter: formatterButtonDetail},
 				//{field:'position', title:'Position', halign: 'center', align: 'left', sortable:"true", width:100},
 				]],
@@ -177,7 +178,7 @@
         let arrgff = row.usergff;
         let varrgff = arrgff.split(',');
         //if ( varrgff.length > 1 ){
-            const btnDetail = commonGrid.btnBuilderText('btn-detail', 'primary', 'fa fa-file-movie-o', ' View GFF');
+            const btnDetail = commonGrid.btnBuilderText('btn-detail', 'primary', 'fa fa-file-movie-o', ' View MEDREP');
             return '<div class="action-grid-detail">' + btnDetail +'</div>';
         //}
     }

@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Sales Salesman <small>Control panel</small>
+        User MEDREP <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Sales Salesman</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> User MEDREP</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Sales Salesman</h3>
+                    <h3 class="box-title">Form User MEDREP</h3>
                 </div>
 
                 <form id="fm-sales-salesman" role="form" method="post">
@@ -25,16 +25,16 @@
                                 <select id="siteid-id" name="siteid" class="form-control" placeholder="SiteID"></select>
 							</div>-->
 							<div class="form-group col-md-3">
-								<label for="salesmanid">USER GFF</label>
-								<input name="salesmanid" id="salesmanid-id" class="form-control" value="" placeholder="User GFF">
+								<label for="salesmanid">User MEDREP</label>
+								<input name="salesmanid" id="salesmanid-id" class="form-control" value="" placeholder="User MEDREP">
 							</div>
 							<div class="form-group col-md-3">
 								<label for="password">Password</label>
 								<input name="password" id="password-id" type="password" class="form-control" value="" placeholder="Password">
 							</div>
 							<div class="form-group col-md-7">
-								<label for="nama_salesman">Nama GFF</label>
-								<input name="nama_salesman" class="form-control" placeholder="Nama GFF">
+								<label for="nama_salesman">Nama User MEDREP</label>
+								<input name="nama_salesman" class="form-control" placeholder="Nama User MEDREP">
 							</div>
 							<!--<div class="form-group col-md-3">
 								<label for="supervisorid">Supervisorid</label>
@@ -49,12 +49,30 @@
 								<input name="tipe_db" class="form-control" placeholder="Tipe Db">
 							</div>-->
 							<div class="form-group  col-md-3">
-								<label for="tipe_sales">Tipe GFF</label>
-                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Sales Type"></select>
+								<label for="tipe_sales">Tipe User MEDREP</label>
+                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="MEDREP Type"></select>
+							</div>
+							<div class="form-group col-md-2">
+								<label for="join_date">Join Date</label>
+								<div class="input-group date">
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+									<input id="join_date" placeholder="Join Date" type="text" class="form-control datepicker" name="join_date" readonly>
+								</div>
 							</div>
 							<div class="form-group col-md-2">
 								<label for="aktif">Status</label>
                                 <select id="aktif-id" name="aktif" class="form-control" placeholder="Active/Not Active"></select>
+							</div>
+							<div class="form-group col-md-2">
+								<label for="resign_date">Resign Date</label>
+								<div class="input-group date">
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+									<input id="resign_date" placeholder="Resign Date" type="text" class="form-control datepicker" name="resign_date" readonly>
+								</div>
 							</div>
 							
 							<div class="form-group col-md-4">
@@ -65,10 +83,10 @@
 								<label for="areaid">Area</label>
                                 <select id="areaid-id" name="areaid" class="form-control" placeholder="Area"></select>
 							</div>
-							<div class="form-group col-md-4">
+							<!-- <div class="form-group col-md-4">
 								<label for="subareaid">Sub Area</label>
                                 <select id="subareaid-id" name="subareaid" class="form-control" placeholder="Sub Area"></select>
-							</div>
+							</div> -->
 
 							<!--<div class="form-group  col-md-4">
 								<label for="ram">RAM</label>

@@ -69,8 +69,10 @@ class Ref_absen_salesman_model extends CI_Model
         $field = "a.* ";
         $table = " (select a.periode, a.salesmanid, a.status, a.checkin, a.checkout, a.keterangan, a.flag_adjust, case when a.flag_adjust=1 then 'Yes' else 'No' end adjust_pjp, concat('".URL_IMAGE."', a.image) as image, b.nama_salesman
                     from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid 
-                    where a.periode between '".(@$data["get_date1"] ?? date('Y-m-d'))."' and '".(@$data["get_date2"] ?? date('Y-m-d'))."'
-                    ) a";
+                    where a.periode between '".(@$data["get_date1"] ?? today())."' and '".(@$data["get_date2"] ?? today())."'
+                    ) a";        
+        //$field = "a.*, concat('".URL_IMAGE."', a.image) as image, b.nama_salesman";
+        //$table = "t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid where a.periode between '".@$data["get_date1"]."' and '".@$data["get_date2"]."' ";
         return easy_pagging($data, $field, $table);
     }
 

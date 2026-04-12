@@ -259,8 +259,8 @@ class Customer_model extends CI_Model
 		$html .='<th>Channel/Type</th>';
 		$html .='<th>SubChannel/Account</th>';
 		$html .='<th>DC</th>';
-		$html .='<th>GFF</th>';
-		$html .='<th>GFF Name</th>';
+		$html .='<th>MEDREP</th>';
+		$html .='<th>MEDREP Name</th>';
 		$html .='<th>Position</th>';
 		$html .= '</tr></thead>';
         $html .= '<tbody>';

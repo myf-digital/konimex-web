@@ -218,7 +218,7 @@
                    
                     {field: 'periode', title: 'Periode', width: 120, sortable: 'true', halign: 'center', align: 'left'},
                     {field: 'salesmanid', title: 'Salesmanid', width: 200, sortable: 'true',halign: 'center', align: 'center'},
-                    {field: 'nama_salesman', title: 'Nama Salesman', width: 200, sortable: 'true', halign: 'center', align: 'left'},
+                    {field: 'nama_salesman', title: 'Nama Medrep', width: 200, sortable: 'true', halign: 'center', align: 'left'},
                     {field: 'prinsipalid', title: 'Prinsipal id', width: 170, sortable: 'true', halign: 'center', align: 'center'},
                     {field: 'nama_prinsipal', title: 'Nama Prinsipal', width: 220, sortable: 'true', halign: 'center', align: 'left'},                    
                     {field: 'target', title: 'Target', width: 220, sortable: 'true', halign: 'center', align: 'left'},

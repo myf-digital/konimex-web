@@ -74,7 +74,7 @@ class Ref_customer extends BaseController
         $restrict_level = $this->uri->segment('6');
         $filename = $this->uri->segment('7');
         ini_set("memory_limit","2048M");
-        ini_set('max_execution_time', '3600');
+        ini_set('max_execution_time', '0');
         
         if ($account=='' or empty($account) or $account=='null'){
             $account='All';
@@ -114,7 +114,8 @@ class Ref_customer extends BaseController
         }
         
 
-        $query_old = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position
+        $query_old = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position,
+                            case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo        
                                     from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                                     left join m_area_areasite c on a.areaid = c.areaid
                                     left join m_area_subarea d on a.subareaid = d.subareaid
@@ -123,20 +124,24 @@ class Ref_customer extends BaseController
                     where a.customerid <> '' ".$strquery."
                   ";
         $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='MERCHANDISER'),'') as gffmd,
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='SPG'),'') as gffspg,
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='SALESMAN MT'),'') as gffmt,
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from t_sales_setup_rrk where customerid=a.customerid) and tipe_sales='SALESMAN GT'),'') as gffgt
+                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') 
+                        from m_sales_salesman 
+                        where salesmanid in (select salesmanid from m_customer_ob 
+                                            where customerid=a.customerid) and tipe_sales='MEDREP'),'') as gffmd,
+                        MAX(CASE WHEN f.minggu = 1 THEN f.hari END) AS minggu_1,
+                        MAX(CASE WHEN f.minggu = 2 THEN f.hari END) AS minggu_2,
+                        MAX(CASE WHEN f.minggu = 3 THEN f.hari END) AS minggu_3,
+                        MAX(CASE WHEN f.minggu = 4 THEN f.hari END) AS minggu_4,
+                        case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo
                         from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                         left join m_area_areasite c on a.areaid = c.areaid
                         left join m_area_subarea d on a.subareaid = d.subareaid
                         left join m_customer_class e on a.classid = e.classid
+                        left join t_sales_setup_rrk f on a.customerid = f.customerid 
                         where a.customerid <> '' ".$strquery."
-                  ";
+                    GROUP BY
+                    a.customerid, b.nama_regional, c.nama_area, d.nama_area, e.nama_class
+                    ;";
 
         $query1 = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
                   (select count(1) from m_sales_salesman 
@@ -144,9 +149,9 @@ class Ref_customer extends BaseController
                   (select count(1) from m_sales_salesman 
                               where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='SPG') as gffspg,
                   (select count(1) from m_sales_salesman 
-                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='SALESMAN MT') as gffmt,
+                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='MEDREP MT') as gffmt,
                   (select count(1) from m_sales_salesman 
-                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='SALESMAN GT') as gffgt
+                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='MEDREP GT') as gffgt
                   from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
                   left join m_area_areasite c on a.areaid = c.areaid
                   left join m_area_subarea d on a.subareaid = d.subareaid
@@ -158,60 +163,65 @@ class Ref_customer extends BaseController
         $execquery = $this->db->query($query);
         $lovoutlet = $execquery->result_array();
 		
-		$filename = "Outlet_".$filename.".xlsx";
+		$filename = "Master_Data_Outlet.xlsx";
 
         $this->load->library('excel');
     
         //$objDrawing = new PHPExcel_Worksheet_Drawing();
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'OUTLETID_DRC')
-                    ->setCellValue('B1', 'KODE OUTLET')
-                    ->setCellValue('C1', 'Nama Outlet')
-                    ->setCellValue('D1', 'Alamat')
-                    ->setCellValue('E1', 'Regional')
-                    ->setCellValue('F1', 'Area')
-                    ->setCellValue('G1', 'City')
-                    ->setCellValue('H1', 'BU')
-                    ->setCellValue('I1', 'Channel')
-                    ->setCellValue('J1', 'SubChannel/Account')
-                    ->setCellValue('K1', 'TYPE')
-                    ->setCellValue('L1', 'DC')
-                    ->setCellValue('M1', 'MERCHANDISER')
-                    ->setCellValue('N1', 'SPG')
-                    ->setCellValue('O1', 'SALESMAN MT')
-                    ->setCellValue('P1', 'SALESMAN GT')
-                    ->setCellValue('Q1', 'Latitude')
-                    ->setCellValue('R1', 'Longitude')
+                    ->setCellValue('A2', 'MEDREP ID Outlet')
+                    ->setCellValue('B2', 'ID Outlet Distributor')
+                    ->setCellValue('C2', 'Latest JJID')
+                    ->setCellValue('D2', 'Latest Customer Name')
+                    ->setCellValue('E2', 'MEDREP Nama Outlet')
+                    ->setCellValue('F2', 'Alamat')
+                    ->setCellValue('G2', 'Regional')
+                    ->setCellValue('H2', 'Area')
+                    ->setCellValue('I2', 'Cluster')
+                    ->setCellValue('J2', 'Tier')
+                    ->setCellValue('K2', 'Tipe Kepemilikan')
+                    ->setCellValue('L2', 'Distributir')
+                    ->setCellValue('M2', 'MEDREP')
+                    ->setCellValue('N2', 'Minggu 1')
+                    ->setCellValue('O2', 'Minggu 2')
+                    ->setCellValue('P2', 'Minggu 3')
+                    ->setCellValue('Q2', 'Minggu 4')
+                    ->setCellValue('R2', 'Latitude')
+                    ->setCellValue('S2', 'Longitude')
+                    ->setCellValue('T2', 'Flag Noo')
+                    ->setCellValue('N1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active ')
                     ;
-        $i = 2;
+        $i = 3;
         foreach ($lovoutlet as $voutlet) {
             //if ($voutlet['gffmd']!='' or $voutlet['gffspg']!='' or $voutlet['gffmt']!='' or $voutlet['gffgt']!=''){
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('A'.$i, $voutlet['customerid'])
-                        ->setCellValue('B'.$i, $voutlet['kode_outlet'])
-                        ->setCellValue('C'.$i, $voutlet['nama_customer'])
-                        ->setCellValue('D'.$i, $voutlet['alamat'])
-                        ->setCellValue('E'.$i, $voutlet['nama_regional'])
-                        ->setCellValue('F'.$i, $voutlet['nama_area'])
-                        ->setCellValue('G'.$i, $voutlet['nama_subarea'])
-                        ->setCellValue('H'.$i, $voutlet['segmentid'])
+                        ->setCellValue('B'.$i, $voutlet['cust_id_map'])
+                        ->setCellValue('C'.$i, $voutlet['latest_jjid'])
+                        ->setCellValue('D'.$i, $voutlet['latest_customer_name'])
+                        ->setCellValue('E'.$i, $voutlet['nama_customer'])
+                        ->setCellValue('F'.$i, $voutlet['alamat'])
+                        ->setCellValue('G'.$i, $voutlet['nama_regional'])
+                        ->setCellValue('H'.$i, $voutlet['nama_area'])
                         ->setCellValue('I'.$i, $voutlet['typeid'])
                         ->setCellValue('J'.$i, $voutlet['nama_account'])
                         ->setCellValue('K'.$i, $voutlet['spot_id'])
                         ->setCellValue('L'.$i, $voutlet['mcc'])
                         ->setCellValue('M'.$i, $voutlet['gffmd'])
-                        ->setCellValue('N'.$i, $voutlet['gffspg'])
-                        ->setCellValue('O'.$i, $voutlet['gffmt'])
-                        ->setCellValue('P'.$i, $voutlet['gffgt'])
-                        ->setCellValue('Q'.$i, $voutlet['latitude'])
-                        ->setCellValue('R'.$i, $voutlet['longitude'])
+                        ->setCellValue('N'.$i, $voutlet['minggu_1'])
+                        ->setCellValue('O'.$i, $voutlet['minggu_2'])
+                        ->setCellValue('P'.$i, $voutlet['minggu_3'])
+                        ->setCellValue('Q'.$i, $voutlet['minggu_4'])
+                        ->setCellValue('R'.$i, $voutlet['latitude'])
+                        ->setCellValue('S'.$i, $voutlet['longitude'])
+                        ->setCellValue('T'.$i, $voutlet['flag_noo'])
 						;
                 $i++;
                 //}
             }
 
-        $objPHPExcel->getActiveSheet()->setTitle('Outlet');
+        $objPHPExcel->getActiveSheet()->setTitle('Data Outlet');
         $objPHPExcel->createSheet();
 
             /*$execquery = $this->db->query($query1);
@@ -227,8 +237,8 @@ class Ref_customer extends BaseController
             ->setCellValue('G1', 'SubArea/City')
             ->setCellValue('H1', 'MERCHANDISER')
             ->setCellValue('I1', 'SPG')
-            ->setCellValue('J1', 'SALESMAN MT')
-            ->setCellValue('K1', 'SALESMAN GT')
+            ->setCellValue('J1', 'MEDREP MT')
+            ->setCellValue('K1', 'MEDREP GT')
             ;
             $i = 2;
             foreach ($lovoutlet as $voutlet) {
@@ -249,7 +259,7 @@ class Ref_customer extends BaseController
                     }
                 }
 
-            $objPHPExcel->getActiveSheet()->setTitle('Count GFF');
+            $objPHPExcel->getActiveSheet()->setTitle('Count MEDREP');
 			*/
             // Redirect output to a client's web browser (Excel2007)
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -283,8 +293,8 @@ class Ref_customer extends BaseController
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-        $html .= '<th style="white-space: nowrap;">User GFF</th>';
-		$html .= '<th style="white-space: nowrap;">Nama GFF</th>';
+        $html .= '<th style="white-space: nowrap;">User MEDREP</th>';
+		$html .= '<th style="white-space: nowrap;">Nama MEDREP</th>';
 		$html .= '<th style="white-space: nowrap;">Posisi</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';

@@ -107,13 +107,13 @@ class Rep_competitor extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Tanggal</th>';
-		$html .= '<th style="width: 300px">User GFF</th>';
+		$html .= '<th style="width: 300px">User MEDREP</th>';
 		$html .= '<th style="width: 200px">Account</th>';
 		//$html .= '<th style="width: 200px">Outlet ID</th>';
 		//$html .= '<th style="width: 200px">Kode Outlet</th>';
 		//$html .= '<th style="width: 200px">Nama Outlet</th>';
 		//$html .= '<th style="width: 200px">Alamat</th>';
-		$html .= '<th style="width: 200px">Kota</th>';
+		$html .= '<th style="width: 200px">Area</th>';
 		$html .= '<th style="width: 450px">Nama Produk</th>';
 		$html .= '<th style="width: 80px">Sewa</th>';
 		$html .= '<th style="width: 100px">Tipe Sewa</th>';
@@ -142,7 +142,7 @@ class Rep_competitor extends BaseController
             //$html .= '<td style="width: 200px">'.$value['kode_outlet'].'</td>';
 			//$html .= '<td style="width: 200px">'.$value['nama_customer'].'</td>';
 			//$html .= '<td style="width: 200px">'.$value['alamat'].'</td>';
-			$html .= '<td style="width: 200px">'.$value['city'].'</td>';
+			$html .= '<td style="width: 200px">'.$value['nama_area'].'</td>';
 			$html .= '<td style="width: 450px">'.$value['nama_invoice'].'</td>';
 			$html .= '<td style="width: 80px">'.$value['sewa'].'</td>';
 			$html .= '<td style="width: 100px">'.$value['tipesewa'].'</td>';
@@ -238,13 +238,13 @@ class Rep_competitor extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 80px">Tanggal</th>';
-		$html .= '<th style="width: 200px">User GFF</th>';
+		$html .= '<th style="width: 200px">User MEDREP</th>';
 		$html .= '<th style="width: 200px">Account</th>';
 		//$html .= '<th style="width: 200px">Outlet ID</th>';
 		//$html .= '<th style="width: 200px">Kode Outlet</th>';
 		//$html .= '<th style="width: 200px">Nama Outlet</th>';
 		//$html .= '<th style="width: 200px">Alamat</th>';
-		$html .= '<th style="width: 200px">Kota</th>';
+		$html .= '<th style="width: 200px">Area</th>';
         $html .= '<th style="width: 450px">Nama Produk</th>';
         $html .= '<th style="width: 200px">Harga</th>';
 		$html .= '<th style="width: 600px">Description</th>';
@@ -268,7 +268,7 @@ class Rep_competitor extends BaseController
 			//$html .= '<td style="width: 200px">'.$value['kode_outlet'].'</td>';
 			//$html .= '<td style="width: 200px">'.$value['nama_customer'].'</td>';
 			//$html .= '<td style="width: 200px">'.$value['alamat'].'</td>';
-			$html .= '<td style="width: 200px">'.$value['city'].'</td>';
+			$html .= '<td style="width: 200px">'.$value['nama_area'].'</td>';
 			$html .= '<td style="width: 450px">'.$value['product_name'].'</td>';
 			$html .= '<td style="width: 200px">'.number_format($value['harga_normal'], 0, '.', ',').'</td>';
 			$html .= '<td style="width: 600px">'.$value['description'].'</td>';
@@ -354,13 +354,13 @@ class Rep_competitor extends BaseController
                     ->setCellValue('A1', 'List Promo Competitor')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'Tanggal')
-                    ->setCellValue('C2', 'User GFF')
+                    ->setCellValue('C2', 'User MEDREP')
                     ->setCellValue('D2', 'Account')
                     //->setCellValue('E2', 'Outlet ID')
                     //->setCellValue('F2', 'Kode Outlet')
                     //->setCellValue('G2', 'Nama Outlet')
                     //->setCellValue('H2', 'Alamat')
-                    ->setCellValue('E2', 'Kota')
+                    ->setCellValue('E2', 'Area')
                     ->setCellValue('F2', 'Nama Produk')
                     ->setCellValue('G2', 'Sewa')
                     ->setCellValue('H2', 'Tipe Sewa')
@@ -385,7 +385,7 @@ class Rep_competitor extends BaseController
                                     //->setCellValue('F'.$i, $vpjp['kode_outlet'])
                                     //->setCellValue('G'.$i, $vpjp['nama_customer'])
                                     //->setCellValue('H'.$i, $vpjp['alamat'])
-                                    ->setCellValue('E'.$i, $vpjp['city'])
+                                    ->setCellValue('E'.$i, $vpjp['nama_area'])
                                     ->setCellValue('F'.$i, $vpjp['nama_invoice'])
                                     ->setCellValue('G'.$i, $vpjp['sewa'])
                                     ->setCellValue('H'.$i, $vpjp['tipesewa'])
@@ -510,7 +510,7 @@ class Rep_competitor extends BaseController
                     ->setCellValue('G2', 'Discount')
                     ->setCellValue('H2', 'Start Date')
                     ->setCellValue('I2', 'End Date')
-                    ->setCellValue('J2', 'Kota')
+                    ->setCellValue('J2', 'Area')
                     ;
 
                     $i = 3;
@@ -527,7 +527,7 @@ class Rep_competitor extends BaseController
                                     ->setCellValue('G'.$i, (($vpjp['harga_normal']-$vpjp['harga_promo'])/$vpjp['harga_normal'])*100)
                                     ->setCellValue('H'.$i, $vpjp['start_date'])
                                     ->setCellValue('I'.$i, $vpjp['end_date'])
-                                    ->setCellValue('J'.$i, $vpjp['city'])
+                                    ->setCellValue('J'.$i, $vpjp['nama_area'])
 									;
 						$objPHPExcel->getActiveSheet()->getStyle('G'.$i)->getNumberFormat()->setFormatCode('#,##0.00');									
                             $i++;
@@ -610,13 +610,13 @@ class Rep_competitor extends BaseController
                     ->setCellValue('A1', 'List New Product Competitor ')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'Tanggal')
-                    ->setCellValue('C2', 'User GFF')
+                    ->setCellValue('C2', 'User MEDREP')
                     ->setCellValue('D2', 'Account')
                     //->setCellValue('E2', 'Outlet ID')
                     //->setCellValue('F2', 'Kode Outlet')
                     //->setCellValue('G2', 'Nama Outlet')
                     //->setCellValue('H2', 'Alamat')
-                    ->setCellValue('E2', 'Kota')
+                    ->setCellValue('E2', 'Area')
                     ->setCellValue('F2', 'Nama Produk')
                     ->setCellValue('G2', 'Harga')
                     ->setCellValue('H2', 'Deskripsi')
@@ -636,7 +636,7 @@ class Rep_competitor extends BaseController
                                     //->setCellValue('F'.$i, $vpjp['kode_outlet'])
                                     //->setCellValue('G'.$i, $vpjp['nama_customer'])
                                     //->setCellValue('H'.$i, $vpjp['alamat'])
-                                    ->setCellValue('E'.$i, $vpjp['city'])
+                                    ->setCellValue('E'.$i, $vpjp['nama_area'])
                                     ->setCellValue('F'.$i, $vpjp['product_name'])
                                     ->setCellValue('G'.$i, $vpjp['harga_normal'])
                                     ->setCellValue('H'.$i, $vpjp['description']);
@@ -743,9 +743,9 @@ class Rep_competitor extends BaseController
                     ->setCellValue('A1', 'List New Product Competitor ')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'Tanggal')
-                    ->setCellValue('C2', 'User GFF')
+                    ->setCellValue('C2', 'User MEDREP')
                     ->setCellValue('D2', 'Account')
-                    ->setCellValue('E2', 'Kota')
+                    ->setCellValue('E2', 'Area')
                     ->setCellValue('F2', 'Nama Produk')
                     ->setCellValue('G2', 'Harga')
                     ->setCellValue('H2', 'Deskripsi')
@@ -760,7 +760,7 @@ class Rep_competitor extends BaseController
                                     ->setCellValue('B'.$i, $vpjp['periode'])
                                     ->setCellValue('C'.$i, $vpjp['salesmanid'].'-'.$vpjp['nama_salesman'])
                                     ->setCellValue('D'.$i, $vpjp['nama_class'])
-                                    ->setCellValue('E'.$i, $vpjp['city'])
+                                    ->setCellValue('E'.$i, $vpjp['nama_area'])
                                     ->setCellValue('F'.$i, $vpjp['product_name'])
                                     ->setCellValue('G'.$i, $vpjp['harga_normal'])
                                     ->setCellValue('H'.$i, $vpjp['description']);

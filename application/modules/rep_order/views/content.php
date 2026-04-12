@@ -73,6 +73,11 @@
     font-size: 12px;
     margin-left: 0px;
   }
+  .no-border td {
+    border: none !important;
+    padding: 1rem;
+    font-size: 1.2em;
+  }
 </style>
 
 <section class="content-header">
@@ -105,4 +110,4 @@
 </section>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/rep_order/rep-order-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/rep_order/rep-order-content.js'?>"></script>

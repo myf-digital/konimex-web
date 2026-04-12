@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("Sales Salesman");
+    common.setTitle("Sales Medrep");
     // ui components
     let uiTbl = $("#tbl-sales-salesman");
 
@@ -23,7 +23,7 @@
 
     function initializeGrid() {
         let option = {
-            title: "Sales Salesman",
+            title: "Sales Medrep",
             toolbar: toolbar(),
             url: common.baseURL("ref_sales_salesman/load"),
             pageNumber: 1,
@@ -41,12 +41,12 @@
             ]],
             columns: [[
 				//{field:'siteid', title:'SITEID', halign: 'left', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'USER GFF', halign: 'left', align: 'left', sortable:"true", width:100},
-				{field:'nama_salesman', title:'NAMA GFF', halign: 'left', align: 'left', sortable:"true", width:250},
-				{field:'tipe_sales', title:'GFF TYPE', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'salesmanid', title:'USER MEDREP', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'nama_salesman', title:'NAMA MEDREP', halign: 'left', align: 'left', sortable:"true", width:250},
+				{field:'tipe_sales', title:'MEDREP TYPE', halign: 'left', align: 'left', sortable:"true", width:100},
 				{field:'nama_regional', title:'Regional', halign: 'left', align: 'left', sortable:"true", width:120},
 				{field:'nama_area', title:'Area', halign: 'left', align: 'left', sortable:"true", width:120},
-				{field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:120},
+				// {field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:120},
 				{field:'aktifstatus', title:'STATUS', halign: 'left', align: 'left', sortable:"true", width:100},
 				//{field:'password', title:'PASSWORD', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'nama_category', title:'CATEGORY', halign: 'left', align: 'left', sortable:"true", width:200},

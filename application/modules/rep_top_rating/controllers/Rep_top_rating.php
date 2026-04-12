@@ -35,7 +35,7 @@ class Rep_top_rating extends BaseController
         $html .= '<th style="width: 300px">Outlet</th>';
         $html .= '<th style="width: 200px">Regional</th>';
         $html .= '<th style="width: 200px">Area</th>';
-        $html .= '<th style="width: 200px">City</th>';
+        // $html .= '<th style="width: 200px">City</th>';
         $html .= '<th style="width: 200px">Rating</th>';
         $html .= '</tr>';
         $html .= '</tbody>';
@@ -54,7 +54,7 @@ class Rep_top_rating extends BaseController
             $html .= '<td style="width: 300px">'.$value['nama_customer'].'</td>';
             $html .= '<td style="width: 200px">'.$value['regional'].'</td>';
             $html .= '<td style="width: 200px">'.$value['area'].'</td>';
-            $html .= '<td style="width: 200px">'.$value['city'].'</td>';
+            // $html .= '<td style="width: 200px">'.$value['city'].'</td>';
             $html .= '<td style="width: 200px">'.$value['rating_star'].$this->star(round($value['rating_star'])).'</td>';
             $i++;
         }
@@ -205,7 +205,7 @@ class Rep_top_rating extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'ID Outlet', 'Kode Outlet', 'Outlet', 'Regional', 'Area', 'City', 'Rating'];
+        $header = ['No', 'ID Outlet', 'Kode Outlet', 'Outlet', 'Regional', 'Area', 'Rating'];
 
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'List Report Top Rating '.$top);
@@ -223,7 +223,7 @@ class Rep_top_rating extends BaseController
                 $value['nama_customer'],
                 $value['regional'],
                 $value['area'],
-                $value['city'],
+                // $value['city'],
                 round($value['rating_star'])
             ];
 

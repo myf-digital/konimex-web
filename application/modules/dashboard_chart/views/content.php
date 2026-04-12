@@ -7,7 +7,7 @@
         justify-content: center;
         align-items: center;
     }
-    #chartParmaCoverage {
+    #chartMedrepCoverage {
         max-width: 100% !important;
         max-height: 100% !important;
     }
@@ -95,7 +95,7 @@
         </div>
         <div class="col-md-6 col-sm-12">
             <h4 class="section-title">
-                Performance SALESMAN
+                Performance MEDREP
                 <span id="labelPerformance"></span>
             </h4>
             <div class="dashboard-card mb-4">
@@ -108,7 +108,7 @@
     <div class="row mt-3r">
         <div class="col-md-6 col-sm-12">
             <h4 class="section-title">
-                Preseni SALESMAN
+                Preseni MEDREP
                 <span id="labelPresensi"></span>
             </h4>
             <div class="dashboard-card mb-4">
@@ -119,12 +119,12 @@
         </div>
         <div class="col-md-6 col-sm-12">
             <h4 class="section-title">
-                Man Power SALESMAN
-                <span id="labelParmaCoverage"></span>
+                Man Power MEDREP
+                <span id="labelMedrepCoverage"></span>
             </h4>
             <div class="dashboard-card mb-4">
                 <div class="chart-container">
-                    <canvas id="chartParmaCoverage"></canvas>
+                    <canvas id="chartMedrepCoverage"></canvas>
                 </div>
             </div>
         </div>

@@ -35,39 +35,56 @@ class App_dashboard_model extends CI_Model
     public function load($data)
     {
 		if ($data["restrict_level"]=='4'){
-			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."')
+												where a.username='".$data["usersession"]."') and tipe_sales='MEDREP' and aktif=1
 												)";
 		}
 		else if ($data["restrict_level"]=='3'){
-			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
 											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$data["usersession"]."')
+											where a.username='".$data["usersession"]."') and tipe_sales='MEDREP' and aktif=1
 												)";
 		}
 		else if ($data["restrict_level"]=='2'){
-			$strquery = " and z.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
 												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."')
+												where a.username='".$data["usersession"]."') and tipe_sales='MEDREP' and aktif=1
 												) ";
 		}
 		else {
-			$strquery = "";
+			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where tipe_sales='MEDREP' and aktif=1)";
 		}
 
 		$field = " a.* ";
-		$table = " (select distinct z.siteid, z.periode, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area city,
-					(select count(1) from t_sales_rrk where periode=z.periode and salesmanid=z.salesmanid) _jadwal, 
+		$table = " (
+					select distinct b.siteid, b.salesmanid, b.nama_salesman, b.tipe_sales, a.periode, c.nama_area city,
+					(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) _jadwal, 
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and crc_time is not null) _crc,
-					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and order_time is not null) _order
-					from t_sales_rrk_trans z left join t_sales_rrk a on z.salesmanid=a.salesmanid and z.periode=a.periode
-					left join m_sales_salesman b on z.salesmanid=b.salesmanid
-					left join m_area_subarea c on c.subareaid=b.subareaid
-					where z.periode = '".(@$data["get_date"] ?? date('Y-m-d'))."' $strquery
-					group by z.siteid, z.salesmanid, b.nama_salesman, b.tipe_sales, c.nama_area) a
+					(select count(1) from t_sales_rrk_trans tsrt join t_sales_master tsm on tsrt.periode =tsm.tanggal and tsrt.salesmanid =tsm.salesmanid and tsrt.customerid =tsm.customerid
+						where tsrt.periode=z.periode and tsrt.salesmanid=z.salesmanid and tsm.bruto >0) _order,
+						ap.start_time,
+						ap.start_image,
+						IF(ap.start_image IS NULL OR ap.start_image = '',
+							ap.start_image,
+							CONCAT('".URL_IMAGE."', ap.start_image)
+						) AS url_start_image,
+						ap.start_keterangan,
+						ap.end_time,
+						IF(ap.end_image IS NULL OR ap.end_image = '',
+							ap.end_image,
+							CONCAT('".URL_IMAGE."', ap.end_image)
+						) AS url_end_image,
+						ap.end_keterangan
+					from m_sales_salesman b
+					left join t_sales_rrk a on b.salesmanid=a.salesmanid and a.periode = '".($data["get_date"] ?? today())."'
+					left join t_sales_rrk_trans z  on b.salesmanid=z.salesmanid and z.periode = '".($data["get_date"] ?? today())."'
+					left join m_area_areasite c on b.areaid=c.areaid
+					left join attendance_parma ap on ap.salesmanid = b.salesmanid and ap.periode = '".($data["get_date"] ?? today())."'
+					$strquery
+					) a
 					";
         return easy_pagging($data, $field, $table);
     }
@@ -80,7 +97,7 @@ class App_dashboard_model extends CI_Model
 			   tcrc.brandid, product.nama_brand,
 			   tcrc.productid, replace(product.nama_invoice,'\'','`') nama_invoice,
 			   tcrc.qty_rata  as r1,
-			   tcrc.qty_akhir  as a1,
+			   case when tcrc.stock_buffer>0 then tcrc.stock_buffer else tcrc.qty_akhir end as a1,
 			   tcrc.qty_saran_order  as s1, 
 			   tcrc.qty_fix_order  as f1,
 			   ifnull(tcrc.total_qty_exp,0) as exp_qty,
@@ -113,12 +130,6 @@ class App_dashboard_model extends CI_Model
 						\'<td style="text-align:left;padding:10px;">Product Name</td>\'+
 						\'<td style="text-align:right;padding:10px;">Stock</td>\'+
 						\'<td style="text-align:right;padding:10px;">Harga</td>\'+
-						\'<td style="text-align:right;padding:10px;">Qty Expired</td>\'+
-						\'<td style="text-align:right;padding:10px;">Expired Date</td>\'+
-						\'<td style="text-align:right;padding:10px;">Selling Out</td>\'+
-						\'<td style="text-align:right;padding:10px;">Rata-rata</td>\'+
-						\'<td style="text-align:right;padding:10px;">Saran Order</td>\'+
-						\'<td style="text-align:right;padding:10px;">Order</td>\'+
 					\'</td>\'+
 				\'</thead>\'+
 				\'<tbody>\'+';
@@ -129,12 +140,12 @@ class App_dashboard_model extends CI_Model
 			
 				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['a1'].'</td>\'+';
 				$return .= '\'<td style="text-align:right;padding:10px;">'.number_format($value['price'], 2, '.', ',').'</td>\'+';			
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_qty'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_date'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['sell_out'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['r1'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['s1'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['f1'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_qty'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_date'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['sell_out'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['r1'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['s1'].'</td>\'+';
+				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['f1'].'</td>\'+';
 			
 				$return .= '\'</tr>\'+';
 					
@@ -412,8 +423,8 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
             sum(case when dtl.flag_bonus = 0 then (dtl.qty_kecil*dtl.h_jual) - (dtl.rp_cabang+dtl.rp_prinsipal+dtl.rp_xtra+dtl.rp_cod) else 0 end) as total_netto
             from 
             t_sales_master sls left join
-            t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_sales = dtl.no_sales left JOIN
-			left JOIN m_customer_ob custob ON sls.salesmanid = custob.salesmanid and sls.customerid = custob.customerid
+            t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
+			m_customer_ob custob ON sls.salesmanid = custob.salesmanid and sls.customerid = custob.customerid
             left join m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
             m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
             m_product product on dtl.productid = product.productid 
@@ -529,7 +540,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		$q = $this->db->query(" select z.* from (
 								select case when b.customerid is null then 'ExtraCall' 
 									   when b.customerid is not null then 'EffectiveCall' end as flag,
-									   a.siteid, e.nama_site , a.salesmanid,  a.customerid , f.nama_customer, f.alamat, f.latitude, f.longitude, 
+									   a.siteid, e.nama_site , a.salesmanid,  a.customerid , f.customerid_m, f.nama_customer, f.alamat, f.latitude, f.longitude, 
 									   a.latitude_cell, a.longitude_cell, d.nama_salesman,a.check_in
 								from t_sales_rrk_trans a left join t_sales_rrk b on 
 								a.siteid = b.siteid and a.salesmanid = b.salesmanid and a.customerid=b.customerid and a.periode=b.periode
@@ -541,7 +552,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 								where a.periode='".$get_date."' and a.salesmanid='".$sid."'
 								group by a.siteid, a.periode, a.salesmanid, a.customerid, a.latitude_cell, a.longitude_cell, a.check_in, b.customerid, d.nama_salesman, e.nama_site, f.nama_customer, f.alamat, f.latitude, f.longitude
 								UNION ALL
-								select 'Jadwal' as flag, rrk.siteid, site.nama_site , rrk.salesmanid,  rrk.customerid , cust.nama_customer, cust.alamat, cust.latitude, 
+								select 'Jadwal' as flag, rrk.siteid, site.nama_site , rrk.salesmanid,  rrk.customerid , cust.customerid_m, cust.nama_customer, cust.alamat, cust.latitude, 
 								cust.longitude, cust.latitude as latitude_cell, cust.longitude as longitude_cell, sls.nama_salesman, '' check_in
 								from  t_sales_rrk rrk								
 								INNER JOIN  m_sales_salesman sls ON rrk.siteid = sls.siteid and rrk.salesmanid = sls.salesmanid
@@ -550,7 +561,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 								INNER JOIN  m_setup_site site ON rrk.siteid = site.siteid
 								where rrk.periode = '".$get_date."' and rrk.salesmanid = '".$sid."' 
 								UNION ALL
-								select 'Noo' as flag, cust.siteid, site.nama_site , cust.salesmanid,  cust.customerid , cust.nama_customer, 
+								select 'Noo' as flag, cust.siteid, site.nama_site , cust.salesmanid,  cust.customerid, cust.customerid_m, cust.nama_customer, 
 										cust.alamat, cust.latitude, cust.longitude, cust.latitude as latitude_cell, cust.longitude as longitude_cell, 
 										sls.nama_salesman, '' check_in
 								from  m_customer as cust
@@ -562,6 +573,15 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		//$this->db->order_by('check_in', 'ASC');
 		//$q=$this->db->get();
 		return $q->result_array();
+	}
+
+	function get_attendance_parma($sid,$get_date) {
+		$this->db->select("ap.*");
+		$this->db->from("attendance_parma ap");
+		$this->db->where("ap.salesmanid",$sid);
+		$this->db->where("ap.periode",$get_date);
+		$data = $this->db->get()->row();
+		return $data;
 	}
 
 	function get_detail_rrk($siteid,$customerid,$salesmanid,$get_date) {
@@ -579,14 +599,15 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		return $data;
     }
 
-	function get_image_cust($siteid,$customerid,$salesmanid) {
+	function get_image_cust($siteid,$customerid,$customerid_m,$salesmanid) {
 	
-		$this->db->select("image");
+		$this->db->select("ifnull(image,'noimage.jpg') as image");
 		$this->db->from("m_customer_image");
-		$this->db->where("customerid",$customerid);
 		$this->db->where("siteid",$siteid);
 		$this->db->where("salesmanid",$salesmanid);
 		$this->db->where("image_type","IMG_OUTLET");
+		$this->db->where("customerid",$customerid);
+		//$this->db->or_where("customerid_m",$customerid_m);
 		$this->db->order_by("created_date","desc");
 		$this->db->limit(1, 0);
 		$data = $this->db->get()->row();
@@ -594,7 +615,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 	}
 
 	function get_image_checkin($siteid,$periode,$salesmanid,$customerid) {
-	$this->db->select("image,image_type");
+	$this->db->select("ifnull(image,'noimage.jpg') as image,image_type");
 	$this->db->from("m_customer_image");
 	$this->db->where("siteid",$siteid);
 	$this->db->where("periode",$periode);
@@ -699,6 +720,62 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		return $data;
 	}
 
+	function get_detailing($siteid,$periode,$salesmanid,$customerid) {
+		$q = $this->db->query(" SELECT a.periode, a.siteid, a.salesmanid, a.salesman_name, 
+										a.customerid, v.latest_jjid, v.nama_customer, v.typeid, v.nama_account,
+										a.nourut, a.tipe_pic, a.professional_name, 
+										a.array_product, 
+										CASE
+											WHEN (
+												SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+												FROM ref_brand rb
+												WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+											) IS NOT NULL THEN (
+												SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+												FROM ref_brand rb
+												WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
+											)
+											ELSE a.array_product
+										END as brands,
+										a.keterangan, a.start_detailing, a.url_img_detailing, 
+										a.latitude_cell, a.longitude_cell, a.end_detailing, a.status, a.reason
+								FROM trx_visit_detailing a left join v_outlet_all v on a.customerid =v.customerid
+								where a.periode='".$periode."' and a.salesmanid='".$salesmanid."' and a.customerid='".$customerid."'
+								;");
+		$data = $q->result_array();
+		return $data;
+	}
+
+	function get_image_detailing() {
+		$siteid = $_POST['siteid'];
+		$periode = $_POST['periode'];
+		$customerid = $_POST['customerid'];
+		$salesmanid = $_POST['salesmanid'];
+
+		$this->db->select("
+			url_img_detailing,
+			keterangan,
+			CASE
+				WHEN (
+					SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+					FROM ref_brand rb
+					WHERE FIND_IN_SET(rb.brandid, array_product) > 0
+				) IS NOT NULL THEN (
+					SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
+					FROM ref_brand rb
+					WHERE FIND_IN_SET(rb.brandid, array_product) > 0
+				)
+				ELSE array_product
+			END as brands
+		");
+		$this->db->from("trx_visit_detailing");
+		$this->db->where("periode",$periode);
+		$this->db->where("siteid",$siteid);
+		$this->db->where("salesmanid",$salesmanid);
+		$this->db->where("customerid",$customerid);
+		$data = $this->db->get()->result_array();
+		return $data;
+	}
 
 	function get_siteid() {
 		$this->db->select("siteid");
@@ -861,5 +938,4 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		$response['images'] = $result_array->result();
 		return $response;
 	}
-
 }

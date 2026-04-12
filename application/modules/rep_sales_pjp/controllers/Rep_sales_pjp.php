@@ -306,10 +306,10 @@ class Rep_sales_pjp extends BaseController
 		$row4 = ['Aktif', $salesActive];
 
 		$row5 = ['Week', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-		$row6 = array_merge(['Week 1'], $formatWeek1);
-		$row7 = array_merge(['Week 2'], $formatWeek2);
-		$row8 = array_merge(['Week 3'], $formatWeek3);
-		$row9 = array_merge(['Week 4'], $formatWeek4);
+		$row6 = $this->generateWeekData('1', $row5, $formatWeek1);
+		$row7 = $this->generateWeekData('2', $row5, $formatWeek2);
+		$row8 = $this->generateWeekData('3', $row5, $formatWeek3);
+		$row9 = $this->generateWeekData('4', $row5, $formatWeek4);
 
 		$spreadsheet->getActiveSheet()
 		    ->fromArray($row1,NULL,'A1');
@@ -338,4 +338,17 @@ class Rep_sales_pjp extends BaseController
 
 		$writer->save('php://output');
     }
+
+	function generateWeekData($n, $weeks, $data)
+	{
+		$result = [];
+		foreach ($weeks as $k => $w) {
+			if ($k == 0) $result[] = $w . ' ' . $n;
+			else {
+				if (isset($data[$k])) $result[] = $data[$k];
+				else $result[] = '';
+			}
+		}
+		return $result;
+	}
 }

@@ -16,7 +16,7 @@
     let paramsession = common.getCookie("session");
 
     let isUpdate = param !== undefined;
-    let selectedParma = null;
+    let selectedMedrep = null;
 
     // maps
     let map;
@@ -59,7 +59,7 @@
             restrict_level: paramsession.restrict_level
         });
         uiSelectSalesman.on('change', function () {
-            selectedParma = uiSelectSalesman.select2('data')[0];
+            selectedMedrep = uiSelectSalesman.select2('data')[0];
 
             // reset maps
             centerMarker = null;
@@ -70,8 +70,9 @@
             mapInitialized = false;
             defaultRadius = 5;
 
-            if (selectedParma) {
+            if (selectedMedrep) {
                 uiBtnMaps.removeAttr('disabled');
+                loadOutlet(selectedMedrep);
             } else {
                 uiBtnMaps.attr('disabled', 'disabled');
                 resetSelectOutlet();
@@ -95,10 +96,10 @@
         });
 
         uiBtnMaps.click(function () {
-            if (!selectedParma) return;
+            if (!selectedMedrep) return;
 
-            loadOutlet(selectedParma);
-            $('#myModalMapsLabel').html(`User (SALESMAN): ${selectedParma.text}`);
+            loadOutlet(selectedMedrep);
+            $('#myModalMapsLabel').html(`User (MEDREP): ${selectedMedrep.text}`);
             $('#modalMaps').modal('show');
         });
 
@@ -219,7 +220,7 @@
         }, function (res) {
             uiSelectSalesman.empty();
             uiSelectSalesman.select2({
-                placeholder: "Select Salesman",
+                placeholder: "Select Medrep",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid;
@@ -286,72 +287,72 @@
 
     function initMap() {
         try {
-        let centerLatLong = defaultCenter;
-        if (selectedParma.latitude && selectedParma.longitude) {
-            centerLatLong = { lat: parseFloat(selectedParma.latitude), lng: parseFloat(selectedParma.longitude) };
-        }
+            let centerLatLong = defaultCenter;
+            if (selectedMedrep.latitude && selectedMedrep.latitude != '0' && selectedMedrep.longitude && selectedMedrep.longitude != '0') {
+                centerLatLong = { lat: parseFloat(selectedMedrep.latitude), lng: parseFloat(selectedMedrep.longitude) };
+            }
 
-        map = new google.maps.Map(document.getElementById('maps'), {
-            center: centerLatLong,
-            zoom: 13,
-        });
+            map = new google.maps.Map(document.getElementById('maps'), {
+                center: centerLatLong,
+                zoom: 13,
+            });
 
-        const input = document.getElementById('search-input');
-        const autocomplete = new google.maps.places.Autocomplete(input);
-        autocomplete.bindTo('bounds', map);
-
-        const pacContainer = document.querySelector('.pac-container');
-        if (pacContainer) {
-            document.querySelector('#modalMaps .modal-body').appendChild(pacContainer);
-        }
-
-        autocomplete.addListener('place_changed', () => {
-            const place = autocomplete.getPlace();
-            if (!place.geometry || !place.geometry.location) return;
-
-            const lat = place.geometry.location.lat();
-            const lng = place.geometry.location.lng();
-            const radius = parseFloat(document.getElementById('radiusSelect').value);
-            defaultRadius = radius;
-
-            map.setCenter({ lat, lng });
-            map.setZoom(15);
-
-            drawSearchRadius(lat, lng, radius);
-            loadOutletMaps(lat, lng, radius);
-        });
-
-        document.getElementById('btnSearchArea').addEventListener('click', () => {
-            const center = map.getCenter();
-            const radius = parseFloat(document.getElementById('radiusSelect').value);
             const input = document.getElementById('search-input');
-            input.value = '';
-            
-            defaultRadius = radius;
-            drawSearchRadius(center.lat(), center.lng(), radius);
-            loadOutletMaps(center.lat(), center.lng(), radius);
-        });
+            const autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.bindTo('bounds', map);
 
-        document.getElementById('radiusSelect').addEventListener('change', () => {
-            const center = map.getCenter();
-            const radius = parseFloat(document.getElementById('radiusSelect').value);
-            
-            defaultRadius = radius;
-            drawSearchRadius(center.lat(), center.lng(), radius);
-            loadOutletMaps(center.lat(), center.lng(), radius);
-        });
+            const pacContainer = document.querySelector('.pac-container');
+            if (pacContainer) {
+                document.querySelector('#modalMaps .modal-body').appendChild(pacContainer);
+            }
 
-        document.getElementById('btnSave').addEventListener('click', saveSelected);
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
 
-        google.maps.event.addListenerOnce(map, 'idle', () => {
-            drawSearchRadius(centerLatLong.lat, centerLatLong.lng, defaultRadius);
-            setCenterMarker(centerLatLong.lat, centerLatLong.lng);
-        });
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                const radius = parseFloat(document.getElementById('radiusSelect').value);
+                defaultRadius = radius;
 
-        setTimeout(() => google.maps.event.trigger(map, 'resize'), 300);
-    } catch (err) {
-        console.error(err)
-    }
+                map.setCenter({ lat, lng });
+                map.setZoom(15);
+
+                drawSearchRadius(lat, lng, radius);
+                loadOutletMaps(lat, lng, radius);
+            });
+
+            document.getElementById('btnSearchArea').addEventListener('click', () => {
+                const center = map.getCenter();
+                const radius = parseFloat(document.getElementById('radiusSelect').value);
+                const input = document.getElementById('search-input');
+                input.value = '';
+                
+                defaultRadius = radius;
+                drawSearchRadius(center.lat(), center.lng(), radius);
+                loadOutletMaps(center.lat(), center.lng(), radius);
+            });
+
+            document.getElementById('radiusSelect').addEventListener('change', () => {
+                const center = map.getCenter();
+                const radius = parseFloat(document.getElementById('radiusSelect').value);
+                
+                defaultRadius = radius;
+                drawSearchRadius(center.lat(), center.lng(), radius);
+                loadOutletMaps(center.lat(), center.lng(), radius);
+            });
+
+            document.getElementById('btnSave').addEventListener('click', saveSelected);
+
+            google.maps.event.addListenerOnce(map, 'idle', () => {
+                drawSearchRadius(centerLatLong.lat, centerLatLong.lng, defaultRadius);
+                setCenterMarker(centerLatLong.lat, centerLatLong.lng);
+            });
+
+            setTimeout(() => google.maps.event.trigger(map, 'resize'), 300);
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     function drawSearchRadius(lat, lng, radiusKm) {
@@ -410,7 +411,7 @@
             lat_center: lat,
             lng_center: lng,
             radius_km: radiusKm,
-            salesmanid: selectedParma.salesmanid,
+            salesmanid: selectedMedrep.salesmanid,
             selected_outlets: selectedOutlets,
         }, function (res) {
             dataOutlets = res.result;

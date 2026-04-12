@@ -149,8 +149,8 @@ class Ref_customer extends BaseController
                     ->setCellValue('I1', 'Channel/Type')
                     ->setCellValue('J1', 'SubChannel/Account')
                     ->setCellValue('K1', 'DC')
-                    ->setCellValue('L1', 'GFF')
-                    ->setCellValue('M1', 'GFF Name')
+                    ->setCellValue('L1', 'MEDREP')
+                    ->setCellValue('M1', 'MEDREP Name')
                     ->setCellValue('N1', 'Position')
                     ;
         $i = 2;

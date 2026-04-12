@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Sales Salesman <small>Control panel</small>
+        Sales Medrep <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Sales Salesman</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Sales Medrep</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-6">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Sales Salesman</h3>
+                    <h3 class="box-title">Form Sales Medrep</h3>
                 </div>
 
                 <form id="fm-sales-salesman" role="form" method="post">
@@ -33,8 +33,8 @@
 								<input name="password" type="password" class="form-control" value="" placeholder="Password">
 							</div>
 							<div class="form-group col-md-9">
-								<label for="nama_salesman">Nama Salesman</label>
-								<input name="nama_salesman" class="form-control" placeholder="Nama Salesman">
+								<label for="nama_salesman">Nama Medrep</label>
+								<input name="nama_salesman" class="form-control" placeholder="Nama Medrep">
 							</div>
 							<!--<div class="form-group col-md-3">
 								<label for="supervisorid">Supervisorid</label>
@@ -49,7 +49,7 @@
 								<input name="tipe_db" class="form-control" placeholder="Tipe Db">
 							</div>-->
 							<div class="form-group col-md-3">
-								<label for="aktif">Status Salesman</label>
+								<label for="aktif">Status Medrep</label>
                                 <select id="aktif-id" name="aktif" class="form-control" placeholder="Active/Not Active"></select>
 							</div>
 							<div class="form-group  col-md-3">

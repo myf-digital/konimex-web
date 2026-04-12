@@ -72,7 +72,6 @@
 		<link rel="apple-touch-startup-image" href="<?php echo base_url(); ?>assets/template/img/splash/ipad-landscape.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)">
 		<link rel="apple-touch-startup-image" href="<?php echo base_url(); ?>assets/template/img/splash/ipad-portrait.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)">
 		<link rel="apple-touch-startup-image" href="<?php echo base_url(); ?>assets/template/img/splash/iphone.png" media="screen and (max-device-width: 320px)">
-		<!--<script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyBEmppoWtgOt74tOkNo_SDy9OHonj3MMTY&sensor=false"></script>-->
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&libraries=places,marker"></script>
 																				   
 		<!--<script src="< ?php echo base_url(); ?>assets/template/js/libs/jquery-2.0.2.min.js"></script>

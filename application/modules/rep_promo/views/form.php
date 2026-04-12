@@ -74,47 +74,47 @@
 
                 <form id="fm-report_promo" role="form" method="post">
                     <div class="box-body col-md-12">
-                            <div class="form-group col-md-2">
-								<label for="start_periode">Start Periode</label>
-                                    <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-th"></span>
-                                    </div>
-                                    <input id="start_periode" placeholder="Start Periode" type="text" class="form-control datepicker" name="start_periode" readonly>
-                                    </div>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="end_periode">End Periode</label>
-                                <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-th"></span>
-                                    </div>
-                                    <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
-                                    </div>
-							</div>
-                            <div class="form-group col-md-2">
-								<label for="tipepromo">Type Promo</label>
-                                <select id="tipepromo-id" name="tipepromo" class="form-control" placeholder="All Type Promo">
-                                </select>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="account">SubChannel / Account</label>
-                                <select id="account-id" name="account" class="form-control" placeholder="Select Account"></select>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="regional">Regional</label>
-                                <select id="regional-id" name="regional" class="form-control" placeholder="Select Regional"></select>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="city">City</label>
-                                <select id="city-id" name="city" class="form-control" placeholder="Select City"></select>
-							</div>
+                        <div class="form-group col-md-2">
+                            <label for="start_periode">Start Periode</label>
+                            <div class="input-group date">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                            <input id="start_periode" placeholder="Start Periode" type="text" class="form-control datepicker" name="start_periode" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="end_periode">End Periode</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                                <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
+                                </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="tipepromo">Type Promo</label>
+                            <select id="tipepromo-id" name="tipepromo" class="form-control" placeholder="All Type Promo">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="account">SubChannel / Account</label>
+                            <select id="account-id" name="account" class="form-control" placeholder="Select Account"></select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="regional">Regional</label>
+                            <select id="regional-id" name="regional" class="form-control" placeholder="Select Regional"></select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="area">Area</label>
+                            <select id="area-id" name="area" class="form-control" placeholder="Select Area"></select>
+                        </div>
 					</div>
                     <div class="box-body col-md-12">
-							<div class="form-group col-md-6">
-								<label for="idpromo">Promo</label>
-                                <select id="idpromo-id" name="idpromo" class="form-control" placeholder="Select Promo"></select>
-							</div>
+                        <div class="form-group col-md-6">
+                            <label for="idpromo">Promo</label>
+                            <select id="idpromo-id" name="idpromo" class="form-control" placeholder="Select Promo"></select>
+                        </div>
                     </div>
 
                     <div class="box-footer">
