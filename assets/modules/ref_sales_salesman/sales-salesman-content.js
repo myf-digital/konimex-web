@@ -41,9 +41,9 @@
             ]],
             columns: [[
 				//{field:'siteid', title:'SITEID', halign: 'left', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'USER GFF', halign: 'left', align: 'left', sortable:"true", width:100},
-				{field:'nama_salesman', title:'NAMA GFF', halign: 'left', align: 'left', sortable:"true", width:250},
-				{field:'tipe_sales', title:'GFF TYPE', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'salesmanid', title:'USER PAR-MA', halign: 'left', align: 'left', sortable:"true", width:100},
+				{field:'nama_salesman', title:'NAMA PAR-MA', halign: 'left', align: 'left', sortable:"true", width:250},
+				{field:'tipe_sales', title:'PAR-MA TYPE', halign: 'left', align: 'left', sortable:"true", width:100},
 				{field:'nama_regional', title:'Regional', halign: 'left', align: 'left', sortable:"true", width:120},
 				{field:'nama_area', title:'Area', halign: 'left', align: 'left', sortable:"true", width:120},
 				// {field:'city', title:'City', halign: 'left', align: 'left', sortable:"true", width:120},

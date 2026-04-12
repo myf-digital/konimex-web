@@ -61,8 +61,8 @@
               }
           ]],
           columns: [[
-            {field: 'salesmanid', title: 'Kode GFF', width: 60, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'nama_salesman', title: 'Nama GFF', width: 120, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'salesmanid', title: 'Kode PAR-MA', width: 60, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'nama_salesman', title: 'Nama PAR-MA', width: 120, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'start_time', title: 'Check In', width: 80, sortable: 'true', halign: 'left', align: 'left', formatter: formatterFileStart},
             {field: 'end_time', title: 'Check Out', width: 80, sortable: 'true', halign: 'left', align: 'left', formatter: formatterFileEnd},
             {field: 'city', title: 'City', width: 100, sortable: 'true', halign: 'left', align: 'left'},

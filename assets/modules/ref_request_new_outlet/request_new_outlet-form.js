@@ -170,7 +170,7 @@
         });
 
         uiSelectSalesman.select2({
-            placeholder: 'Select GFF',
+            placeholder: 'Select PAR-MA',
             allowClear: true
         });
 

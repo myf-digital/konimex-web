@@ -69,8 +69,8 @@
 				{field:'nama_account', title:'Sub Channel', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'latitude', title:'LATITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'longitude', title:'LONGITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'USER GFF', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'gff_name', title:'GFF Name', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'USER PAR-MA', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'gff_name', title:'PAR-MA Name', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'position', title:'Position', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:200},            ]],
             onBeforeLoad: function (param) {

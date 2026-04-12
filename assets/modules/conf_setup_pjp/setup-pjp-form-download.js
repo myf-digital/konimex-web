@@ -26,7 +26,7 @@
             //alert(uiSelectSalesman.val());
             //if (uiSelectSalesman.val()===null){
             //    uiAlertNotif.show();
-                //alert ('GFF (MD/SPG/SALESMAN) harus di isi...!');
+                //alert ('PAR-MA (MD/SPG/SALESMAN) harus di isi...!');
             //}else{
                 common.direct("conf_setup_pjp/savetoxlsx/"+uiSelectSalesman.val()+"/"+paramsession.username+"/"+paramsession.idjabatan+"/"+paramsession.restrict_level);
             //}

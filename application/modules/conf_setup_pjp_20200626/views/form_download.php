@@ -29,7 +29,7 @@
 </style>
 <div id="alertnotif" class="alert warning" style="display:none;">
   <span class="closebtn">&times;</span>  
-  <strong></strong> GFF (MD/SPG/SALESMAN) harus di isi...
+  <strong></strong> PAR-MA (MD/SPG/SALESMAN) harus di isi...
 </div>
 <script>
 // Get all elements with class="closebtn"
@@ -81,8 +81,8 @@ for (i = 0; i < close.length; i++) {
 								<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 							</div>-->
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">GFF (MD/SPG/SALESMAN)</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="GFF (MD/SPG/SALESMAN)"></select>
+								<label for="salesmanid">PAR-MA (MD/SPG/SALESMAN)</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="PAR-MA (MD/SPG/SALESMAN)"></select>
 							</div>
                     </div>
                     <div class="box-footer">

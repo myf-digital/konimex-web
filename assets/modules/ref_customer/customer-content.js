@@ -86,7 +86,7 @@
 				//{field:'longitude', title:'LONGITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
                 {field:'spot_id', title:'Tipe Kepemilikan', halign: 'center', align: 'left', sortable:"true", width:100},
                 {field:'mcc', title:'Distributor', halign: 'center', align: 'left', sortable:"true", width:200},
-				//{field:'usergff', title:'Kode GFF', halign: 'center', align: 'left', sortable:"true", width:100},
+				//{field:'usergff', title:'Kode PAR-MA', halign: 'center', align: 'left', sortable:"true", width:100},
                 {field:'usergff', title:'User PAR-MA', halign: 'center', align: 'left', sortable:"true", width:150},
 				//{field:'detail', title:'Detail', halign: 'center', align: 'left', width:150, formatter: formatterButtonDetail},
 				//{field:'position', title:'Position', halign: 'center', align: 'left', sortable:"true", width:100},
@@ -178,7 +178,7 @@
         let arrgff = row.usergff;
         let varrgff = arrgff.split(',');
         //if ( varrgff.length > 1 ){
-            const btnDetail = commonGrid.btnBuilderText('btn-detail', 'primary', 'fa fa-file-movie-o', ' View GFF');
+            const btnDetail = commonGrid.btnBuilderText('btn-detail', 'primary', 'fa fa-file-movie-o', ' View PAR-MA');
             return '<div class="action-grid-detail">' + btnDetail +'</div>';
         //}
     }

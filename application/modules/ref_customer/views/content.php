@@ -30,7 +30,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="ModalLabel">List GFF</h4>
+                <h4 class="modal-title" id="ModalLabel">List PAR-MA</h4>
             </div>
             <div class="modal-body">
                 <div id="tbl-listgff" class="box-table box-success">

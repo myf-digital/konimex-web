@@ -85,7 +85,7 @@ class Set_quota_budget extends BaseController
 		$html .= '<th style="white-space: nowrap;">Tanggal</th>';
 		$html .= '<th style="white-space: nowrap;">Promo</th>';
 		$html .= '<th style="white-space: nowrap;">Account</th>';
-		$html .= '<th style="white-space: nowrap;">User GFF</th>';
+		$html .= '<th style="white-space: nowrap;">User PAR-MA</th>';
 		$html .= '<th style="white-space: nowrap;">Outlet ID</th>';
 		$html .= '<th style="white-space: nowrap;">Kode Outlet</th>';
 		$html .= '<th style="white-space: nowrap;">Nama Outlet</th>';

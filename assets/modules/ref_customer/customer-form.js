@@ -160,7 +160,7 @@
         });
 
         uiSelectSalesman.select2({
-            placeholder: 'Select GFF',
+            placeholder: 'Select PAR-MA',
             allowClear: true
         });
 
@@ -178,7 +178,7 @@
             }
 
             uiSelectSalesman.select2({
-                placeholder: 'Select GFF',
+                placeholder: 'Select PAR-MA',
                 minimumSelectionLength: vmin,
                 maximumSelectionLength: vmax,
                 allowClear: true,
@@ -471,7 +471,7 @@
             }
 
             uiSelectSalesman.select2({
-                placeholder: "Select GFF",
+                placeholder: "Select PAR-MA",
                 allowClear: true,
                 minimumSelectionLength: vmin,
                 maximumSelectionLength: vmax,

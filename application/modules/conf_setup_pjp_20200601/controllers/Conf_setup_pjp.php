@@ -97,8 +97,8 @@ class Conf_setup_pjp extends BaseController
             $objPHPExcel = new PHPExcel();
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu')
-                        ->setCellValue('A2', 'KODE GFF')
-                        ->setCellValue('B2', 'NAMA GFF')
+                        ->setCellValue('A2', 'KODE PAR-MA')
+                        ->setCellValue('B2', 'NAMA PAR-MA')
                         ->setCellValue('C2', 'POSITION')
                         ->setCellValue('D2', 'ID OUTLET')
                         ->setCellValue('E2', 'KODE OUTLET')

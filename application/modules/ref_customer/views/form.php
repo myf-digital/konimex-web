@@ -124,7 +124,7 @@
 							<input name="nilai_sales" class="form-control" placeholder="Nilai Sales">
 						</div>-->
 						<div class="form-group col-md-6">
-							<label for="salesmanid">Kode GFF - Double Cover <input id="doublecover-id" type = "checkbox" name="doublecover"></label>  
+							<label for="salesmanid">Kode PAR-MA - Double Cover <input id="doublecover-id" type = "checkbox" name="doublecover"></label>  
 							<select id="salesmanid-id" name="salesmanid[]" class="form-control" placeholder="Salesman"></select>
 						</div>
 						<!--<div class="form-group">

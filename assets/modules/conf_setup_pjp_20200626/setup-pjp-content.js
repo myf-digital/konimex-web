@@ -64,8 +64,8 @@
             ]],
             columns: [[
 				//{field:'siteid', title:'SITEID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'KODE GFF', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'gffname', title:'NAMA GFF', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'KODE PAR-MA', halign: 'center', align: 'left', sortable:"true", width:100},
+				{field:'gffname', title:'NAMA PAR-MA', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'position', title:'POSITION', halign: 'center', align: 'left', sortable:"true", width:100},
 				//{field:'ram_rsm', title:'RAM/RSM', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'aas_aam_tss_tsm', title:'AAS/AAM/TSS/TSM', halign: 'center', align: 'left', sortable:"true", width:200},

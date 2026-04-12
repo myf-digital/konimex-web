@@ -113,7 +113,7 @@ class Rep_sos extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Tanggal</th>';
-		$html .= '<th style="width: 300px">User GFF</th>';
+		$html .= '<th style="width: 300px">User PAR-MA</th>';
 		$html .= '<th style="width: 200px">Account</th>';
 		$html .= '<th style="width: 100px">Outlet ID</th>';
 		$html .= '<th style="width: 150px">Kode Outlet</th>';
@@ -240,7 +240,7 @@ class Rep_sos extends BaseController
                     ->setCellValue('A1', 'List Report SOS')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'Tanggal')
-                    ->setCellValue('C2', 'User GFF')
+                    ->setCellValue('C2', 'User PAR-MA')
                     ->setCellValue('D2', 'Account')
                     ->setCellValue('E2', 'Outlet ID')
                     ->setCellValue('F2', 'Kode Outlet')

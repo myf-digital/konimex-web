@@ -31,7 +31,7 @@
             //alert(uiSelectSalesman.val());
             /*if (uiSelectSalesman.val()===null){
                 uiAlertNotif.show();
-                //alert ('GFF (MD/SPG/SALESMAN) harus di isi...!');
+                //alert ('PAR-MA (MD/SPG/SALESMAN) harus di isi...!');
             }else{*/
                 common.direct("ref_customer/savetoxlsx/"+uiSelectClass.val()+"/"+paramsession.username+"/"+paramsession.idjabatan+"/"+paramsession.restrict_level+"/"+$("#classid-id option:selected").text());
             //}
@@ -48,7 +48,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession,restrict_level: data.restrict_level, restrict_bu: data.restrict_bu}, function (res) {
             uiSelectSalesman.empty();
             uiSelectSalesman.select2({
-                placeholder: "Select GFF",
+                placeholder: "Select PAR-MA",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

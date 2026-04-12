@@ -71,7 +71,7 @@ class Rep_join_visit extends BaseController
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-        $html .= '<th style="white-space: nowrap;" colspan=2>Review By '.$data[0]["review_by"].' - GFF '.$data[0]["nama_salesman"].' ('.$data[0]["salesmanid"].')</th>';
+        $html .= '<th style="white-space: nowrap;" colspan=2>Review By '.$data[0]["review_by"].' - PAR-MA '.$data[0]["nama_salesman"].' ('.$data[0]["salesmanid"].')</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';
 		$html .= '<tbody">';
@@ -105,7 +105,7 @@ class Rep_join_visit extends BaseController
         ini_set("memory_limit","1024M");
         ini_set('max_execution_time', '360');
         
-        $filename = "Join_Visit_GFF.xlsx";
+        $filename = "Join_Visit_PAR-MA.xlsx";
 
         $this->load->library('excel');
     
@@ -115,7 +115,7 @@ class Rep_join_visit extends BaseController
                     ->setCellValue('A1', 'No')
                     ->setCellValue('B1', 'Date')
                     ->setCellValue('C1', 'Review By')
-                    ->setCellValue('D1', 'GFF Code')
+                    ->setCellValue('D1', 'PAR-MA Code')
                     ->setCellValue('E1', 'Name')
                     ->setCellValue('F1', 'Regional')
                     ->setCellValue('G1', 'Area')
@@ -159,7 +159,7 @@ class Rep_join_visit extends BaseController
             $row++;
         }
 
-        $objPHPExcel->getActiveSheet()->setTitle('Join_Visit_GFF');
+        $objPHPExcel->getActiveSheet()->setTitle('Join_Visit_PAR-MA');
 		// Redirect output to a client's web browser (Excel2007)
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header("Content-Disposition: attachment;filename=$filename");

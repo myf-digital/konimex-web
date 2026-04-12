@@ -107,7 +107,7 @@ class Rep_competitor extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Tanggal</th>';
-		$html .= '<th style="width: 300px">User GFF</th>';
+		$html .= '<th style="width: 300px">User PAR-MA</th>';
 		$html .= '<th style="width: 200px">Account</th>';
 		//$html .= '<th style="width: 200px">Outlet ID</th>';
 		//$html .= '<th style="width: 200px">Kode Outlet</th>';
@@ -238,7 +238,7 @@ class Rep_competitor extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 80px">Tanggal</th>';
-		$html .= '<th style="width: 200px">User GFF</th>';
+		$html .= '<th style="width: 200px">User PAR-MA</th>';
 		$html .= '<th style="width: 200px">Account</th>';
 		//$html .= '<th style="width: 200px">Outlet ID</th>';
 		//$html .= '<th style="width: 200px">Kode Outlet</th>';
@@ -354,7 +354,7 @@ class Rep_competitor extends BaseController
                     ->setCellValue('A1', 'List Promo Competitor')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'Tanggal')
-                    ->setCellValue('C2', 'User GFF')
+                    ->setCellValue('C2', 'User PAR-MA')
                     ->setCellValue('D2', 'Account')
                     //->setCellValue('E2', 'Outlet ID')
                     //->setCellValue('F2', 'Kode Outlet')
@@ -610,7 +610,7 @@ class Rep_competitor extends BaseController
                     ->setCellValue('A1', 'List New Product Competitor ')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'Tanggal')
-                    ->setCellValue('C2', 'User GFF')
+                    ->setCellValue('C2', 'User PAR-MA')
                     ->setCellValue('D2', 'Account')
                     //->setCellValue('E2', 'Outlet ID')
                     //->setCellValue('F2', 'Kode Outlet')
@@ -743,7 +743,7 @@ class Rep_competitor extends BaseController
                     ->setCellValue('A1', 'List New Product Competitor ')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'Tanggal')
-                    ->setCellValue('C2', 'User GFF')
+                    ->setCellValue('C2', 'User PAR-MA')
                     ->setCellValue('D2', 'Account')
                     ->setCellValue('E2', 'Area')
                     ->setCellValue('F2', 'Nama Produk')

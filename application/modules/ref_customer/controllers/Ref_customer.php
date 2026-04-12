@@ -260,7 +260,7 @@ class Ref_customer extends BaseController
                     }
                 }
 
-            $objPHPExcel->getActiveSheet()->setTitle('Count GFF');
+            $objPHPExcel->getActiveSheet()->setTitle('Count PAR-MA');
 			*/
             // Redirect output to a client's web browser (Excel2007)
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

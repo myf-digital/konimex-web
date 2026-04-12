@@ -98,8 +98,8 @@ class Rep_gffaktif extends BaseController
 		$html .= '<tbody>';
 		$html .= '<tr>';
 		$html .='<th rowspan="2" style="text-align:center;width: 80px">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;width: 200px">GFF</th>';
-		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama GFF</th>';
+		$html .='<th rowspan="2" style="text-align:center;width: 200px">PAR-MA</th>';
+		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama PAR-MA</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Area FC</th>';
@@ -300,8 +300,8 @@ class Rep_gffaktif extends BaseController
 		$html .= '<thead>';
 		$html .= '<tr>';
 		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">GFF</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama GFF</th>';
+		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">PAR-MA</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama PAR-MA</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area FC</th>';
@@ -448,7 +448,7 @@ class Rep_gffaktif extends BaseController
 		$html .= '</tbody>';
 		$html .= '</table></div></div>';
 
-		$filename = "Report_GFF_Aktif_".$periodemonth.".xls";
+		$filename = "Report_PAR-MA_Aktif_".$periodemonth.".xls";
         /*header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header("Content-Disposition: attachment;filename=$filename");
         header('Cache-Control: max-age=0');

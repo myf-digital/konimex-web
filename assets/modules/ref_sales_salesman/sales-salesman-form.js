@@ -72,8 +72,8 @@
             },
             messages : {
 				salesmanid : {
-					required : 'Isi User GFF',
-					remote   : 'User GFF Sudah terdaftar'     
+					required : 'Isi User PAR-MA',
+					remote   : 'User PAR-MA Sudah terdaftar'     
 						
                 }			
             }

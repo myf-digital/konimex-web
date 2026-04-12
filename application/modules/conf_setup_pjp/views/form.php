@@ -29,8 +29,8 @@
 							<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 						</div>
 						<div class="form-group col-xs-12 col-sm-12 col-md-5">
-							<label for="salesmanid">GFF (MD/SPG/SALESMAN)</label>
-							<select id="salesmanid-id" name="salesmanid_new" class="form-control" placeholder="GFF (MD/SPG/SALESMAN)"></select>
+							<label for="salesmanid">PAR-MA (MD/SPG/SALESMAN)</label>
+							<select id="salesmanid-id" name="salesmanid_new" class="form-control" placeholder="PAR-MA (MD/SPG/SALESMAN)"></select>
 						</div>
 						<div class="form-group  col-xs-12 col-sm-12 col-md-6">
 						</div>

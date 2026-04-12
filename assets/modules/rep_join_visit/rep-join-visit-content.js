@@ -26,8 +26,8 @@
 		  columns: [[
             {field: 'periode', title: 'Period', width:30, sortable: 'true', halign: 'center', align: 'center'},
             {field: 'review_by', title: 'Review By', width:30, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'salesmanid', title: 'GFF', width:30, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'nama_salesman', title: 'GFF Name', width:30, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'salesmanid', title: 'PAR-MA', width:30, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'nama_salesman', title: 'PAR-MA Name', width:30, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'tipe_sales', title: 'Type', width:30, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'review', title: 'Review', width:30, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'final_score', title: 'Score', width:30, sortable: 'true', halign: 'center', align: 'center'},

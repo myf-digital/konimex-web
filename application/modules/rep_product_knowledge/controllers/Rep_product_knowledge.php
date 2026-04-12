@@ -66,7 +66,7 @@ class Rep_product_knowledge extends BaseController
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-        $html .= '<th style="white-space: nowrap;" colspan=3>GFF '.$data[0]["nama_salesman"].' ('.$username.')</th>';
+        $html .= '<th style="white-space: nowrap;" colspan=3>PAR-MA '.$data[0]["nama_salesman"].' ('.$username.')</th>';
 		$html .= '</tr>';
 		$html .= '<tr>';
         $html .= '<th style="white-space: nowrap;">Pertanyaan</th>';
@@ -114,8 +114,8 @@ class Rep_product_knowledge extends BaseController
         $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A1', 'No')
                     ->setCellValue('B1', 'Event')
-                    ->setCellValue('C1', 'Kode GFF')
-                    ->setCellValue('D1', 'Nama GFF')
+                    ->setCellValue('C1', 'Kode PAR-MA')
+                    ->setCellValue('D1', 'Nama PAR-MA')
                     ->setCellValue('E1', 'Regional')
                     ->setCellValue('F1', 'Area')
                     // ->setCellValue('G1', 'City')
