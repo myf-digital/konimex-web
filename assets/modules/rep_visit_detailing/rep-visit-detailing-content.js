@@ -35,12 +35,12 @@
             ]],
             columns: [[
               {field:'periode', title:'Periode', halign: 'left', align: 'left', sortable:"true", width:100},
-              {field:'salesmanid', title:'User Login', halign: 'left', align: 'left', sortable:"true", width:75},
+            //   {field:'salesmanid', title:'User Login', halign: 'left', align: 'left', sortable:"true", width:75},
               {field:'nama_salesman', title:'Salesman', halign: 'left', align: 'left', sortable:"true", width:150},
-              {field:'customerid', title:'Outlet ID', halign: 'left', align: 'left', sortable:"true", width:75},
+            //   {field:'customerid', title:'Outlet ID', halign: 'left', align: 'left', sortable:"true", width:75},
               {field:'nama_customer', title:'Outlet', halign: 'left', align: 'left', sortable:"true", width:200},
-              {field:'professional_name', title:'PIC', halign: 'left', align: 'left', sortable:"true", width:100},
-              {field:'brands', title:'Brand', halign: 'left', align: 'left', sortable:"true", width:150},
+              {field:'professional_name', title:'User', halign: 'left', align: 'left', sortable:"true", width:100},
+            //   {field:'brands', title:'Brand', halign: 'left', align: 'left', sortable:"true", width:150},
               //{field:'start_detailing', title:'Start Detailing', halign: 'left', align: 'left', sortable:"true", width:125},
               //{field:'end_detailing', title:'End Detailing', halign: 'left', align: 'left', sortable:"true", width:125},
               {field:'status_label', title:'Status', halign: 'left', align: 'left', sortable:"true", width:125},
@@ -132,10 +132,13 @@
 			btnImage.click(function () {
 				open_image(param);
 			});
+            const btnSurvei = $(btns).find("a.btn-warning");
+			btnSurvei.click(function () {
+				open_survei(param);
+			});
             index++;
         }
     }
-
 
     /*
     * action button generator
@@ -143,14 +146,26 @@
     function formatterButton(val, row, index) {
         let btnImage = '';
         if (row.url_img_detailing && row.url_img_detailing != undefined) btnImage = commonGrid.btnBuilder('btn-viem-image', 'info', 'fa fa-image');
+        const btnSurvei = commonGrid.btnBuilder('btn-survei', 'warning', 'fa fa-clipboard');
         const btnPreview = commonGrid.btnBuilder('btn-viem-maps', 'success', 'fa fa-map-o');
-        return '<div class="action-grid">' + btnPreview + btnImage + '</div>';
+        return '<div class="action-grid">' + btnPreview + btnImage + btnSurvei + '</div>';
     }
 
 	function open_image(data) {
         if (data && data != undefined) {
             $('#myModalImage').text(`Visit Detailing: ${data.nama_salesman}, Outlet: ${data.nama_customer}`);	
-            $("#show-image").html(`<img src="${data.url_img_detailing}" alt="Image" width="400">`);
+            $("#show-image").html(`
+                <div class="row text-left">
+                    <div class="col-md-12">
+                        <h5><b>1. Foto Detailing</b></h5>
+                        <img src="${data.url_img_detailing}" alt="Foto Detailing" class="img-fluid">
+                    </div>
+                    <div class="col-md-12">
+                        <h5><b>2. Foto Signature</b></h5>
+                        ${data.url_file_signature ? `<img src="${data.url_file_signature}" alt="Foto Signature" class="img-fluid">` : '<p>-</p>'}
+                    </div>
+                </div>
+            `);
             $("#modal_image").modal('show');
         }
     }
@@ -172,6 +187,46 @@
 			}
 		});
 		
+	}
+
+	function open_survei(data) {
+		$.ajax({
+			type:"POST",
+			dataType: "json",
+			url: common.baseURL("rep_visit_detailing/survei"),
+			data : "siteid="+data.siteid+"&periode="+data.periode+"&salesmanid="+data.salesmanid+"&customerid="+data.customerid,
+			success:function(res){
+				response = res;
+                if (response && response.length > 0) {
+                    $('#myModalSurvei').html(`
+                        Hasil Survei: <b>${data.nama_salesman}</b> <br>
+                        <small>Outlet: ${data.nama_customer}</small> <br>
+                        <small>User: ${response[0].nama_professional || '-'}</small>
+                    `);	
+                    $("#show-survei").html(`
+                        <div class="row">
+                            <div class="col-md-12">
+                                ${response.map(item => `
+                                    <ol class="text-left">
+                                        <li>
+                                            <h5><b>${item.question}</b></h5>
+                                            <p>Jawaban: ${item.answer}</p>
+                                        </li>
+                                    </ol>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `);
+                    $("#modal_survei").modal('show');
+                } else {
+                    alert("Tidak ada hasil survei untuk data ini.");
+                }
+                console.warn(response);
+			},
+			error:function(){
+				alert("Load failed");
+			}
+		});
 	}
 
 	function initializeParamMaps() {

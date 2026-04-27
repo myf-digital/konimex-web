@@ -7,27 +7,102 @@ class Professional_model extends CI_Model
     {
         $field = "a.* ";
         $table = " (
-                    SELECT 
-                        d.cab, 
-                        d.cabang, 
-                        a.customerid, 
-                        a.nama_customer, 
-                        b.id_professional, 
-                        b.nama_professional, 
-                        mp.productid, 
-                        mp.category_product, 
-                        mp.nama_invoice, 
-                        mp.sat_kecil, 
-                        0 as qty,
-                        0 as total
-                    FROM m_customer a 
-                    LEFT JOIN ref_professional_mapping b ON b.customerid = a.customerid
-                    LEFT JOIN m_cabang_area c ON c.subareaid = a.subareaid
-                    LEFT JOIN m_cabang d ON d.kode_cab = c.kode_cab
-                    RIGHT OUTER JOIN m_product mp ON mp.status = 'A'
-                    WHERE a.customerid IS NOT NULL
+                    SELECT
+                        a.id,
+                        a.nama_professional,
+                        concat('".URL_IMAGE."', a.url_foto) as url_foto,
+                        concat('".URL_IMAGE."', a.url_img_signature) as url_img_signature,
+                        GROUP_CONCAT(
+                            DISTINCT CONCAT(rpm.customerid, ' - ', rpm.nama_customer)
+                            ORDER BY rpm.customerid 
+                            SEPARATOR '||'
+                        ) as customer_list
+                    FROM ref_professional a
+                    LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
+                    WHERE rpm.customerid IS NOT NULL
+                    GROUP BY a.id
+                    ORDER BY a.id DESC
                 ) a ";
         return easy_pagging($data, $field, $table);
+    }
+
+    public function detail($data)
+    {
+        $this->db->where_in('id', $data['id_professional']);
+        $result = $this->db
+            ->from('ref_professional')
+            ->get()->result_array();
+        return $result;
+    }
+
+    public function outlet($data)
+    {
+        $this->db->where('customerid IS NOT NULL', null, false);
+        $this->db->where('customerid <>', '');
+        $this->db->order_by('customerid', 'DESC');
+        $result = $this->db->from('m_customer')->get()->result_array();
+        return $result;
+    }
+
+    public function update($data)
+    {
+        if (!isset($data['customerid']) || !is_array($data['customerid'])) {
+            $status = false;
+        } else {
+            $professional = $this->db->get_where('ref_professional', ['id' => $data['id_professional']])->row_array();
+            $outlets = $this->db->where_in('customerid', $data['customerid'])->get('m_customer')->result_array();
+            $outletMap = [];
+            foreach ($outlets as $o) {
+                $outletMap[$o['customerid']] = $o['nama_customer'];
+            }
+
+            $mappingData = [];
+            foreach ($data['customerid'] as $customerId) {
+                $mappingData[] = [
+                    'id_professional' => $data['id_professional'],
+                    'nama_professional' => $professional['nama_professional'],
+                    'customerid' => $customerId,
+                    'nama_customer' => $outletMap[$customerId] ?? '',
+                ];
+            }
+            
+            if (!empty($mappingData)) {
+                $this->db->trans_start();
+                $this->db->where('id_professional', $data['id_professional']);
+                $this->db->delete('ref_professional_mapping');
+                $this->db->insert_batch('ref_professional_mapping', $mappingData);
+                $this->db->trans_complete();
+                $status = $this->db->trans_status();
+            }
+        }
+
+        return [
+            'code' => 200,
+            'message' => 'Success',
+            'result' => $status
+        ];
+    }
+
+    public function savetoxlsx($data)
+    {
+        $sql = "
+                SELECT
+                    a.id,
+                    a.nama_professional,
+                    concat('".URL_IMAGE."', a.url_foto) as url_foto,
+                    concat('".URL_IMAGE."', a.url_img_signature) as url_img_signature,
+                    GROUP_CONCAT(
+                        DISTINCT CONCAT(rpm.customerid, ' - ', rpm.nama_customer)
+                        ORDER BY rpm.customerid 
+                        SEPARATOR '||'
+                    ) as customer_list
+                FROM ref_professional a
+                LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
+                WHERE rpm.customerid IS NOT NULL
+                GROUP BY a.id
+                ORDER BY a.id DESC
+            ";
+		return $this->db->query($sql)->result_array();
     }
 
     public function load_target($data)

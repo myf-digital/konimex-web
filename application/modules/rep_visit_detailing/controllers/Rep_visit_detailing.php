@@ -26,6 +26,13 @@ class Rep_visit_detailing extends BaseController
         responseJSON($this->visit_detailing->load($data));
     } 
 
+    public function survei()
+    {
+        $data = param_input();
+		echo $this->db->last_query();
+        responseJSON($this->visit_detailing->get_survei($data));
+    } 
+
 	function get_gmap()
     {		
 		$html 		= '';
@@ -348,6 +355,7 @@ class Rep_visit_detailing extends BaseController
             'Keterangan',
             'Reason',
 			'Foto',
+			'Signature',
         ];
 
         $sheet = $spreadsheet->getActiveSheet();
@@ -369,11 +377,41 @@ class Rep_visit_detailing extends BaseController
 				$value['status_label'],
 				$value['keterangan'],
 				$value['reason'],
-				$value['url_img_detailing'],
+				'',
+				'',
 			];
 			// img_url_to_sheet($sheet, $value['url_img_detailing'], 'N'.$row);
             // $sheet->getStyle('N'.$row)->getAlignment()->setWrapText(true);
             $sheet->fromArray($content,NULL,'A'.$row);
+
+			if (!empty($value['url_img_detailing'])) {
+				$sheet->setCellValue('L'.$row, 'Foto Detailing');
+				$sheet->getCell('L'.$row)
+					->getHyperlink()
+					->setUrl($value['url_img_detailing']);
+
+				$sheet->getStyle('L'.$row)->applyFromArray([
+					'font' => [
+						'color' => ['rgb' => '0000FF'],
+						'underline' => 'single'
+					]
+				]);
+			}
+
+			if (!empty($value['url_file_signature'])) {
+				$sheet->setCellValue('M'.$row, 'Foto Signature');
+				$sheet->getCell('M'.$row)
+					->getHyperlink()
+					->setUrl($value['url_file_signature']);
+
+				$sheet->getStyle('M'.$row)->applyFromArray([
+					'font' => [
+						'color' => ['rgb' => '0000FF'],
+						'underline' => 'single'
+					]
+				]);
+			}
+
             $i++;
             $row++;
         }

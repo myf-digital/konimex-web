@@ -26,10 +26,10 @@ date_default_timezone_set('Asia/Jakarta');
 $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 
 define('DIR_IMAGE', './uploads/');
-define('DIR_IMAGE_PATH', './../par-api/uploads/');
-define('DIR_IMAGE_PATH_ABSENCE', './../par-api/uploads/absence/');
-define('URL_IMAGE', 'https://par-api.product-act.com/uploads/');
-define('URL_IMAGE_REVIEW', 'https://par-api.product-act.com/uploads/image_review/');
+define('DIR_IMAGE_PATH', './../konimex-api/uploads/');
+define('DIR_IMAGE_PATH_ABSENCE', './../konimex-api/uploads/absence/');
+define('URL_IMAGE', 'https://konimex-api.product-act.com/uploads/');
+define('URL_IMAGE_REVIEW', 'https://konimex-api.product-act.com/uploads/image_review/');
 
 /*
 |--------------------------------------------------------------------------

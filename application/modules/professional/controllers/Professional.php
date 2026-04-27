@@ -1,6 +1,12 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+
 class Professional extends BaseController
 {
 
@@ -15,10 +21,33 @@ class Professional extends BaseController
         $this->template->show($this, 'content');
     }
 
+    public function form_set_outlet()
+    {
+        $this->template->show($this, 'form_set_outlet');
+    }
+
     public function load()
     {
         $data = param_input();
         responseJSON($this->professional->load($data));
+    }
+
+    public function detail()
+    {
+        $data = param_input();
+        responseJSON($this->professional->detail($data));
+    }
+
+    public function outlet()
+    {
+        $data = param_input();
+        responseJSON($this->professional->outlet($data));
+    }
+
+    public function update()
+    {
+        $data = param_input();
+        responseJSON($this->professional->update($data));
     }
 
     public function target()
@@ -276,5 +305,224 @@ class Professional extends BaseController
             $this->db->trans_rollback();
             responseJson(['status' => false, 'message' => "Error: " . $e->getMessage()]);
         }
+    }
+
+    public function savetoxlsx()
+    {
+		ini_set('memory_limit', '1024M');
+        set_time_limit(300);
+
+        $data = [];
+        $data['get_date1'] = $this->uri->segment('3');
+        $data['get_date2'] = $this->uri->segment('4');
+
+        $result = $this->professional->savetoxlsx($data);
+        $filename = "data_pelanggan_" . date('Y-m-d_His');
+
+        $maxCustomer = 0;
+        $uniqueCustomers = [];
+        foreach ($result as $row) {
+            $customers = !empty($row['customer_list']) 
+                ? explode('||', $row['customer_list']) 
+                : [];
+
+            $count = count($customers);
+            if ($count > $maxCustomer) {
+                $maxCustomer = $count;
+            }
+
+            foreach ($customers as $cust) {
+                $parts = explode(' - ', $cust);
+
+                $customerid = $parts[0] ?? '';
+                $nama = $parts[1] ?? '';
+
+                if (!empty($customerid)) {
+                    $uniqueCustomers[$customerid] = $nama;
+                }
+            }
+        }
+        
+        $customerIds = array_keys($uniqueCustomers);
+        $outlets = [];
+        if (!empty($customerIds)) {
+            $this->db->where_in('a.customerid', $customerIds);
+            $customers = $this->db
+                ->select('a.*, b.nama_class, c.nama_regional, d.nama_area, e.nama_area as nama_subarea')
+                ->from('m_customer a')
+                ->join('m_customer_class b', 'b.classid = a.classid', 'left')
+                ->join('m_area_regional c', 'c.regionalid = a.regionalid', 'left')
+                ->join('m_area_areasite d', 'd.areaid = a.areaid', 'left')
+                ->join('m_area_subarea e', 'e.subareaid = a.subareaid', 'left')
+                ->get()
+                ->result_array();
+
+            foreach ($customers as $row) {
+                $outlets[$row['customerid']] = $row;
+            }
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $header = [
+            'Id Pelanggan',
+            'Pelanggan',
+        ];
+        for ($i = 1; $i <= $maxCustomer; $i++) {
+            $header[] = 'Tempat Praktek ' . $i;
+        }
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Pelanggan');
+        $sheet->setCellValue('A1', 'DATA PELANGGAN')->mergeCells('A1:B1');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 14,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->fromArray($header, NULL,'A2');
+        $sheet->getRowDimension(2)->setRowHeight(25);
+
+        $i = 1;
+        $rowNum = 3;
+        foreach ($result as $value) {
+            $customers = !empty($value['customer_list']) 
+                ? explode('||', $value['customer_list']) 
+                : [];
+
+            $content = [
+                $value['id'],
+                $value['nama_professional'],
+            ];
+
+            for ($j = 0; $j < $maxCustomer; $j++) {
+                $content[] = $customers[$j] ?? '';
+            }
+
+            $sheet->fromArray($content, NULL, 'A'.$rowNum);
+
+            $i++;
+            $rowNum++;
+        }
+		// Ambil range seluruh worksheet
+		$highestRow = $sheet->getHighestRow();
+		$highestColumn = $sheet->getHighestColumn();
+		$fullRange = 'A1:' . $highestColumn . $highestRow;
+		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->freezePane('A3');
+        $sheet->freezePane('C3');
+
+        foreach (range('A', $highestColumn) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        $sheet->getStyle($fullRange)->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+        
+        $headerRange = 'A2:' . $highestColumn . '2';
+        $sheet->getStyle($headerRange)->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1F4E78'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $spreadsheet->createSheet();
+        $sheet2 = $spreadsheet->setActiveSheetIndex(1);
+        $sheet2->setTitle('Outlet');
+
+        $sheet2->setCellValue('A1', 'DATA OUTLET')->mergeCells('A1:F1');
+        $sheet2->getStyle('A1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 14,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+        $sheet2->fromArray([
+            'Outlet ID',
+            'Nama Outlet',
+            'Regional',
+            'Area',
+            'Sub Area',
+            'Alamat',
+        ], NULL, 'A2');
+        $sheet2->getRowDimension(2)->setRowHeight(25);
+
+        $sheet2->getStyle('A2:F2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1F4E78'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $rowNum = 3;
+        foreach ($outlets as $ot) {
+            $sheet2->fromArray([
+                $ot['customerid'] ?? '',
+                $ot['nama_customer'] ?? '',
+                $ot['nama_regional'] ?? '',
+                $ot['nama_area'] ?? '',
+                $ot['nama_subarea'] ?? '',
+                $ot['alamat'] ?? '',
+            ], NULL, 'A'.$rowNum);
+            $rowNum++;
+        }
+
+        $highestRow2 = $sheet2->getHighestRow();
+        $highestCol2 = $sheet2->getHighestColumn();
+
+        $fullRange2 = 'A1:' . $highestCol2 . $highestRow2;
+        $sheet2->getStyle($fullRange2)->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+        $sheet2->freezePane('A3');
+
+        foreach (range('A', $highestCol2) as $col) {
+            $sheet2->getColumnDimension($col)->setAutoSize(true);
+        }
+ 
+        $spreadsheet->setActiveSheetIndex(0);
+        $writer = new Xlsx($spreadsheet);
+        
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
     }
 }

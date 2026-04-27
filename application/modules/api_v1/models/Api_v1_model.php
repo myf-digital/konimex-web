@@ -823,118 +823,117 @@ class Api_v1_model extends CI_Model
 		if ($datesetupsite >= $reqdate){
 			return false;
 		}else{
-		$weekday = date('w', strtotime($vdate));
-		$weeks = $data->aktif_week;
+			$weekday = date('w', strtotime($vdate));
+			$weeks = $data->aktif_week;
 
-		if ($weekday==0){
-			if ($weeks==4){
-				$weeks = 1;
-				$tsql = "update m_setup_site set aktif_week=1, tanggal=?;";
-			}else{
-				$weeks = $weeks+1;
-				$tsql = "update m_setup_site set aktif_week=aktif_week+1, tanggal=?;";
+			if ($weekday==0){
+				if ($weeks==4){
+					$weeks = 1;
+					$tsql = "update m_setup_site set aktif_week=1, tanggal=?;";
+				}else{
+					$weeks = $weeks+1;
+					$tsql = "update m_setup_site set aktif_week=aktif_week+1, tanggal=?;";
+				}
 			}
-		}
 
-		$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
-		$this->db->query($sqldeleterrk, array($vdate));
-		$sqldeletecrc = "delete from t_sales_crc where periode=? and date_update is null;";
-		$this->db->query($sqldeletecrc, array($vdate));
-
-		$sql = " insert into t_sales_rrk(periode,salesmanid,customerid,flag_proses,tgl_proses,user_create,date_create, minggu)
-				 select ?,a.salesmanid,a.customerid,'O',now(),?, now(),? from t_sales_setup_rrk a join m_sales_salesman b on a.salesmanid=b.salesmanid 
-				 where a.minggu=? and a.hari = ? and b.aktif='1'
-				";
-		$res_ss = $this->db->query($sql, array($vdate,$createby,$weeks,$weeks,$weekday));
-		if (!$res_ss) {
 			$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
 			$this->db->query($sqldeleterrk, array($vdate));
-			return false;
-		} else {
-			//delete data crc yang tidak di isi
-			$sqldeletecrc = "delete from t_sales_crc where date_update is null;";
-			$this->db->query($sqldeletecrc);
+			$sqldeletecrc = "delete from t_sales_crc where periode=? and date_update is null;";
+			$this->db->query($sqldeletecrc, array($vdate));
 
-			//menambahkan price periode terakhir input product di crc
-			$sqlcrc = "insert into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price)
-							select ?,a.salesmanid, a.customerid, c.productid, d.brandid, d.h_ritel, ifnull(e.price,0)
-							from t_sales_rrk a join m_customer_ob b on a.customerid = b.customerid and a.salesmanid=b.salesmanid
-							join m_customer mc on b.customerid = mc.customerid
-							join mapping_sku_active c on mc.classid = c.idaccount
-							join m_product d on c.productid = d.productid
-							left join t_stock_all_outlet e on a.salesmanid=e.salesmanid and a.customerid = e.customerid 
-							and d.productid=e.productid and e.tahun=date_format(?,'%Y') and e.bulan=date_format(?,'%m')
-						where a.periode=? and a.customerid not in (select distinct customerid from mapping_sku_active_last3months);
-						";
-			// add suggest last 3 months SKU Active 2022-02-08
-			$sqlcrc_suggest = "replace into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price)
-								select ?,a.salesmanid, a.customerid, c.productid, d.brandid, d.h_ritel, ifnull(e.price,0)
-									from t_sales_rrk a join m_customer_ob b on a.customerid = b.customerid and a.salesmanid=b.salesmanid
-									join mapping_sku_active_last3months c on b.customerid = c.customerid 
-									join m_product d on c.productid = d.productid
-									left join t_stock_all_outlet e on a.salesmanid=e.salesmanid and a.customerid = e.customerid 
-									and d.productid=e.productid and e.tahun=date_format(?,'%Y') and e.bulan=date_format(?,'%m')
-								where a.periode=?
-								;
-								";
-
-			$sqlcrc_suggest_order = "replace into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price,qty_saran_order)
-										select ?,b.salesmanid, b.customerid, c.productid, d.brandid, d.h_ritel, d.h_ritel, c.qty_saran_order
-										from m_customer_ob b join m_customer mc on b.customerid = mc.customerid
-										join (
-												select z.customerid,z.salesmanid, z.productid, round(avg(z.qty_akhir ),0) as qty_saran_order 
-												from t_sales_crc as z
-												where z.salesmanid in (select salesmanid from m_sales_salesman where aktif=1) 
-												and z.periode >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) and z.customerid <>''
-												group by z.customerid,z.salesmanid, z.productid
-											) c on b.customerid = c.customerid
-										join m_product d on c.productid = d.productid
-										join t_stock_all_outlet e on e.customerid = c.customerid and e.salesmanid=c.salesmanid 
-										and d.productid=e.productid and e.last_update >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
-										where c.customerid <>'';
-							";
-			$clearcrc="delete from t_sales_crc where date_update is null;";
-
-			$this->db->query($clearcrc);
-			$res_crc = $this->db->query($sqlcrc, array($vdate,$vdate,$vdate,$vdate));
-			$res_crc_sugest = $this->db->query($sqlcrc_suggest, array($vdate,$vdate,$vdate,$vdate));
-			$res_crc_sugest_order = $this->db->query($sqlcrc_suggest_order, array($vdate));
-			
-			if (!$res_crc){
-				$sqldeletecrc = "delete from t_sales_crc where periode=? and date_update is null;";
-				$this->db->query($sqldeletecrc, array($vdate));
+			$sql = " insert into t_sales_rrk(periode,salesmanid,customerid,flag_proses,tgl_proses,user_create,date_create, minggu)
+					select ?,a.salesmanid,a.customerid,'O',now(),?, now(),? from t_sales_setup_rrk a join m_sales_salesman b on a.salesmanid=b.salesmanid 
+					where a.minggu=? and a.hari = ? and b.aktif='1'
+					";
+			$res_ss = $this->db->query($sql, array($vdate,$createby,$weeks,$weeks,$weekday));
+			if (!$res_ss) {
 				$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
 				$this->db->query($sqldeleterrk, array($vdate));
 				return false;
-			}else{
-				if ($weekday=='0'){
-					$tres = $this->db->query($tsql,array($vdate));
-					if(!$tres){
-						$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
-						$this->db->query($sqldeleterrk, array($vdate));
-						$sqldeletecrc = "delete from t_sales_crc where periode=?;";
-						$this->db->query($sqldeletecrc, array($vdate));
-						return false;
-					}else{
-						return true;
-					}
-				}else{
-					$this->db->query("Update app_data_version set version=1, modified_date=now(), modified_by='Scheduler PJP'");
-            		$tsql = "update m_setup_site set tanggal=?;";
-					$tres = $this->db->query($tsql,array($vdate));
-					if(!$tres){
-						$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
-						$this->db->query($sqldeleterrk, array($vdate));
-						$sqldeletecrc = "delete from t_sales_crc where periode=?;";
-						$this->db->query($sqldeletecrc, array($vdate));
-						return false;
-					}else{
-						return true;
-					}
+			} else {
+				//delete data crc yang tidak di isi
+				$sqldeletecrc = "delete from t_sales_crc where date_update is null;";
+				$this->db->query($sqldeletecrc);
 
+				//menambahkan price periode terakhir input product di crc
+				$sqlcrc = "insert into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price)
+								select ?,a.salesmanid, a.customerid, c.productid, d.brandid, d.h_ritel, ifnull(e.price,0)
+								from t_sales_rrk a join m_customer_ob b on a.customerid = b.customerid and a.salesmanid=b.salesmanid
+								join m_customer mc on b.customerid = mc.customerid
+								join mapping_sku_active c on mc.classid = c.idaccount
+								join m_product d on c.productid = d.productid
+								left join t_stock_all_outlet e on a.salesmanid=e.salesmanid and a.customerid = e.customerid 
+								and d.productid=e.productid and e.tahun=date_format(?,'%Y') and e.bulan=date_format(?,'%m')
+							where a.periode=? and a.customerid not in (select distinct customerid from mapping_sku_active_last3months);
+							";
+				// add suggest last 3 months SKU Active 2022-02-08
+				$sqlcrc_suggest = "replace into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price)
+									select ?,a.salesmanid, a.customerid, c.productid, d.brandid, d.h_ritel, ifnull(e.price,0)
+										from t_sales_rrk a join m_customer_ob b on a.customerid = b.customerid and a.salesmanid=b.salesmanid
+										join mapping_sku_active_last3months c on b.customerid = c.customerid 
+										join m_product d on c.productid = d.productid
+										left join t_stock_all_outlet e on a.salesmanid=e.salesmanid and a.customerid = e.customerid 
+										and d.productid=e.productid and e.tahun=date_format(?,'%Y') and e.bulan=date_format(?,'%m')
+									where a.periode=?
+									;
+									";
+
+				$sqlcrc_suggest_order = "replace into t_sales_crc(periode,salesmanid,customerid,productid,brandid,harga,price,qty_saran_order)
+											select ?,b.salesmanid, b.customerid, c.productid, d.brandid, d.h_ritel, d.h_ritel, c.qty_saran_order
+											from m_customer_ob b join m_customer mc on b.customerid = mc.customerid
+											join (
+													select z.customerid,z.salesmanid, z.productid, round(avg(z.qty_akhir ),0) as qty_saran_order 
+													from t_sales_crc as z
+													where z.salesmanid in (select salesmanid from m_sales_salesman where aktif=1) 
+													and z.periode >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) and z.customerid <>''
+													group by z.customerid,z.salesmanid, z.productid
+												) c on b.customerid = c.customerid
+											join m_product d on c.productid = d.productid
+											join t_stock_all_outlet e on e.customerid = c.customerid and e.salesmanid=c.salesmanid 
+											and d.productid=e.productid and e.last_update >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+											where c.customerid <>'';
+								";
+				$clearcrc="delete from t_sales_crc where date_update is null;";
+
+				$this->db->query($clearcrc);
+				$res_crc = $this->db->query($sqlcrc, array($vdate,$vdate,$vdate,$vdate));
+				$res_crc_sugest = $this->db->query($sqlcrc_suggest, array($vdate,$vdate,$vdate,$vdate));
+				$res_crc_sugest_order = $this->db->query($sqlcrc_suggest_order, array($vdate));
+				
+				if (!$res_crc){
+					$sqldeletecrc = "delete from t_sales_crc where periode=? and date_update is null;";
+					$this->db->query($sqldeletecrc, array($vdate));
+					$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
+					$this->db->query($sqldeleterrk, array($vdate));
+					return false;
+				}else{
+					if ($weekday=='0'){
+						$tres = $this->db->query($tsql,array($vdate));
+						if(!$tres){
+							$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
+							$this->db->query($sqldeleterrk, array($vdate));
+							$sqldeletecrc = "delete from t_sales_crc where periode=?;";
+							$this->db->query($sqldeletecrc, array($vdate));
+							return false;
+						}else{
+							return true;
+						}
+					}else{
+						$this->db->query("Update app_data_version set version=1, modified_date=now(), modified_by='Scheduler PJP'");
+						$tsql = "update m_setup_site set tanggal=?;";
+						$tres = $this->db->query($tsql,array($vdate));
+						if(!$tres){
+							$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
+							$this->db->query($sqldeleterrk, array($vdate));
+							$sqldeletecrc = "delete from t_sales_crc where periode=?;";
+							$this->db->query($sqldeletecrc, array($vdate));
+							return false;
+						}else{
+							return true;
+						}
+					}
 				}
 			}
-		}
 		}
 	}
 
