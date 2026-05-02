@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("Sales Medrep");
+    common.setTitle("Karyawan");
     // ui components
     let uiTbl = $("#tbl-sales-salesman");
 
@@ -19,11 +19,14 @@
             common.removeCookie("module.sales.salesman.update");
             common.direct("ref_sales_salesman/form");
         });
+        $("#btn-org").click(function () {
+            common.direct("ref_sales_salesman/salesman_org");
+        });
     }
 
     function initializeGrid() {
         let option = {
-            title: "Sales Medrep",
+            title: "Karyawan",
             toolbar: toolbar(),
             url: common.baseURL("ref_sales_salesman/load"),
             pageNumber: 1,
@@ -69,7 +72,8 @@
 
     function toolbar() {
         const btnCreate = commonGrid.btnBuilderDash('btn-create', 'success', '../assets/images/ic_edit.png');
-        return '<div class="action-grid-toolbar">' + btnCreate + '</div>';
+        const btnOrg = commonGrid.btnBuilder('btn-org', 'danger', 'fa fa-users');
+        return '<div class="action-grid-toolbar">' + btnCreate + btnOrg + '</div>';
     }
 
     function optionButton(data) {

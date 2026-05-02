@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        User MEDREP <small>Control panel</small>
+        Karyawan <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> User MEDREP</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Karyawan</a></li>
         <li class="active">Content</li>
     </ol>
 </section>

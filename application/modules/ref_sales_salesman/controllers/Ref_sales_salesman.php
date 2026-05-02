@@ -60,6 +60,17 @@ class Ref_sales_salesman extends BaseController
 		echo json_encode($json);	
 	}
 
+    public function salesman_org()
+    {
+        $this->template->show($this, 'salesman_org');
+    }
+
+    public function data_salesman()
+    {
+        $data = param_input();
+        responseJSON($this->sales_salesman->load_salesman($data));
+    }
+
     public function form_upload()
     {
         $this->template->show($this, 'form_upload');

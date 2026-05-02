@@ -48,11 +48,11 @@ for (i = 0; i < close.length; i++) {
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Upload MEDREP <small>Control panel</small>
+        Upload Karyawan <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Upload MEDREP</a></li>
-        <li class="active">Form Upload MEDREP</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Upload Karyawan</a></li>
+        <li class="active">Form Upload Karyawan</li>
     </ol>
 </section>
 
@@ -62,12 +62,12 @@ for (i = 0; i < close.length; i++) {
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Upload MEDREP</h3>
+                    <h3 class="box-title">Form Upload Karyawan</h3>
                 </div>
                 <form id="fm-upload-sales-salesman" role="form" method="post" enctype="multipart/form-data">
                     <div class="box-body">
                         <div class="form-group col-xs-12 col-sm-12 col-md-6">
-                            <label for="salesmanid">File Upload MEDREP</label>
+                            <label for="salesmanid">File Upload Karyawan</label>
                             <input type="file" name="fileupload" id="fileupload" class="form-control"  onchange="return validasiFile()">
                             <small>*Max Size File Upload 10 MB</small>
                         </div>
@@ -109,7 +109,7 @@ for (i = 0; i < close.length; i++) {
     }
 
     const common = new Common();
-    common.setTitle("Upload MEDREP");
+    common.setTitle("Upload Karyawan");
     let uiForm = $("#fm-upload-sales-salesman");
     let uiBtnCancel = $("#btn-cancel-form");
     let uiBtnUpload = $("#btn-upload-form");

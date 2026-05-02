@@ -597,21 +597,34 @@ class Api_v1_model extends CI_Model
 
 	function get_tipesalesman()
     {
-		$sql = " select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
-				union
-				select 'SPV' as idtipesales, 'SPV' as tipesales
-				union
-				select 'ADMIN' as idtipesales, 'ADMIN' as tipesales
-				";
-		$res_ss = $this->db->query($sql);
-		if (count($res_ss->result_array()) > 0) {
-		$response = new stdClass();
-		$response = $res_ss->result_array();
-		//parsing to result
-		return result($response);
-		} else {
-		return result(new stdClass(), 200, "data Invalid!");
-		}
+		// $sql = " select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
+		// 		union
+		// 		select 'SPV' as idtipesales, 'SPV' as tipesales
+		// 		union
+		// 		select 'ADMIN' as idtipesales, 'ADMIN' as tipesales
+		// 		";
+		// $res_ss = $this->db->query($sql);
+		// if (count($res_ss->result_array()) > 0) {
+		// 	$response = new stdClass();
+		// 	$response = $res_ss->result_array();
+		// //parsing to result
+		// 	return result($response);
+		// } else {
+		// 	return result(new stdClass(), 200, "data Invalid!");
+		// }
+		$data = [
+			['idtipesales' => 'MEDREP', 'tipesales' => 'MEDICAL REP'],
+			['idtipesales' => 'MRC', 'tipesales' => 'MEDICAL REP COORDINATOR'],
+			['idtipesales' => 'ASS', 'tipesales' => 'AREA SALES SUPERVISOR'],
+			['idtipesales' => 'ASM', 'tipesales' => 'AREA SALES MANAGER'],
+			['idtipesales' => 'SM', 'tipesales' => 'SALES MANAGER'],
+			['idtipesales' => 'GME', 'tipesales' => 'GENERAL MANAGER EB'],
+			['idtipesales' => 'ESO', 'tipesales' => 'ETHICAL SUPPORT OFFICER'],
+			['idtipesales' => 'PA', 'tipesales' => 'PENATA ADM'],
+			['idtipesales' => 'PM', 'tipesales' => 'PRODUCT MANAGER'],
+			['idtipesales' => 'PE', 'tipesales' => 'PRODUCT EXECUTIVE'],
+		];
+		return result($data);
 	}
 
 	function get_tipetrans()

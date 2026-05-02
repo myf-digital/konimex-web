@@ -115,4 +115,44 @@ class Sales_salesman_model extends CI_Model
 		return $num;
 	}
 
+    function load_salesman($data)
+    {
+        $data = $this->db->query("
+            SELECT 
+                a.salesmanid as id,
+                a.salesmanid,
+                a.nama_salesman,
+                a.tipe_sales,
+                a.jabatan,
+                a.kpp_area,
+                COALESCE(NULLIF(a.supervisorid, 0), '') as pid,
+                b.nama_regional,
+                c.nama_area,
+                d.nama_area as nama_subarea,
+                'https://cdn-icons-png.flaticon.com/512/149/149071.png' as img
+            FROM m_sales_salesman a
+            LEFT JOIN m_area_regional b ON a.regionalid = b.regionalid
+            LEFT JOIN m_area_areasite c ON a.areaid = c.areaid
+            LEFT JOIN m_area_subarea d ON a.subareaid = d.subareaid
+            WHERE a.salesmanid NOT IN (00332,09174,09159,09173)
+        ")->result_array();
+        return $data;
+    }
+
+    function buildTree(array $elements, $parentId = null)
+    {
+        $branch = [];
+        foreach ($elements as $element) {
+            if ($element['supervisorid'] == $parentId) {
+                $children = $this->buildTree($elements, $element['salesmanid']);
+                if ($children) {
+                    $element['children'] = $children;
+                } else {
+                    $element['children'] = [];
+                }
+                $branch[] = $element;
+            }
+        }
+        return $branch;
+    }
 }

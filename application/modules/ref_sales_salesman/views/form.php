@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        User MEDREP <small>Control panel</small>
+        Karyawan <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> User MEDREP</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Karyawan</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form User MEDREP</h3>
+                    <h3 class="box-title">Form Karyawan</h3>
                 </div>
 
                 <form id="fm-sales-salesman" role="form" method="post">
@@ -25,16 +25,16 @@
                                 <select id="siteid-id" name="siteid" class="form-control" placeholder="SiteID"></select>
 							</div>-->
 							<div class="form-group col-md-3">
-								<label for="salesmanid">User MEDREP</label>
-								<input name="salesmanid" id="salesmanid-id" class="form-control" value="" placeholder="User MEDREP">
+								<label for="salesmanid">Karyawan</label>
+								<input name="salesmanid" id="salesmanid-id" class="form-control" value="" placeholder="Karyawan">
 							</div>
 							<div class="form-group col-md-3">
 								<label for="password">Password</label>
 								<input name="password" id="password-id" type="password" class="form-control" value="" placeholder="Password">
 							</div>
 							<div class="form-group col-md-7">
-								<label for="nama_salesman">Nama User MEDREP</label>
-								<input name="nama_salesman" class="form-control" placeholder="Nama User MEDREP">
+								<label for="nama_salesman">Nama Karyawan</label>
+								<input name="nama_salesman" class="form-control" placeholder="Nama Karyawan">
 							</div>
 							<!--<div class="form-group col-md-3">
 								<label for="supervisorid">Supervisorid</label>
@@ -49,8 +49,8 @@
 								<input name="tipe_db" class="form-control" placeholder="Tipe Db">
 							</div>-->
 							<div class="form-group  col-md-3">
-								<label for="tipe_sales">Tipe User MEDREP</label>
-                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="MEDREP Type"></select>
+								<label for="tipe_sales">Tipe Karyawan</label>
+                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Tipe Karyawan"></select>
 							</div>
 							<div class="form-group col-md-2">
 								<label for="join_date">Join Date</label>
