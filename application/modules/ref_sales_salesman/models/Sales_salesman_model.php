@@ -17,30 +17,6 @@ class Sales_salesman_model extends CI_Model
             "nama_category" => "CATEGORY"." - ".$data['salesmanid']
         );
         $this->db->insert('m_sales_salesman_category', $data_array_category);
-        
-        /*$dataarray_ram = array(
-            "ram_rsm" => $data['ram_rsm'],
-            "aas_aam_tss_tsm" => $data['aas_aam_tss_tsm']
-        );
-        $this->db->insert('mapping_ram_aas', $dataarray_ram);
-        
-        $dataarray_ram_fc = array(
-            "ram_rsm" => $data['ram_rsm'],
-            "aas_aam_tss_tsm" => $data['fc']
-        );
-        $this->db->insert('mapping_ram_aas', $dataarray_ram_fc);
-                
-        $dataarray_gff_aas = array(
-            "salesmanid" => $data['salesmanid'],
-            "aas_aam_tss_tsm" => $data['aas_aam_tss_tsm']
-        );
-        $this->db->insert('mapping_sales_aas_aam', $dataarray_gff_aas);
-        
-        $dataarray_gff_fc = array(
-            "salesmanid" => $data['salesmanid'],
-            "aas_aam_tss_tsm" => $data['fc']
-        );
-        $this->db->insert('mapping_sales_aas_aam', $dataarray_gff_fc);*/
 
         $data['categoryid']="11";
         $data['password'] = md5($data['password']);
@@ -49,33 +25,6 @@ class Sales_salesman_model extends CI_Model
 
     public function update($data)
     {
-
-        /*$this->db->delete('mapping_sales_aas_aam');
-
-        $dataarray_ram = array(
-            "ram_rsm" => $data['ram_rsm'],
-            "aas_aam_tss_tsm" => $data['aas_aam_tss_tsm']
-        );
-        $this->db->insert('mapping_ram_aas', $dataarray_ram);
-
-        $dataarray_ram_fc = array(
-            "ram_rsm" => $data['ram_rsm'],
-            "aas_aam_tss_tsm" => $data['fc']
-        );
-        $this->db->insert('mapping_ram_aas', $dataarray_ram_fc);
-        
-        $dataarray_gff_aas = array(
-            "salesmanid" => $data['salesmanid'],
-            "aas_aam_tss_tsm" => $data['aas_aam_tss_tsm']
-        );
-        $this->db->insert('mapping_sales_aas_aam', $dataarray_gff_aas);
-        
-        $dataarray_gff_fc = array(
-            "salesmanid" => $data['salesmanid'],
-            "aas_aam_tss_tsm" => $data['fc']
-        );
-        $this->db->insert('mapping_sales_aas_aam', $dataarray_gff_fc);
-        */
         $data['password'] = md5($data['password']);
         $this->db->where('salesmanid', $data['salesmanid']);
         $this->db->where('siteid', $data['siteid']);
@@ -154,5 +103,39 @@ class Sales_salesman_model extends CI_Model
             }
         }
         return $branch;
+    }
+
+    function supervisor($data)
+    {
+        if (empty($data['tipe_sales'])) return [];
+
+        $upperLevel = $this->getUpperLevel($data['tipe_sales']);
+        if (empty($upperLevel)) return [];
+
+		$this->db->from("m_sales_salesman");
+        $this->db->where('aktif', '1');
+        $this->db->where_in('tipe_sales', $upperLevel);
+        $result = $this->db->get()->result_array();
+        return $result;
+    }
+
+    function getUpperLevel($current)
+    {
+        $levels = [
+            'level_1' => ['GME','PA','PM','PE','ESO'],
+            'level_2' => ['SM'],
+            'level_3' => ['ASM'],
+            'level_4' => ['ASS','MRC'],
+            'level_5' => ['MEDREP'],
+        ];
+
+        $keys = array_keys($levels);
+        foreach ($levels as $key => $vals) {
+            if (in_array($current, $vals)) {
+                $index = array_search($key, $keys);
+                return ($index > 0) ? $levels[$keys[$index - 1]] : [];
+            }
+        }
+        return [];
     }
 }

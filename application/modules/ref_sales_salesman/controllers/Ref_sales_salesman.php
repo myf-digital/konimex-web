@@ -71,6 +71,12 @@ class Ref_sales_salesman extends BaseController
         responseJSON($this->sales_salesman->load_salesman($data));
     }
 
+    public function supervisor()
+    {
+        $data = param_input();
+        responseJSON($this->sales_salesman->supervisor($data));
+    }
+
     public function form_upload()
     {
         $this->template->show($this, 'form_upload');
