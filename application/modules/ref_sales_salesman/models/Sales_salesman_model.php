@@ -46,12 +46,20 @@ class Sales_salesman_model extends CI_Model
     public function load($data)
     {
         $field = " a.* ";
-        $table = " ( select a.*,b.nama_regional,c.nama_area,d.nama_area as city, case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus
-                            from m_sales_salesman a 
-                            left join m_area_regional b on a.regionalid=b.regionalid
-                            left join m_area_areasite c on a.areaid=c.areaid
-                            left join m_area_subarea d on a.subareaid=d.subareaid
-                    ) a";
+        $table = " (
+            select
+                a.*,
+                b.nama_regional,
+                c.nama_area,
+                d.nama_area as city,
+                case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
+                mss.nama_salesman as supervisor
+            from m_sales_salesman a 
+            left join m_area_regional b on a.regionalid=b.regionalid
+            left join m_area_areasite c on a.areaid=c.areaid
+            left join m_area_subarea d on a.subareaid=d.subareaid
+            left join m_sales_salesman mss on a.supervisorid=mss.salesmanid
+        ) a";
         return easy_pagging($data, $field, $table);
     }
 

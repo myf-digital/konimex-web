@@ -46,6 +46,7 @@
 				//{field:'siteid', title:'SITEID', halign: 'left', align: 'left', sortable:"true", width:200},
 				{field:'salesmanid', title:'USER MEDREP', halign: 'left', align: 'left', sortable:"true", width:100},
 				{field:'nama_salesman', title:'NAMA MEDREP', halign: 'left', align: 'left', sortable:"true", width:250},
+				{field:'supervisor', title:'LEADER', halign: 'left', align: 'left', sortable:"true", width:200},
 				{field:'tipe_sales', title:'MEDREP TYPE', halign: 'left', align: 'left', sortable:"true", width:100},
 				{field:'nama_regional', title:'Regional', halign: 'left', align: 'left', sortable:"true", width:120},
 				{field:'nama_area', title:'Area', halign: 'left', align: 'left', sortable:"true", width:120},
