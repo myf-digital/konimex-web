@@ -75,6 +75,9 @@
                         <button id="btn_load" type="button" class="btn btn-warning" style="margin-top:2.7rem;">
                             <i class="fa fa-refresh"></i> Load Data
                         </button>
+                        <button id="btn_export" type="button" class="btn btn-success" style="margin-top:2.7rem; margin-left:6px;" disabled>
+                            <i class="fa fa-file-excel-o"></i> Export Excel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -84,14 +87,31 @@
     <!-- Nasional + per-region summary -->
     <div id="charts-row" class="row"></div>
 
-    <!-- Region detail (hidden until a region card is clicked) -->
+    <!-- Area detail -->
     <div id="row-detail" class="row" style="margin-top: 16px; display:none;">
         <div class="col-xs-12">
             <div class="section-title"><i class="fa fa-map-marker"></i> <span id="title-detail"></span></div>
         </div>
         <div id="col-detail" class="col-xs-12"></div>
     </div>
+
+    <!-- Subarea detail -->
+    <div id="row-detail-area" class="row" style="margin-top: 16px; display:none;">
+        <div class="col-xs-12">
+            <div class="section-title"><i class="fa fa-map-pin"></i> <span id="title-detail-area"></span></div>
+        </div>
+        <div id="col-detail-area" class="col-xs-12"></div>
+    </div>
+
+    <!-- Final detail -->
+    <div id="row-detail-subarea" class="row" style="margin-top: 16px; display:none;">
+        <div class="col-xs-12">
+            <div class="section-title"><i class="fa fa-circle"></i> <span id="title-detail-subarea"></span></div>
+        </div>
+        <div id="col-detail-subarea" class="col-xs-12"></div>
+    </div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="<?php echo base_url() . 'assets/modules/dashboard_pjp_daily/dashboard-pjp-daily-content.js' ?>"></script>
