@@ -254,16 +254,14 @@ $(function () {
     function renderSubareaDetail(data) {
         var $col = $('#col-detail-subarea').empty();
 
+        function val(v) { return (v === null || v === undefined || v === 'null' || v === '') ? '-' : v; }
+
         var rows = data.map(function (r, i) {
-            var img = r.image_profile
-                ? '<img src="' + r.image_profile + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">'
-                : '<span class="fa fa-user-circle fa-2x text-muted"></span>';
             return '<tr>' +
                 '<td>' + (i + 1) + '</td>' +
-                '<td>' + img + '</td>' +
-                '<td>' + r.nama_salesman + '<br><small class="text-muted">' + r.salesmanid + '</small></td>' +
-                '<td>' + r.tipe_sales + '</td>' +
-                '<td>' + r.jabatan + '</td>' +
+                '<td>' + val(r.nama_salesman) + '<br><small class="text-muted">' + val(r.salesmanid) + '</small></td>' +
+                '<td>' + val(r.tipe_sales) + '</td>' +
+                '<td>' + val(r.jabatan) + '</td>' +
                 '<td>' + (r.plan_outlet || 0) + '</td>' +
                 '<td>' + (r.unplan_outlet || 0) + '</td>' +
                 '<td>' + (r.plan_user || 0) + '</td>' +
@@ -277,13 +275,13 @@ $(function () {
             '<div class="table-responsive">' +
             '<table class="table table-bordered table-striped table-hover" style="margin-bottom:0;">' +
             '<thead><tr>' +
-            '<th>#</th><th></th><th>Nama Salesman</th><th>Tipe</th><th>Jabatan</th>' +
+            '<th>#</th><th>Nama Salesman</th><th>Tipe</th><th>Jabatan</th>' +
             '<th style="background:#00a65a;color:#fff;">Plan Outlet</th>' +
             '<th style="background:#dd4b39;color:#fff;">Unplan Outlet</th>' +
             '<th style="background:#0073b7;color:#fff;">Plan User</th>' +
             '<th style="background:#f39c12;color:#fff;">Unplan User</th>' +
             '</tr></thead>' +
-            '<tbody>' + (rows || '<tr><td colspan="9" class="text-center">Tidak ada data</td></tr>') + '</tbody>' +
+            '<tbody>' + (rows || '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>') + '</tbody>' +
             '</table></div></div></div>'
         );
     }
