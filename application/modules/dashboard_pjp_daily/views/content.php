@@ -110,7 +110,31 @@
         </div>
         <div id="col-detail-subarea" class="col-xs-12"></div>
     </div>
+
+    <!-- Salesman visit detail -->
+    <div id="row-detail-salesman" class="row" style="margin-top: 16px; display:none;">
+        <div class="col-xs-12">
+            <div class="section-title"><i class="fa fa-user"></i> <span id="title-detail-salesman"></span></div>
+        </div>
+        <div id="col-detail-salesman" class="col-xs-12"></div>
+    </div>
 </section>
+
+<!-- Visit Detail Modal -->
+<div class="modal fade" id="modal-visit-detail" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" id="modal-visit-header" style="background:#0073b7;color:#fff;border-radius:4px 4px 0 0;">
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff;opacity:1;">&times;</button>
+                <h4 class="modal-title" id="modal-visit-title"></h4>
+            </div>
+            <div class="modal-body" id="modal-visit-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>

@@ -2,6 +2,7 @@ $(function () {
     var common = new Common();
     var paramsession = common.getCookie("session");
     var API_URL = 'https://konimex-api.product-act.com/api_v1/dash_pjp_daily_history';
+    var API_URL_REQ = 'https://konimex-api.product-act.com/api_v1/req_pjp_daily_history';
     var chartInstances = {};
 
     // stored data for export
@@ -18,8 +19,8 @@ $(function () {
     $('#end_date').val(fmtDate(lastDay));
 
     $('#btn_load').on('click', function () {
-        $('#row-detail, #row-detail-area, #row-detail-subarea').hide();
-        exportData = { summary: [], area: null, subarea: null };
+        $('#row-detail, #row-detail-area, #row-detail-subarea, #row-detail-salesman').hide();
+        exportData = { summary: [], area: null, subarea: null, salesman: null, visits: null };
         $('#btn_export').prop('disabled', true);
         loadSummary();
     });
@@ -92,6 +93,7 @@ $(function () {
         $('#title-detail-subarea').text(nama);
         $('#col-detail-subarea').html('<p class="text-muted" style="padding:10px;"><i class="fa fa-spinner fa-spin"></i> Loading...</p>');
         $('#row-detail-subarea').show();
+        $('#row-detail-salesman').hide();
 
         scrollTo('#row-detail-subarea');
 
@@ -99,6 +101,33 @@ $(function () {
             if (res.code !== 200) return;
             exportData.salesman = { label: nama, data: res.result };
             renderSubareaDetail(res.result);
+        });
+    }
+
+    function apiCallReq(salesmanid) {
+        var fd = new FormData();
+        fd.append('salesmanid', salesmanid);
+        return $.ajax({
+            url: API_URL_REQ,
+            method: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false,
+            headers: { 'X-Token': paramsession ? paramsession.token || 'expired' : 'expired' },
+        });
+    }
+
+    function loadSalesmanDetail(salesmanid, nama) {
+        $('#title-detail-salesman').text(nama + ' (' + salesmanid + ')');
+        $('#col-detail-salesman').html('<p class="text-muted" style="padding:10px;"><i class="fa fa-spinner fa-spin"></i> Loading...</p>');
+        $('#row-detail-salesman').show();
+
+        scrollTo('#row-detail-salesman');
+
+        apiCallReq(salesmanid).done(function (res) {
+            if (res.code !== 200) return;
+            exportData.visits = { label: nama + ' (' + salesmanid + ')', data: res.result };
+            renderSalesmanVisits(res.result);
         });
     }
 
@@ -244,6 +273,21 @@ $(function () {
             );
         }
 
+        var hdrVisit = ['Periode', 'Customer ID', 'Nama Customer', 'Check In', 'Check Out', 'Keterangan', 'Alasan'];
+        function visitRows(visits) {
+            return (visits || []).map(function (r) {
+                return [r.periode, r.customerid, r.nama_customer, r.check_in, r.check_out,
+                    r.keterangan || '', r.alasan || ''];
+            });
+        }
+
+        if (exportData.visits) {
+            var vLabel = exportData.visits.label || 'Salesman';
+            var vData = exportData.visits.data;
+            addSection('Plan Outlet — ' + vLabel, hdrVisit, visitRows(vData.plan_outlet));
+            addSection('Unplan Outlet — ' + vLabel, hdrVisit, visitRows(vData.unplan_outlet));
+        }
+
         var wb = XLSX.utils.book_new();
         var ws = XLSX.utils.aoa_to_sheet(rows);
         var period = $('#start_date').val() + ' sd ' + $('#end_date').val();
@@ -257,9 +301,10 @@ $(function () {
         function val(v) { return (v === null || v === undefined || v === 'null' || v === '') ? '-' : v; }
 
         var rows = data.map(function (r, i) {
-            return '<tr>' +
+            return '<tr style="cursor:pointer;" data-salesmanid="' + r.salesmanid + '" data-nama="' + (r.nama_salesman || '') + '">' +
                 '<td>' + (i + 1) + '</td>' +
-                '<td>' + val(r.nama_salesman) + '<br><small class="text-muted">' + val(r.salesmanid) + '</small></td>' +
+                '<td>' + val(r.nama_salesman) + '<br><small class="text-muted">' + val(r.salesmanid) + '</small>' +
+                ' <small style="color:#aaa;font-size:10px;"><i class="fa fa-hand-pointer-o"></i></small></td>' +
                 '<td>' + val(r.tipe_sales) + '</td>' +
                 '<td>' + val(r.jabatan) + '</td>' +
                 '<td>' + (r.plan_outlet || 0) + '</td>' +
@@ -273,7 +318,7 @@ $(function () {
             '<div style="padding-left:10px;padding-right:10px;">' +
             '<div class="dashboard-card">' +
             '<div class="table-responsive">' +
-            '<table class="table table-bordered table-striped table-hover" style="margin-bottom:0;">' +
+            '<table id="tbl-salesman" class="table table-bordered table-striped table-hover" style="margin-bottom:0;">' +
             '<thead><tr>' +
             '<th>#</th><th>Nama Salesman</th><th>Tipe</th><th>Jabatan</th>' +
             '<th style="background:#00a65a;color:#fff;">Plan Outlet</th>' +
@@ -284,5 +329,113 @@ $(function () {
             '<tbody>' + (rows || '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>') + '</tbody>' +
             '</table></div></div></div>'
         );
+
+        $col.find('#tbl-salesman tbody tr[data-salesmanid]').on('click', function () {
+            var salesmanid = $(this).data('salesmanid');
+            var nama = $(this).data('nama');
+            loadSalesmanDetail(salesmanid, nama);
+        });
+    }
+
+    function renderSalesmanVisits(result) {
+        var $col = $('#col-detail-salesman').empty();
+        var visitStore = {};
+
+        function val(v) { return (v === null || v === undefined || v === 'null' || v === '') ? '-' : v; }
+        function fmtDt(v) { return v ? v.replace('T', ' ').substring(0, 16) : '-'; }
+
+        function buildVisitTable(visits, label, headerColor) {
+            if (!visits || visits.length === 0) {
+                return '<p class="text-muted" style="margin:0;">Tidak ada data ' + label + '</p>';
+            }
+            var rows = visits.map(function (r, i) {
+                var key = label + '_' + i;
+                visitStore[key] = r;
+                return '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + val(r.periode) + '</td>' +
+                    '<td>' + val(r.nama_customer) + '<br><small class="text-muted">' + val(r.customerid) + '</small></td>' +
+                    '<td>' + fmtDt(r.check_in) + '</td>' +
+                    '<td>' + fmtDt(r.check_out) + '</td>' +
+                    '<td>' + val(r.keterangan) + '</td>' +
+                    '<td><button class="btn btn-xs btn-info btn-visit-detail" data-key="' + key + '"><i class="fa fa-search"></i> Detail</button></td>' +
+                    '</tr>';
+            }).join('');
+            return '<table class="table table-bordered table-striped" style="margin-bottom:0;">' +
+                '<thead><tr>' +
+                '<th>#</th>' +
+                '<th style="background:' + headerColor + ';color:#fff;">Periode</th>' +
+                '<th style="background:' + headerColor + ';color:#fff;">Customer</th>' +
+                '<th style="background:' + headerColor + ';color:#fff;">Check In</th>' +
+                '<th style="background:' + headerColor + ';color:#fff;">Check Out</th>' +
+                '<th style="background:' + headerColor + ';color:#fff;">Keterangan</th>' +
+                '<th style="background:' + headerColor + ';color:#fff;">Action</th>' +
+                '</tr></thead>' +
+                '<tbody>' + rows + '</tbody>' +
+                '</table>';
+        }
+
+        $col.append(
+            '<div style="padding-left:10px;padding-right:10px;">' +
+            '<div class="dashboard-card">' +
+            '<h5 style="margin:0 0 12px;font-weight:600;color:#00a65a;">Plan Outlet <span class="badge" style="background:#00a65a;">' + ((result.plan_outlet && result.plan_outlet.length) || 0) + '</span></h5>' +
+            '<div class="table-responsive" style="margin-bottom:24px;">' + buildVisitTable(result.plan_outlet, 'Plan Outlet', '#00a65a') + '</div>' +
+            '<h5 style="margin:0 0 12px;font-weight:600;color:#dd4b39;">Unplan Outlet <span class="badge" style="background:#dd4b39;">' + ((result.unplan_outlet && result.unplan_outlet.length) || 0) + '</span></h5>' +
+            '<div class="table-responsive">' + buildVisitTable(result.unplan_outlet, 'Unplan Outlet', '#dd4b39') + '</div>' +
+            '</div></div>'
+        );
+
+        $col.on('click', '.btn-visit-detail', function () {
+            var r = visitStore[$(this).data('key')];
+            showVisitModal(r);
+        });
+    }
+
+    function showVisitModal(r) {
+        function val(v) { return (v === null || v === undefined || v === 'null' || v === '') ? '-' : v; }
+        function fmtDt(v) { return v ? v.replace('T', ' ').substring(0, 16) : '-'; }
+
+        var infoRows = [
+            ['Customer', val(r.nama_customer) + ' <small class="text-muted">(' + val(r.customerid) + ')</small>'],
+            ['Periode', val(r.periode)],
+            ['Salesman', val(r.nama_salesman) + ' <small class="text-muted">(' + val(r.salesmanid) + ')</small>'],
+            ['Check In', fmtDt(r.check_in)],
+            ['Check Out', fmtDt(r.check_out)],
+            ['Keterangan', val(r.keterangan)],
+            ['Alasan', val(r.alasan)],
+        ].map(function (row) {
+            return '<tr><td style="width:35%;font-weight:600;background:#f9f9f9;">' + row[0] + '</td><td>' + row[1] + '</td></tr>';
+        }).join('');
+
+        var detailTable = '';
+        if (r.detail_user && r.detail_user.length > 0) {
+            var detailRows = r.detail_user.map(function (d, i) {
+                return '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + val(d.tipe_pic) + '</td>' +
+                    '<td>' + val(d.professional_name) + '</td>' +
+                    '<td>' + val(d.array_product) + '</td>' +
+                    '<td>' + fmtDt(d.start_detailing) + '</td>' +
+                    '<td>' + fmtDt(d.end_detailing) + '</td>' +
+                    '<td>' + val(d.reason) + '</td>' +
+                    '<td>' + val(d.keterangan) + '</td>' +
+                    '</tr>';
+            }).join('');
+            detailTable =
+                '<h5 style="font-weight:600;margin:16px 0 8px;border-left:4px solid #0073b7;padding-left:8px;">Detailing</h5>' +
+                '<div class="table-responsive">' +
+                '<table class="table table-bordered table-condensed" style="margin-bottom:0;">' +
+                '<thead style="background:#0073b7;color:#fff;"><tr>' +
+                '<th>#</th><th>Tipe</th><th>Nama Professional</th><th>Produk</th><th>Mulai</th><th>Selesai</th><th>Reason</th><th>Keterangan</th>' +
+                '</tr></thead><tbody>' + detailRows + '</tbody></table></div>';
+        }
+
+        $('#modal-visit-title').text(val(r.nama_customer) + ' — ' + val(r.periode));
+        $('#modal-visit-body').html(
+            '<table class="table table-bordered" style="margin-bottom:0;">' +
+            '<tbody>' + infoRows + '</tbody></table>' +
+            detailTable
+        );
+        $('#modal-visit-detail').modal('show');
     }
 });
