@@ -15,8 +15,15 @@ $(function () {
     function padZ(n) { return String(n).padStart(2, '0'); }
     function fmtDate(d) { return d.getFullYear() + '-' + padZ(d.getMonth() + 1) + '-' + padZ(d.getDate()); }
 
-    $('#start_date').val(fmtDate(firstDay));
-    $('#end_date').val(fmtDate(lastDay));
+    $('#start_date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    }).datepicker('setDate', firstDay);
+
+    $('#end_date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    }).datepicker('setDate', lastDay);
 
     $('#btn_load').on('click', function () {
         $('#row-detail, #row-detail-area, #row-detail-subarea, #row-detail-salesman').hide();
