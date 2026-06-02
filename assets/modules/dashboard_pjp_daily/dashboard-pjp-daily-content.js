@@ -266,7 +266,7 @@ $(function () {
             addSection('Summary', hdr, [nasional].concat(toRows(exportData.summary)));
         }
         if (exportData.area) {
-            addSection('Region: ' + exportData.area.label || 'Region', hdr, toRows(exportData.area.data));
+            addSection('Region: ' + (exportData.area.label || 'Region'), hdr, toRows(exportData.area.data));
         }
         if (exportData.subarea) {
             addSection('Area: ' + (exportData.subarea.label || 'Area'), hdr, toRows(exportData.subarea.data));
@@ -280,25 +280,68 @@ $(function () {
             );
         }
 
-        var hdrVisit = ['Periode', 'Customer ID', 'Nama Customer', 'Check In', 'Check Out', 'Keterangan', 'Alasan'];
-        function visitRows(visits) {
-            return (visits || []).map(function (r) {
-                return [r.periode, r.customerid, r.nama_customer, r.check_in, r.check_out,
-                    r.keterangan || '', r.alasan || ''];
+        var hdrVisit = [
+            'Periode', 'Nama Salesman', 'Salesman ID', 'Customer ID', 'Nama Customer', 
+            'Check In', 'Check Out', 'Keterangan', 'Alasan', 
+            'Tipe PIC', 'Nama Professional', 'Detailing Product', 'Mulai Detailing', 'Selesai Detailing', 'Durasi Detailing', 'Reason Detailing', 'Keterangan Detailing'
+        ];
+
+        var planRows = [hdrVisit];
+        var unplanRows = [hdrVisit];
+
+        function fmtDt(v) { return v ? v.replace('T', ' ').substring(0, 19) : ''; }
+
+        function calcDuration(start, end) {
+            if (!start || !end) return '';
+            var s = new Date(start);
+            var e = new Date(end);
+            if (isNaN(s) || isNaN(e)) return '';
+            var diff = Math.floor((e - s) / 1000);
+            if (diff < 0) return '';
+            var h = Math.floor(diff / 3600);
+            var m = Math.floor((diff % 3600) / 60);
+            var sec = diff % 60;
+            return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+        }
+
+        function visitRowsWithDetail(visits) {
+            var result = [];
+            (visits || []).forEach(function (r) {
+                var parentData = [
+                    r.periode, r.nama_salesman, r.salesmanid, r.customerid, r.nama_customer,
+                    fmtDt(r.check_in), fmtDt(r.check_out), r.keterangan || '', r.alasan || ''
+                ];
+                
+                if (r.detail_user && r.detail_user.length > 0) {
+                    r.detail_user.forEach(function(d) {
+                        result.push(parentData.concat([
+                            d.tipe_pic || '', d.professional_name || '', d.array_product || '',
+                            fmtDt(d.start_detailing), fmtDt(d.end_detailing), calcDuration(d.start_detailing, d.end_detailing), d.reason || '', d.keterangan || ''
+                        ]));
+                    });
+                } else {
+                    result.push(parentData.concat(['', '', '', '', '', '', '', '']));
+                }
             });
+            return result;
         }
 
         if (exportData.visits) {
-            var vLabel = exportData.visits.label || 'Salesman';
             var vData = exportData.visits.data;
-            addSection('Plan Outlet — ' + vLabel, hdrVisit, visitRows(vData.plan_outlet));
-            addSection('Unplan Outlet — ' + vLabel, hdrVisit, visitRows(vData.unplan_outlet));
+            planRows = planRows.concat(visitRowsWithDetail(vData.plan_outlet));
+            unplanRows = unplanRows.concat(visitRowsWithDetail(vData.unplan_outlet));
         }
 
         var wb = XLSX.utils.book_new();
-        var ws = XLSX.utils.aoa_to_sheet(rows);
+        var wsSummary = XLSX.utils.aoa_to_sheet(rows);
+        var wsPlan = XLSX.utils.aoa_to_sheet(planRows);
+        var wsUnplan = XLSX.utils.aoa_to_sheet(unplanRows);
+        
         var period = $('#start_date').val() + ' sd ' + $('#end_date').val();
-        XLSX.utils.book_append_sheet(wb, ws, 'PJP Daily');
+        XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+        XLSX.utils.book_append_sheet(wb, wsPlan, 'Planned');
+        XLSX.utils.book_append_sheet(wb, wsUnplan, 'Unplanned');
+        
         XLSX.writeFile(wb, 'PJP_Daily_' + period + '.xlsx');
     }
 
@@ -433,7 +476,7 @@ $(function () {
                 '<div class="table-responsive">' +
                 '<table class="table table-bordered table-condensed" style="margin-bottom:0;">' +
                 '<thead style="background:#0073b7;color:#fff;"><tr>' +
-                '<th>#</th><th>Tipe</th><th>Nama Professional</th><th>Produk</th><th>Mulai</th><th>Selesai</th><th>Reason</th><th>Keterangan</th>' +
+                '<th>#</th><th>Tipe</th><th>Nama Professional</th><th>Detailing Product</th><th>Mulai</th><th>Selesai</th><th>Reason</th><th>Keterangan</th>' +
                 '</tr></thead><tbody>' + detailRows + '</tbody></table></div>';
         }
 
