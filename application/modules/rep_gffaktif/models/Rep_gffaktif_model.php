@@ -345,7 +345,7 @@ class Rep_gffaktif_model extends CI_Model
         FROM t_sales_absensi tsa 
             LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
             left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
-            WHERE ".$where . $strquery ."and mss.nama_salesman NOT LIKE '%Tester%'
+            WHERE ".$where . $strquery ."
             order by tsa.periode, tsa.salesmanid 
         ");
         return $query->result_array();

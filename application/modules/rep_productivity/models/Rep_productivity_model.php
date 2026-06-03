@@ -139,7 +139,7 @@ class Rep_productivity_model extends CI_Model
                                                where z.periode between '".$start."' and '".$end."' 
                                                group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
                                             ),'-') as rrk_detailing, sum(e.jumlah_customer) as jumlah_customer, sum(e.total_penjualan) as total_penjualan
-									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.nama_salesman NOT LIKE '%Tester%' and b.aktif=1
+									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
 									left join m_area_areasite c on c.areaid=b.areaid left join m_area_regional d on d.regionalid=c.regionalid
                                     left join (SELECT salesmanid,tanggal,
 										  COUNT(customerid) AS total_transaksi,
@@ -217,7 +217,7 @@ class Rep_productivity_model extends CI_Model
 									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 									m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid and salesamn.nama_salesman NOT LIKE '%Tester%' left JOIN  
+									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
 									m_product product on dtl.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.tanggal between '".$start."' and '".$end."' 
@@ -284,7 +284,7 @@ class Rep_productivity_model extends CI_Model
 									t_sales_crc sls left join
 									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
 									m_customer cst on sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid and salesamn.nama_salesman NOT LIKE '%Tester%' left JOIN  
+									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid left JOIN  
 									m_product product on sls.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.periode between '".$start."' and '".$end."' 
@@ -356,7 +356,7 @@ class Rep_productivity_model extends CI_Model
                                                 then 'Call' 
                                             end as flag
                                     from t_sales_rrk_trans a
-                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid and b.nama_salesman NOT LIKE '%Tester%'
+                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
@@ -372,7 +372,7 @@ class Rep_productivity_model extends CI_Model
                                             '' alasan, '' keterangan,
                                             'FJP Tidak Terkunjungi' as flag
                                     from t_sales_rrk a
-                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid and b.nama_salesman NOT LIKE '%Tester%'
+                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
@@ -457,7 +457,7 @@ class Rep_productivity_model extends CI_Model
                                     from trx_visit_detailing a
                                     left join v_gff_info b on a.salesmanid=b.salesmanid
                                     left join v_outlet_all c on a.customerid=c.customerid
-                                    where a.periode between '".$start."' and '".$end."' and b.nama_salesman NOT LIKE '%Tester%'
+                                    where a.periode between '".$start."' and '".$end."'
                                             $strquery
                                             $area $regional;");
         return $query->result_array();
@@ -518,7 +518,7 @@ class Rep_productivity_model extends CI_Model
                 SELECT tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid, MAX(tpl.periode) AS max_periode
                 FROM trx_progress_listing tpl
                 LEFT JOIN m_sales_salesman mss ON mss.salesmanid = tpl.salesmanid
-                WHERE ".$where . $strquery ." and mss.nama_salesman NOT LIKE '%Tester%'
+                WHERE ".$where . $strquery ."
                 GROUP BY tpl.siteid, tpl.salesmanid, tpl.customerid, tpl.brandid
             ) latest
                 ON t.siteid = latest.siteid
@@ -583,7 +583,7 @@ class Rep_productivity_model extends CI_Model
         FROM t_sales_absensi tsa 
             LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
             left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
-            WHERE ".$where . $strquery ."and mss.nama_salesman NOT LIKE '%Tester%'
+            WHERE ".$where . $strquery ."
             order by tsa.periode, tsa.salesmanid 
         ");
         return $query->result_array();
@@ -707,7 +707,7 @@ class Rep_productivity_model extends CI_Model
                     where
                         m.idjabatan = 24) e on
                     (e.areaid = c.areaid))
-            WHERE ".$where . $strquery ." and c.nama_salesman NOT LIKE '%Tester%'
+            WHERE ".$where . $strquery ."
             ) x
             group by
                 x.periode,

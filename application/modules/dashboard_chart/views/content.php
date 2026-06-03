@@ -40,6 +40,11 @@
             <div class="box box-success">
                 <div class="box-header with-border">
                     <div class="form-group col-md-3">
+                        <label for="salesmanid">MEDREP</label>
+                        <select id="salesmanid" name="salesmanid[]" class="form-control" placeholder="Select MEDREP" multiple="multiple">
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
                         <label for="periode">Periode</label>
                         <select id="periode_id" name="periode" class="form-control" placeholder="Select Periode">
                             <option value="today" selected>Hari Ini</option>

@@ -18,7 +18,8 @@
 
   let uiDateRange = $("#date_range");
   let uiSelectPeriode = $("#periode_id");
-  let uiStartPeriode = $("#start_periode"); 
+  let uiSelectSalesman = $("#salesmanid");
+  let uiStartPeriode = $("#start_periode");
   let uiEndPeriode = $("#end_periode");
   let uiBtnLoadData = $("#btn_load_data");
 
@@ -32,20 +33,21 @@
       data: {
         ...dateRange,
         usersession: paramsession.username,
+        salesmanid: uiSelectSalesman.val(),
         restrict_level: paramsession.restrict_level,
       },
-      beforeSend : function() {
+      beforeSend: function () {
         common.loading();
       },
       url: common.baseURL('dashboard_chart/load'),
-      success: function(data) {
+      success: function (data) {
         loadChartProductivity(data.productivity);
         loadChartPerformance(data.performance);
         loadChartMedrepCoverage(data.parma_coverage);
         loadChartPresensi(data.presensi);
         common.loadingClose();
       },
-      error:function(){
+      error: function () {
         alert('Load failed');
         common.loadingClose();
       }
@@ -66,6 +68,11 @@
       allowClear: true
     });
 
+    uiSelectSalesman.select2({
+      placeholder: 'Select MEDREP',
+      allowClear: true
+    });
+
     uiBtnLoadData.click(function () {
       const periode = uiSelectPeriode.val();
       if (periode == '') {
@@ -74,12 +81,12 @@
           content: 'Periode harus dipilih!',
           containerFluid: true
         });
-      } else{
+      } else {
         loadChart();
       }
     });
 
-    uiSelectPeriode.on('change', function(selected) {
+    uiSelectPeriode.on('change', function (selected) {
       const val = selected.target.value;
       if (val == 'custom') uiDateRange.removeClass('hidden');
       else {
@@ -89,13 +96,19 @@
       }
     });
 
-    uiStartPeriode.on('changeDate', function(selected) {
+    uiStartPeriode.on('changeDate', function (selected) {
       let endDate = new Date(selected.date.valueOf());
       endDate.setDate(endDate.getDate() + 90);
       uiEndPeriode.datepicker('setEndDate', endDate);
       if (uiStartPeriode.val() > uiEndPeriode.val()) {
         uiEndPeriode.val(uiStartPeriode.val());
       }
+    });
+
+    loadSalesman({
+      usersession: paramsession.username,
+      idjabatan: paramsession.idjabatan,
+      restrict_level: paramsession.restrict_level
     });
 
     loadChart();
@@ -118,7 +131,7 @@
       labelPerformance.html('Hari Ini');
       labelPresensi.html('Hari Ini');
       start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      end   = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
     else if (periode === "week") {
@@ -126,7 +139,7 @@
       labelPerformance.html('Minggu Ini');
       labelPresensi.html('Minggu Ini');
       start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
-      end   = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
     else if (periode === "month") {
@@ -134,7 +147,7 @@
       labelPerformance.html('Bulan Ini');
       labelPresensi.html('Bulan Ini');
       start = new Date(now.getFullYear(), now.getMonth(), 1);
-      end   = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
     else if (periode === "year") {
@@ -142,7 +155,7 @@
       labelPerformance.html('Tahun Ini');
       labelPresensi.html('Tahun Ini');
       start = new Date(now.getFullYear(), 0, 1);
-      end   = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
     else if (periode === "custom") {
@@ -178,7 +191,7 @@
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: { 
+          y: {
             beginAtZero: true,
             min: 0,
             max: 100,
@@ -187,7 +200,7 @@
         plugins: {
           tooltip: {
             callbacks: {
-              label: function(context) {
+              label: function (context) {
                 let index = context.dataIndex;
                 let info = context.dataset.extraInfo[index];
                 let name = `👤 ${info.nama_salesman} (${info.city})`;
@@ -195,7 +208,7 @@
                   `${name}`,
                   `${'_'.repeat(name.length)}`,
                   `%FJP Compliance : ${context.parsed.y}%`,
-                  `Kehadiran : ${info.kehadiran}% | Cuti(${info.cuti}), Sakit(${info.sakit})`,
+                  `Kehadiran : Hadir(${info.hadir}) | Cuti(${info.cuti}), Sakit(${info.sakit})`,
                   `Keterangan : ${info.rrk_keterangan}`,
                   `Detailing : ${info.rrk_detailing}`,
                 ];
@@ -216,39 +229,32 @@
         labels: data.labels,
         datasets: [
           {
-              label: 'Schedule',
-              borderColor: '#008d4c',
-              backgroundColor: '#008d4c',
-              data: data.data_schedule,
-              extraInfo: data.extraInfo,
+            label: 'Planned',
+            borderColor: '#008d4c',
+            backgroundColor: '#008d4c',
+            data: data.data_schedule,
+            extraInfo: data.extraInfo,
           },
           {
-              label: 'Call',
-              borderColor: '#00de93',
-              backgroundColor: '#00de93',
-              data: data.data_call,
-              extraInfo: data.extraInfo,
+            label: 'Actual Planned',
+            borderColor: '#00de93',
+            backgroundColor: '#00de93',
+            data: data.data_call,
+            extraInfo: data.extraInfo,
           },
           {
-              label: 'Extra Call',
-              borderColor: '#f82347',
-              backgroundColor: '#f82347',
-              data: data.data_extra,
-              extraInfo: data.extraInfo,
+            label: 'Unplanned',
+            borderColor: '#f82347',
+            backgroundColor: '#f82347',
+            data: data.data_extra,
+            extraInfo: data.extraInfo,
           },
           {
-              label: 'CRC',
-              borderColor: '#f7f02a',
-              backgroundColor: '#f7f02a',
-              data: data.data_crc,
-              extraInfo: data.extraInfo,
-          },
-          {
-              label: 'Order',
-              borderColor: '#2a60f7',
-              backgroundColor: '#2a60f7',
-              data: data.data_order,
-              extraInfo: data.extraInfo,
+            label: 'Order',
+            borderColor: '#2a60f7',
+            backgroundColor: '#2a60f7',
+            data: data.data_order,
+            extraInfo: data.extraInfo,
           },
         ],
       },
@@ -267,27 +273,25 @@
             displayColors: false,
             callbacks: {
               label: function () { return ''; },
-              
-              afterBody: function(context) {
+
+              afterBody: function (context) {
                 let ctx = context[0];
                 let idx = ctx.dataIndex;
                 let ds = ctx.dataset;
                 let extra = ds.extraInfo[idx];
 
                 let schedule = ctx.chart.data.datasets[0].data[idx];
-                let call     = ctx.chart.data.datasets[1].data[idx];
-                let extraC   = ctx.chart.data.datasets[2].data[idx];
-                let crc      = ctx.chart.data.datasets[3].data[idx];
-                let order    = ctx.chart.data.datasets[4].data[idx];
-                let name     = `👤 ${extra.nama_salesman} (${extra.city})`;
+                let call = ctx.chart.data.datasets[1].data[idx];
+                let extraC = ctx.chart.data.datasets[2].data[idx];
+                let order = ctx.chart.data.datasets[3].data[idx];
+                let name = `👤 ${extra.nama_salesman} (${extra.city})`;
 
                 return [
                   `${name}`,
                   `${'_'.repeat(name.length)}`,
-                  `📌 Schedule : ${schedule}`,
-                  `📞 Call : ${call}`,
-                  `➕ Extra Call : ${extraC}`,
-                  `📝 CRC : ${crc}`,
+                  `📌 Planned : ${schedule}`,
+                  `📞 Actual Planned : ${call}`,
+                  `➕ Unplanned : ${extraC}`,
                   `🛒 Order : ${order} ${extra.total_order == '0' ? '' : `(${extra.total_order})`}`,
                 ];
               }
@@ -336,8 +340,8 @@
         datasets: [{
           data: data.counts,
           backgroundColor: [
-            '#3498db','#2ecc71','#e67e22','#9b59b6',
-            '#e74c3c','#16a085','#f1c40f','#34495e'
+            '#3498db', '#2ecc71', '#e67e22', '#9b59b6',
+            '#e74c3c', '#16a085', '#f1c40f', '#34495e'
           ]
         }]
       },
@@ -358,7 +362,7 @@
           },
           tooltip: {
             callbacks: {
-              label: function(ctx) {
+              label: function (ctx) {
                 let idx = ctx.dataIndex;
                 let list = data.details[idx];
 
@@ -370,7 +374,7 @@
                 return result;
               },
 
-              afterBody: function(ctx) {
+              afterBody: function (ctx) {
                 let idx = ctx[0].dataIndex;
                 let total = data.counts[idx];
 
@@ -380,7 +384,7 @@
           },
           legendFooterPlugin: {
             showFooter: true,
-            footerText: `Total MEDREP : ${data.total_parma}`
+            footerText: `Total: ${data.total_parma}`
           },
         }
       },
@@ -412,9 +416,9 @@
         plugins: {
           tooltip: {
             callbacks: {
-              label: function() { return ""; },
+              label: function () { return ""; },
 
-              afterBody: function(ctx) {
+              afterBody: function (ctx) {
                 let ds = ctx[0].dataset;
                 let idx = ctx[0].dataIndex;
                 let info = ds.extraInfo[idx];
@@ -443,20 +447,20 @@
   }
 
   function randomColor() {
-    return `hsl(${Math.floor(Math.random()*360)}, 70%, 50%)`;
+    return `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
   }
 
   function convertDurasiToHour(str) {
     let jam = 0, menit = 0, detik = 0;
 
     if (str.includes("jam")) {
-        jam = parseInt(str.split("jam")[0]);
+      jam = parseInt(str.split("jam")[0]);
     }
     if (str.includes("menit")) {
-        menit = parseInt(str.split("jam")[1].split("menit")[0]);
+      menit = parseInt(str.split("jam")[1].split("menit")[0]);
     }
     if (str.includes("detik")) {
-        detik = parseInt(str.split("menit")[1]);
+      detik = parseInt(str.split("menit")[1]);
     }
 
     return jam + (menit / 60) + (detik / 3600);
@@ -484,7 +488,7 @@
         if (raw[date][sid]) {
           let d = raw[date][sid];
 
-          let val = d.durasi_jam.includes("jam") 
+          let val = d.durasi_jam.includes("jam")
             ? convertDurasiToHour(d.durasi_jam)
             : 0;
 
@@ -518,5 +522,28 @@
     });
 
     return { labels, datasets };
+  }
+
+  function loadSalesman(data) {
+    common.loading();
+    $.post(common.baseURL("api_v1/call_salesman"), {
+      idjabatan: data.idjabatan,
+      usersession: data.usersession,
+      restrict_level: data.restrict_level
+    }, function (res) {
+      uiSelectSalesman.empty();
+      uiSelectSalesman.select2({
+        placeholder: "Select Medrep",
+        allowClear: true,
+        data: $.map(res.result, function (o) {
+          o.id = o.salesmanid;
+          o.text = o.salesmanid + " - " + o.nama_salesman + " - " + o.tipe_sales;
+          return o;
+        }),
+      });
+
+      uiSelectSalesman.val(null).trigger('change');
+      common.loadingClose();
+    });
   }
 })();

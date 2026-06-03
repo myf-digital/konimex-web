@@ -22,25 +22,36 @@ class Dashboard_chart_model extends CI_Model
     {
         $start = $data['start'] ?? date("Y-m-d");
         $end = $data['end'] ?? date("Y-m-d");
+        $salesmanid = $data['salesmanid'] ?? '';
 
-        if ($data["restrict_level"] == '4') {
-			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
-            ) ";
-		} else if ($data["restrict_level"] == '3') {
-			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
-            ) ";
-		} else if ($data["restrict_level" ]== '2') {
-			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
-            ) ";
-		} else {
-			$strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE tipe_sales='MEDREP' AND aktif=1)";
-		}
+        $strquery = "";
+        if (!empty($salesmanid)) {
+            if (is_array($salesmanid)) {
+                $escaped = array_map(array($this->db, 'escape_str'), $salesmanid);
+                $strquery = " AND b.salesmanid IN ('" . implode("','", $escaped) . "')";
+            } else {
+                $strquery = " AND b.salesmanid = '" . $this->db->escape_str($salesmanid) . "'";
+            }
+        } else {
+            if ($data["restrict_level"] == '4') {
+                $strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
+                ) ";
+            } else if ($data["restrict_level"] == '3') {
+                $strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
+                ) ";
+            } else if ($data["restrict_level"] == '2') {
+                $strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data["usersession"]."') AND tipe_sales='MEDREP' AND aktif=1
+                ) ";
+            } else {
+                $strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE tipe_sales='MEDREP' AND aktif=1)";
+            }
+        }
 
 		$query = "
 			SELECT 
@@ -113,7 +124,7 @@ class Dashboard_chart_model extends CI_Model
                 GROUP BY tr.salesmanid
             ) ord ON ord.salesmanid = b.salesmanid
             LEFT JOIN m_area_areasite c ON b.areaid = c.areaid
-            WHERE b.tipe_sales='MEDREP' AND b.aktif = 1 AND b.nama_salesman NOT LIKE '%Tester%' $strquery
+            WHERE b.tipe_sales='MEDREP' AND b.aktif = 1 $strquery
             ORDER BY b.salesmanid
         ";
 		$data = $this->db->query($query)->result_array();
@@ -150,24 +161,33 @@ class Dashboard_chart_model extends CI_Model
         $end = $data['end'] ?? date("Y-m-d");
         $year = date('Y', strtotime($end));
         $month = date('m', strtotime($end));
+        $salesmanid = $data['salesmanid'] ?? '';
 
-        if ($data['restrict_level'] == '4') {
-            $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON  a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            )";
-        } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON  a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            )";
-        } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON  a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            ) ";
+        $strquery = "";
+        if (!empty($salesmanid)) {
+            if (is_array($salesmanid)) {
+                $escaped = array_map(array($this->db, 'escape_str'), $salesmanid);
+                $strquery = " AND a.salesmanid IN ('" . implode("','", $escaped) . "')";
+            } else {
+                $strquery = " AND a.salesmanid = '" . $this->db->escape_str($salesmanid) . "'";
+            }
         } else {
-            $strquery = "";
+            if ($data['restrict_level'] == '4') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON  a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                )";
+            } else if ($data['restrict_level'] == '3') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON  a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                )";
+            } else if ($data['restrict_level'] == '2') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON  a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                ) ";
+            }
         }
         
 		$query = "
@@ -189,6 +209,9 @@ class Dashboard_chart_model extends CI_Model
                 (SELECT count(1) FROM t_sales_absensi WHERE status='S' AND salesmanid=a.salesmanid AND periode BETWEEN '".$start."' AND '".$end."') AS sakit, 
                 sum(a.pjp) as pjp,
                 sum(a.call) as `call`,
+                sum(a.extra_call) as `extra_call`,
+                sum(a.crc) as `crc`,
+                sum(a.order) as `order`,
                 IFNULL((
                     SELECT GROUP_CONCAT(x.reason_rrk SEPARATOR ' , ')
                     FROM ( 
@@ -210,7 +233,7 @@ class Dashboard_chart_model extends CI_Model
                     ) x WHERE x.salesmanid=a.salesmanid GROUP BY x.salesmanid
                 ),'-') AS rrk_detailing
             FROM t_sales_absensi a
-            LEFT JOIN m_sales_salesman b ON a.salesmanid=b.salesmanid AND b.nama_salesman NOT LIKE '%Tester%' AND b.aktif=1
+            LEFT JOIN m_sales_salesman b ON a.salesmanid=b.salesmanid AND b.aktif=1
             LEFT JOIN m_area_areasite c ON c.areaid=b.areaid LEFT JOIN m_area_regional d ON d.regionalid=c.regionalid
             LEFT JOIN (
                 SELECT salesmanid,tanggal,
@@ -234,16 +257,21 @@ class Dashboard_chart_model extends CI_Model
         ];
         foreach ($data as $d) {
             $result['labels'][] = $d['salesmanid'];
-            $result['data'][] = $d['pjp'] ? number_format($d['call']/$d['pjp']*100, 2, '.', ',') : 0;
+            $result['data'][] = number_format($d['call'] + $d['extra_call'], 0, '.', ',');
             $result['extraInfo'][] = [
                 'salesmanid' => $d['salesmanid'],
                 'nama_salesman' => $d['nama_salesman'],
                 'city' => $d['city'],
                 'rrk_keterangan' => $d['rrk_keterangan'],
                 'rrk_detailing' => $d['rrk_detailing'],
-                'kehadiran' => number_format($d['hadir']/$d['aktif']*100, 2, '.', ','),
-                'sakit' => $d['sakit'],
-                'cuti' => $d['cuti'],
+                'hadir' => number_format($d['hadir'], 0, '.', ','),
+                'sakit' => number_format($d['sakit'], 0, '.', ','),
+                'cuti' => number_format($d['cuti'], 0, '.', ','),
+                'pjp' => number_format($d['pjp'], 0, '.', ','),
+                'call' => number_format($d['call'], 0, '.', ','),
+                'extra_call' => number_format($d['extra_call'], 0, '.', ','),
+                'crc' => number_format($d['crc'], 0, '.', ','),
+                'order' => number_format($d['order'], 0, '.', ','),
             ];
         }
 
@@ -254,25 +282,34 @@ class Dashboard_chart_model extends CI_Model
     {
         $start = $data['start'] ?? date("Y-m-d");
         $end = $data['end'] ?? date("Y-m-d");
+        $salesmanid = $data['salesmanid'] ?? '';
 
-        if ($data['restrict_level'] == '4') {
-			$strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            )";
-		} else if ($data['restrict_level'] == '3') {
-			$strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            )";
-		} else if ($data['restrict_level'] == '2') {
-			$strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            ) ";
-		} else {
-			$strquery = "";
-		}
+        $strquery = "";
+        if (!empty($salesmanid)) {
+            if (is_array($salesmanid)) {
+                $escaped = array_map(array($this->db, 'escape_str'), $salesmanid);
+                $strquery = " AND a.salesmanid IN ('" . implode("','", $escaped) . "')";
+            } else {
+                $strquery = " AND a.salesmanid = '" . $this->db->escape_str($salesmanid) . "'";
+            }
+        } else {
+            if ($data['restrict_level'] == '4') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                )";
+            } else if ($data['restrict_level'] == '3') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                )";
+            } else if ($data['restrict_level'] == '2') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                ) ";
+            }
+        }
 
         $query = " 
             SELECT
@@ -287,7 +324,7 @@ class Dashboard_chart_model extends CI_Model
                 a.end_keterangan
             FROM attendance_parma a
             LEFT JOIN v_gff_info b ON a.salesmanid=b.salesmanid 
-            WHERE a.periode BETWEEN '$start' AND '$end' AND b.nama_salesman NOT LIKE '%Tester%'
+            WHERE a.periode BETWEEN '$start' AND '$end'
             $strquery
             ORDER BY a.periode DESC
         ";
@@ -321,24 +358,34 @@ class Dashboard_chart_model extends CI_Model
 
     public function loadMedrepCoverage($data)
     {
-        if ($data['restrict_level'] == '4') {
-			$strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            )";
-		} else if ($data['restrict_level'] == '3') {
-			$strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            )";
-		} else if ($data['restrict_level'] == '2') {
-			$strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
-                app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                WHERE a.username='".$data['usersession']."')
-            ) ";
-		} else {
-			$strquery = "";
-		}
+        $salesmanid = $data['salesmanid'] ?? '';
+
+        $strquery = "";
+        if (!empty($salesmanid)) {
+            if (is_array($salesmanid)) {
+                $escaped = array_map(array($this->db, 'escape_str'), $salesmanid);
+                $strquery = " AND a.salesmanid IN ('" . implode("','", $escaped) . "')";
+            } else {
+                $strquery = " AND a.salesmanid = '" . $this->db->escape_str($salesmanid) . "'";
+            }
+        } else {
+            if ($data['restrict_level'] == '4') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE subareaid IN (SELECT distinct b.subareaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                )";
+            } else if ($data['restrict_level'] == '3') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE areaid IN (SELECT distinct b.areaid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                )";
+            } else if ($data['restrict_level'] == '2') {
+                $strquery = " AND a.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE regionalid IN (SELECT distinct b.regionalid FROM  
+                    app_resource a LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
+                    WHERE a.username='".$data['usersession']."')
+                ) ";
+            }
+        }
 
         $query = "
             SELECT 
@@ -348,7 +395,7 @@ class Dashboard_chart_model extends CI_Model
                 a.nama_salesman,
                 a.nama_area
             FROM v_gff_info a
-            WHERE a.tipe_sales='MEDREP' AND a.nama_salesman NOT LIKE '%Tester%'
+            WHERE a.tipe_sales='MEDREP'
             $strquery
             ORDER BY a.nama_regional, a.salesmanid;
         ";

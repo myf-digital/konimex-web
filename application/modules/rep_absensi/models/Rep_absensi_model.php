@@ -8,7 +8,7 @@ class Rep_absensi_model extends CI_Model
     {
         $field = " a.* ";
         $table = " ( select salesmanid, nama_salesman, tipe_sales, regionalid, nama_regional, areaid, nama_area 
-                        from v_gff_info where tipe_sales='MEDREP' and nama_salesman not like '%Tester%'
+                        from v_gff_info where tipe_sales='MEDREP'
                         order by salesmanid asc ) as a";
         return easy_pagging($data, $field, $table);
     }
@@ -17,7 +17,7 @@ class Rep_absensi_model extends CI_Model
     {
         $field = " a.* ";
         $table = " ( select salesmanid, nama_salesman, tipe_sales, regionalid, nama_regional, areaid, nama_area 
-                        from v_gff_info where tipe_sales='MEDREP' and nama_salesman not like '%Tester%'
+                        from v_gff_info where tipe_sales='MEDREP'
                         order by salesmanid asc ) as a";
         return easy_pagging($data, $field, $table);
     }
