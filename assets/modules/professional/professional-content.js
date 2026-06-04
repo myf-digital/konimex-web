@@ -4,7 +4,7 @@
     const common = new Common();
     const commonGrid = new CommonGrid();
     // update title
-    common.setTitle("List Professional");
+    common.setTitle("List User");
     // ui components
     let uiTbl = $("#tbl-professional");
 
@@ -19,11 +19,15 @@
         uiBtnDownload.click(function () {
             save_xls();
         });
+        $("#btn-create").click(function () {
+            common.removeCookie("module.professional.update");
+            common.direct("professional/form");
+        });
     }
 
     function initializeGrid() {
         let option = {
-            title: "List Professional",
+            title: "List User",
             toolbar: toolbar(),
             url: common.baseURL("professional/load"),
             pageNumber: 1,
@@ -40,9 +44,10 @@
                 }
             ]],
             columns: [[
-				{field:'id', title:'KODE PROFESSIONAL', halign: 'center', align: 'center', sortable:"true", width:175},
-				{field:'nama_professional', title:'NAMA PROFESSIONAL', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'customer_list', title:'TEMPAT PRAKTEK', halign: 'center', align: 'left', sortable:"true", width:200, formatter: formatterCustomerList},
+                { field: 'id', title: 'ID USER', halign: 'center', align: 'center', sortable: "true", width: 175 },
+                { field: 'nama_professional', title: 'NAMA USER', halign: 'center', align: 'left', sortable: "true", width: 200 },
+                { field: 'spesialisasi', title: 'SPESIALISASI', halign: 'center', align: 'left', sortable: "true", width: 200 },
+                { field: 'customer_list', title: 'TEMPAT PRAKTEK', halign: 'center', align: 'left', sortable: "true", width: 200, formatter: formatterCustomerList },
             ]],
             onBeforeLoad: function (param) {
             },
@@ -56,24 +61,10 @@
         common.removeFilter(['options']);
     }
 
-    function formatterNumber(val, row, index) {
-		return val ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '';
-	}
-
-    function formatterDate(val, row, index) {
-        moment.locale('id');
-		return val ? moment(val, "YYYYMM").format("MMM YYYY") : '';
-	}
-
     function toolbar() {
-        // const btnSearch = commonGrid.btnBuilderText('btn-search', 'primary', 'fa fa-search', ' Search');
-        const btnDownload = commonGrid.btnBuilderText('btn-download', 'success', 'fa fa-download', ' Download');
-        return '<div class="action-grid-toolbar">' +
-            //    '&nbsp;&nbsp;&nbsp; Periode : &nbsp;' +
-            //    '<input type="text" id="get_date1" value="" name="get_date1" readonly>' +
-            //    '&nbsp; - &nbsp; <input type="text" id="get_date2" value="" name="get_date2" readonly>' +
-                // btnSearch + 
-                btnDownload + '</div>';
+        const btnCreate = commonGrid.btnBuilderText('btn-create', 'success', 'fa fa-plus', 'Tambah');
+        const btnDownload = commonGrid.btnBuilderText('btn-download', 'info', 'fa fa-download', ' Download');
+        return '<div class="action-grid-toolbar">' + btnCreate + btnDownload + '</div>';
     }
 
     function formatterButton(val, row, index) {
@@ -103,26 +94,26 @@
         let index = 0;
         for (const btns of btnContent) {
             const param = data.rows[index];
-            const btnPreview = $(btns).find("a.btn-success");
-			btnPreview.click(function () {
-				open_detail(param);
-			});
+            const btnEdit = $(btns).find("a.btn-success");
+            btnEdit.click(function () {
+                open_edit(param);
+            });
             const btnImage = $(btns).find("a.btn-info");
-			btnImage.click(function () {
-				open_image(param);
-			});
+            btnImage.click(function () {
+                open_image(param);
+            });
             index++;
         }
     }
 
-    function open_detail(data) {
-        common.setCookie("module.setup.professional-outlet", data);
-        common.direct("professional/form_set_outlet");
+    function open_edit(data) {
+        common.setCookie("module.professional.update", data);
+        common.direct("professional/form");
     }
 
-	function open_image(data) {
+    function open_image(data) {
         if (data && data != undefined) {
-            $('#myModalImage').text(`User: ${data.nama_professional}`);	
+            $('#myModalImage').text(`User: ${data.nama_professional}`);
             $("#show-image").html(`
                 <div class="row text-left">
                     <div class="col-md-12">

@@ -10,15 +10,19 @@ class Professional_model extends CI_Model
                     SELECT
                         a.id,
                         a.nama_professional,
+                        a.spesialisasi_id,
+                        rs.name as spesialisasi,
                         concat('".URL_IMAGE."', a.url_foto) as url_foto,
                         concat('".URL_IMAGE."', a.url_img_signature) as url_img_signature,
                         GROUP_CONCAT(
-                            DISTINCT CONCAT(rpm.customerid, ' - ', rpm.nama_customer)
+                            DISTINCT CONCAT(rpm.customerid, ' - ', rpm.nama_customer, ' - ', mc.typeid)
                             ORDER BY rpm.customerid 
                             SEPARATOR '||'
                         ) as customer_list
                     FROM ref_professional a
+                    LEFT JOIN ref_spesialisasi rs ON rs.id = a.spesialisasi_id
                     LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
+                    LEFT JOIN m_customer mc ON mc.customerid = rpm.customerid
                     WHERE rpm.customerid IS NOT NULL
                     GROUP BY a.id
                     ORDER BY a.id DESC
@@ -37,43 +41,98 @@ class Professional_model extends CI_Model
 
     public function outlet($data)
     {
+        if (!empty($data['q'])) {
+            $this->db->group_start();
+            $this->db->like('customerid', $data['q']);
+            $this->db->or_like('nama_customer', $data['q']);
+            $this->db->or_like('typeid', $data['q']);
+            $this->db->group_end();
+        }
         $this->db->where('customerid IS NOT NULL', null, false);
         $this->db->where('customerid <>', '');
         $this->db->order_by('customerid', 'DESC');
+        $this->db->limit(50);
         $result = $this->db->from('m_customer')->get()->result_array();
         return $result;
     }
 
+    public function spesialisasi($data)
+    {
+        $result = $this->db->from('ref_spesialisasi')->get()->result_array();
+        return $result;
+    }
+
+    public function create($data)
+    {
+        return $this->update($data);
+    }
+
     public function update($data)
     {
-        if (!isset($data['customerid']) || !is_array($data['customerid'])) {
-            $status = false;
-        } else {
-            $professional = $this->db->get_where('ref_professional', ['id' => $data['id_professional']])->row_array();
-            $outlets = $this->db->where_in('customerid', $data['customerid'])->get('m_customer')->result_array();
-            $outletMap = [];
-            foreach ($outlets as $o) {
-                $outletMap[$o['customerid']] = $o['nama_customer'];
-            }
+        $error = '';
+        if (empty($data['professional'])) {
+            $error = "Profesional wajib diisi.";
+        } else if (empty($data['spesialisasi'])) {
+            $error = "Spesialisasi wajib dipilih.";
+        } else if (empty($data['customerid'])) {
+            $error = "Outlet wajib dipilih.";
+        }
 
-            $mappingData = [];
-            foreach ($data['customerid'] as $customerId) {
-                $mappingData[] = [
-                    'id_professional' => $data['id_professional'],
-                    'nama_professional' => $professional['nama_professional'],
-                    'customerid' => $customerId,
-                    'nama_customer' => $outletMap[$customerId] ?? '',
-                ];
-            }
-            
-            if (!empty($mappingData)) {
-                $this->db->trans_start();
-                $this->db->where('id_professional', $data['id_professional']);
-                $this->db->delete('ref_professional_mapping');
-                $this->db->insert_batch('ref_professional_mapping', $mappingData);
-                $this->db->trans_complete();
-                $status = $this->db->trans_status();
-            }
+        if (!empty($error)) {
+            return [
+                'code' => 422,
+                'message' => $error,
+                'result' => false
+            ];
+        }
+
+        $professionalId = $data['id_professional'] ?? null;
+        $namaProfessional = $data['professional'] ?? null;
+        if (empty($professionalId)) {
+            $this->db->insert('ref_professional', [
+                'siteid' => "KNX01",
+                'nama_professional' => $namaProfessional,
+                'spesialisasi_id' => $data['spesialisasi'],
+                'created_by' => $data['usersession'],
+                'created_date' => date('Y-m-d H:i:s'),
+            ]);
+            $professionalId = $this->db->insert_id();
+        } else {
+            $this->db->where('id', $professionalId);
+            $this->db->update('ref_professional', [
+                'nama_professional' => $namaProfessional,
+                'spesialisasi_id' => $data['spesialisasi'],
+                'modified_by' => $data['usersession'],
+                'modified_date' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        $professional = $this->db->get_where('ref_professional', ['id' => $professionalId])->row_array();
+        
+        $outlets = $this->db->where_in('customerid', $data['customerid'])->get('m_customer')->result_array();
+        $outletMap = [];
+        foreach ($outlets as $o) {
+            $outletMap[$o['customerid']] = $o['nama_customer'];
+        }
+
+        $mappingData = [];
+        foreach ($data['customerid'] as $customerId) {
+            $mappingData[] = [
+                'id_professional' => $professionalId,
+                'nama_professional' => $professional['nama_professional'],
+                'customerid' => $customerId,
+                'nama_customer' => $outletMap[$customerId] ?? '',
+            ];
+        }
+        
+        $status = false;
+        if (!empty($mappingData)) {
+            $this->db->trans_start();
+            $this->db->where('id_professional', $professionalId);
+            $this->db->delete('ref_professional_mapping');
+            $this->db->insert_batch('ref_professional_mapping', $mappingData);
+            $this->db->trans_complete();
+            $status = $this->db->trans_status();
         }
 
         return [
@@ -89,15 +148,19 @@ class Professional_model extends CI_Model
                 SELECT
                     a.id,
                     a.nama_professional,
+                    a.spesialisasi_id,
+                    rs.name as spesialisasi,
                     concat('".URL_IMAGE."', a.url_foto) as url_foto,
                     concat('".URL_IMAGE."', a.url_img_signature) as url_img_signature,
                     GROUP_CONCAT(
-                        DISTINCT CONCAT(rpm.customerid, ' - ', rpm.nama_customer)
+                        DISTINCT CONCAT(rpm.customerid, ' - ', rpm.nama_customer, ' - ', mc.typeid)
                         ORDER BY rpm.customerid 
                         SEPARATOR '||'
                     ) as customer_list
                 FROM ref_professional a
+                LEFT JOIN ref_spesialisasi rs ON rs.id = a.spesialisasi_id
                 LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
+                LEFT JOIN m_customer mc ON mc.customerid = rpm.customerid
                 WHERE rpm.customerid IS NOT NULL
                 GROUP BY a.id
                 ORDER BY a.id DESC

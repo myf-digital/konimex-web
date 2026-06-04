@@ -21,9 +21,9 @@ class Professional extends BaseController
         $this->template->show($this, 'content');
     }
 
-    public function form_set_outlet()
+    public function form()
     {
-        $this->template->show($this, 'form_set_outlet');
+        $this->template->show($this, 'form');
     }
 
     public function load()
@@ -42,6 +42,12 @@ class Professional extends BaseController
     {
         $data = param_input();
         responseJSON($this->professional->outlet($data));
+    }
+
+    public function spesialisasi()
+    {
+        $data = param_input();
+        responseJSON($this->professional->spesialisasi($data));
     }
 
     public function update()
@@ -364,16 +370,17 @@ class Professional extends BaseController
 
         $spreadsheet = new Spreadsheet();
         $header = [
-            'Id Pelanggan',
-            'Pelanggan',
+            'Id User',
+            'Nama User',
+            'Spesialisasi',
         ];
         for ($i = 1; $i <= $maxCustomer; $i++) {
             $header[] = 'Tempat Praktek ' . $i;
         }
 
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Pelanggan');
-        $sheet->setCellValue('A1', 'DATA PELANGGAN')->mergeCells('A1:B1');
+        $sheet->setTitle('User');
+        $sheet->setCellValue('A1', 'DATA USER')->mergeCells('A1:B1');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -398,6 +405,7 @@ class Professional extends BaseController
             $content = [
                 $value['id'],
                 $value['nama_professional'],
+                $value['spesialisasi'],
             ];
 
             for ($j = 0; $j < $maxCustomer; $j++) {
