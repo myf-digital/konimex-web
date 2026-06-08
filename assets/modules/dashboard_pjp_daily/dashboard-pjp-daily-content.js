@@ -1,8 +1,9 @@
 $(function () {
     var common = new Common();
     var paramsession = common.getCookie("session");
-    var API_URL = 'https://konimex-api.product-act.com/api_v1/dash_pjp_daily_history';
-    var API_URL_REQ = 'https://konimex-api.product-act.com/api_v1/req_pjp_daily_history';
+    var baseUrlApi = (typeof URL_API !== 'undefined' ? URL_API : '');
+    var API_URL = baseUrlApi + '/api_v1/dash_pjp_daily_history';
+    var API_URL_REQ = baseUrlApi + '/api_v1/req_pjp_daily_history';
     var chartInstances = {};
 
     // stored data for export
@@ -281,8 +282,8 @@ $(function () {
         }
 
         var hdrVisit = [
-            'Periode', 'Nama Salesman', 'Salesman ID', 'Customer ID', 'Nama Customer', 
-            'Check In', 'Check Out', 'Keterangan', 'Alasan', 
+            'Periode', 'Nama Salesman', 'Salesman ID', 'Customer ID', 'Nama Customer',
+            'Check In', 'Check Out', 'Keterangan', 'Alasan',
             'Tipe PIC', 'Nama Professional', 'Detailing Product', 'Mulai Detailing', 'Selesai Detailing', 'Durasi Detailing', 'Reason Detailing', 'Keterangan Detailing'
         ];
 
@@ -311,9 +312,9 @@ $(function () {
                     r.periode, r.nama_salesman, r.salesmanid, r.customerid, r.nama_customer,
                     fmtDt(r.check_in), fmtDt(r.check_out), r.keterangan || '', r.alasan || ''
                 ];
-                
+
                 if (r.detail_user && r.detail_user.length > 0) {
-                    r.detail_user.forEach(function(d) {
+                    r.detail_user.forEach(function (d) {
                         result.push(parentData.concat([
                             d.tipe_pic || '', d.professional_name || '', d.array_product || '',
                             fmtDt(d.start_detailing), fmtDt(d.end_detailing), calcDuration(d.start_detailing, d.end_detailing), d.reason || '', d.keterangan || ''
@@ -336,12 +337,12 @@ $(function () {
         var wsSummary = XLSX.utils.aoa_to_sheet(rows);
         var wsPlan = XLSX.utils.aoa_to_sheet(planRows);
         var wsUnplan = XLSX.utils.aoa_to_sheet(unplanRows);
-        
+
         var period = $('#start_date').val() + ' sd ' + $('#end_date').val();
         XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
         XLSX.utils.book_append_sheet(wb, wsPlan, 'Planned');
         XLSX.utils.book_append_sheet(wb, wsUnplan, 'Unplanned');
-        
+
         XLSX.writeFile(wb, 'PJP_Daily_' + period + '.xlsx');
     }
 

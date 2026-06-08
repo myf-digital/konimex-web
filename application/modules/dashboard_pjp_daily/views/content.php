@@ -138,4 +138,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+    var URL_API = "<?php echo URL_API; ?>";
+</script>
 <script src="<?php echo base_url() . 'assets/modules/dashboard_pjp_daily/dashboard-pjp-daily-content.js' ?>"></script>

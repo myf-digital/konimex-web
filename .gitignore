@@ -2,6 +2,7 @@
 /uploads/*
 /application/logs/*
 /application/cache/sessions/*
+/application/config/config.php
 /application/config/database.php
 /application/config/onesignal.php
 /application/config/wa_zawa.php
