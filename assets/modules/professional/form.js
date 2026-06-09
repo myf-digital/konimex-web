@@ -1,6 +1,6 @@
 (function () {
     const common = new Common();
-    common.setTitle("Setup Outlet");
+    common.setTitle("Form User");
     // declare dom
     let uiForm = $("#form-set-outlet");
     let uiBtnCancel = $("#btn-cancel-form");
