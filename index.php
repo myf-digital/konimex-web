@@ -54,7 +54,30 @@ session_start();
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'production');
+if (file_exists(__DIR__ . '/.env')) {
+	$lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	foreach ($lines as $line) {
+		$line = trim($line ?? '');
+		if ($line === '' || strpos($line, '#') === 0) {
+			continue;
+		}
+		$parts = explode('=', $line, 2);
+		if (count($parts) === 2) {
+			$key = trim($parts[0] ?? '');
+			$val = trim($parts[1] ?? '');
+			if (preg_match('/^([\'"])(.*)\1$/', $val, $matches)) {
+				$val = $matches[2];
+			}
+			if (getenv($key) === false) {
+				putenv("$key=$val");
+				$_ENV[$key] = $val;
+				$_SERVER[$key] = $val;
+			}
+		}
+	}
+}
+
+define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'production');
 
 /*
  *---------------------------------------------------------------

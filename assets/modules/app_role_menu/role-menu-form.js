@@ -23,11 +23,11 @@
             directUrl: "app_role_menu",
             beforeSubmit: function (form, options) {
                 if (param !== undefined) {
-                    form.push({name: 'role_menu_id', value: param.role_menu_id});
+                    form.push({ name: 'role_menu_id', value: param.role_menu_id });
                 }
                 return true; // MANDATORY!
             },
-            rules : {
+            rules: {
                 role_id: {
                     required: true
                 },
@@ -45,13 +45,11 @@
         common.loading();
         let resolver = new HttpResolver();
         let param = new Filter();
+        param.page = 1;
+        param.rows = 100;
         $.when(
             $.post(common.baseURL("app_menu/load"), param.build()),
-            $.post(common.baseURL("app_role/load"), param.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build())
+            $.post(common.baseURL("app_role/load"), param.build())
         ).done(function (data, textStatus, jqXHR) {
 
         }).then(function (r1, r2) {

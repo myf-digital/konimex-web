@@ -25,7 +25,7 @@
             directUrl: "app_menu",
             beforeSubmit: function (form, options) {
                 if (param !== undefined) {
-                    form.push({name: 'menu_id', value: param.menu_id});
+                    form.push({ name: 'menu_id', value: param.menu_id });
                 }
                 return true; // MANDATORY!
             },
@@ -47,10 +47,11 @@
         common.loading();
         let resolver = new HttpResolver();
         let filter = new Filter();
-		if(isUpdate) filter.add("a.menu_id", "!=", param.menu_id);
+        filter.page = 1;
+        filter.rows = 100;
+        if (isUpdate) filter.add("a.menu_id", "!=", param.menu_id);
         $.when(
             $.post(common.baseURL("app_menu/load"), filter.build()),
-            // $.post(common.baseURL("app_menu/load"), param.build()),
         ).done(function (data, textStatus, jqXHR) {
         }).then(function (r1, r2) {
             common.loadingClose();
@@ -67,7 +68,7 @@
 
     function setupForm(r1, r2) {
         let rows = [];
-        rows.push({menu_id: 0, menu_name: "Root"});
+        rows.push({ menu_id: 0, menu_name: "Root" });
         rows = rows.concat(r1.rows);
         if (isUpdate) { // update
             rows = rows.filter(function (val) {
