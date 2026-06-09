@@ -25,6 +25,10 @@
                             <label for="role_name">Role Name</label>
                             <input name="role_name" class="form-control" placeholder="Role Name">
                         </div>
+                        <div class="form-group">
+                            <label for="target_dub">Target DUB</label>
+                            <input type="number" min="1" name="target_dub" class="form-control" placeholder="Target DUB">
+                        </div>
                     </div>
 
                     <div class="box-footer">
