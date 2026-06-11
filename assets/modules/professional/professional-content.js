@@ -37,7 +37,7 @@
           {
             field: "options",
             title: "Action",
-            width: 100,
+            width: 120,
             halign: "center",
             align: "center",
             formatter: formatterButton,
@@ -52,7 +52,7 @@
             halign: "center",
             align: "center",
             sortable: "true",
-            width: 175,
+            width: 150,
           },
           {
             field: "nama_professional",
@@ -60,7 +60,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 200,
+            width: 250,
           },
           {
             field: "type",
@@ -68,7 +68,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 200,
+            width: 150,
           },
           {
             field: "spesialisasi",
@@ -76,7 +76,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 200,
+            width: 250,
           },
           {
             field: "tanggal_lahir",
@@ -99,10 +99,10 @@
           {
             field: "customer_list",
             title: "TEMPAT PRAKTEK",
-            halign: "center",
+            halign: "left",
             align: "left",
             sortable: "true",
-            width: 200,
+            width: 450,
             formatter: formatterCustomerList,
           },
         ],
@@ -110,10 +110,22 @@
       onBeforeLoad: function (param) {},
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
+
+        let $grid = $(this);
+        setTimeout(function () {
+          $grid.datagrid("autoSizeColumn", "customer_list");
+          let col = $grid.datagrid("getColumnOption", "customer_list");
+          if (col && col.width < 450) {
+            $grid.datagrid("resizeColumn", { field: "customer_list", width: 450 });
+          }
+        }, 50);
+
         optionButton(data);
       },
     };
-    uiTbl.datagrid(commonGrid.optionValue(option));
+    let gridOptions = commonGrid.optionValue(option);
+    gridOptions.fitColumns = false;
+    uiTbl.datagrid(gridOptions);
     uiTbl.datagrid("enableFilter");
     common.removeFilter(["options"]);
   }
@@ -149,12 +161,27 @@
 
   function formatterCustomerList(val, row, index) {
     if (val) {
-      let html = "<ol>";
-      val.split("||").forEach((item) => {
-        html += `<li>${item}</li>`;
+      let listCustomer = val.split("||");
+      let chunks = [];
+      for (let i = 0; i < listCustomer.length; i += 5) {
+        chunks.push(listCustomer.slice(i, i + 5));
+      }
+
+      let result =
+        '<div style="display: flex; gap: 15px; align-items: start;">';
+      chunks.forEach((chunk, chunkIdx) => {
+        let startNum = chunkIdx * 5 + 1;
+        result +=
+          '<ol start="' +
+          startNum +
+          '" style="margin: 0; padding-left: 15px; width: 320px; min-width: 320px; max-width: 320px; white-space: normal; word-break: break-word;">';
+        for (const customer of chunk) {
+          result += "<li>" + customer + "</li>";
+        }
+        result += "</ol>";
       });
-      html += "</ol>";
-      return html;
+      result += "</div>";
+      return result;
     }
     return "";
   }

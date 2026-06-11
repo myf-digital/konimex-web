@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div id="tbl-content" class="box-table box-success">
-                <div class="box-body">
+                <div class="box-body" style="overflow: auto hidden;">
                     <table id="tbl-professional">
                     </table>
                 </div>

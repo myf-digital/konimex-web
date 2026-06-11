@@ -90,7 +90,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 100,
+            width: 150,
           },
           {
             field: "nama_customer",
@@ -98,7 +98,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 120,
+            width: 200,
           },
           {
             field: "nama_regional",
@@ -114,7 +114,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 100,
+            width: 120,
           },
           {
             field: "nama_subarea",
@@ -122,7 +122,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 100,
+            width: 120,
           },
           {
             field: "typeid",
@@ -138,7 +138,7 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 100,
+            width: 120,
           },
           {
             field: "alamat",
@@ -146,15 +146,15 @@
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 200,
+            width: 350,
           },
           {
             field: "list_professional",
             title: "User",
-            halign: "center",
+            halign: "left",
             align: "left",
             sortable: "true",
-            width: 200,
+            width: 400,
             formatter: formatterListProfessional,
           },
         ],
@@ -162,11 +162,14 @@
       onBeforeLoad: function (param) {},
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
+        $(this).datagrid("autoSizeColumn", "list_professional");
         optionButton(data);
       },
     };
 
-    uiTbl.datagrid(commonGrid.optionValue(option));
+    let gridOptions = commonGrid.optionValue(option);
+    gridOptions.fitColumns = false;
+    uiTbl.datagrid(gridOptions);
     uiTbl.datagrid("enableFilter");
     common.removeFilter(["options"]);
     common.removeFilter(["detail"]);
@@ -175,11 +178,26 @@
   function formatterListProfessional(val, row, index) {
     if (val) {
       let listProfessional = val.split("||");
-      let result = "<ol>";
-      for (const professional of listProfessional) {
-        result += "<li>" + professional + "</li>";
+      let chunks = [];
+      for (let i = 0; i < listProfessional.length; i += 5) {
+        chunks.push(listProfessional.slice(i, i + 5));
       }
-      return result + "</ol>";
+
+      let result =
+        '<div style="display: flex; gap: 15px; align-items: start;">';
+      chunks.forEach((chunk, chunkIdx) => {
+        let startNum = chunkIdx * 5 + 1;
+        result +=
+          '<ol start="' +
+          startNum +
+          '" style="margin: 0; padding-left: 15px; width: 320px; min-width: 320px; max-width: 320px; white-space: normal; word-break: break-word;">';
+        for (const professional of chunk) {
+          result += "<li>" + professional + "</li>";
+        }
+        result += "</ol>";
+      });
+      result += "</div>";
+      return result;
     }
     return "";
   }
