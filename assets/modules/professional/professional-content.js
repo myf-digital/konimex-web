@@ -110,16 +110,7 @@
       onBeforeLoad: function (param) {},
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
-
-        let $grid = $(this);
-        setTimeout(function () {
-          $grid.datagrid("autoSizeColumn", "customer_list");
-          let col = $grid.datagrid("getColumnOption", "customer_list");
-          if (col && col.width < 450) {
-            $grid.datagrid("resizeColumn", { field: "customer_list", width: 450 });
-          }
-        }, 50);
-
+        $(this).datagrid("autoSizeColumn", "customer_list");
         optionButton(data);
       },
     };
