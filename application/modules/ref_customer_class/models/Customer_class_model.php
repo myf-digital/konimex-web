@@ -44,6 +44,15 @@ class Customer_class_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
 
+    public function loadClass($data = [])
+    {
+        $this->db->from("m_customer_class a");
+        if (!empty($data['typeid'])) {
+            $this->db->where('a.typeid', $data['typeid']);
+        }
+        return $this->db->get()->result();
+    }
+
     public function load_subchannel($data)
     {
         $field = " a.* ";

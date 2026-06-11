@@ -70,10 +70,11 @@ class Api_v1_model extends CI_Model
 			$where = " and a.nama_professional like '%" . $data['q'] . "%'";
 		}
 
-		$sql = "select a.*
-				from m_sales_salesman a
+		$sql = "select a.*, b.name as spesialisasi
+				from ref_professional a
+				left join ref_spesialisasi b on b.id = a.spesialisasi_id
 				where a.siteid = 'KNX01' $where
-				order by a.id asc
+				order by a.id desc
 				limit 25
 			";
 		$res_ss = $this->db->query($sql);

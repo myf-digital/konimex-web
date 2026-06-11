@@ -4,23 +4,21 @@
   // declare dom
   let uiForm = $("#fm-customer");
   let uiBtnCancel = $("#btn-cancel-form");
-  let uiSelectPropinsi = $("#propinsiid-id");
-  let uiSelectKota = $("#kotaid-id");
-  let uiSelectKecamatan = $("#kecamatanid-id");
-  let uiSelectKelurahan = $("#kelurahanid-id");
-  let uiSelectSegment = $("#segmentid-id");
-  let uiSelectoutlettype = $("#outlet-type-id");
   let uiSelectType = $("#typeid-id");
   let uiSelectClass = $("#classid-id");
   let uiSelectRegional = $("#regionalid-id");
   let uiSelectArea = $("#areaid-id");
   let uiSelectSubarea = $("#subareaid-id");
-  let uiSelectUser = $("#professional-id");
-  let uiCheckboxDblCvr = $("#doublecover-id");
+
   let param = common.getCookie("module.customer.update");
   let paramsession = common.getCookie("session");
+  let uiSearchProfessional = $("#professional");
 
   let isUpdate = param !== undefined; // flag create update
+  let searchTimeout = null;
+
+  let modalSpesialisasiLoaded = false;
+  let modalTypeLoaded = false;
 
   initializeParam();
   initialize();
@@ -30,6 +28,16 @@
       param === undefined
         ? common.baseURL("ref_customer/create")
         : common.baseURL("ref_customer/update");
+
+    $.validator.setDefaults({
+      errorPlacement: function (error, element) {
+        if (element.hasClass("select2-hidden-accessible")) {
+          error.insertAfter(element.next(".select2-container"));
+        } else {
+          error.insertAfter(element);
+        }
+      },
+    });
     uiForm.initForm({
       url: url,
       param: param,
@@ -39,32 +47,21 @@
           form.push({ name: "siteid", value: param.siteid });
         }
         form.push({ name: "usersession", value: paramsession.username });
+
+        let professional = document.getElementById("professional_to");
+        for (let i = 0; i < professional.options.length; i++) {
+          form.push({
+            name: "professional[]",
+            value: professional.options[i].value,
+          });
+        }
         return true; // MANDATORY!
       },
       rules: {
-        kode_outlet: {
-          required: true /*,
-					remote	 : {
-						url		: common.baseURL("ref_customer/cek_kode_outler"),
-						type	: "POST",
-						data: {
-							kode_outlet: function() {
-								return $("#kode_outlet").val();
-							},
-							kode_outlet : $("#kode_outlet").val()
-						}
-					}*/,
-        },
         nama_customer: {
           required: true,
         },
         regionalid: {
-          required: true,
-        },
-        areaid: {
-          required: true,
-        },
-        subareaid: {
           required: true,
         },
         typeid: {
@@ -74,41 +71,31 @@
           required: true,
         },
       },
+      message: {
+        nama_customer: {
+          required: "Nama outlet wajib diisi.",
+        },
+        regionalid: {
+          required: "Regional wajib dipilih.",
+        },
+        typeid: {
+          required: "Channel wajib dipilih.",
+        },
+        classid: {
+          required: "Sub Channel wajib dipilih.",
+        },
+      },
     });
     uiBtnCancel.click(function () {
       common.direct("ref_customer");
     });
 
-    loadPropinsi();
+    loadProfessional("", true);
     loadRegional({
       usersession: paramsession.username,
       idjabatan: paramsession.idjabatan,
       restrict_level: paramsession.restrict_level,
       restrict_bu: paramsession.restrict_bu,
-    });
-    loadProfessional();
-
-    uiSelectPropinsi.on("select2:select", function (e) {
-      propinsiSelected = e.params.data;
-      loadKota(propinsiSelected);
-    });
-
-    uiSelectKota.on("select2:select", function (e) {
-      kotaSelected = e.params.data;
-      propinsiSelected = uiSelectPropinsi.val();
-      let gval = kotaSelected;
-      gval.push = { propinsiid: propinsiSelected };
-      loadKecamatan(gval);
-    });
-
-    uiSelectKecamatan.on("select2:select", function (e) {
-      kecamatanSelected = e.params.data;
-      propinsiSelected = uiSelectPropinsi.val();
-      kotaSelected = uiSelectKota.val();
-      let gval = kecamatanSelected;
-      gval.push = { propinsiid: propinsiSelected };
-      gval.push = { kotaid: kotaSelected };
-      loadKelurahan(gval);
     });
 
     uiSelectRegional.on("select2:select", function (e) {
@@ -124,27 +111,20 @@
 
     uiSelectArea.on("select2:select", function (e) {
       areaSelected = e.params.data;
-      regionalSelected = uiSelectRegional.val();
+      srval = {
+        regionalid: uiSelectRegional.val(),
+        areaid: areaSelected.areaid,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      };
+      loadSubArea(srval);
     });
 
-    uiSelectPropinsi.select2({
-      placeholder: "Select Propinsi",
-      allowClear: true,
-    });
-
-    uiSelectKota.select2({
-      placeholder: "Select Kota/Kabupaten",
-      allowClear: true,
-    });
-
-    uiSelectKecamatan.select2({
-      placeholder: "Select Kecamatan",
-      allowClear: true,
-    });
-
-    uiSelectKelurahan.select2({
-      placeholder: "Select Kelurahan",
-      allowClear: true,
+    uiSelectType.on("select2:select", function (e) {
+      srval = {
+        typeid: e.params.data.typeid,
+      };
+      loadClass(srval);
     });
 
     uiSelectRegional.select2({
@@ -162,9 +142,12 @@
       allowClear: true,
     });
 
-    uiSelectUser.select2({
-      placeholder: "Select User",
-      allowClear: true,
+    uiSearchProfessional.multiselect({
+      search: {
+        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+        right:
+          '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+      },
       fireSearch: function (value) {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(function () {
@@ -172,51 +155,11 @@
         }, 500);
         return false;
       },
-    });
-
-    uiCheckboxDblCvr.change(function () {
-      let vmin = 1;
-      let vmax = 1;
-      if ($(this).is(":checked")) {
-        //do something
-        vmin = 1;
-        vmax = 10;
-      } else {
-        vmin = 1;
-        vmax = 1;
-        uiSelectUser.val(null).trigger("change");
-      }
-
-      uiSelectUser.select2({
-        placeholder: "Select User",
-        minimumSelectionLength: vmin,
-        maximumSelectionLength: vmax,
-        allowClear: true,
-        multiple: true,
-        tokenSeparators: [","],
-        fireSearch: function (value) {
-          clearTimeout(searchTimeout);
-          searchTimeout = setTimeout(function () {
-            loadProfessional(value);
-          }, 500);
-          return false;
-        },
-      });
+      submitAllLeft: false,
+      submitAllRight: false,
     });
 
     if (isUpdate) {
-      loadPropinsi();
-      let kval = { propinsiid: param.propinsiid };
-      loadKota(kval);
-      let pkval = { propinsiid: param.propinsiid, kotaid: param.kotaid };
-      loadKecamatan(pkval);
-      let pkkval = {
-        propinsiid: param.propinsiid,
-        kotaid: param.kotaid,
-        kecamatanid: param.kecamatanid,
-      };
-      loadKelurahan(pkkval);
-
       loadRegional({
         usersession: paramsession.username,
         idjabatan: paramsession.idjabatan,
@@ -234,7 +177,86 @@
         usersession: paramsession.username,
         restrict_level: paramsession.restrict_level,
       });
+      loadClass({
+        typeid: param.typeid,
+      });
     }
+
+    $("#modal-tanggal_lahir, #modal-tanggal_aniv_pernikahan").datepicker({
+      format: "yyyy-mm-dd",
+      autoclose: true,
+      todayHighlight: true,
+      changeMonth: true,
+      changeYear: true,
+    });
+
+    $("#btn-add-professional").click(function () {
+      loadModalSpesialisasi();
+      loadModalType();
+      $("#modal-add-professional").modal("show");
+    });
+
+    $("#form-add-professional").submit(function (e) {
+      e.preventDefault();
+
+      let namaVal = $("#modal-professional").val();
+      let spesialisasiVal = $("#modal-spesialisasi").val();
+      let typeVal = $("#modal-type").val();
+      let lahirVal = $("#modal-tanggal_lahir").val();
+      let anivVal = $("#modal-tanggal_aniv_pernikahan").val();
+
+      if (!namaVal) {
+        alert("Nama User wajib diisi.");
+        return;
+      }
+      if (!spesialisasiVal) {
+        alert("Spesialisasi wajib dipilih.");
+        return;
+      }
+
+      common.loading();
+      $.post(
+        common.baseURL("professional/quick_create"),
+        {
+          professional: namaVal,
+          spesialisasi: spesialisasiVal,
+          type: typeVal,
+          tanggal_lahir: lahirVal,
+          tanggal_aniv_pernikahan: anivVal,
+          usersession: paramsession.username,
+        },
+        function (res) {
+          common.loadingClose();
+          if (res.code === 200 && res.result) {
+            let newProf = res.result;
+
+            let html = "";
+            if (newProf.id) html += newProf.id;
+            if (newProf.nama_professional)
+              html += ` - ${newProf.nama_professional}`;
+            if (newProf.spesialisasi) html += ` - ${newProf.spesialisasi}`;
+            if (newProf.type) html += ` - ${newProf.type}`;
+
+            let selectTo = document.getElementById("professional_to");
+            let optSelected = document.createElement("option");
+            optSelected.value = newProf.id;
+            optSelected.innerHTML = html;
+            optSelected.setAttribute("data-position", newProf.id);
+            selectTo.appendChild(optSelected);
+
+            $("#modal-add-professional").modal("hide");
+            $("#form-add-professional")[0].reset();
+            $("#modal-spesialisasi").val(null).trigger("change");
+            $("#modal-type").val(null).trigger("change");
+          } else {
+            alert(res.message || "Gagal menyimpan User.");
+          }
+        },
+      ).fail(function () {
+        common.loadingClose();
+        alert("Terjadi kesalahan sistem.");
+      });
+    });
   }
 
   function initializeParam() {
@@ -242,181 +264,58 @@
     let resolver = new HttpResolver();
     let filter = new Filter();
 
-    $.when(
-      $.post(common.baseURL("ref_customer_segment/load"), filter.build()),
-      $.post(common.baseURL("ref_customer_type/load"), filter.build()),
-      $.post(common.baseURL("ref_customer_class/load"), filter.build()),
-      $.post(
-        common.baseURL("api_v1/call_param_key"),
-        { parkey: "key_outlet_type" },
-        filter.build(),
-      ),
-    )
+    $.when($.post(common.baseURL("ref_customer_type/load"), filter.build()))
       .done(function (data, textStatus, jqXHR) {})
-      .then(function (r2, r3, r4, r5) {
+      .then(function (ct, cc) {
         common.loadingClose();
-        setupForm(r2[0], r3[0], r4[0], r5[0]);
+        setupForm(ct);
       })
       .fail(resolver.fail);
   }
 
-  function setupForm(r2, r3, r4, r5) {
-    let rows2 = r2.rows;
-    let rows3 = r3.rows;
-    let rows4 = r4.rows;
-    let rows5 = r5.result;
-
-    uiSelectSegment.select2({
-      placeholder: "Select BU",
-      allowClear: true,
-      data: $.map(rows2, function (o) {
-        o.id = o.segmentid; // replace name with the property used for the text
-        o.text = o.nama_segment; // replace name with the property used for the text
-        return o;
-      }),
-    });
-
-    uiSelectoutlettype.select2({
-      placeholder: "Select Outlet Type",
-      allowClear: true,
-      data: $.map(rows5, function (o) {
-        o.id = o.value; // replace name with the property used for the text
-        o.text = o.desc; // replace name with the property used for the text
-        return o;
-      }),
-    });
+  function setupForm(ct) {
+    let rowsCT = ct.rows;
 
     uiSelectType.select2({
-      placeholder: "Select Cluster",
+      placeholder: "Select Channel",
       allowClear: true,
-      data: $.map(rows3, function (o) {
+      data: $.map(rowsCT, function (o) {
         o.id = o.typeid; // replace name with the property used for the text
         o.text = o.nama_type; // replace name with the property used for the text
         return o;
       }),
     });
 
-    uiSelectClass.select2({
-      placeholder: "Select Tier",
-      allowClear: true,
-      data: $.map(rows4, function (o) {
-        o.id = o.classid; // replace name with the property used for the text
-        o.text = o.nama_class; // replace name with the property used for the text
-        return o;
-      }),
-    });
-
     if (isUpdate) {
-      uiSelectSegment.val(param.segmentid).trigger("change");
       uiSelectType.val(param.typeid).trigger("change");
-      uiSelectClass.val(param.classid).trigger("change");
-      uiSelectoutlettype.val(param.spot_id).trigger("change");
     } else {
-      uiSelectSegment.val(null).trigger("change");
       uiSelectType.val(null).trigger("change");
-      uiSelectClass.val(null).trigger("change");
-      uiSelectoutlettype.val(null).trigger("change");
     }
   }
 
-  function loadPropinsi() {
-    common.loading();
-    $.post(common.baseURL("api_v1/call_propinsi"), function (res) {
-      uiSelectPropinsi.empty();
-      uiSelectPropinsi.select2({
-        placeholder: "Select Province",
-        allowClear: true,
-        data: $.map(res.result, function (o) {
-          o.id = o.propinsiid; // replace name with the property used for the text
-          o.text = o.nama_propinsi;
-          return o;
-        }),
-      });
-      if (isUpdate) {
-        uiSelectPropinsi.val(param.propinsiid).trigger("change");
-      } else {
-        uiSelectPropinsi.val(null).trigger("change");
-      }
-      common.loadingClose();
-    });
-  }
-
-  function loadKota(data) {
+  function loadClass(data) {
     common.loading();
     $.post(
-      common.baseURL("api_v1/call_kota"),
-      { propinsiid: data.propinsiid },
-      function (res) {
-        uiSelectKota.empty();
-        uiSelectKota.select2({
-          placeholder: "Select Kota/Kabupaten",
-          allowClear: true,
-          data: $.map(res.result, function (o) {
-            o.id = o.kotaid; // replace name with the property used for the text
-            o.text = o.nama_kota;
-            return o;
-          }),
-        });
-        if (isUpdate) {
-          uiSelectKota.val(param.kotaid).trigger("change");
-        } else {
-          uiSelectKota.val(null).trigger("change");
-        }
-        common.loadingClose();
-      },
-    );
-  }
-
-  function loadKecamatan(data) {
-    common.loading();
-    $.post(
-      common.baseURL("api_v1/call_kecamatan"),
-      { propinsiid: data.propinsiid, kotaid: data.kotaid },
-      function (res) {
-        uiSelectKecamatan.empty();
-        uiSelectKecamatan.select2({
-          placeholder: "Select Kecamatan",
-          allowClear: true,
-          data: $.map(res.result, function (o) {
-            o.id = o.kecamatanid; // replace name with the property used for the text
-            o.text = o.nama_kecamatan;
-            return o;
-          }),
-        });
-        if (isUpdate) {
-          uiSelectKecamatan.val(param.kecamatanid).trigger("change");
-        } else {
-          uiSelectKecamatan.val(null).trigger("change");
-        }
-        common.loadingClose();
-      },
-    );
-  }
-
-  function loadKelurahan(data) {
-    common.loading();
-    $.post(
-      common.baseURL("api_v1/call_kelurahan"),
+      common.baseURL("ref_customer_class/load_class"),
       {
-        propinsiid: data.propinsiid,
-        kotaid: data.kotaid,
-        kecamatanid: data.kecamatanid,
+        typeid: data.typeid,
       },
       function (res) {
-        uiSelectKelurahan.empty();
-        uiSelectKelurahan.select2({
-          placeholder: "Select Kelurahan",
+        uiSelectClass.empty();
+        uiSelectClass.select2({
+          placeholder: "Select Sub Channel",
           allowClear: true,
-          data: $.map(res.result, function (o) {
-            o.id = o.kelurahanid; // replace name with the property used for the text
-            o.text = o.nama_kelurahan;
+          data: $.map(res, function (o) {
+            o.id = o.classid; // replace name with the property used for the text
+            o.text = o.nama_class;
             return o;
           }),
         });
+
         if (isUpdate) {
-          uiSelectKelurahan.val(param.kelurahanid).trigger("change");
+          uiSelectClass.val(param.classid).trigger("change");
         } else {
-          uiSelectKelurahan.val(null).trigger("change");
+          uiSelectClass.val(null).trigger("change");
         }
         common.loadingClose();
       },
@@ -513,65 +412,111 @@
     );
   }
 
-  function loadProfessional(data = "") {
-    common.loading();
+  function loadProfessional(keyword = "", isInitial = false) {
     $.post(
       common.baseURL("api_v1/call_professional"),
       {
-        q: data.q,
+        q: keyword,
       },
       function (res) {
-        uiSelectUser.empty();
-        let vmin = 1;
-        let vmax = 1;
-        if (isUpdate) {
-          //do something
-          let arrgff = param.usergff;
-          let varrgff = arrgff ? arrgff.split(",") : [];
-          if (varrgff.length > 1) {
-            uiCheckboxDblCvr.prop("checked", "checked");
-            vmin = 1;
-            vmax = 10;
-          } else {
-            uiCheckboxDblCvr.prop("checked", "");
-            vmin = 1;
-            vmax = 1;
-          }
-        } else {
-          vmin = 1;
-          vmax = 1;
+        let result = res.result;
+        let select = document.getElementById("professional");
+        let selectTo = document.getElementById("professional_to");
+
+        let length = select.options.length;
+        for (let i = length - 1; i >= 0; i--) {
+          select.options[i] = null;
         }
 
-        uiSelectUser.select2({
-          placeholder: "Select User",
+        let selectedOutlet = [];
+        if (isInitial) {
+          let selectToLength = selectTo.options.length;
+          for (let i = selectToLength - 1; i >= 0; i--) {
+            selectTo.options[i] = null;
+          }
+
+          if (isUpdate && param.list_professional) {
+            const professionalList = param.list_professional
+              ? param.list_professional.split("||")
+              : [];
+            professionalList.forEach((item) => {
+              const parts = item.split(" - ");
+              const professionalId = parts[0];
+              selectedOutlet.push(professionalId);
+
+              let optSelected = document.createElement("option");
+              optSelected.value = professionalId;
+              optSelected.innerHTML = item;
+              optSelected.setAttribute("data-position", professionalId);
+              selectTo.appendChild(optSelected);
+            });
+          }
+        } else {
+          for (let i = 0; i < selectTo.options.length; i++) {
+            selectedOutlet.push(selectTo.options[i].value);
+          }
+        }
+
+        for (let i = 0; i < result.length; i++) {
+          if (selectedOutlet.includes(result[i].id)) {
+            continue;
+          }
+
+          let html = "";
+          if (result[i].id) html += result[i].id;
+          if (result[i].nama_professional)
+            html += ` - ${result[i].nama_professional}`;
+          if (result[i].spesialisasi) html += ` - ${result[i].spesialisasi}`;
+          if (result[i].type) html += ` - ${result[i].type}`;
+
+          let opt = document.createElement("option");
+          opt.value = result[i].id;
+          opt.innerHTML = html;
+          opt.setAttribute("data-position", result[i].id);
+          select.appendChild(opt);
+        }
+      },
+    );
+  }
+
+  function loadModalSpesialisasi() {
+    if (modalSpesialisasiLoaded) return;
+    $.post(common.baseURL("professional/spesialisasi"), function (res) {
+      let uiModalSpesialisasi = $("#modal-spesialisasi");
+      uiModalSpesialisasi.empty();
+      uiModalSpesialisasi.select2({
+        placeholder: "Select Spesialisasi",
+        allowClear: true,
+        data: $.map(res, function (o) {
+          return { id: o.id, text: o.name };
+        }),
+      });
+      uiModalSpesialisasi.val(null).trigger("change");
+      modalSpesialisasiLoaded = true;
+    });
+  }
+
+  function loadModalType() {
+    if (modalTypeLoaded) return;
+    $.post(
+      common.baseURL("api_v1/call_param_key"),
+      {
+        parkey: "professional_type",
+      },
+      function (result) {
+        let res = result.result;
+        let types = res && res[0].value ? res[0].value.split("|") : [];
+        let uiModalType = $("#modal-type");
+        uiModalType.empty();
+        uiModalType.select2({
+          placeholder: "Select Tipe",
           allowClear: true,
-          minimumSelectionLength: vmin,
-          maximumSelectionLength: vmax,
-          allowClear: true,
-          multiple: true,
-          tokenSeparators: [","],
-          data: $.map(res.result, function (o) {
-            o.id = o.id; // replace name with the property used for the text
-            o.text = o.nama_salesman;
-            return o;
+          data: $.map(types, function (o) {
+            return { id: o, text: o };
           }),
         });
-
-        if (isUpdate) {
-          let arrgff = param.usergff;
-          let varrgff = arrgff ? arrgff.split(",") : [];
-          let rarrgff = [];
-
-          var i;
-          for (i = 0; i < varrgff.length; i++) {
-            rarrgff.push(varrgff[i]);
-          }
-
-          uiSelectUser.val(rarrgff).trigger("change");
-        } else {
-          uiSelectUser.val(null).trigger("change");
-        }
-        common.loadingClose();
+        uiModalType.val(null).trigger("change");
+        modalTypeLoaded = true;
       },
     );
   }

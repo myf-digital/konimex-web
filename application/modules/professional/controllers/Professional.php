@@ -50,6 +50,12 @@ class Professional extends BaseController
         responseJSON($this->professional->spesialisasi($data));
     }
 
+    public function quick_create()
+    {
+        $data = param_input();
+        responseJSON($this->professional->quick_create($data));
+    }
+
     public function update()
     {
         $data = param_input();
@@ -373,6 +379,9 @@ class Professional extends BaseController
             'Id User',
             'Nama User',
             'Spesialisasi',
+            'Tipe',
+            'Tanggal Lahir',
+            'Tanggal Aniv Pernikahan',
         ];
         for ($i = 1; $i <= $maxCustomer; $i++) {
             $header[] = 'Tempat Praktek ' . $i;
@@ -380,7 +389,7 @@ class Professional extends BaseController
 
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('User');
-        $sheet->setCellValue('A1', 'DATA USER')->mergeCells('A1:B1');
+        $sheet->setCellValue('A1', 'DATA USER')->mergeCells('A1:F1');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -406,6 +415,9 @@ class Professional extends BaseController
                 $value['id'],
                 $value['nama_professional'],
                 $value['spesialisasi'],
+                $value['type'],
+                !empty($value['tanggal_lahir']) && $value['tanggal_lahir'] !== '0000-00-00' ? format_date_id($value['tanggal_lahir'], false, false) : '',
+                !empty($value['tanggal_aniv_pernikahan']) && $value['tanggal_aniv_pernikahan'] !== '0000-00-00' ? format_date_id($value['tanggal_aniv_pernikahan'], false, false) : '',
             ];
 
             for ($j = 0; $j < $maxCustomer; $j++) {
@@ -423,7 +435,7 @@ class Professional extends BaseController
 		$fullRange = 'A1:' . $highestColumn . $highestRow;
 		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
         $sheet->freezePane('A3');
-        $sheet->freezePane('C3');
+        $sheet->freezePane('G3');
 
         foreach (range('A', $highestColumn) as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);

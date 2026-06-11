@@ -21,9 +21,9 @@
                 <form id="fm-customer" role="form" method="post">
                     <div class="box-body">
 							<div class="form-group col-md-6">
-								<label for="classid">Tier</label>
+								<label for="classid">Sub Channel</label>
                                 <select id="classid-id" name="classid" class="form-control" placeholder="SubChannel">
-								<option value="All">All Tier</option>
+								<option value="All">All Sub Channel</option>
 								</select>
 							</div>
                     </div>

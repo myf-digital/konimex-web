@@ -10,6 +10,9 @@ class Professional_model extends CI_Model
                     SELECT
                         a.id,
                         a.nama_professional,
+                        a.type,
+                        a.tanggal_lahir,
+                        a.tanggal_aniv_pernikahan,
                         a.spesialisasi_id,
                         rs.name as spesialisasi,
                         concat('".URL_IMAGE."', a.url_foto) as url_foto,
@@ -33,9 +36,7 @@ class Professional_model extends CI_Model
     public function detail($data)
     {
         $this->db->where_in('id', $data['id_professional']);
-        $result = $this->db
-            ->from('ref_professional')
-            ->get()->result_array();
+        $result = $this->db->from('ref_professional')->get()->result_array();
         return $result;
     }
 
@@ -67,6 +68,48 @@ class Professional_model extends CI_Model
         return $this->update($data);
     }
 
+    public function quick_create($data)
+    {
+        $error = '';
+        if (empty($data['professional'])) {
+            $error = "Profesional wajib diisi.";
+        } else if (empty($data['spesialisasi'])) {
+            $error = "Spesialisasi wajib dipilih.";
+        }
+
+        if (!empty($error)) {
+            return [
+                'code' => 422,
+                'message' => $error,
+                'result' => false
+            ];
+        }
+
+        $this->db->insert('ref_professional', [
+            'siteid' => "KNX01",
+            'nama_professional' => $data['professional'] ?? null,
+            'spesialisasi_id' => $data['spesialisasi'] ?? null,
+            'type' => $data['type'] ?? null,
+            'tanggal_lahir' => (!empty($data['tanggal_lahir'])) ? $data['tanggal_lahir'] : null,
+            'tanggal_aniv_pernikahan' => (!empty($data['tanggal_aniv_pernikahan'])) ? $data['tanggal_aniv_pernikahan'] : null,
+            'created_by' => $data['usersession'] ?? null,
+            'created_date' => date('Y-m-d H:i:s'),
+        ]);
+        $professionalId = $this->db->insert_id();
+
+        $q = $this->db->select("a.id, a.nama_professional, a.type, rs.name as spesialisasi")
+            ->from("ref_professional a")
+            ->join("ref_spesialisasi rs", "rs.id = a.spesialisasi_id", "left")
+            ->where("a.id", $professionalId)
+            ->get();
+        
+        return [
+            'code' => 200,
+            'message' => 'Success',
+            'result' => $q->row_array()
+        ];
+    }
+
     public function update($data)
     {
         $error = '';
@@ -92,8 +135,11 @@ class Professional_model extends CI_Model
             $this->db->insert('ref_professional', [
                 'siteid' => "KNX01",
                 'nama_professional' => $namaProfessional,
-                'spesialisasi_id' => $data['spesialisasi'],
-                'created_by' => $data['usersession'],
+                'spesialisasi_id' => $data['spesialisasi'] ?? null,
+                'type' => $data['type'] ?? null,
+                'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+                'tanggal_aniv_pernikahan' => $data['tanggal_aniv_pernikahan'] ?? null,
+                'created_by' => $data['usersession'] ?? null,
                 'created_date' => date('Y-m-d H:i:s'),
             ]);
             $professionalId = $this->db->insert_id();
@@ -101,7 +147,11 @@ class Professional_model extends CI_Model
             $this->db->where('id', $professionalId);
             $this->db->update('ref_professional', [
                 'nama_professional' => $namaProfessional,
-                'spesialisasi_id' => $data['spesialisasi'],
+                'spesialisasi_id' => $data['spesialisasi'] ?? null,
+                'type' => $data['type'] ?? null,
+                'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+                'tanggal_aniv_pernikahan' => $data['tanggal_aniv_pernikahan'] ?? null,
+                'created_by' => $data['usersession'] ?? null,
                 'modified_by' => $data['usersession'],
                 'modified_date' => date('Y-m-d H:i:s'),
             ]);
@@ -148,6 +198,9 @@ class Professional_model extends CI_Model
                 SELECT
                     a.id,
                     a.nama_professional,
+                    a.type,
+                    a.tanggal_lahir,
+                    a.tanggal_aniv_pernikahan,
                     a.spesialisasi_id,
                     rs.name as spesialisasi,
                     concat('".URL_IMAGE."', a.url_foto) as url_foto,

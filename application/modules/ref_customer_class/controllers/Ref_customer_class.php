@@ -44,6 +44,12 @@ class Ref_customer_class extends BaseController
         responseJSON($this->customer_class->load($data));
     }
 
+    public function load_class()
+    {
+        $data = param_input();
+        responseJSON($this->customer_class->loadClass($data));
+    }
+
     public function load_subchannel()
     {
         $data = param_input();

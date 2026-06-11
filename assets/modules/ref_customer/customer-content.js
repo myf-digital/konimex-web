@@ -101,14 +101,6 @@
             width: 120,
           },
           {
-            field: "alamat",
-            title: "Alamat",
-            halign: "center",
-            align: "left",
-            sortable: "true",
-            width: 120,
-          },
-          {
             field: "nama_regional",
             title: "Regional",
             halign: "center",
@@ -143,6 +135,14 @@
           {
             field: "nama_account",
             title: "Sub Channel",
+            halign: "center",
+            align: "left",
+            sortable: "true",
+            width: 100,
+          },
+          {
+            field: "alamat",
+            title: "Alamat",
             halign: "center",
             align: "left",
             sortable: "true",

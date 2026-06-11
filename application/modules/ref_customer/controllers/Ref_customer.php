@@ -1,6 +1,12 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+
 class Ref_customer extends BaseController
 {
 
@@ -66,13 +72,12 @@ class Ref_customer extends BaseController
         $this->customer->savetoxls($data);
     }
 
-
     function savetoxlsx() {
         $account = $this->uri->segment('3');
         $username = $this->uri->segment('4');
         $jabatan = $this->uri->segment('5');
         $restrict_level = $this->uri->segment('6');
-        $filename = $this->uri->segment('7');
+        $filtername = $this->uri->segment('7');
         ini_set("memory_limit","2048M");
         ini_set('max_execution_time', '0');
         
@@ -80,7 +85,6 @@ class Ref_customer extends BaseController
             $account='All';
             $filename = 'All_Account';
         }
-        //$salesmanid = $data['salesmanid'];
 		if ($account=='All'){
 			$strsubquery = "";
 		}else{
@@ -113,170 +117,157 @@ class Ref_customer extends BaseController
             $strquery = "".$strsubquery;
         }
         
-
-        $query_old = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position,
-                            case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo        
-                                    from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
-                                    left join m_area_areasite c on a.areaid = c.areaid
-                                    left join m_area_subarea d on a.subareaid = d.subareaid
-                                    left join m_customer_class e on a.classid = e.classid
-                                    left join m_sales_salesman f on a.salesmanid = f.salesmanid
-                    where a.customerid <> '' ".$strquery."
-                  ";
-        $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
-                        ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') 
-                        from m_sales_salesman 
-                        where salesmanid in (select salesmanid from m_customer_ob 
-                                            where customerid=a.customerid) and tipe_sales='MEDREP'),'') as gffmd,
-                        MAX(CASE WHEN f.minggu = 1 THEN f.hari END) AS minggu_1,
-                        MAX(CASE WHEN f.minggu = 2 THEN f.hari END) AS minggu_2,
-                        MAX(CASE WHEN f.minggu = 3 THEN f.hari END) AS minggu_3,
-                        MAX(CASE WHEN f.minggu = 4 THEN f.hari END) AS minggu_4,
-                        case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo
-                        from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
-                        left join m_area_areasite c on a.areaid = c.areaid
-                        left join m_area_subarea d on a.subareaid = d.subareaid
-                        left join m_customer_class e on a.classid = e.classid
-                        left join t_sales_setup_rrk f on a.customerid = f.customerid 
-                        where a.customerid <> '' ".$strquery."
-                    GROUP BY
-                    a.customerid, b.nama_regional, c.nama_area, d.nama_area, e.nama_class
-                    ;";
-
-        $query1 = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
-                  (select count(1) from m_sales_salesman 
-                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='MERCHANDISER') as gffmd,
-                  (select count(1) from m_sales_salesman 
-                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='SPG') as gffspg,
-                  (select count(1) from m_sales_salesman 
-                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='MEDREP MT') as gffmt,
-                  (select count(1) from m_sales_salesman 
-                              where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='MEDREP GT') as gffgt
-                  from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
-                  left join m_area_areasite c on a.areaid = c.areaid
-                  left join m_area_subarea d on a.subareaid = d.subareaid
-                  left join m_customer_class e on a.classid = e.classid
-                  where a.customerid <> '' ".$strquery."
-            ";
-
+        $query = "
+            select
+                a.*,
+                b.nama_regional,
+                c.nama_area,
+                d.nama_area as nama_subarea,
+                e.nama_class as nama_account,
+                ifnull(f.tipe_sales,'') position,
+                ifnull(pro.list_professional, '') as list_professional
+            from m_customer a
+            left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
+            left join m_area_areasite c on a.areaid = c.areaid
+            left join m_area_subarea d on a.subareaid = d.subareaid
+            left join m_customer_class e on a.classid = e.classid
+            left join m_sales_salesman f on a.salesmanid = f.salesmanid
+            left join (
+                select 
+                    rpm.customerid, 
+                    group_concat(
+                        concat(
+                            rp.nama_professional,
+                            case 
+                                when (rs.name is not null and rs.name <> '') and (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rs.name, ' - ', rp.type, ')')
+                                when (rs.name is not null and rs.name <> '') 
+                                    then concat(' (', rs.name, ')')
+                                when (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rp.type, ')')
+                                else ''
+                            end
+                        ) separator '||'
+                    ) as list_professional
+                from ref_professional_mapping rpm
+                left join ref_professional rp on rp.id = rpm.id_professional
+                left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
+                group by rpm.customerid
+            ) AS pro ON a.customerid = pro.customerid
+            where a.customerid <> '' ".$strquery."
+            order by ifnull(a.modified_date, a.created_date) desc
+        ";
 
         $execquery = $this->db->query($query);
-        $lovoutlet = $execquery->result_array();
+        $outlets = $execquery->result_array();
 		
-		$filename = "Master_Data_Outlet.xlsx";
+		$filename = "Data_Outlet_".str_replace(' ', '_', $filtername)."_".date('Ymd_His').".xlsx";
 
-        $this->load->library('excel');
-    
-        //$objDrawing = new PHPExcel_Worksheet_Drawing();
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A2', 'MEDREP ID Outlet')
-                    ->setCellValue('B2', 'ID Outlet Distributor')
-                    ->setCellValue('C2', 'Latest JJID')
-                    ->setCellValue('D2', 'Latest Customer Name')
-                    ->setCellValue('E2', 'MEDREP Nama Outlet')
-                    ->setCellValue('F2', 'Alamat')
-                    ->setCellValue('G2', 'Regional')
-                    ->setCellValue('H2', 'Area')
-                    ->setCellValue('I2', 'Cluster')
-                    ->setCellValue('J2', 'Tier')
-                    ->setCellValue('K2', 'Tipe Kepemilikan')
-                    ->setCellValue('L2', 'Distributir')
-                    ->setCellValue('M2', 'MEDREP')
-                    ->setCellValue('N2', 'Minggu 1')
-                    ->setCellValue('O2', 'Minggu 2')
-                    ->setCellValue('P2', 'Minggu 3')
-                    ->setCellValue('Q2', 'Minggu 4')
-                    ->setCellValue('R2', 'Latitude')
-                    ->setCellValue('S2', 'Longitude')
-                    ->setCellValue('T2', 'Flag Noo')
-                    ->setCellValue('N1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active ')
-                    ;
-        $i = 3;
-        foreach ($lovoutlet as $voutlet) {
-            //if ($voutlet['gffmd']!='' or $voutlet['gffspg']!='' or $voutlet['gffmt']!='' or $voutlet['gffgt']!=''){
-            $objPHPExcel->setActiveSheetIndex(0)
-                        ->setCellValue('A'.$i, $voutlet['customerid'])
-                        ->setCellValue('B'.$i, $voutlet['cust_id_map'])
-                        ->setCellValue('C'.$i, $voutlet['latest_jjid'])
-                        ->setCellValue('D'.$i, $voutlet['latest_customer_name'])
-                        ->setCellValue('E'.$i, $voutlet['nama_customer'])
-                        ->setCellValue('F'.$i, $voutlet['alamat'])
-                        ->setCellValue('G'.$i, $voutlet['nama_regional'])
-                        ->setCellValue('H'.$i, $voutlet['nama_area'])
-                        ->setCellValue('I'.$i, $voutlet['typeid'])
-                        ->setCellValue('J'.$i, $voutlet['nama_account'])
-                        ->setCellValue('K'.$i, $voutlet['spot_id'])
-                        ->setCellValue('L'.$i, $voutlet['mcc'])
-                        ->setCellValue('M'.$i, $voutlet['gffmd'])
-                        ->setCellValue('N'.$i, $voutlet['minggu_1'])
-                        ->setCellValue('O'.$i, $voutlet['minggu_2'])
-                        ->setCellValue('P'.$i, $voutlet['minggu_3'])
-                        ->setCellValue('Q'.$i, $voutlet['minggu_4'])
-                        ->setCellValue('R'.$i, $voutlet['latitude'])
-                        ->setCellValue('S'.$i, $voutlet['longitude'])
-                        ->setCellValue('T'.$i, $voutlet['flag_noo'])
-						;
-                $i++;
-                //}
+        $spreadsheet = new Spreadsheet();
+        $header = [
+            'ID Outlet',
+            'ID Outlet Distributor',
+            'Nama Outlet',
+            'Regional',
+            'Area',
+            'Sub Area',
+            'Channel',
+            'Sub Channel',
+            'Alamat',
+            'User',
+        ];
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Outlet');
+        $sheet->setCellValue('A1', 'DATA OUTLET '.strtoupper(str_replace(' ', '_', $filtername)))->mergeCells('A1:J1');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 14,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->fromArray($header, NULL,'A2');
+        $sheet->getRowDimension(2)->setRowHeight(25);
+
+        $i = 1;
+        $rowNum = 3;
+        foreach ($outlets as $outlet) {
+            $listUser = '';
+            if (!empty($outlet['list_professional'])) {
+                $profArray = explode('||', $outlet['list_professional']);
+                $formattedProfs = [];
+                foreach ($profArray as $idx => $profName) {
+                    $formattedProfs[] = ($idx + 1) . '. ' . trim($profName);
+                }
+                $listUser = implode("\n", $formattedProfs);
             }
 
-        $objPHPExcel->getActiveSheet()->setTitle('Data Outlet');
-        $objPHPExcel->createSheet();
+            $content = [
+                $outlet['customerid'],
+                $outlet['cust_id_map'],
+                $outlet['nama_customer'],
+                $outlet['nama_regional'],
+                $outlet['nama_area'],
+                $outlet['nama_subarea'],
+                $outlet['typeid'],
+                $outlet['nama_account'],
+                $outlet['alamat'],
+                $listUser
+            ];
 
-            /*$execquery = $this->db->query($query1);
-            $lovoutlet = $execquery->result_array();
-    
-            $objPHPExcel->setActiveSheetIndex(1)
-            ->setCellValue('A1', 'OUTLETID_DRC')
-            ->setCellValue('B1', 'KODE OUTLET')
-            ->setCellValue('C1', 'Nama Outlet')
-            ->setCellValue('D1', 'Account')
-            ->setCellValue('E1', 'Regional')
-            ->setCellValue('F1', 'Area')
-            ->setCellValue('G1', 'SubArea/City')
-            ->setCellValue('H1', 'MERCHANDISER')
-            ->setCellValue('I1', 'SPG')
-            ->setCellValue('J1', 'MEDREP MT')
-            ->setCellValue('K1', 'MEDREP GT')
-            ;
-            $i = 2;
-            foreach ($lovoutlet as $voutlet) {
-                if ($voutlet['gffmd']!='0' or $voutlet['gffspg']!='0' or $voutlet['gffmt']!='0' or $voutlet['gffgt']!='0'){
-                $objPHPExcel->setActiveSheetIndex(1)
-                            ->setCellValue('A'.$i, $voutlet['customerid'])
-                            ->setCellValue('B'.$i, $voutlet['kode_outlet'])
-                            ->setCellValue('C'.$i, $voutlet['nama_customer'])
-                            ->setCellValue('D'.$i, $voutlet['nama_account'])
-                            ->setCellValue('E'.$i, $voutlet['nama_regional'])
-                            ->setCellValue('F'.$i, $voutlet['nama_area'])
-                            ->setCellValue('G'.$i, $voutlet['nama_subarea'])
-                            ->setCellValue('H'.$i, $voutlet['gffmd'])
-                            ->setCellValue('I'.$i, $voutlet['gffspg'])
-                            ->setCellValue('J'.$i, $voutlet['gffmt'])
-                            ->setCellValue('K'.$i, $voutlet['gffgt']);
-                    $i++;
-                    }
-                }
+            $sheet->fromArray($content, NULL, 'A'.$rowNum);
 
-            $objPHPExcel->getActiveSheet()->setTitle('Count MEDREP');
-			*/
-            // Redirect output to a client's web browser (Excel2007)
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header("Content-Disposition: attachment;filename=$filename");
-            header('Cache-Control: max-age=0');
-            // If you're serving to IE 9, then the following may be needed
-            header('Cache-Control: max-age=0');
-            // If you're serving to IE over SSL, then the following may be needed
-            header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-            header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-            header ('Pragma: public'); // HTTP/1.0
-            
-            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-            $objWriter->save('php://output');
-            unset($objPHPExcel);
-            return true;
+            $i++;
+            $rowNum++;
+        }
+		// Ambil range seluruh worksheet
+		$highestRow = $sheet->getHighestRow();
+		$highestColumn = $sheet->getHighestColumn();
+		$fullRange = 'A1:' . $highestColumn . $highestRow;
+		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+		$sheet->getStyle('I3:J' . $highestRow)->getAlignment()->setWrapText(true);
+        $sheet->freezePane('A3');
 
+        foreach (range('A', $highestColumn) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        $sheet->getStyle($fullRange)->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+        
+        $headerRange = 'A2:' . $highestColumn . '2';
+        $sheet->getStyle($headerRange)->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1F4E78'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+        
+        $writer = new Xlsx($spreadsheet);
+        
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
     }
 
 	function open_gff_detail() {
@@ -288,7 +279,6 @@ class Ref_customer extends BaseController
                                 join m_sales_salesman c on b.salesmanid=c.salesmanid
                                 where a.customerid = '".$customerid."';
                             ");
-		//echo $this->db->last_query();
 		$data = $q->result_array();
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';

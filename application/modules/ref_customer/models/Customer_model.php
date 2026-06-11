@@ -6,69 +6,103 @@ class Customer_model extends CI_Model
 
     public function create($data)
     {
-        unset($data["customerid_m"]);
-        unset($data["siteid"]);
-        unset($data["doublecover"]);
-        $data["created_by"] = $data["usersession"];
-
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
         $data["created_date"] = $datetime->datetime;
-        unset($data["usersession"]);
+        $data["created_by"] = $data["usersession"];
 
         $sql = "select used+1 customerid_new from app_table_sequence where id=5";
         $newidcust = $this->db->query($sql)->row();
         $data['customerid'] =  $newidcust->customerid_new;
 
-        $arrsalesman = array();
-        if(isset($data['salesmanid'])){ $arrsalesman= $data['salesmanid']; unset($data['salesmanid']); }
-        $data['salesmanid'] = implode(",",$arrsalesman);
-        for($i=0;$i<count($arrsalesman);$i++){
-            $data_array = array(
-                "customerid" => $data['customerid'],
-                "salesmanid" => $arrsalesman[$i],
-                "created_date" => $data["created_date"],
-                "created_by" => $data["created_by"]
+        $this->db->where('customerid', $data['customerid']);
+        $this->db->delete('ref_professional_mapping');
+
+        $professionals = $data['professional'];
+        if(!empty($professionals)){
+            $dataProfessionals = $this->db->where_in('id', $professionals)->get('ref_professional')->result_array();
+            $data_array = [];
+            for($i=0; $i < count($dataProfessionals); $i++){
+                $data_array[] = array(
+                    "id_professional" => $dataProfessionals[$i]['id'],
+                    "nama_professional" => $dataProfessionals[$i]['nama_professional'],
+                    "customerid" => $data['customerid'],
+                    "nama_customer" => $data['nama_customer'],
                 );
-            $execreturn = $this->db->insert('m_customer_ob', $data_array);
+            }
+            $this->db->insert_batch('ref_professional_mapping', $data_array);
         }
+
+        $payload = $this->generatePayload($data);
 
         //update sequence
         $this->db->query("update app_table_sequence set used=".$data['customerid']." where id=5");
         $this->db->query("Update app_data_version set version=version+1, modified_date=now(), modified_by='Insert New Outlet'");
-        return $this->db->insert('m_customer', $data);
+        return $this->db->insert('m_customer', $payload);
     }
 
     public function update($data)
     {
-        $data["modified_by"] = $data["usersession"];
         $sqldate = "select sysdate() datetime;";
-        $datetime = $this->db->query($sqldate)->row(); 
+        $datetime = $this->db->query($sqldate)->row();
         $data["modified_date"] = $datetime->datetime;
-        unset($data["usersession"]);
-        unset($data["doublecover"]);
+        $data["modified_by"] = $data["usersession"];
+        $professionals = $data['professional'];
         
         $this->db->where('customerid', $data['customerid']);
-        $this->db->delete('m_customer_ob');
+        $this->db->delete('ref_professional_mapping');
 
-        $arrsalesman = array();
-        if(isset($data['salesmanid'])){ $arrsalesman= $data['salesmanid']; unset($data['salesmanid']); }
-        $data['salesmanid'] = implode(",",$arrsalesman);
-        for($i=0;$i<count($arrsalesman);$i++){
-            $data_array = array(
-                "customerid" => $data['customerid'],
-                "salesmanid" => $arrsalesman[$i],
-                "created_date" => $data["modified_date"],
-                "created_by" => $data["modified_by"]
+        if(!empty($professionals)){
+            $dataProfessionals = $this->db->where_in('id', $professionals)->get('ref_professional')->result_array();
+            $data_array = [];
+            for($i=0; $i < count($dataProfessionals); $i++){
+                $data_array[] = array(
+                    "id_professional" => $dataProfessionals[$i]['id'],
+                    "nama_professional" => $dataProfessionals[$i]['nama_professional'],
+                    "customerid" => $data['customerid'],
+                    "nama_customer" => $data['nama_customer'],
                 );
-            $execreturn = $this->db->insert('m_customer_ob', $data_array);
+            }
+            $this->db->insert_batch('ref_professional_mapping', $data_array);
         }
-		
-		$this->db->query("delete from t_sales_setup_rrk where customerid = '".$data['customerid']."' and salesmanid not in (select salesmanid from m_customer_ob where customerid='".$data['customerid']."')");
-        
+
+        $payload = $this->generatePayload($data);
 		$this->db->query("Update app_data_version set version=version+1, modified_date=now(), modified_by='Modify Outlet'");
 		$this->db->where('customerid', $data['customerid']);
-        return $this->db->update('m_customer', $data);
+        return $this->db->update('m_customer', $payload);
+    }
+
+    public function generatePayload($data)
+    {
+        $payload = payload([
+            "siteid",
+            "customerid_m",
+            "customerid",
+            "kode_outlet",
+            "cust_id_map",
+            "nama_customer",
+            "alamat",
+            "kelurahanid",
+            "kecamatanid",
+            "kotaid",
+            "propinsiid",
+            "kodepos",
+            "telp",
+            "email",
+            "segmentid",
+            "typeid",
+            "classid",
+            "regionalid",
+            "areaid",
+            "subareaid",
+            "latitude",
+            "longitude",
+            "created_by",
+            "created_date",
+            "modified_by",
+            "modified_date",
+        ], $data);
+        return $payload;
     }
 
     public function update_location($data)
@@ -145,13 +179,29 @@ class Customer_model extends CI_Model
             left join m_sales_salesman f on a.salesmanid = f.salesmanid
             left join (
                 select 
-                    customerid, 
-                    group_concat(concat(id_professional,' - ',nama_professional) SEPARATOR '||') AS list_professional
-                from ref_professional_mapping
-                group by customerid
+                    rpm.customerid, 
+                    group_concat(
+                        concat(
+                            rp.id,' - ',
+                            rp.nama_professional,
+                            case 
+                                when (rs.name is not null and rs.name <> '') and (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rs.name, ' - ', rp.type, ')')
+                                when (rs.name is not null and rs.name <> '') 
+                                    then concat(' (', rs.name, ')')
+                                when (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rp.type, ')')
+                                else ''
+                            end
+                        ) separator '||'
+                    ) as list_professional
+                from ref_professional_mapping rpm
+                left join ref_professional rp on rp.id = rpm.id_professional
+                left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
+                group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
             where a.customerid <> '' ".$strquery."
-            order by a.customerid desc
+            order by ifnull(a.modified_date, a.created_date) desc
         ) a";
         
         return easy_pagging($data, $field, $table);
