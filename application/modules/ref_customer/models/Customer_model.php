@@ -6,11 +6,6 @@ class Customer_model extends CI_Model
 
     public function create($data)
     {
-        /*$id = IDGenerator::getInstance()->nextID('m_customer');
-        if (!empty($id)) {
-            $data['siteid'] = $id;
-        }*/
-
         unset($data["customerid_m"]);
         unset($data["siteid"]);
         unset($data["doublecover"]);
@@ -46,9 +41,6 @@ class Customer_model extends CI_Model
 
     public function update($data)
     {
-        //$this->db->where('siteid', $data['siteid']);
-        //$this->db->where('customerid_m', $data['customerid_m']);
-        //date("Y-m-d H:i:s")
         $data["modified_by"] = $data["usersession"];
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row(); 
@@ -93,8 +85,6 @@ class Customer_model extends CI_Model
     {
         $data["deleted_by"] = $data["usersession"];
         $this->db->query("insert into m_customer_delete select *, '".$data["deleted_by"]."' deleted_by, now() deleted_date from m_customer where customerid='".$data['customerid']."'");
-        //$datadb["deleted_date"] = $datetime->datetime;
-        //$this->db->insert('m_customer_delete', $datajson);
         $this->db->where('customerid', $data['customerid']);
         $this->db->delete('m_customer_ob');
 
@@ -109,7 +99,6 @@ class Customer_model extends CI_Model
 
         $this->db->where('siteid', $data['siteid']);
         $this->db->where('customerid', $data['customerid']);
-        //$this->db->where('salesmanid', $data['salesmanid']);
         return $this->db->delete('t_sales_setup_rrk');
     }
 
@@ -137,36 +126,33 @@ class Customer_model extends CI_Model
         else {
             $strquery = "";
         }
-        
-
-		/*if ($data["idjabatan"]=='2' or $data["idjabatan"]=='3')
-			$strquery = " and a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm where a.ram_rsm = '".$data["usersession"]."') ";
-		else if($data["idjabatan"]=='16' or $data["idjabatan"]=='17'){
-			$strquery = " and a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$data["usersession"]."') ";
-		}else{
-            $strquery = "";
-        }*/
 
         $field = "a.* ";
-        $table = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, 
-                            ifnull((select GROUP_CONCAT(concat(salesmanid,'-',nama_salesman,'-',tipe_sales) SEPARATOR ',') from m_sales_salesman 
-                                    where salesmanid in (select salesmanid from m_customer_ob where customerid=a.customerid) and tipe_sales='MEDREP'),'') as usergff,
-                            ifnull(f.tipe_sales,'') position
-                    from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
-                            left join m_area_areasite c on a.areaid = c.areaid
-                            left join m_area_subarea d on a.subareaid = d.subareaid
-                            left join m_customer_class e on a.classid = e.classid
-                            left join m_sales_salesman f on a.salesmanid = f.salesmanid
-                            where a.customerid <> '' ".$strquery."
-                    ) a";
-        $table_new = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account
-                    from m_customer a left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
-                            left join m_area_areasite c on a.areaid = c.areaid
-                            left join m_area_subarea d on a.subareaid = d.subareaid
-                            left join m_customer_class e on a.classid = e.classid
-                            left join m_sales_salesman f on a.salesmanid = f.salesmanid
-                            where a.customerid <> '' ".$strquery."
-                    ) a";
+        $table = " (
+            select
+                a.*,
+                b.nama_regional,
+                c.nama_area,
+                d.nama_area as nama_subarea,
+                e.nama_class as nama_account,
+                ifnull(f.tipe_sales,'') position,
+                ifnull(pro.list_professional, '') as list_professional
+            from m_customer a
+            left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
+            left join m_area_areasite c on a.areaid = c.areaid
+            left join m_area_subarea d on a.subareaid = d.subareaid
+            left join m_customer_class e on a.classid = e.classid
+            left join m_sales_salesman f on a.salesmanid = f.salesmanid
+            left join (
+                select 
+                    customerid, 
+                    group_concat(concat(id_professional,' - ',nama_professional) SEPARATOR '||') AS list_professional
+                from ref_professional_mapping
+                group by customerid
+            ) AS pro ON a.customerid = pro.customerid
+            where a.customerid <> '' ".$strquery."
+            order by a.customerid desc
+        ) a";
         
         return easy_pagging($data, $field, $table);
     }
@@ -181,8 +167,6 @@ class Customer_model extends CI_Model
             $account='All';
             $filename = 'All_Account';
         }
-        //$salesmanid = $data['salesmanid'];
-
         if ($data["restrict_level"]=='4'){
             if ($account=='All'){
                 $strsubquery = "";
@@ -224,33 +208,6 @@ class Customer_model extends CI_Model
         else {
             $strquery = "";
         }
-        
-		/*if ($data["jabatan"]=='2' or $data["jabatan"]=='3') {
-                if ($account=='All'){
-                    $strsubquery = "";
-                }else{
-                    $strsubquery = " and a.classid='".$account."'";
-                }
-            
-                $strquery = " and a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm 
-                                                    where a.ram_rsm = '".$data["username"]."') ";
-                $strquery = $strquery.$strsubquery;
-            } else if($data["jabatan"]=='16' or $data["jabatan"]=='17') {
-                if ($account=='All'){
-                    $strsubquery = "";
-                }else{
-                    $strsubquery = " and a.classid='".$account."'";
-                }
-            
-                $strquery = " and a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$data["username"]."') ";
-                $strquery = $strquery.$strsubquery;
-            }else{
-                if ($account=='All'){
-                    $strquery = "";
-                }else{
-                    $strquery = " and a.classid='".$account."'";
-                }
-            }*/
 
         $query = " select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.nama_salesman gff_name, f.tipe_sales position,
                             case when a.customerid_m <>'' then 'Noo' else '-' END as flag_noo
@@ -311,7 +268,6 @@ class Customer_model extends CI_Model
 		$html .= '</table>';
 
         header('Content-Type: application/vnd.ms-excel');
-        //header("Content-Type:   application/vnd.ms-excel; charset=utf-8");
 		header("Content-Disposition: attachment; filename=" . $filename);  //File name extension was wrong
 		header('Cache-Control: max-age=0');
         header("Expires: 0");
