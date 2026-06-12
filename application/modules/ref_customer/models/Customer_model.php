@@ -136,29 +136,36 @@ class Customer_model extends CI_Model
         return $this->db->delete('t_sales_setup_rrk');
     }
 
-    public function load($data)
+    public function load($data, $type = 'load')
     {
+		if ($data['account'] == 'All') {
+			$strsubquery = "";
+		} else {
+			$strsubquery = " and a.classid='".$data['account']."'";
+		}
 
+        $strquery = "" . $strsubquery;
         if ($data["restrict_level"]=='4'){
-            $strquery = " and a.subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."'
-                                                )";
-        }
-        else if ($data["restrict_level"]=='3'){
-            $strquery = " and a.areaid in (select distinct b.areaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."'
-                                                )";
-        }
-        else if ($data["restrict_level"]=='2'){
-            $strquery = " and a.regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."'
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+            $strquery = " and a.subareaid in (
+                select distinct b.subareaid
+                from app_resource a 
+                left join app_restrict_location b on a.resource_id=b.resource_id 
+                where a.username='".$data["usersession"]."'
+            )";
+        } else if ($data["restrict_level"]=='3'){
+            $strquery = " and a.areaid in (
+                select distinct b.areaid
+                from app_resource a 
+                left join app_restrict_location b on a.resource_id=b.resource_id 
+                where a.username='".$data["usersession"]."'
+            )";
+        } else if ($data["restrict_level"]=='2'){
+            $strquery = " and a.regionalid in (
+                select distinct b.regionalid
+                from app_resource a 
+                left join app_restrict_location b on a.resource_id=b.resource_id 
+                where a.username='".$data["usersession"]."'
+            )";
         }
 
         $field = "a.* ";
@@ -203,6 +210,11 @@ class Customer_model extends CI_Model
             where a.customerid <> '' ".$strquery."
             order by ifnull(a.modified_date, a.created_date) desc
         ) a";
+
+        if ($type == 'export') {
+            $result = $this->db->query("select * from ".$table);
+            return $result->result_array();
+        }
         
         return easy_pagging($data, $field, $table);
     }

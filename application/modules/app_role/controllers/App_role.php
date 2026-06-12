@@ -43,5 +43,4 @@ class App_role extends BaseController
         $data = param_input();
         responseJSON($this->role->load($data));
     }
-
 }

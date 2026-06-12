@@ -76,3 +76,7 @@ a:active, a:focus, button:active, button:focus  {
 	background-color: white;
 	min-width: 680px;
 }
+
+.swal2-popup {
+	font-size: 14px !important;
+}

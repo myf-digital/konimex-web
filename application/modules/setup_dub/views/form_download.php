@@ -48,11 +48,11 @@ for (i = 0; i < close.length; i++) {
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Download FJP <small>Control panel</small>
+        Download DUB <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Download FJP</a></li>
-        <li class="active">Form Download FJP</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Download DUB</a></li>
+        <li class="active">Form Download DUB</li>
     </ol>
 </section>
 
@@ -62,10 +62,10 @@ for (i = 0; i < close.length; i++) {
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Download FJP</h3>
+                    <h3 class="box-title">Form Download DUB</h3>
                 </div>
 
-                <form id="fm-download-setup-pjp" role="form" method="post">
+                <form id="fm-download-setup-dub" role="form" method="post">
                     <div class="box-body">
                       <div class="form-group col-xs-12 col-sm-12 col-md-6">
                         <label for="salesmanid">MEDREP</label>
@@ -81,4 +81,4 @@ for (i = 0; i < close.length; i++) {
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/conf_setup_pjp/setup-pjp-form-download.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/setup_dub/form-download.js' ?>"></script>

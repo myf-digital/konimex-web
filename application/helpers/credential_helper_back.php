@@ -45,8 +45,14 @@ function authUserApplication($data)
 {
     $ci =& get_instance();
     $values = array($data['username'], $data['password']);
-    $sql = "SELECT a.* FROM app_resource a 
-			WHERE a.username=? AND a.password=md5(?)";
+    $sql = "
+        SELECT
+            a.*,
+            b.role_name
+        FROM app_resource a 
+        LEFT JOIN app_role b on b.role_id = a.role_id
+		WHERE a.username=? AND a.password=md5(?)
+    ";
     $res = $ci->db->query($sql, $values)->result_array();
     $form_response = new stdClass();
     if (1 == count($res)) {
@@ -56,6 +62,7 @@ function authUserApplication($data)
         $_SESSION['nip'] = $res[0]['nip'];
         $_SESSION['user_credential'] = $res[0]['username'];
         $_SESSION['role_id'] = $res[0]['role_id'];
+        $_SESSION['role_name'] = $res[0]['role_name'];
         unset($res[0]["password"]);
         $form_response->session = $res[0];
         $form_response->status_login = 200;

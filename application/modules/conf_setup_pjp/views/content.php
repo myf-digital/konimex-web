@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Setup FJP <small>Control panel</small>
+        Setup Planned <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Setup FJP</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Setup Planned</a></li>
         <li class="active">Content</li>
     </ol>
 </section>

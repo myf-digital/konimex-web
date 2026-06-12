@@ -45,10 +45,12 @@ class Api_v1_model extends CI_Model
 					regional.nama_regional,
 					area.nama_area,
 					area.latitude,
-					area.longitude
+					area.longitude,
+					role.target_dub
 				from m_sales_salesman a
 				left join m_area_regional regional on regional.regionalid = a.regionalid
 				left join m_area_areasite area on area.areaid = a.areaid
+				left join app_role role on role.role_name = a.tipe_sales
 				where a.tipe_sales <> 'ADMIN' and a.aktif = 1
 				".$strquery."
 				order by a.nama_salesman asc
@@ -621,34 +623,36 @@ class Api_v1_model extends CI_Model
 
 	function get_tipesalesman()
     {
-		// $sql = " select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
-		// 		union
-		// 		select 'SPV' as idtipesales, 'SPV' as tipesales
-		// 		union
-		// 		select 'ADMIN' as idtipesales, 'ADMIN' as tipesales
-		// 		";
-		// $res_ss = $this->db->query($sql);
-		// if (count($res_ss->result_array()) > 0) {
-		// 	$response = new stdClass();
-		// 	$response = $res_ss->result_array();
-		// //parsing to result
-		// 	return result($response);
-		// } else {
-		// 	return result(new stdClass(), 200, "data Invalid!");
-		// }
-		$data = [
-			['idtipesales' => 'MEDREP', 'tipesales' => 'MEDICAL REP'],
-			['idtipesales' => 'MRC', 'tipesales' => 'MEDICAL REP COORDINATOR'],
-			['idtipesales' => 'ASS', 'tipesales' => 'AREA SALES SUPERVISOR'],
-			['idtipesales' => 'ASM', 'tipesales' => 'AREA SALES MANAGER'],
-			['idtipesales' => 'SM', 'tipesales' => 'SALES MANAGER'],
-			['idtipesales' => 'GME', 'tipesales' => 'GENERAL MANAGER EB'],
-			['idtipesales' => 'ESO', 'tipesales' => 'ETHICAL SUPPORT OFFICER'],
-			['idtipesales' => 'PA', 'tipesales' => 'PENATA ADM'],
-			['idtipesales' => 'PM', 'tipesales' => 'PRODUCT MANAGER'],
-			['idtipesales' => 'PE', 'tipesales' => 'PRODUCT EXECUTIVE'],
-		];
-		return result($data);
+		$sql = "
+			select
+				a.role_name as idtipesales,
+				concat(a.role_name, ' - ', a.description) as tipesales
+			from app_role a
+			where a.role_name not like '%admin%' and 
+				a.description is not null
+				and a.description <> ''
+		";
+		$res_ss = $this->db->query($sql);
+		if (count($res_ss->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res_ss->result_array();
+			return result($response);
+		} else {
+			return result(new stdClass(), 200, "data Invalid!");
+		}
+		// $data = [
+		// 	['idtipesales' => 'MEDREP', 'tipesales' => 'MEDICAL REP'],
+		// 	['idtipesales' => 'MRC', 'tipesales' => 'MEDICAL REP COORDINATOR'],
+		// 	['idtipesales' => 'ASS', 'tipesales' => 'AREA SALES SUPERVISOR'],
+		// 	['idtipesales' => 'ASM', 'tipesales' => 'AREA SALES MANAGER'],
+		// 	['idtipesales' => 'SM', 'tipesales' => 'SALES MANAGER'],
+		// 	['idtipesales' => 'GME', 'tipesales' => 'GENERAL MANAGER EB'],
+		// 	['idtipesales' => 'ESO', 'tipesales' => 'ETHICAL SUPPORT OFFICER'],
+		// 	['idtipesales' => 'PA', 'tipesales' => 'PENATA ADM'],
+		// 	['idtipesales' => 'PM', 'tipesales' => 'PRODUCT MANAGER'],
+		// 	['idtipesales' => 'PE', 'tipesales' => 'PRODUCT EXECUTIVE'],
+		// ];
+		// return result($data);
 	}
 
 	function get_tipetrans()
@@ -993,6 +997,76 @@ class Api_v1_model extends CI_Model
 			return result($response);
 		} else {
 			return result(new stdClass(), 200, "Siteid Invalid!");
+		}
+    }
+
+	function get_outlet_dub($data)
+    {
+		$where = '';
+		if (!empty($data['salesmanid'])) {
+			$salesman = $this->db->get_where('m_sales_salesman', ['salesmanid' => $data['salesmanid']])->row_array();
+			if ($salesman) {
+				if (!empty($salesman['regionalid'])) {
+					$where .= ' and a.regionalid = "'.$salesman['regionalid']. '"';
+				}
+				if (!empty($salesman['areaid'])) {
+					$where .= ' and a.areaid = "'.$salesman['areaid']. '"';
+				}
+				if (!empty($salesman['subareaid'])) {
+					$where .= ' and a.subareaid = "'.$salesman['subareaid']. '"';
+				}
+			}
+		}
+
+		$sql = "
+			select
+				a.customerid,
+				a.nama_customer,
+				b.typeid,
+				b.nama_class,
+				d.nama_regional,
+				c.nama_area,
+				e.nama_area as nama_subarea,
+                ifnull(pro.list_professional, '') as list_professional
+			from m_customer a 
+			left join m_customer_class b on a.classid = b.classid
+			left join m_area_regional d on a.regionalid = d.regionalid
+			left join m_area_areasite c on a.areaid = c.areaid
+			left join m_area_subarea e on a.subareaid = e.subareaid
+            left join (
+                select 
+                    rpm.customerid, 
+                    group_concat(
+                        concat(
+                            rp.id,' - ',
+                            rp.nama_professional,
+                            case 
+                                when (rs.name is not null and rs.name <> '') and (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rs.name, ' - ', rp.type, ')')
+                                when (rs.name is not null and rs.name <> '') 
+                                    then concat(' (', rs.name, ')')
+                                when (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rp.type, ')')
+                                else ''
+                            end
+                        ) separator '||'
+                    ) as list_professional
+                from ref_professional_mapping rpm
+                left join ref_professional rp on rp.id = rpm.id_professional
+                left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
+                group by rpm.customerid
+            ) AS pro ON a.customerid = pro.customerid
+			where a.customerid <> '' and pro.list_professional is not null $where
+			group by a.customerid
+		";
+		$res = $this->db->query($sql);
+		if (count($res->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res->result_array();
+			//parsing to result
+			return result($response);
+		} else {
+			return result(new stdClass(), 200, "Data tidak ditemukan!");
 		}
     }
 

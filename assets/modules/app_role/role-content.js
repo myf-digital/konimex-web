@@ -51,6 +51,14 @@
             width: 200,
           },
           {
+            field: "description",
+            title: "DESCRIPTION",
+            halign: "center",
+            align: "left",
+            sortable: "true",
+            width: 200,
+          },
+          {
             field: "target_dub",
             title: "TARGET DUB",
             halign: "center",
@@ -62,36 +70,13 @@
             },
           },
           {
-            field: "created_by",
-            title: "CREATED BY",
+            field: "-",
+            title: "LAST MODIFIED",
             halign: "center",
             align: "left",
             sortable: "true",
             width: 200,
-          },
-          {
-            field: "created_date",
-            title: "CREATED DATE",
-            halign: "center",
-            align: "left",
-            sortable: "true",
-            width: 200,
-          },
-          {
-            field: "modified_by",
-            title: "MODIFIED BY",
-            halign: "center",
-            align: "left",
-            sortable: "true",
-            width: 200,
-          },
-          {
-            field: "modified_date",
-            title: "MODIFIED DATE",
-            halign: "center",
-            align: "left",
-            sortable: "true",
-            width: 200,
+            formatter: formaterLastModified,
           },
         ],
       ],
@@ -147,6 +132,25 @@
       "../assets/images/ic_trash.png",
     );
     return '<div class="action-grid">' + btnUpdate + " " + btnDelete + "</div>";
+  }
+
+  function formaterLastModified(val, row, index) {
+    if (row.modified_date) {
+      return (
+        "at " +
+        moment(row.modified_date).locale("id").format("DD MMM YYYY") +
+        " <br/> by " +
+        (row.modified_by || "-")
+      );
+    } else if (row.created_date) {
+      return (
+        "at " +
+        moment(row.created_date).locale("id").format("DD MMM YYYY") +
+        " <br/> by " +
+        (row.created_by || "-")
+      );
+    }
+    return "";
   }
 
   function updateRow(val) {

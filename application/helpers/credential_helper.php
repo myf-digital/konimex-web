@@ -53,8 +53,17 @@ function authUserApplication($data)
 {
     $ci =& get_instance();
     $values = array($data['username'], $data['password']);
-    $sql = "SELECT a.*, b.restrict_level, b.restrict_bu, (select aktif_week from m_setup_site) as week_aktif FROM app_resource a left join ref_jabatan b on a.idjabatan=b.idjabatan
-			WHERE a.username=? AND a.password=md5(?) AND a.status='RA'";
+    $sql = "
+        SELECT
+            a.*,
+            b.restrict_level,
+            b.restrict_bu,
+            (select aktif_week from m_setup_site) as week_aktif,
+            c.role_name
+        FROM app_resource a
+        LEFT JOIN ref_jabatan b ON a.idjabatan=b.idjabatan
+        LEFT JOIN app_role c on c.role_id = a.role_id
+		WHERE a.username=? AND a.password=md5(?) AND a.status='RA'";
     $res = $ci->db->query($sql, $values)->result_array();
     $form_response = new stdClass();
     if (1 == count($res)) {
@@ -64,6 +73,7 @@ function authUserApplication($data)
         $_SESSION['nip'] = $res[0]['nip'];
         $_SESSION['user_credential'] = $res[0]['username'];
         $_SESSION['role_id'] = $res[0]['role_id'];
+        $_SESSION['role_name'] = $res[0]['role_name'];
         $_SESSION['idjabatan'] = $res[0]['idjabatan'];
         $_SESSION['expired_at'] = strtotime("+30 minutes");
         unset($res[0]["password"]);

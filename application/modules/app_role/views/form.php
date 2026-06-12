@@ -23,7 +23,24 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="role_name">Role Name</label>
-                            <input name="role_name" class="form-control" placeholder="Role Name">
+                            <select id="role_name" name="role_name" class="form-control">
+                                <option value="">Select Role Name</option>
+                                <option value="other">Lainnya (Input Manual)</option>
+                                <option value="MEDREP">MEDREP - MEDICAL REP</option>
+                                <option value="MRC">MRC - MEDICAL REP COORDINATOR</option>
+                                <option value="ASS">ASS - AREA SALES SUPERVISOR</option>
+                                <option value="ASM">ASM - AREA SALES MANAGER</option>
+                                <option value="SM">SM - SALES MANAGER</option>
+                                <option value="GME">GME - GENERAL MANAGER EB</option>
+                                <option value="ESO">ESO - ETHICAL SUPPORT OFFICER</option>
+                                <option value="PA">PA - PENATA ADM</option>
+                                <option value="PM">PM - PRODUCT MANAGER</option>
+                                <option value="PE">PE - PRODUCT EXECUTIVE</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="custom_role_group" style="display: none;">
+                            <label for="role_name_desc">Custom Role Name</label>
+                            <input id="role_name_desc" name="role_name_desc" class="form-control" placeholder="Enter Custom Role Name">
                         </div>
                         <div class="form-group">
                             <label for="target_dub">Target DUB</label>

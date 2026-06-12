@@ -85,81 +85,14 @@ class Ref_customer extends BaseController
             $account='All';
             $filename = 'All_Account';
         }
-		if ($account=='All'){
-			$strsubquery = "";
-		}else{
-			$strsubquery = " and a.classid='".$account."'";
-		}
 
-        if ($restrict_level=='4'){            
-            $strquery = " and a.subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$username."'
-                                                )";
-            $strquery = $strquery.$strsubquery;
-        }
-        else if ($restrict_level=='3'){
-            $strquery = " and a.areaid in (select distinct b.areaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$username."'
-                                                )";
-            
-            $strquery = $strquery.$strsubquery;
-        }
-        else if ($restrict_level=='2'){
-            $strquery = " and a.regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$username."'
-                                                ) ";
-            $strquery = $strquery.$strsubquery;
-        }
-        else {
-            $strquery = "".$strsubquery;
-        }
-        
-        $query = "
-            select
-                a.*,
-                b.nama_regional,
-                c.nama_area,
-                d.nama_area as nama_subarea,
-                e.nama_class as nama_account,
-                ifnull(f.tipe_sales,'') position,
-                ifnull(pro.list_professional, '') as list_professional
-            from m_customer a
-            left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
-            left join m_area_areasite c on a.areaid = c.areaid
-            left join m_area_subarea d on a.subareaid = d.subareaid
-            left join m_customer_class e on a.classid = e.classid
-            left join m_sales_salesman f on a.salesmanid = f.salesmanid
-            left join (
-                select 
-                    rpm.customerid, 
-                    group_concat(
-                        concat(
-                            rp.nama_professional,
-                            case 
-                                when (rs.name is not null and rs.name <> '') and (rp.type is not null and rp.type <> '') 
-                                    then concat(' (', rs.name, ' - ', rp.type, ')')
-                                when (rs.name is not null and rs.name <> '') 
-                                    then concat(' (', rs.name, ')')
-                                when (rp.type is not null and rp.type <> '') 
-                                    then concat(' (', rp.type, ')')
-                                else ''
-                            end
-                        ) separator '||'
-                    ) as list_professional
-                from ref_professional_mapping rpm
-                left join ref_professional rp on rp.id = rpm.id_professional
-                left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
-                group by rpm.customerid
-            ) AS pro ON a.customerid = pro.customerid
-            where a.customerid <> '' ".$strquery."
-            order by ifnull(a.modified_date, a.created_date) desc
-        ";
-
-        $execquery = $this->db->query($query);
-        $outlets = $execquery->result_array();
+        $data = array(
+            "account" => $account ,
+            "usersession" => $username,
+            "restrict_level" => $restrict_level,
+            "filename" => $filtername
+        );
+        $outlets = $this->customer->load($data, 'export');
 		
 		$filename = "Data_Outlet_".str_replace(' ', '_', $filtername)."_".date('Ymd_His').".xlsx";
 
