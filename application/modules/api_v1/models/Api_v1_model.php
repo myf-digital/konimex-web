@@ -1111,7 +1111,6 @@ class Api_v1_model extends CI_Model
 
 		$sqlDub = "
 			select
-				a.req_no,
 				a.salesmanid,
 				a.customerid,
 				a.user_id,
@@ -1120,7 +1119,7 @@ class Api_v1_model extends CI_Model
 				c.typeid,
 				d.nama_professional,
 				e.name as spesialisasi
-			from req_pjp_daily_detail a
+			from m_customer_ob a
 			left join m_sales_salesman b on b.salesmanid = a.salesmanid
 			left join m_customer c on c.customerid = a.customerid
 			left join ref_professional d on d.id = a.user_id

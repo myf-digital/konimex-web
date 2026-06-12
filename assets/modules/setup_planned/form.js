@@ -75,7 +75,7 @@
         if (totalPlanned === 0) {
           Swal.fire({
             title: "Validation",
-            html: "Planned wajib dipilih.",
+            html: "Periode wajib dipilih.",
             icon: "warning",
           });
           return false;
@@ -298,6 +298,16 @@
       },
       function (res) {
         let dub = res.result ? res.result.dub || [] : [];
+        if (!dub || (dub && dub.length == 0)) {
+          Swal.fire({
+            title: "Peringatan",
+            html: `<b>${selectedMedrep.nama_salesman} - ${selectedMedrep.tipe_sales}</b> belum memiliki DUB.`,
+            icon: "warning",
+          });
+          uiSelectSalesman.val(null).trigger("change");
+          common.loadingClose();
+          return;
+        }
 
         if (isUpdate) {
           $.post(
