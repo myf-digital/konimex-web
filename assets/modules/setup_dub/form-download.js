@@ -21,9 +21,18 @@
     });
 
     uiBtnDownload.click(function () {
+      let vSelected = uiSelectSalesman.val();
+      if (!vSelected || (vSelected && vSelected.length == 0)) {
+        Swal.fire({
+          title: "Perhatian",
+          text: "Harap pilih minimal 1 MEDREP",
+          icon: "warning",
+        });
+        return;
+      }
       common.direct(
         "setup_dub/savetoxlsx/" +
-          uiSelectSalesman.val() +
+          vSelected.join(",") +
           "/" +
           paramsession.username +
           "/" +
@@ -52,6 +61,7 @@
         uiSelectSalesman.select2({
           placeholder: "All MEDREP",
           allowClear: true,
+          multiple: true,
           data: $.map(res.result, function (o) {
             o.id = o.salesmanid; // replace name with the property used for the text
             o.text =

@@ -74,5 +74,4 @@
 </div>
 
 <!-- JS content -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="<?php echo base_url() . 'assets/modules/setup_dub/content.js' ?>"></script>

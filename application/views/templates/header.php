@@ -84,6 +84,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.js'); ?>"></script>
 
 <!-- Add fancyBox main JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="<?php echo base_url('assets/fancybox/jquery.mousewheel-3.0.6.pack.js'); ?>"></script>
 <script src="<?php echo base_url('assets/fancybox/jquery.fancybox.js?v=2.1.5'); ?>"></script>
 

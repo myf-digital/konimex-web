@@ -237,6 +237,10 @@ class Setup_dub_model extends CI_Model
                 ) ";
 		}
 
+        if (!empty($data['salesmanid'])) {
+            $strquery .= " and a.salesmanid IN (".$data['salesmanid'].") ";
+        }
+
 
         $field = " a.* ";
         $table = " ( 

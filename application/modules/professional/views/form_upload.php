@@ -83,7 +83,6 @@ for (i = 0; i < close.length; i++) {
         </div>
     </div>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function validasiFile() {
         var inputFile = document.getElementById('fileupload');
