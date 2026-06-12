@@ -62,7 +62,7 @@ class IDGenerator
             }
             flock($fp, LOCK_UN); // unlock
         } else {
-            echo "failed";
+            log_message('error', 'IDGenerator: flock failed to acquire lock for ' . $table);
         }
         fclose($fp);
 
