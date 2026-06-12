@@ -177,6 +177,7 @@
       usersession: paramsession.username,
       idjabatan: paramsession.idjabatan,
       restrict_level: paramsession.restrict_level,
+      salesmanid: param !== undefined ? param.salesmanid : "",
     });
 
     uiSelectSalesman.on("change", function () {
@@ -262,6 +263,8 @@
         idjabatan: data.idjabatan,
         usersession: data.usersession,
         restrict_level: data.restrict_level,
+        salesmanid: data.salesmanid || "",
+        skip_req_dub: 1,
       },
       function (res) {
         uiSelectSalesman.empty();
@@ -335,26 +338,36 @@
             },
           );
         } else {
+          let savedDetails = [];
           for (let i = 0; i < loadedOutlets.length; i++) {
+            let item = loadedOutlets[i];
             let opt = document.createElement("option");
-            opt.value = loadedOutlets[i].customerid;
+            opt.value = item.customerid;
 
             let html = "";
-            if (loadedOutlets[i].customerid)
-              html += loadedOutlets[i].customerid;
-            if (loadedOutlets[i].nama_customer)
-              html += ` - ${loadedOutlets[i].nama_customer}`;
-            if (loadedOutlets[i].typeid)
-              html += ` - ${loadedOutlets[i].typeid}`;
-            if (loadedOutlets[i].nama_class)
-              html += ` - ${loadedOutlets[i].nama_class}`;
+            if (item.customerid) html += item.customerid;
+            if (item.nama_customer) html += ` - ${item.nama_customer}`;
+            if (item.typeid) html += ` - ${item.typeid}`;
+            if (item.nama_class) html += ` - ${item.nama_class}`;
 
             opt.innerHTML = html;
-            opt.setAttribute("data-position", loadedOutlets[i].customerid);
-            select.appendChild(opt);
+            opt.setAttribute("data-position", item.customerid);
+
+            if (item.mapped_professionals) {
+              selectTo.appendChild(opt);
+              let profs = item.mapped_professionals.split("||");
+              profs.forEach(function (userId) {
+                savedDetails.push({
+                  customerid: item.customerid,
+                  user_id: userId
+                });
+              });
+            } else {
+              select.appendChild(opt);
+            }
           }
 
-          updateProfessionalCheckboxes([]);
+          updateProfessionalCheckboxes(savedDetails);
           common.loadingClose();
         }
       },

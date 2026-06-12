@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Setup DUB <small>Control panel</small>
+        Setup Planned <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Setup DUB</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Setup Planned</a></li>
         <li class="active">Content</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12">
             <div id="tbl-content" class="box-table box-success">
                 <div class="box-body">
-                    <table id="tbl-setup-dub" data-options="filterDelay:1500">
+                    <table id="tbl-setup-planned" data-options="filterDelay:1500">
                     </table>
                 </div>
             </div>
@@ -27,7 +27,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title font-weight-bold" id="modalDetailLabel" style="display:inline-block;">Detail Request Setup DUB</h4>
+				<h4 class="modal-title font-weight-bold" id="modalDetailLabel" style="display:inline-block;">Detail Request Setup Planned</h4>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="float:right;">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -52,13 +52,14 @@
 					</tr>
 				</table>
 				
-				<h5 class="font-weight-bold h5-title">Daftar Outlet & User Binaan (DUB)</h5>
+				<h5 class="font-weight-bold h5-title ">List Planned</h5>
 				<div class="table-detail" style="min-height: 550px;">
-					<table class="table table-striped table-hover" style="margin-bottom: 0;">
+					<table class="table" style="margin-bottom: 0;">
 						<thead>
 							<tr class="bg-f5">
 								<th class="th-detail">Outlet (Customer)</th>
 								<th class="th-detail">Daftar User Binaan (DUB)</th>
+								<th class="th-detail">Periode Visit</th>
 							</tr>
 						</thead>
 						<tbody id="detail-list-body">
@@ -74,4 +75,4 @@
 </div>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/setup_dub/content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/setup_planned/content.js' ?>"></script>

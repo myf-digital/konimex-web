@@ -449,6 +449,17 @@ class Api_v1 extends CI_Controller
         }
     }
 
+    function call_outlet_planned()
+    {
+        $data = param_input();
+        $result = $this->api_v1->get_outlet_planned($data);
+        if (200 == $result->code) {
+            return response($result->result);
+        } else {
+            return response($result->result, $result->code, $result->message);
+        }
+    }
+
     function call_pjp_detail()
     {
         $data = param_input();

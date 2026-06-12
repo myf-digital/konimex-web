@@ -1,14 +1,14 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Setup_dub_model extends CI_Model
+class Setup_planned_model extends CI_Model
 {
     public function create($data)
     {
-        if (empty($data['dub_detail'])) {
+        if (empty($data['planned_detail'])) {
             return [
                 'status' => false,
-                'message' => 'DUB wajib dipilih'
+                'message' => 'Planned wajib dipilih'
             ];
         }
 
@@ -21,20 +21,20 @@ class Setup_dub_model extends CI_Model
         $this->db->trans_begin();
        
         $payload = $this->generatePayload($data);
-        $execreturn = $this->db->insert('req_dub', $payload);
+        $execreturn = $this->db->insert('req_pjp_daily', $payload);
         if (!$execreturn){
             $this->db->trans_rollback();
             return [
                 'status' => false,
-                'message' => 'Gagal memnyimpan DUB'
+                'message' => 'Gagal memnyimpan Planned'
             ];
         }
         $req_no = $this->db->insert_id();
 
         $details = [];
         $unique_keys = [];
-        foreach ($data['dub_detail'] as $customer) {
-            $key = $data['salesmanid'] . '_' . $customer['user_id'] . '_' . $customer['customerid'];
+        foreach ($data['planned_detail'] as $customer) {
+            $key = $customer['periode'] . '_' . $customer['customerid'] . '_' . $customer['user_id'] . '_' . $data['salesmanid'];
             if (in_array($key, $unique_keys)) {
                 continue;
             }
@@ -48,18 +48,18 @@ class Setup_dub_model extends CI_Model
             ]), 'detail');
         }
         if (!empty($details) && count($details) > 0) {
-            $this->db->insert_batch('req_dub_detail', $details);
+            $this->db->insert_batch('req_pjp_daily_detail', $details);
             $execreturn = true;
         }
         
         if (!empty($data['rolename']) && strpos(strtolower($data['rolename']), 'admin') !== false) {
             $this->db->where('req_no', $req_no);
-            $execreturn = $this->db->update('req_dub', [
+            $execreturn = $this->db->update('req_pjp_daily', [
                 'status' => 3,
-                'reason' => 'Data DUB telah disetujui oleh ' . $data['usersession'],
+                'reason' => 'Data Planned telah disetujui oleh ' . $data['usersession'],
             ]);
             if ($execreturn) {
-                $this->sync_to_customer_ob($req_no, $data['created_by']);
+                $this->sync_to_rrk($req_no, $data['created_by']);
             }
 		}
 
@@ -67,13 +67,13 @@ class Setup_dub_model extends CI_Model
             $this->db->trans_rollback();
             return [
                 'status' => false,
-                'message' => 'Gagal memnyimpan DUB Detail'
+                'message' => 'Gagal memnyimpan Planned Detail'
             ];
         } else {
             $this->db->trans_commit();
             return [
                 'status' => true,
-                'message' => 'Berhasil menyimpan DUB',
+                'message' => 'Berhasil menyimpan Planned',
                 'data' => $req_no
             ];
         }
@@ -87,10 +87,10 @@ class Setup_dub_model extends CI_Model
                 'message' => 'req_no wajib diisi.'
             ];
         }
-        if (empty($data['dub_detail'])) {
+        if (empty($data['planned_detail'])) {
             return [
                 'status' => false,
-                'message' => 'DUB wajib dipilih'
+                'message' => 'Planned wajib dipilih'
             ];
         }
 
@@ -105,12 +105,12 @@ class Setup_dub_model extends CI_Model
         $req_no = $data['req_no'];
 
         $this->db->where('req_no', $req_no);
-        $this->db->delete('req_dub_detail');
+        $this->db->delete('req_pjp_daily_detail');
 
         $details = [];
         $unique_keys = [];
-        foreach ($data['dub_detail'] as $customer) {
-            $key = $data['salesmanid'] . '_' . $customer['user_id'] . '_' . $customer['customerid'];
+        foreach ($data['planned_detail'] as $customer) {
+            $key = $customer['periode'] . '_' . $customer['customerid'] . '_' . $customer['user_id'] . '_' . $data['salesmanid'];
             if (in_array($key, $unique_keys)) {
                 continue;
             }
@@ -125,26 +125,26 @@ class Setup_dub_model extends CI_Model
         }
         
         if (!empty($details) && count($details) > 0) {
-            $this->db->insert_batch('req_dub_detail', $details);
+            $this->db->insert_batch('req_pjp_daily_detail', $details);
         }
 
         if (!empty($data['rolename']) && strpos(strtolower($data['rolename']), 'admin') !== false) {
             $data['status'] = 3;
-            $data['reason'] = 'Data DUB telah disetujui oleh ' . $data['usersession'];
+            $data['reason'] = 'Data Planned telah disetujui oleh ' . $data['usersession'];
 		}
 
         $payload = $this->generatePayload($data);
         $this->db->where('req_no', $data['req_no']);
-        $execreturn = $this->db->update('req_dub', $payload);
+        $execreturn = $this->db->update('req_pjp_daily', $payload);
         if (!$execreturn){
             $this->db->trans_rollback();    
             return [
                 'status' => false,
-                'message' => 'Gagal memnyimpan DUB'
+                'message' => 'Gagal memnyimpan Planned'
             ];
         } else {
             if (isset($data['status']) && $data['status'] == 3) {
-                $this->sync_to_customer_ob($req_no, $data['modified_by']);
+                $this->sync_to_rrk($req_no, $data['modified_by']);
             }
         }
 
@@ -152,13 +152,13 @@ class Setup_dub_model extends CI_Model
             $this->db->trans_rollback();
             return [
                 'status' => false,
-                'message' => 'Gagal memnyimpan DUB Detail'
+                'message' => 'Gagal memnyimpan Planned Detail'
             ];
         } else {
             $this->db->trans_commit();
             return [
                 'status' => true,
-                'message' => 'Berhasil menyimpan DUB',
+                'message' => 'Berhasil menyimpan Planned',
                 'data' => $req_no
             ];
         }
@@ -175,22 +175,22 @@ class Setup_dub_model extends CI_Model
         $this->db->trans_begin();
         
         $this->db->where('req_no', $data['req_no']);
-        $this->db->delete('req_dub');
+        $this->db->delete('req_pjp_daily');
 
         $this->db->where('req_no', $data['req_no']);
-        $this->db->delete('req_dub_detail');
+        $this->db->delete('req_pjp_daily_detail');
         
         if (!$this->db->trans_status()){
             $this->db->trans_rollback();
             return [
                 'status' => false,
-                'message' => 'Gagal menghapus DUB Detail'
+                'message' => 'Gagal menghapus Planned Detail'
             ];
         } else {
             $this->db->trans_commit();
             return [
                 'status' => true,
-                'message' => 'Berhasil menghapus DUB'
+                'message' => 'Berhasil menghapus Planned'
             ];
         }
     }
@@ -247,7 +247,7 @@ class Setup_dub_model extends CI_Model
                     a.modified_by,
                     a.modified_date,
                     b.nama_salesman
-                from req_dub a
+                from req_pjp_daily a
                 left join m_sales_salesman b on a.salesmanid = b.salesmanid
                 where a.siteid = 'KNX01' $strquery
                 order by
@@ -291,20 +291,9 @@ class Setup_dub_model extends CI_Model
             'salesmanid',
             'user_id',
             'customerid',
-            'created_by',
-            'created_date'
+            'periode',
         ];
         $fields = $type == 'detail' ? $fieldDetail : $fieldHeader;
-
-        if ($type == 'customer_ob') {
-            $fields = [
-                'salesmanid',
-                'user_id',
-                'customerid',
-                'created_by',
-                'created_date'
-            ];
-        }
         $payload = payload($fields, $data);
         return $payload;
     }
@@ -327,11 +316,12 @@ class Setup_dub_model extends CI_Model
         $sql = "
             SELECT 
                 a.req_no,
-                a.customerid, 
+                a.customerid,
+                a.periode,
                 b.nama_customer as outlet, 
                 a.user_id, 
                 c.nama_professional as user_name
-            FROM req_dub_detail a
+            FROM req_pjp_daily_detail a
             LEFT JOIN m_customer b ON a.customerid = b.customerid
             LEFT JOIN ref_professional c ON a.user_id = c.id
             WHERE a.req_no IN (" . implode(',', $escaped_req_nos) . ")
@@ -361,7 +351,7 @@ class Setup_dub_model extends CI_Model
         $this->db->trans_begin();
 
         $this->db->where('req_no', $req_no);
-        $this->db->update('req_dub', [
+        $this->db->update('req_pjp_daily', [
             'status' => $status,
             'reason' => $reason,
             'modified_by' => $user,
@@ -369,7 +359,7 @@ class Setup_dub_model extends CI_Model
         ]);
 
         if ($status == 3) {
-            $this->sync_to_customer_ob($req_no, $user);
+            $this->sync_to_rrk($req_no, $user);
         }
 
         if ($this->db->trans_status() === FALSE) {
@@ -388,42 +378,73 @@ class Setup_dub_model extends CI_Model
         }
     }
 
-    public function sync_to_customer_ob($req_no, $user_create)
+    public function sync_to_rrk($req_no, $user_create)
     {
-        $req = $this->db->get_where('req_dub', ['req_no' => $req_no])->row_array();
+        $req = $this->db->get_where('req_pjp_daily', ['req_no' => $req_no])->row_array();
         if (!$req) {
             return;
         }
 
         $salesmanid = $req['salesmanid'];
-        
-        $sqldate = "select sysdate() datetime;";
-        $datetime = $this->db->query($sqldate)->row();
-        $now = $datetime->datetime;
+        $siteid = !empty($req['siteid']) ? $req['siteid'] : 'KNX01';
 
-        $this->db->where('salesmanid', $salesmanid);
-        $this->db->delete('m_customer_ob');
+        $sales = $this->db->get_where('m_sales_salesman', ['salesmanid' => $salesmanid])->row_array();
+        $nama_salesman = $sales ? $sales['nama_salesman'] : '';
 
-        $details = $this->db->get_where('req_dub_detail', ['req_no' => $req_no])->result_array();
-        $ob = [];
-        $unique_ob_keys = [];
+        $details = $this->db->get_where('req_pjp_daily_detail', ['req_no' => $req_no])->result_array();
+
+        $unique_rrk_keys = [];
+        $unique_rrk_user_keys = [];
+
         foreach ($details as $detail) {
-            $ob_key = $salesmanid . '_' . $detail['user_id'] . '_' . $detail['customerid'];
-            if (in_array($ob_key, $unique_ob_keys)) {
-                continue;
-            }
-            $unique_ob_keys[] = $ob_key;
+            $rrk_key = $detail['periode'] . '_' . $siteid . '_' . $detail['customerid'] . '_' . $salesmanid;
+            if (!in_array($rrk_key, $unique_rrk_keys)) {
+                $unique_rrk_keys[] = $rrk_key;
 
-            $ob[] = [
-                'salesmanid' => $salesmanid,
-                'customerid' => $detail['customerid'],
-                'user_id' => $detail['user_id'],
-                'created_by' => $user_create,
-                'created_date' => $now
-            ];
-        }
-        if (!empty($ob)) {
-            $this->db->insert_batch('m_customer_ob', $ob);
+                $res_rrk = $this->db->get_where('t_sales_rrk', [
+                    'periode' => $detail['periode'],
+                    'siteid' => $siteid,
+                    'customerid' => $detail['customerid'],
+                    'salesmanid' => $salesmanid,
+                ])->result_array();
+
+                if (count($res_rrk) < 1) {
+                    $this->db->insert('t_sales_rrk', [
+                        'periode' => $detail['periode'],
+                        'siteid' => $siteid,
+                        'customerid' => $detail['customerid'],
+                        'salesmanid' => $salesmanid,
+                        'nama_salesman' => $nama_salesman,
+                        'flag_proses' => '0',
+                        'user_create' => $user_create,
+                        'date_create' => date('Y-m-d H:i:s'),
+                    ]);
+                }
+            }
+
+            $rrk_user_key = $detail['periode'] . '_' . $siteid . '_' . $detail['customerid'] . '_' . $salesmanid . '_' . $detail['user_id'];
+            if (!in_array($rrk_user_key, $unique_rrk_user_keys)) {
+                $unique_rrk_user_keys[] = $rrk_user_key;
+
+                $res_rrk_user = $this->db->get_where('t_sales_rrk_user', [
+                    'periode' => $detail['periode'],
+                    'siteid' => $siteid,
+                    'customerid' => $detail['customerid'],
+                    'salesmanid' => $salesmanid,
+                    'user_id' => $detail['user_id'],
+                ])->result_array();
+
+                if (count($res_rrk_user) < 1) {
+                    $this->db->insert('t_sales_rrk_user', [
+                        'periode' => $detail['periode'],
+                        'siteid' => $siteid,
+                        'customerid' => $detail['customerid'],
+                        'salesmanid' => $salesmanid,
+                        'nama_salesman' => $nama_salesman,
+                        'user_id' => $detail['user_id'],
+                    ]);
+                }
+            }
         }
     }
 }

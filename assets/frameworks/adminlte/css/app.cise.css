@@ -92,15 +92,15 @@ div.form-group-login {
 
 .login-box, .register-box {
     width: 360px;
-    margin: 0% auto;!important;
+    margin: 0% auto !important;
 }
 
 .login-page, .register-page {
-    background: #5bb23a;!important;
+    background: #5bb23a !important;
 }
 
 .table-light tbody+tbody, .table-light td, .table-light th, .table-light thead th {
-    border-color: #343a40;!important;
+    border-color: #343a40 !important;
 }
 
 
@@ -116,4 +116,58 @@ background: linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1))
 }
 .swal2-popup {
 	font-size: 14px !important;
+}
+.bg-f5 {
+    background-color: #f5f5f5;
+}
+.bg-f9 {
+    background-color: #f9f9f9;
+}
+.h5-title {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+}
+.table-detail {
+    max-height: 350px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0;
+}
+.table-detail .th-detail {
+    position: sticky;
+    top: 0;
+    background-color: #f5f5f5;
+    z-index: 10;
+    padding: 10px;
+    border-bottom: 2px solid #ddd;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+.table-detail .td-detail {
+    padding: 10px;
+    vertical-align: top;
+    border: 1px solid #ddd;
+}
+.table-detail .w-50 {
+    width: 50%;
+}
+.table-detail .w-25 {
+    width: 25%;
+}
+.table-detail .td-footer {
+    vertical-align: middle;
+    font-weight: bold;
+    position: sticky;
+    bottom: 0;
+    background-color: #f9f9f9;
+    z-index: 10;
+    border-top: 2px solid #ddd !important;
+    border-bottom: 1px solid #ddd !important;
+    border-left: 1px solid #ddd !important;
+    border-right: 1px solid #ddd !important;
 }

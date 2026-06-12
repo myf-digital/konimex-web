@@ -3,9 +3,9 @@
   const common = new Common();
   const commonGrid = new CommonGrid();
   // update title
-  common.setTitle("Setup DUB");
+  common.setTitle("Setup Planned");
   // ui components
-  let uiTbl = $("#tbl-setup-dub");
+  let uiTbl = $("#tbl-setup-planned");
   let paramsession = common.getCookie("session");
 
   initializeGrid();
@@ -16,21 +16,21 @@
    */
   function initialize() {
     $("#btn-create").click(function () {
-      common.removeCookie("module.setup_dub.update");
-      common.direct("setup_dub/form");
+      common.removeCookie("module.setup_planned.update");
+      common.direct("setup_planned/form");
     });
 
     $("#btn-download").click(function () {
-      common.removeCookie("module.setup_dub.update");
-      common.direct("setup_dub/form_download");
+      common.removeCookie("module.setup_planned.update");
+      common.direct("setup_planned/form_download");
     });
   }
 
   function initializeGrid() {
     let option = {
-      title: "Setup DUB",
+      title: "Setup Planned",
       toolbar: toolbar(),
-      url: common.baseURL("setup_dub/load"),
+      url: common.baseURL("setup_planned/load"),
       queryParams: {
         usersession: paramsession.username,
         idjabatan: paramsession.idjabatan,
@@ -132,13 +132,13 @@
       "btn-create",
       "success",
       "fa fa-pencil",
-      " Create DUB",
+      " Create Planned",
     );
     const btnDownload = commonGrid.btnBuilderText(
       "btn-download",
       "primary",
       "fa fa-download",
-      " Download DUB",
+      " Download Planned",
     );
     return (
       '<div class="action-grid-toolbar">' + btnCreate + btnDownload + "</div>"
@@ -212,13 +212,13 @@
   }
 
   function updateRow(val) {
-    common.setCookie("module.setup_dub.update", val);
-    common.direct("setup_dub/form");
+    common.setCookie("module.setup_planned.update", val);
+    common.direct("setup_planned/form");
   }
 
   function deleteRow(val) {
     common.dialogDelete(function () {
-      $.post("setup_dub/delete", val, function (data, status) {
+      $.post("setup_planned/delete", val, function (data, status) {
         if (200 === data.code) {
           $.alert("Delete success!");
           uiTbl.datagrid("reload");
@@ -232,7 +232,7 @@
   function detailRow(val) {
     common.loading();
     $.post(
-      common.baseURL("setup_dub/get_detail"),
+      common.baseURL("setup_planned/get_detail"),
       { req_no: val.req_no },
       function (res) {
         common.loadingClose();
@@ -277,7 +277,7 @@
           let details = res.result || [];
           if (details.length === 0) {
             body.append(
-              '<tr><td colspan="2" style="text-align:center;color:#999;padding:12px;">Tidak ada detail professional/DUB.</td></tr>',
+              '<tr><td colspan="3" style="text-align:center;color:#999;padding:12px;">Tidak ada detail User Planned.</td></tr>',
             );
           } else {
             let grouped = {};
@@ -286,33 +286,57 @@
               if (!grouped[key]) {
                 grouped[key] = {
                   outletName: d.outlet || "Outlet tidak diketahui",
-                  users: [],
+                  records: [],
                 };
               }
-              grouped[key].users.push(
-                `<b>${d.user_id}</b> - ${d.user_name || "Professional tidak diketahui"}`,
-              );
+              grouped[key].records.push({
+                user_id: d.user_id,
+                user_name: d.user_name || "Professional tidak diketahui",
+                periode: d.periode
+                  ? moment(d.periode).locale("id").format("DD MMM YYYY")
+                  : "-",
+              });
             });
 
             Object.keys(grouped).forEach(function (key) {
               let group = grouped[key];
-              let outletCell = `<b>${key}</b> - ${group.outletName}`;
-              let usersCell =
-                `<ul style="margin: 0; padding-left: 20px;">` +
-                group.users.map((u) => `<li>${u}</li>`).join("") +
-                `</ul>`;
-              body.append(`
-                <tr>
-                  <td class="td-detail w-50 font-weight-bold">${outletCell}</td>
-                  <td class="td-detail w-50">${usersCell}</td>
-                </tr>
-              `);
+              let records = group.records;
+              let rowspan = records.length;
+
+              records.forEach(function (rec, index) {
+                let userCell = `<b>${rec.user_id}</b> - ${rec.user_name}`;
+                let dateCell = rec.periode;
+
+                if (index === 0) {
+                  let outletCell = `<b>${key}</b> - ${group.outletName}`;
+                  body.append(`
+                    <tr>
+                      <td rowspan="${rowspan}" class="td-detail w-50 font-weight-bold">${outletCell}</td>
+                      <td class="td-detail w-25">${userCell}</td>
+                      <td class="td-detail w-25">${dateCell}</td>
+                    </tr>
+                  `);
+                } else {
+                  body.append(`
+                    <tr>
+                      <td class="td-detail w-25">${userCell}</td>
+                      <td class="td-detail w-25">${dateCell}</td>
+                    </tr>
+                  `);
+                }
+              });
+            });
+
+            let distinctDates = new Set();
+            details.forEach((d) => {
+              if (d.periode) distinctDates.add(d.periode);
             });
 
             body.append(`
               <tr style="background-color: #f9f9f9; font-weight: bold; border-top: 2px solid #ddd;">
                 <td class="td-detail w-50 td-footer">Total Outlet: ${Object.keys(grouped).length}</td>
-                <td class="td-detail w-50 td-footer">Total DUB: ${details.length}</td>
+                <td class="td-detail w-25 td-footer">Total DUB: ${details.length}</td>
+                <td class="td-detail w-25 td-footer">Total Periode: ${distinctDates.size}</td>
               </tr>
             `);
           }
@@ -342,7 +366,7 @@
         } else {
           Swal.fire({
             title: "Gagal",
-            text: res.message || "Gagal memuat detail DUB",
+            text: res.message || "Gagal memuat detail Planned",
             icon: "error",
           });
         }
@@ -365,7 +389,7 @@
         : "Alasan penolakan (wajib)";
 
     Swal.fire({
-      title: statusText + " Request DUB",
+      title: statusText + " Request Planned",
       input: "textarea",
       inputLabel: "Masukkan keterangan/alasan:",
       inputPlaceholder: inputPlaceholder,
@@ -382,7 +406,7 @@
       if (result.isConfirmed) {
         common.loading();
         $.post(
-          common.baseURL("setup_dub/update_status"),
+          common.baseURL("setup_planned/update_status"),
           {
             req_no: reqNo,
             status: targetStatus,

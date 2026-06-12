@@ -21,23 +21,34 @@ class Api_v1_model extends CI_Model
 
 	function get_salesman($data)
     {
-		if ($data["restrict_level"]=='4'){ 
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-							app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-							where a.username='".$data["usersession"]."')
-						)";
-		} else if ($data["restrict_level"]=='3') {
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-							app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-							where a.username='".$data["usersession"]."')
-						)";
-		} else if ($data["restrict_level"]=='2') {
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-							app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-							where a.username='".$data["usersession"]."')
-						) ";
+		$strquery = "";
+		if (!empty($data['salesmanid'])) {
+			$strquery .= " and a.salesmanid = '".$data['salesmanid']."'";
 		} else {
-			$strquery = "";
+			if ($data["restrict_level"]=='4'){ 
+				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+								app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+								where a.username='".$data["usersession"]."')
+							)";
+			} else if ($data["restrict_level"]=='3') {
+				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+								app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+								where a.username='".$data["usersession"]."')
+							)";
+			} else if ($data["restrict_level"]=='2') {
+				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+								app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+								where a.username='".$data["usersession"]."')
+							) ";
+			}
+		}
+		
+		if (!empty($data['skip_req_dub'])) {
+			$exclude_where = "";
+			if (!empty($data['salesmanid'])) {
+				$exclude_where = " AND salesmanid <> '" . $this->db->escape_str($data['salesmanid']) . "'";
+			}
+			$strquery .= " and a.salesmanid not in (select distinct salesmanid from req_dub where 1=1 $exclude_where)";
 		}
 
 		$sql = "select
@@ -1003,7 +1014,9 @@ class Api_v1_model extends CI_Model
 	function get_outlet_dub($data)
     {
 		$where = '';
+		$salesmanid_val = '';
 		if (!empty($data['salesmanid'])) {
+			$salesmanid_val = $data['salesmanid'];
 			$salesman = $this->db->get_where('m_sales_salesman', ['salesmanid' => $data['salesmanid']])->row_array();
 			if ($salesman) {
 				if (!empty($salesman['regionalid'])) {
@@ -1027,7 +1040,8 @@ class Api_v1_model extends CI_Model
 				d.nama_regional,
 				c.nama_area,
 				e.nama_area as nama_subarea,
-                ifnull(pro.list_professional, '') as list_professional
+                ifnull(pro.list_professional, '') as list_professional,
+                ifnull(group_concat(distinct ob.user_id separator '||'), '') as mapped_professionals
 			from m_customer a 
 			left join m_customer_class b on a.classid = b.classid
 			left join m_area_regional d on a.regionalid = d.regionalid
@@ -1056,6 +1070,7 @@ class Api_v1_model extends CI_Model
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
+            left join m_customer_ob ob on a.customerid = ob.customerid and ob.salesmanid = '".$this->db->escape_str($salesmanid_val)."'
 			where a.customerid <> '' and pro.list_professional is not null $where
 			group by a.customerid
 		";
@@ -1067,6 +1082,64 @@ class Api_v1_model extends CI_Model
 			return result($response);
 		} else {
 			return result(new stdClass(), 200, "Data tidak ditemukan!");
+		}
+    }
+
+	function get_outlet_planned($data)
+    {
+		$sql = "
+			select
+				a.req_no,
+				a.salesmanid,
+				a.periode,
+				a.customerid,
+				a.user_id,
+				b.nama_salesman,
+				c.nama_customer,
+				c.typeid,
+				d.nama_professional,
+				e.name as spesialisasi
+			from req_pjp_daily_detail a
+			left join m_sales_salesman b on b.salesmanid = a.salesmanid
+			left join m_customer c on c.customerid = a.customerid
+			left join ref_professional d on d.id = a.user_id
+			left join ref_spesialisasi e on e.id = d.spesialisasi_id
+			where  d.nama_professional is not null and a.salesmanid = ?
+			order by a.periode asc
+		";
+		$res = $this->db->query($sql, [$data['salesmanid']]);
+
+		$sqlDub = "
+			select
+				a.req_no,
+				a.salesmanid,
+				a.customerid,
+				a.user_id,
+				b.nama_salesman,
+				c.nama_customer,
+				c.typeid,
+				d.nama_professional,
+				e.name as spesialisasi
+			from req_pjp_daily_detail a
+			left join m_sales_salesman b on b.salesmanid = a.salesmanid
+			left join m_customer c on c.customerid = a.customerid
+			left join ref_professional d on d.id = a.user_id
+			left join ref_spesialisasi e on e.id = d.spesialisasi_id
+			where d.nama_professional is not null and a.salesmanid = ?
+		";
+		$dub = $this->db->query($sqlDub, [$data['salesmanid']]);
+		$resDub = $dub->result_array();
+
+		if (count($resDub) > 0) {
+			return result([
+				'dub' => $resDub,
+				'planned' => $res->result_array(),
+			]);
+		} else {
+			return result([
+				'dub' => [],
+				'planned' => [],
+			], 200, 'Data tidak ditemukan!');
 		}
     }
 
