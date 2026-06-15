@@ -253,8 +253,8 @@ class Setup_planned_model extends CI_Model
                 order by
                 case a.status
                     when 1 then 1
-                    when 3 then 2
-                    when 5 then 3
+                    when 5 then 2
+                    when 3 then 3
                     else 4
                 end, a.req_no desc
             ) a";
