@@ -20,6 +20,7 @@
 
                 <form id="fm-add-setup-planned" role="form" method="post">
                     <div class="box-body">
+                        <input type="hidden" id="salesman_name" name="salesman_name">
 						<div class="form-group col-xs-12 col-sm-12 col-md-4">
 							<label for="salesmanid">MEDREP</label>
 							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP"></select>

@@ -178,12 +178,15 @@
 
     uiSelectSalesman.on("change", function () {
       selectedMedrep = uiSelectSalesman.select2("data")[0];
+      let nama_salesman = "";
       if (selectedMedrep) {
         updateMainPlannedSummary();
         loadOutlet(selectedMedrep);
+        nama_salesman = selectedMedrep?.nama_salesman || "";
       } else {
         $("#daterange-container, #planned-dates-container").hide();
       }
+      $("#salesman_name").val(nama_salesman);
     });
 
     uiBtnCancel.click(function () {

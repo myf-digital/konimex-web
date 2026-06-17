@@ -278,6 +278,7 @@ class Setup_planned_model extends CI_Model
             'siteid',
             'periode',
             'salesmanid',
+            'salesman_name',
             'keterangan',
             'status',
             'reason',
