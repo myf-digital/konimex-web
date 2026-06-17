@@ -65,6 +65,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/moment/moment.js'); ?>"></script>
+<script>
+    moment.updateLocale("id", {
+        months: "Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember".split("_"),
+        monthsShort: "Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des".split("_"),
+        weekdays: "Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu".split("_"),
+        weekdaysShort: "Min_Sen_Sel_Rab_Kam_Jum_Sab".split("_"),
+        weekdaysMin: "Mg_Sn_Sl_Rb_Km_Jm_Sb".split("_")
+    });
+</script>
 <script src="<?php echo base_url('assets/plugins/validation/jquery.form.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/validation/jquery.validate.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/validation/additional-methods.min.js'); ?>"></script>

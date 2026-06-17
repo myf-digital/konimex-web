@@ -78,6 +78,28 @@
       }
     });
 
+    $("#periode").datepicker({
+      format: "yyyy-mm",
+      viewMode: "months",
+      minViewMode: "months",
+      autoclose: true,
+      startDate: moment().format("YYYY-MM"),
+    });
+
+    $("#target_hk, #target_dub").on("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
+
+    $("#target_call_dub, #target_call_visit").on("input", function () {
+      let val = this.value;
+      val = val.replace(/[^0-9.]/g, "");
+      let parts = val.split(".");
+      if (parts.length > 2) {
+        val = parts[0] + "." + parts.slice(1).join("");
+      }
+      this.value = val;
+    });
+
     if (param !== undefined && param.role_name) {
       let roleNameVal = param.role_name;
       let exists =
@@ -88,6 +110,29 @@
         uiSelectRole.val("other").trigger("change");
         $("#role_name_desc").val(roleNameVal);
       }
+
+      common.loading();
+      $.post(
+        common.baseURL("app_role/detail"),
+        { role_id: param.role_id },
+        function (res) {
+          common.loadingClose();
+          if (res.status && res.result) {
+            let detail = res.result;
+            if (detail.tahun && detail.bulan) {
+              let formattedPeriode =
+                detail.tahun + "-" + String(detail.bulan).padStart(2, "0");
+              $("#periode").datepicker("setDate", formattedPeriode);
+            }
+            $("#target_hk").val(detail.target_hk || "");
+            $("#target_dub").val(detail.target_dub || "");
+            $("#target_call_dub").val(detail.target_call_dub || "");
+            $("#target_call_visit").val(detail.target_call_visit || "");
+          }
+        },
+      ).fail(function () {
+        common.loadingClose();
+      });
     }
 
     uiBtnCancel.click(function () {

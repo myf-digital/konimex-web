@@ -59,17 +59,6 @@
             width: 200,
           },
           {
-            field: "target_dub",
-            title: "TARGET DUB",
-            halign: "center",
-            align: "center",
-            sortable: "true",
-            width: 200,
-            formatter: function (value, row, index) {
-              return value + " User";
-            },
-          },
-          {
             field: "-",
             title: "LAST MODIFIED",
             halign: "center",
@@ -106,9 +95,13 @@
     for (const btns of btnContent) {
       const param = data.rows[index];
       const btnEdit = $(btns).find("a.btn-success");
+      const btnDetail = $(btns).find("a.btn-info");
       const btnDelete = $(btns).find("a.btn-danger");
       btnEdit.click(function () {
         updateRow(param);
+      });
+      btnDetail.click(function () {
+        detailRow(param);
       });
       btnDelete.click(function () {
         deleteRow(param);
@@ -126,27 +119,40 @@
       "success",
       "../assets/images/ic_edit.png",
     );
+    const btnDetail = commonGrid.btnBuilderDash(
+      "btn-detail",
+      "info",
+      "../assets/images/ic_detail.png",
+    );
     const btnDelete = commonGrid.btnBuilderDash(
       "btn-delete",
       "danger",
       "../assets/images/ic_trash.png",
     );
-    return '<div class="action-grid">' + btnUpdate + " " + btnDelete + "</div>";
+    return (
+      '<div class="action-grid">' +
+      btnUpdate +
+      " " +
+      btnDetail +
+      " " +
+      btnDelete +
+      "</div>"
+    );
   }
 
   function formaterLastModified(val, row, index) {
     if (row.modified_date) {
       return (
-        "at " +
-        moment(row.modified_date).locale("id").format("DD MMM YYYY") +
-        " <br/> by " +
+        "at: " +
+        moment(row.modified_date).locale("id").format("DD MMMM YYYY") +
+        " <br/> by: " +
         (row.modified_by || "-")
       );
     } else if (row.created_date) {
       return (
-        "at " +
-        moment(row.created_date).locale("id").format("DD MMM YYYY") +
-        " <br/> by " +
+        "at: " +
+        moment(row.created_date).locale("id").format("DD MMMM YYYY") +
+        " <br/> by: " +
         (row.created_by || "-")
       );
     }
@@ -167,6 +173,104 @@
         } else {
           $.alert(status);
         }
+      });
+    });
+  }
+
+  function detailRow(val) {
+    common.loading();
+    $.post(
+      common.baseURL("app_role/detail"),
+      { role_id: val.role_id },
+      function (res) {
+        common.loadingClose();
+        if (res.status) {
+          $("#detail-role-name").text(val.role_name || "-");
+          $("#detail-description").text(val.description || "-");
+
+          let body = $("#detail-list-body");
+          body.empty();
+
+          let detail = res.result || null;
+          if (!detail || (detail && !detail.target_dub)) {
+            body.append(
+              `<tr>
+                <td colspan="5" style="text-align:center;color:#999;padding:12px;">
+                  Belum ada mapping target.
+                </td>
+              </tr>`,
+            );
+          } else {
+            body.append(`
+              <tr>
+                <td class="td-detail">${
+                  detail.tahun && detail.bulan
+                    ? moment(`${detail.tahun}-${detail.bulan}-01`, "YYYY-M-DD")
+                        .locale("id")
+                        .format("MMMM YYYY")
+                    : "-"
+                }</td>
+                <td class="td-detail">${detail.target_hk}</td>
+                <td class="td-detail">${detail.target_dub}</td>
+                <td class="td-detail">${detail.target_call_dub}</td>
+                <td class="td-detail">${detail.target_call_visit}</td>
+              </tr>
+            `);
+          }
+
+          let bodyHistory = $("#history-list-body");
+          bodyHistory.empty();
+
+          let history = res.result && res.result.history;
+          if (!history || (history && history.length == 0)) {
+            bodyHistory.append(
+              `<tr>
+                <td colspan="5" style="text-align:center;color:#999;padding:12px;">
+                  Belum ada history mapping target.
+                </td>
+              </tr>`,
+            );
+          } else {
+            history.forEach((h) => {
+              bodyHistory.append(`
+                <tr>
+                  <td class="td-detail">${
+                    h.tahun && h.bulan
+                      ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD")
+                          .locale("id")
+                          .format("MMMM YYYY")
+                      : "-"
+                  }</td>
+                  <td class="td-detail">${h.target_hk}</td>
+                  <td class="td-detail">${h.target_dub}</td>
+                  <td class="td-detail">${h.target_call_dub}</td>
+                  <td class="td-detail">${h.target_call_visit}</td>
+                </tr>
+              `);
+            });
+          }
+
+          let footer = $("#modalDetail .modal-footer");
+          footer.empty();
+          footer.append(
+            '<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>',
+          );
+
+          $("#modalDetail").modal("show");
+        } else {
+          Swal.fire({
+            title: "Warning",
+            text: res.message || "Gagal memuat detail",
+            icon: "warning",
+          });
+        }
+      },
+    ).fail(function (xhr, status, error) {
+      common.loadingClose();
+      Swal.fire({
+        title: "Error",
+        text: "Terjadi kesalahan sistem: " + error,
+        icon: "error",
       });
     });
   }

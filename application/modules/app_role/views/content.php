@@ -23,5 +23,69 @@
     </div>
 </section>
 
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title font-weight-bold" id="modalDetailLabel" style="display:inline-block;">Detail Role</h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="float:right;">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered table-striped" style="margin-bottom: 20px;">
+					<tr>
+						<th width="20%">Role Name</th>
+						<td width="30%" id="detail-role-name">-</td>
+						<th width="20%">Description</th>
+						<td width="30%" id="detail-description">-</td>
+					</tr>
+				</table>
+				
+				<div style="margin-bottom: 20px;">
+                    <h5 class="font-weight-bold h5-title">Mapping Target (Aktif)</h5>
+                    <div class="table-detail">
+                        <table class="table table-striped table-hover" style="margin-bottom: 0;">
+                            <thead>
+                                <tr class="bg-f5">
+                                    <th class="th-detail">Periode</th>
+                                    <th class="th-detail">Target HK (Hari Kerja)</th>
+                                    <th class="th-detail">Target DUB</th>
+                                    <th class="th-detail">Target Call DUB</th>
+                                    <th class="th-detail">Target Call Visit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-list-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+				
+				<div>
+                    <h5 class="font-weight-bold h5-title">Mapping Target (Histori)</h5>
+                    <div class="table-history">
+                        <table class="table table-striped table-hover" style="margin-bottom: 0;">
+                            <thead>
+                                <tr class="bg-f5">
+                                    <th class="th-detail">Periode</th>
+                                    <th class="th-detail">Target HK (Hari Kerja)</th>
+                                    <th class="th-detail">Target DUB</th>
+                                    <th class="th-detail">Target Call DUB</th>
+                                    <th class="th-detail">Target Call Visit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-list-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <!-- JS content -->
 <script src="<?php echo base_url() . 'assets/modules/app_role/role-content.js' ?>"></script>

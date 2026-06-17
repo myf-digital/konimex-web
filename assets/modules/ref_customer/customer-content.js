@@ -85,8 +85,8 @@
             width: 100,
           },
           {
-            field: "cust_id_map",
-            title: "ID Outlet Distributor",
+            field: "kode_outlet",
+            title: "Kode Outlet",
             halign: "center",
             align: "left",
             sortable: "true",
@@ -131,14 +131,6 @@
             align: "left",
             sortable: "true",
             width: 100,
-          },
-          {
-            field: "nama_account",
-            title: "Sub Channel",
-            halign: "center",
-            align: "left",
-            sortable: "true",
-            width: 120,
           },
           {
             field: "alamat",

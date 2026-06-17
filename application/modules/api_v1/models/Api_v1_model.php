@@ -57,11 +57,13 @@ class Api_v1_model extends CI_Model
 					area.nama_area,
 					area.latitude,
 					area.longitude,
-					role.target_dub
+					ifnull(rmt.target_dub,0) as target_dub
 				from m_sales_salesman a
 				left join m_area_regional regional on regional.regionalid = a.regionalid
 				left join m_area_areasite area on area.areaid = a.areaid
 				left join app_role role on role.role_name = a.tipe_sales
+				left join role_mapping_target rmt on rmt.role_id = role.role_id
+					and rmt.tahun = YEAR(CURRENT_DATE) and rmt.bulan = MONTH(CURRENT_DATE)
 				where a.tipe_sales <> 'ADMIN' and a.aktif = 1
 				".$strquery."
 				order by a.nama_salesman asc
@@ -86,7 +88,7 @@ class Api_v1_model extends CI_Model
 		$sql = "select a.*, b.name as spesialisasi
 				from ref_professional a
 				left join ref_spesialisasi b on b.id = a.spesialisasi_id
-				where a.siteid = 'KNX01' $where
+				where a.siteid = 'KNX01' and a.status = 3 $where
 				order by a.id desc
 				limit 25
 			";

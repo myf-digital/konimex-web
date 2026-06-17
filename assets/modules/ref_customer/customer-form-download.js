@@ -12,7 +12,7 @@
   initialize();
 
   function initialize() {
-    loadAccount();
+    loadChannel();
     uiSelectClass.on("select2:select", function (e) {
       valselected = e.params.data;
     });
@@ -40,16 +40,16 @@
     });
   }
 
-  function loadAccount() {
+  function loadChannel() {
     common.loading();
-    $.post(common.baseURL("ref_customer_class/load"), function (res) {
+    $.post(common.baseURL("ref_customer_type/load"), function (res) {
       uiSelectClass.empty();
       uiSelectClass.select2({
-        placeholder: "All Account",
+        placeholder: "All Channel",
         allowClear: true,
         data: $.map(res.rows, function (o) {
-          o.id = o.classid; // replace name with the property used for the text
-          o.text = o.nama_class;
+          o.id = o.typeid; // replace name with the property used for the text
+          o.text = o.nama_type;
           return o;
         }),
       });

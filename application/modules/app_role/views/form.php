@@ -43,8 +43,39 @@
                             <input id="role_name_desc" name="role_name_desc" class="form-control" placeholder="Enter Custom Role Name">
                         </div>
                         <div class="form-group">
-                            <label for="target_dub">Target DUB</label>
-                            <input type="number" min="1" name="target_dub" class="form-control" placeholder="Target DUB">
+                            <h5 class="font-weight-bold h5-title">Mapping Target</h5>
+                            <div class="table-detail">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr class="bg-f5">
+                                            <th class="th-detail">Periode</th>
+                                            <th class="th-detail">Target HK (Hari Kerja)</th>
+                                            <th class="th-detail">Target DUB</th>
+                                            <th class="th-detail">Target Call DUB</th>
+                                            <th class="th-detail">Target Call Visit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="form_body">
+                                        <tr>
+                                            <td>
+                                                <input type="text" class="form-control" name="periode" id="periode" placeholder="Periode">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="target_hk" id="target_hk" placeholder="Target HK">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="target_dub" id="target_dub" placeholder="Target DUB">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="target_call_dub" id="target_call_dub" placeholder="Target Call DUB">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="target_call_visit" id="target_call_visit" placeholder="Target Call Visit">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 

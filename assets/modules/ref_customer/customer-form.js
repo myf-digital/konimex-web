@@ -5,7 +5,6 @@
   let uiForm = $("#fm-customer");
   let uiBtnCancel = $("#btn-cancel-form");
   let uiSelectType = $("#typeid-id");
-  let uiSelectClass = $("#classid-id");
   let uiSelectRegional = $("#regionalid-id");
   let uiSelectArea = $("#areaid-id");
   let uiSelectSubarea = $("#subareaid-id");
@@ -67,9 +66,6 @@
         typeid: {
           required: true,
         },
-        classid: {
-          required: true,
-        },
       },
       message: {
         nama_customer: {
@@ -80,9 +76,6 @@
         },
         typeid: {
           required: "Channel wajib dipilih.",
-        },
-        classid: {
-          required: "Sub Channel wajib dipilih.",
         },
       },
     });
@@ -118,13 +111,6 @@
         restrict_level: paramsession.restrict_level,
       };
       loadSubArea(srval);
-    });
-
-    uiSelectType.on("select2:select", function (e) {
-      srval = {
-        typeid: e.params.data.typeid,
-      };
-      loadClass(srval);
     });
 
     uiSelectRegional.select2({
@@ -176,9 +162,6 @@
         areaid: param.areaid,
         usersession: paramsession.username,
         restrict_level: paramsession.restrict_level,
-      });
-      loadClass({
-        typeid: param.typeid,
       });
     }
 
@@ -291,35 +274,6 @@
     } else {
       uiSelectType.val(null).trigger("change");
     }
-  }
-
-  function loadClass(data) {
-    common.loading();
-    $.post(
-      common.baseURL("ref_customer_class/load_class"),
-      {
-        typeid: data.typeid,
-      },
-      function (res) {
-        uiSelectClass.empty();
-        uiSelectClass.select2({
-          placeholder: "Select Sub Channel",
-          allowClear: true,
-          data: $.map(res, function (o) {
-            o.id = o.classid; // replace name with the property used for the text
-            o.text = o.nama_class;
-            return o;
-          }),
-        });
-
-        if (isUpdate) {
-          uiSelectClass.val(param.classid).trigger("change");
-        } else {
-          uiSelectClass.val(null).trigger("change");
-        }
-        common.loadingClose();
-      },
-    );
   }
 
   function loadRegional(data) {

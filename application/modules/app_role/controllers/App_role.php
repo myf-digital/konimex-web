@@ -23,13 +23,21 @@ class App_role extends BaseController
     public function create()
     {
         $data = param_input();
-        response($this->role->create($data));
+        $result = $this->role->create($data);
+        if ($result['code'] == 200) {
+            return response($result['data']);
+        }
+        return response(null, $result['code'], $result['message']);
     }
 
     public function update()
     {
         $data = param_input();
-        response($this->role->update($data));
+        $result = $this->role->update($data);
+        if ($result['code'] == 200) {
+            return response($result['data']);
+        }
+        return response(null, $result['code'], $result['message']);
     }
 
     public function delete()
@@ -42,5 +50,11 @@ class App_role extends BaseController
     {
         $data = param_input();
         responseJSON($this->role->load($data));
+    }
+
+    public function detail()
+    {
+        $data = param_input();
+        responseJSON($this->role->detail($data));
     }
 }

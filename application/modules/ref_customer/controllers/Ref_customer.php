@@ -61,17 +61,6 @@ class Ref_customer extends BaseController
         responseJSON($this->customer->load($data));
     }
 
-    public function savetoxls()
-    {
-        $account = $this->uri->segment('3');
-        $username = $this->uri->segment('4');
-        $jabatan = $this->uri->segment('5');
-        $restrict_level = $this->uri->segment('6');
-        $filtername = $this->uri->segment('7');
-        $data = array("account" => $account , "username" => $username, "jabatan" => $jabatan, "restrict_level" => $restrict_level, "filename" => $filtername);
-        $this->customer->savetoxls($data);
-    }
-
     function savetoxlsx() {
         $account = $this->uri->segment('3');
         $username = $this->uri->segment('4');
@@ -105,14 +94,13 @@ class Ref_customer extends BaseController
             'Area',
             'Sub Area',
             'Channel',
-            'Sub Channel',
             'Alamat',
             'User',
         ];
 
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Data Outlet');
-        $sheet->setCellValue('A1', 'DATA OUTLET '.strtoupper(str_replace(' ', '_', $filtername)))->mergeCells('A1:J1');
+        $sheet->setCellValue('A1', 'DATA OUTLET '.strtoupper(str_replace(' ', '_', $filtername)))->mergeCells('A1:I1');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -148,7 +136,6 @@ class Ref_customer extends BaseController
                 $outlet['nama_area'],
                 $outlet['nama_subarea'],
                 $outlet['typeid'],
-                $outlet['nama_account'],
                 $outlet['alamat'],
                 $listUser
             ];
@@ -163,7 +150,7 @@ class Ref_customer extends BaseController
 		$highestColumn = $sheet->getHighestColumn();
 		$fullRange = 'A1:' . $highestColumn . $highestRow;
 		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
-		$sheet->getStyle('I3:J' . $highestRow)->getAlignment()->setWrapText(true);
+		$sheet->getStyle('H3:I' . $highestRow)->getAlignment()->setWrapText(true);
         $sheet->freezePane('A3');
 
         foreach (range('A', $highestColumn) as $col) {

@@ -25,22 +25,18 @@
 						<input name="customerid" type=hidden>
 						<div class="row" style="display: flex; flex-wrap: wrap;">
 							<div class="form-group col-md-4">
-								<label for="cust_id_map">ID Outlet Distributor</label>
-								<input name="cust_id_map" class="form-control" placeholder="ID Outlet Distributor">
+								<label for="kode_outlet">Kode Outlet</label>
+								<input name="kode_outlet" class="form-control" placeholder="Kode Outlet">
 							</div>
 							<div class="form-group col-md-4">
-								<label for="typeid">Channel <small class="text-danger">*</small></label>
-								<select id="typeid-id" name="typeid" class="form-control" placeholder="Channel"></select>
-							</div>
-							<div class="form-group col-md-4">
-								<label for="classid">Sub Channel <small class="text-danger">*</small></label>
-								<select id="classid-id" name="classid" class="form-control" placeholder="Sub Channel"></select>
+								<label for="nama_customer">Nama Outlet <small class="text-danger">*</small></label>
+								<input name="nama_customer" class="form-control" placeholder="Nama Outlet">
 							</div>
 						</div>
 						<div class="row" style="display: flex; flex-wrap: wrap;">
 							<div class="form-group col-md-4">
-								<label for="nama_customer">Nama Outlet <small class="text-danger">*</small></label>
-								<input name="nama_customer" class="form-control" placeholder="Nama Outlet">
+								<label for="typeid">Channel <small class="text-danger">*</small></label>
+								<select id="typeid-id" name="typeid" class="form-control" placeholder="Channel"></select>
 							</div>
 							<div class="form-group col-md-4">
 								<label for="telp">Telpon</label>
