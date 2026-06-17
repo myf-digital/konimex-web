@@ -33,6 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/jquery-filer-master/css/jquery.filer-dragdropbox-theme.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.css'); ?>"/>
+<link rel="stylesheet" href="<?php echo base_url('assets/plugins/daterangepicker/daterangepicker.css'); ?>"/>
 <!-- key from yudi -->
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxXaXhYT8PzX2BEDwnqy0aeWXOZ5yYzLo&libraries=places,marker"></script>
 
@@ -65,6 +66,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/moment/moment.js'); ?>"></script>
+<script src="<?php echo base_url('assets/plugins/daterangepicker/daterangepicker.min.js'); ?>"></script>
 <script>
     moment.updateLocale("id", {
         months: "Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember".split("_"),

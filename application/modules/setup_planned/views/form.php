@@ -37,10 +37,23 @@
 							<label for="keterangan">Keterangan</label>
 							<textarea id="keterangan" name="keterangan" class="form-control" placeholder="Keterangan" rows="1"></textarea>
 						</div>
-						<div id="professional-container" class="form-group col-md-12" style="display: none; margin-top: 20px;">
-							<label id="list-professional">List Planned</label>
-							<div class="table-detail" style="min-height: 600px;">
-								<div id="professional-list"></div>
+
+						<div class="form-group col-xs-12 col-sm-12 col-md-4" id="daterange-container" style="display: none; margin-top: 20px;">
+							<label>Tanggal Kunjungan</label>
+							<div class="input-group">
+								<div class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</div>
+								<input id="planned-daterange" placeholder="Pilih Rentang Tanggal" type="text" class="form-control" readonly style="background-color: #fff; cursor: pointer;">
+							</div>
+						</div>
+
+						<div class="form-group col-xs-12 col-sm-12 col-md-12" id="planned-dates-container" style="display: none; margin-top: 20px;">
+							<label>
+								List Tanggal Kunjungan Planned
+								<span id="main-total-planned-badge" class="label label-success" style="margin-left: 5px;">0 terpilih</span>
+							</label>
+							<div id="date-buttons-container" style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #fdfdfd; margin-top: 10px;">
 							</div>
 						</div>
                     </div>
@@ -54,5 +67,33 @@
         </div>
     </div>
 </section>
+
+<!-- Modal Accordion DUB -->
+<div class="modal fade" id="modalPlannedAccordion" role="dialog" aria-labelledby="modalPlannedAccordionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalPlannedAccordionLabel">Pilih User Binaan untuk Tanggal: <span id="modal-planned-date-display" style="font-weight: bold; color: #3c8dbc;"></span></h4>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <input type="text" id="modal-search-outlet" class="form-control" placeholder="Cari Outlet atau User..." style="margin-bottom: 15px;">
+                <div id="modal-outlet-accordion-container">
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>Total Terpilih pada Tanggal ini: </strong>
+                    <span id="modal-date-total-badge" class="label label-success" style="font-size: 13px;">0 terpilih</span>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Simpan & Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="<?php echo base_url() . 'assets/modules/setup_planned/form.js' ?>"></script>

@@ -52,20 +52,13 @@
 					</tr>
 				</table>
 				
-				<h5 class="font-weight-bold h5-title ">List Planned</h5>
-				<div class="table-detail" style="min-height: 550px;">
-					<table class="table" style="margin-bottom: 0;">
-						<thead>
-							<tr class="bg-f5">
-								<th class="th-detail">Outlet (Customer)</th>
-								<th class="th-detail">Daftar User Binaan (DUB)</th>
-								<th class="th-detail">Periode Visit</th>
-							</tr>
-						</thead>
-						<tbody id="detail-list-body">
-						</tbody>
-					</table>
+				<h5 class="font-weight-bold h5-title">List Planned</h5>
+				<div id="detail-summary-bar">
+					<div>Total Periode: <span id="detail-total-periode" class="label label-warning fs-12">0</span></div>
+					<div>Total Outlet: <span id="detail-total-outlet" class="label label-primary fs-12">0</span></div>
+					<div>Total User: <span id="detail-total-user" class="label label-info fs-12">0</span></div>
 				</div>
+				<div id="detail-accordion-container"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>

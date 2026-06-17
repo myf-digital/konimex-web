@@ -33,14 +33,14 @@ class Setup_planned_model extends CI_Model
 
         $details = [];
         $unique_keys = [];
-        foreach ($data['planned_detail'] as $customer) {
-            $key = $customer['periode'] . '_' . $customer['customerid'] . '_' . $customer['user_id'] . '_' . $data['salesmanid'];
+        foreach ($data['planned_detail'] as $planned) {
+            $key = $planned['periode'] . '_' . $planned['customerid'] . '_' . $planned['user_id'] . '_' . $data['salesmanid'];
             if (in_array($key, $unique_keys)) {
                 continue;
             }
             $unique_keys[] = $key;
 
-            $details[] = $this->generatePayload(array_merge($customer, [
+            $details[] = $this->generatePayload(array_merge($planned, [
                 'req_no' => $req_no,
                 'salesmanid' => $data['salesmanid'],
                 'created_by' => $data['created_by'],
@@ -109,14 +109,14 @@ class Setup_planned_model extends CI_Model
 
         $details = [];
         $unique_keys = [];
-        foreach ($data['planned_detail'] as $customer) {
-            $key = $customer['periode'] . '_' . $customer['customerid'] . '_' . $customer['user_id'] . '_' . $data['salesmanid'];
+        foreach ($data['planned_detail'] as $planned) {
+            $key = $planned['periode'] . '_' . $planned['customerid'] . '_' . $planned['user_id'] . '_' . $data['salesmanid'];
             if (in_array($key, $unique_keys)) {
                 continue;
             }
             $unique_keys[] = $key;
 
-            $details[] = $this->generatePayload(array_merge($customer, [
+            $details[] = $this->generatePayload(array_merge($planned, [
                 'req_no' => $req_no,
                 'salesmanid' => $data['salesmanid'],
                 'created_by' => $data['modified_by'],

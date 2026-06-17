@@ -5,8 +5,6 @@
   let uiForm = $("#fm-add-setup-planned");
   let uiBtnCancel = $("#btn-cancel-form");
   let uiSelectSalesman = $("#salesmanid-id");
-  let uiSearchOutlet = $("#customerid");
-  let maxLimit = 0;
 
   let param = common.getCookie("module.setup_planned.update");
   let paramsession = common.getCookie("session");
@@ -14,6 +12,8 @@
   let isUpdate = param !== undefined;
   let selectedMedrep = null;
   let loadedOutlets = [];
+  let selectedPlanned = {};
+  let activeModalDate = null;
 
   initialize();
 
@@ -65,26 +65,12 @@
           return false;
         }
 
-        let totalPlanned = 0;
-        $(".visit-datepicker").each(function () {
-          if ($(this).val()) {
-            totalPlanned++;
-          }
-        });
+        let totalPlanned = getTotalPlannedCount();
 
-        if (totalPlanned === 0) {
+        if (totalPlanned == 0) {
           Swal.fire({
             title: "Validation",
-            html: "Periode wajib dipilih.",
-            icon: "warning",
-          });
-          return false;
-        }
-
-        if (totalPlanned !== maxLimit && maxLimit > 0) {
-          Swal.fire({
-            title: "Validation",
-            html: `Jumlah Planned wajib tepat ${maxLimit}. Saat ini Anda mengisi ${totalPlanned}.`,
+            html: "Detail planned wajib diisi.",
             icon: "warning",
           });
           return false;
@@ -99,13 +85,13 @@
         formData.push({ name: "rolename", value: paramsession.role_name });
 
         let uniqueCustomerIds = [];
-        $(".visit-datepicker").each(function () {
-          if ($(this).val()) {
-            let customerId = $(this).data("customerid");
-            if (!uniqueCustomerIds.includes(customerId)) {
-              uniqueCustomerIds.push(customerId);
+        Object.keys(selectedPlanned).forEach(function (dateValue) {
+          let items = selectedPlanned[dateValue] || [];
+          items.forEach(function (item) {
+            if (!uniqueCustomerIds.includes(item.customerid)) {
+              uniqueCustomerIds.push(item.customerid);
             }
-          }
+          });
         });
 
         uniqueCustomerIds.forEach(function (cid) {
@@ -116,26 +102,23 @@
         });
 
         let index = 0;
-        $(".visit-datepicker").each(function () {
-          let dateValue = $(this).val();
-          if (dateValue) {
-            let customerId = $(this).data("customerid");
-            let userId = $(this).data("userid");
-
+        Object.keys(selectedPlanned).forEach(function (dateValue) {
+          let items = selectedPlanned[dateValue] || [];
+          items.forEach(function (item) {
             formData.push({
               name: `planned_detail[${index}][customerid]`,
-              value: customerId,
+              value: item.customerid,
             });
             formData.push({
               name: `planned_detail[${index}][user_id]`,
-              value: userId,
+              value: item.user_id,
             });
             formData.push({
               name: `planned_detail[${index}][periode]`,
               value: dateValue,
             });
             index++;
-          }
+          });
         });
 
         Swal.fire({
@@ -196,16 +179,10 @@
     uiSelectSalesman.on("change", function () {
       selectedMedrep = uiSelectSalesman.select2("data")[0];
       if (selectedMedrep) {
-        maxLimit = parseInt(selectedMedrep.target_dub) || 0;
-        if (maxLimit < 1) {
-          Swal.fire({
-            title: "Validation",
-            html: `Target Planned <b>${selectedMedrep.tipe_sales}</b> belum diatur.`,
-            icon: "error",
-          });
-          return;
-        }
+        updateMainPlannedSummary();
         loadOutlet(selectedMedrep);
+      } else {
+        $("#daterange-container, #planned-dates-container").hide();
       }
     });
 
@@ -220,40 +197,149 @@
       orientation: "bottom right",
     });
 
-    $(document).on("change", ".visit-datepicker", function () {
-      let totalFilled = 0;
-      $(".visit-datepicker").each(function () {
-        if ($(this).val()) {
-          totalFilled++;
-        }
-      });
-      if (totalFilled > maxLimit && maxLimit > 0) {
-        $(this).val("");
-        $(this).datepicker("update");
-        Swal.fire({
-          title: "Batas Maksimum",
-          text: `Maksimal professional yang boleh direncanakan visit adalah ${maxLimit}. Anda sudah mengisi ${totalFilled} tanggal.`,
-          icon: "warning",
-        });
-      }
-      updateTableTotals();
+    $("#planned-daterange").daterangepicker({
+      locale: {
+        format: "YYYY-MM-DD",
+        separator: " s/d ",
+        applyLabel: "Pilih",
+        cancelLabel: "Batal",
+        daysOfWeek: ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
+        monthNames: [
+          "Januari",
+          "Februari",
+          "Maret",
+          "April",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
+          "September",
+          "Oktober",
+          "November",
+          "Desember",
+        ],
+        firstDay: 1,
+      },
+      autoUpdateInput: false,
+      minDate: isUpdate ? null : moment().add(1, "days"),
     });
 
-    if (isUpdate && param.status == "1") {
-      let footer = $(".box-footer");
-      footer.append(`
-        <button type="button" id="btn-form-reject" class="btn btn-danger" style="margin-left: 10px;">Reject</button>
-        <button type="button" id="btn-form-approve" class="btn btn-success" style="margin-left: 5px;">Approve</button>
-      `);
+    $("#planned-daterange").on("apply.daterangepicker", function (ev, picker) {
+      $(this).val(
+        picker.startDate.format("YYYY-MM-DD") +
+          " s/d " +
+          picker.endDate.format("YYYY-MM-DD"),
+      );
+      generateDateButtons();
+    });
 
-      $("#btn-form-approve").click(function () {
-        handleFormApproveReject(param.req_no, 3);
+    $("#planned-daterange").on("cancel.daterangepicker", function (ev, picker) {
+      $(this).val("");
+      generateDateButtons();
+    });
+
+    $(document)
+      .off(
+        "click",
+        "#modal-outlet-accordion-container .outlet-accordion-item .panel-heading",
+      )
+      .on(
+        "click",
+        "#modal-outlet-accordion-container .outlet-accordion-item .panel-heading",
+        function (e) {
+          if ($(e.target).closest("input, button, a").length) return;
+
+          let item = $(this).closest(".outlet-accordion-item");
+          let collapse = item.find(".panel-collapse");
+          let arrow = item.find(".accordion-arrow");
+
+          collapse.slideToggle(200, function () {
+            if (collapse.is(":visible")) {
+              arrow.css("transform", "rotate(180deg)");
+            } else {
+              arrow.css("transform", "rotate(0deg)");
+            }
+          });
+        },
+      );
+
+    $(document)
+      .off("change", ".modal-professional-checkbox")
+      .on("change", ".modal-professional-checkbox", function () {
+        let wasChecked = $(this).is(":checked");
+
+        let cid = String($(this).data("customerid"));
+        let uid = String($(this).val());
+
+        if (!selectedPlanned[activeModalDate]) {
+          selectedPlanned[activeModalDate] = [];
+        }
+
+        if (wasChecked) {
+          selectedPlanned[activeModalDate].push({
+            customerid: cid,
+            user_id: uid,
+          });
+        } else {
+          selectedPlanned[activeModalDate] = selectedPlanned[
+            activeModalDate
+          ].filter(function (item) {
+            return !(
+              String(item.customerid) == cid && String(item.user_id) == uid
+            );
+          });
+        }
+
+        let parentPanel = $(this).closest(".outlet-accordion-item");
+        let count = parentPanel.find(
+          ".modal-professional-checkbox:checked",
+        ).length;
+        let badge = parentPanel.find(".selected-count-badge");
+        badge.text(`${count} terpilih`);
+        if (count > 0) {
+          badge.removeClass("label-default").addClass("label-success");
+        } else {
+          badge.removeClass("label-success").addClass("label-default");
+        }
+
+        updateModalTotals();
       });
 
-      $("#btn-form-reject").click(function () {
-        handleFormApproveReject(param.req_no, 5);
+    $(document)
+      .off("click", ".btn-date-planned")
+      .on("click", ".btn-date-planned", function () {
+        activeModalDate = $(this).data("date");
+        let displayDate = moment(activeModalDate)
+          .locale("id")
+          .format("dddd, DD MMM YYYY");
+        $("#modal-planned-date-display").text(displayDate);
+
+        renderModalAccordion();
+        $("#modalPlannedAccordion").modal("show");
       });
-    }
+
+    $("#modal-search-outlet")
+      .off("keyup")
+      .on("keyup", function () {
+        let query = $(this).val().toLowerCase();
+        $("#modal-outlet-accordion-container .outlet-accordion-item").each(
+          function () {
+            let outletName = $(this).find(".panel-title").text().toLowerCase();
+            let subtitle = $(this)
+              .find(".outlet-subtitle")
+              .text()
+              .toLowerCase();
+            if (
+              outletName.indexOf(query) > -1 ||
+              subtitle.indexOf(query) > -1
+            ) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          },
+        );
+      });
   }
 
   function loadSalesman(data) {
@@ -305,9 +391,13 @@
             icon: "warning",
           });
           uiSelectSalesman.val(null).trigger("change");
+          $("#daterange-container, #planned-dates-container").hide();
           common.loadingClose();
           return;
         }
+
+        loadedOutlets = dub;
+        $("#daterange-container, #planned-dates-container").show();
 
         if (isUpdate) {
           $.post(
@@ -315,14 +405,69 @@
             { req_no: param.req_no },
             function (detailRes) {
               let planned = detailRes.result || [];
-              renderDUBTemplate(dub, planned);
+
+              selectedPlanned = {};
+              let dates = [];
+              planned.forEach(function (pl) {
+                if (pl.periode) {
+                  dates.push(pl.periode);
+                  if (!selectedPlanned[pl.periode]) {
+                    selectedPlanned[pl.periode] = [];
+                  }
+                  selectedPlanned[pl.periode].push({
+                    customerid: String(pl.customerid),
+                    user_id: String(pl.user_id),
+                  });
+                }
+              });
+
+              if (dates.length > 0) {
+                dates.sort();
+                let minDate = dates[0];
+                let maxDate = dates[dates.length - 1];
+
+                let picker = $("#planned-daterange").data("daterangepicker");
+                if (picker) {
+                  picker.setStartDate(minDate);
+                  picker.setEndDate(maxDate);
+                }
+                $("#planned-daterange").val(minDate + " s/d " + maxDate);
+                generateDateButtons();
+              } else {
+                generateDateButtons();
+              }
+
+              if (param.status == "1" && planned.length > 0) {
+                let footer = $(".box-footer");
+                if ($("#btn-form-approve").length === 0) {
+                  footer.append(`
+                    <button type="button" id="btn-form-reject" class="btn btn-danger" style="margin-left: 10px;">Reject</button>
+                    <button type="button" id="btn-form-approve" class="btn btn-success" style="margin-left: 5px;">Approve</button>
+                  `);
+
+                  $("#btn-form-approve")
+                    .off("click")
+                    .on("click", function () {
+                      handleFormApproveReject(param.req_no, 3);
+                    });
+
+                  $("#btn-form-reject")
+                    .off("click")
+                    .on("click", function () {
+                      handleFormApproveReject(param.req_no, 5);
+                    });
+                }
+              }
+
               common.loadingClose();
             },
           ).fail(function () {
             common.loadingClose();
           });
         } else {
-          renderDUBTemplate(dub, []);
+          selectedPlanned = {};
+          $("#planned-daterange").val("");
+          generateDateButtons();
           common.loadingClose();
         }
       },
@@ -331,9 +476,9 @@
     });
   }
 
-  function renderDUBTemplate(dub, planned) {
+  function groupDUBList(dubList) {
     let grouped = {};
-    dub.forEach(function (d) {
+    dubList.forEach(function (d) {
       let cid = d.customerid;
       if (!grouped[cid]) {
         grouped[cid] = {
@@ -350,99 +495,180 @@
         grouped[cid].professionals.push(d);
       }
     });
+    return grouped;
+  }
 
-    let listDiv = $("#professional-list");
-    listDiv.empty();
+  function generateDateButtons() {
+    let daterangeVal = $("#planned-daterange").val();
+    if (!daterangeVal) {
+      $("#date-buttons-container").empty();
+      return;
+    }
 
-    let hasData = false;
+    let parts = daterangeVal.split(" s/d ");
+    if (parts.length != 2) {
+      $("#date-buttons-container").empty();
+      return;
+    }
 
-    let table = $(`
-      <table class="table table-bordered table-striped" style="margin-bottom: 0; background-color: #fff;">
-        <thead>
-          <tr class="bg-f9">
-            <th class="th-detail w-50">Outlet (Customer)</th>
-            <th class="th-detail w-25">Daftar User Binaan (DUB)</th>
-            <th class="th-detail w-25">Periode Visit</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-        <tfoot>
-          <tr class="bg-f9 font-weight-bold">
-            <td class="td-footer">Total</td>
-            <td class="td-footer" id="total-dub-cell">0</td>
-            <td class="td-footer" id="total-filled-cell">0</td>
-          </tr>
-        </tfoot>
-      </table>
-    `);
-    let tbody = table.find("tbody");
+    let startVal = parts[0];
+    let endVal = parts[1];
 
-    Object.keys(grouped).forEach(function (cid) {
-      hasData = true;
-      let group = grouped[cid];
-      let rowSpan = group.professionals.length;
+    let start = moment(startVal);
+    let end = moment(endVal);
 
-      group.professionals.forEach(function (p, index) {
-        let matchedPlanned = planned.find(function (pl) {
-          return pl.customerid == p.customerid && pl.user_id == p.user_id;
-        });
+    if (end.isBefore(start)) {
+      $("#date-buttons-container").empty();
+      return;
+    }
 
-        let isChecked = matchedPlanned !== undefined;
-        let checkAttr = isChecked ? "checked" : "";
-        let dateVal = isChecked ? matchedPlanned.periode || "" : "";
+    let container = $("#date-buttons-container");
+    container.empty();
 
-        let tr = $("<tr></tr>");
+    let dateButtonsGroup = $(
+      '<div class="btn-group-vertical" style="width: 100%; gap: 10px; display: flex; flex-direction: column;"></div>',
+    );
 
-        if (index === 0) {
-          tr.append(`
-            <td rowspan="${rowSpan}" style="vertical-align: middle; font-weight: bold; background-color: #fff !important;">
-              <span class="label label-primary" style="margin-right: 5px;">${cid}</span>
-              ${group.nama_customer} ${group.typeid ? `(${group.typeid})` : ""}
-            </td>
-          `);
-        }
+    let current = start.clone();
+    while (current.isSameOrBefore(end)) {
+      let dateStr = current.format("YYYY-MM-DD");
+      let displayDate = current.locale("id").format("dddd, DD MMM YYYY");
 
-        tr.append(`
-          <td style="vertical-align: middle;">
-            <span><b>${p.user_id}</b> - ${p.nama_professional}</span>
-          </td>
-          <td style="vertical-align: middle;">
-            <div class="input-group date" style="width: 100%;">
-              <div class="input-group-addon" style="padding: 4px 8px;">
-                <span class="glyphicon glyphicon-calendar"></span>
-              </div>
-              <input type="text" class="form-control visit-datepicker" 
-                     data-customerid="${p.customerid}" 
-                     data-userid="${p.user_id}" 
-                     value="${dateVal}" 
-                     placeholder="YYYY-MM-DD" 
-                     style="height: 30px; padding: 4px 8px; font-size: 12px; background-color: #fff; cursor: pointer;" 
-                     readonly>
-            </div>
-          </td>
-        `);
+      let count = selectedPlanned[dateStr]
+        ? selectedPlanned[dateStr].length
+        : 0;
+      let badgeClass =
+        count > 0 ? "badge-success bg-green" : "badge-default bg-gray";
 
-        tbody.append(tr);
-      });
+      let btn = $(`
+        <button type="button" class="btn btn-default btn-date-planned" data-date="${dateStr}" style="text-align: left; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px;">
+          <span><i class="fa fa-calendar" style="margin-right: 8px; color: #3c8dbc;"></i> <b>${displayDate}</b></span>
+          <span class="badge ${badgeClass} date-selected-count" style="font-size: 12px; padding: 4px 8px;">${count} terpilih</span>
+        </button>
+      `);
+
+      dateButtonsGroup.append(btn);
+      current.add(1, "days");
+    }
+
+    container.append(dateButtonsGroup);
+    updateMainPlannedSummary();
+  }
+
+  function renderModalAccordion() {
+    let container = $("#modal-outlet-accordion-container");
+    container.empty();
+
+    let grouped = groupDUBList(loadedOutlets);
+    let currentlySelectedForDate = selectedPlanned[activeModalDate] || [];
+    let checkedProfIds = {};
+    currentlySelectedForDate.forEach(function (item) {
+      let cidStr = String(item.customerid);
+      if (!checkedProfIds[cidStr]) {
+        checkedProfIds[cidStr] = [];
+      }
+      checkedProfIds[cidStr].push(String(item.user_id));
     });
 
-    if (hasData) {
-      listDiv.append(table);
+    Object.keys(grouped).forEach(function (cid) {
+      let group = grouped[cid];
+      let checkedList = checkedProfIds[cid] || [];
+      let checkedCount = checkedList.length;
+      let badgeClass = checkedCount > 0 ? "label-success" : "label-default";
 
-      listDiv.find(".visit-datepicker").datepicker({
-        format: "yyyy-mm-dd",
-        autoclose: true,
-        todayHighlight: true,
-        clearBtn: true,
-        orientation: "bottom right",
+      let subtitle = group.professionals
+        .map((p) => `${p.user_id} - ${p.nama_professional}`)
+        .join(", ");
+
+      let html = "";
+      if (group.customerid) html += group.customerid;
+      if (group.nama_customer) html += ` - ${group.nama_customer}`;
+      if (group.typeid) html += ` - ${group.typeid}`;
+
+      let accordionItem = $(`
+        <div class="panel panel-default outlet-accordion-item" data-id="${cid}">
+          <div class="panel-heading">
+            <div class="panel-title-label">
+              <h4 class="panel-title">
+                ${html}
+              </h4>
+              <div class="outlet-subtitle" title="${subtitle}">
+                ${subtitle || "Tidak ada professional"}
+              </div>
+            </div>
+            <div class="panel-title-icon">
+              <span class="label ${badgeClass} selected-count-badge">${checkedCount} terpilih</span>
+              <i class="fa fa-chevron-down accordion-arrow"></i>
+            </div>
+          </div>
+          <div class="panel-collapse">
+            <div class="panel-body">
+              <div class="professional-checkbox-group">
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+
+      let checkboxGroup = accordionItem.find(".professional-checkbox-group");
+      group.professionals.forEach(function (p) {
+        let isChecked = checkedList.includes(String(p.user_id));
+        let checkAttr = isChecked ? "checked" : "";
+
+        let checkboxItem = $(`
+          <label class="professional-label">
+            <input type="checkbox" class="modal-professional-checkbox" data-customerid="${cid}" value="${p.user_id}" ${checkAttr} style="margin-right: 5px; cursor: pointer;">
+            <span class="professional-name">${p.user_id} - ${p.nama_professional}</span>
+          </label>
+        `);
+        checkboxGroup.append(checkboxItem);
       });
 
-      updateTableTotals();
+      container.append(accordionItem);
+    });
 
-      $("#professional-container").show();
-    } else {
-      $("#professional-container").hide();
-    }
+    updateModalTotals();
+    $("#modal-search-outlet").val("").trigger("keyup");
+  }
+
+  function getTotalPlannedCount() {
+    let total = 0;
+    Object.keys(selectedPlanned).forEach(function (date) {
+      total += selectedPlanned[date] ? selectedPlanned[date].length : 0;
+    });
+    return total;
+  }
+
+  function updateModalTotals() {
+    let forDateCount = selectedPlanned[activeModalDate]
+      ? selectedPlanned[activeModalDate].length
+      : 0;
+    $("#modal-date-total-badge").text(`${forDateCount} terpilih`);
+    updateMainPlannedSummary();
+  }
+
+  function updateMainPlannedSummary() {
+    $(".btn-date-planned").each(function () {
+      let dateStr = $(this).data("date");
+      let count = selectedPlanned[dateStr]
+        ? selectedPlanned[dateStr].length
+        : 0;
+      let badge = $(this).find(".date-selected-count");
+      badge.text(`${count} terpilih`);
+      if (count > 0) {
+        badge
+          .removeClass("badge-default bg-gray")
+          .addClass("badge-success bg-green");
+      } else {
+        badge
+          .removeClass("badge-success bg-green")
+          .addClass("badge-default bg-gray");
+      }
+    });
+
+    let total = getTotalPlannedCount();
+    let badgeText = `${total} terpilih`;
+    $("#main-total-planned-badge").text(badgeText);
   }
 
   function handleFormApproveReject(reqNo, targetStatus) {
@@ -505,22 +731,5 @@
         });
       }
     });
-  }
-
-  function updateTableTotals() {
-    let totalDUB = $(".visit-datepicker").length;
-    let totalFilled = 0;
-    $(".visit-datepicker").each(function () {
-      if ($(this).val()) {
-        totalFilled++;
-      }
-    });
-
-    $("#total-dub-cell").text(totalDUB);
-    if (maxLimit > 0) {
-      $("#total-filled-cell").text(totalFilled + " / " + maxLimit);
-    } else {
-      $("#total-filled-cell").text(totalFilled);
-    }
   }
 })();

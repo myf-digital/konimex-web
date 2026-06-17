@@ -271,74 +271,145 @@
           }
           $("#detail-status").html(statusHtml);
 
-          let body = $("#detail-list-body");
-          body.empty();
+          let container = $("#detail-accordion-container");
+          container.empty();
 
           let details = res.result || [];
           if (details.length === 0) {
-            body.append(
-              '<tr><td colspan="3" style="text-align:center;color:#999;padding:12px;">Tidak ada detail User Planned.</td></tr>',
+            container.append(
+              '<div class="no-data-text">Tidak ada detail User Planned.</div>',
             );
+            $("#detail-summary-bar").hide();
           } else {
-            let grouped = {};
-            details.forEach(function (d) {
-              let key = d.customerid;
-              if (!grouped[key]) {
-                grouped[key] = {
-                  outletName: d.outlet || "Outlet tidak diketahui",
-                  records: [],
-                };
-              }
-              grouped[key].records.push({
-                user_id: d.user_id,
-                user_name: d.user_name || "Professional tidak diketahui",
-                periode: d.periode
-                  ? moment(d.periode).locale("id").format("DD MMM YYYY")
-                  : "-",
-              });
-            });
+            $("#detail-summary-bar").show();
 
-            Object.keys(grouped).forEach(function (key) {
-              let group = grouped[key];
-              let records = group.records;
-              let rowspan = records.length;
-
-              records.forEach(function (rec, index) {
-                let userCell = `<b>${rec.user_id}</b> - ${rec.user_name}`;
-                let dateCell = rec.periode;
-
-                if (index === 0) {
-                  let outletCell = `<b>${key}</b> - ${group.outletName}`;
-                  body.append(`
-                    <tr>
-                      <td rowspan="${rowspan}" class="td-detail w-50 font-weight-bold">${outletCell}</td>
-                      <td class="td-detail w-25">${userCell}</td>
-                      <td class="td-detail w-25">${dateCell}</td>
-                    </tr>
-                  `);
-                } else {
-                  body.append(`
-                    <tr>
-                      <td class="td-detail w-25">${userCell}</td>
-                      <td class="td-detail w-25">${dateCell}</td>
-                    </tr>
-                  `);
-                }
-              });
-            });
-
+            let groupedByDate = {};
+            let uniqueOutlets = new Set();
             let distinctDates = new Set();
-            details.forEach((d) => {
+
+            details.forEach(function (d) {
+              if (d.customerid) uniqueOutlets.add(d.customerid);
               if (d.periode) distinctDates.add(d.periode);
+
+              let dateKey = d.periode || "Tanpa Tanggal";
+              if (!groupedByDate[dateKey]) {
+                groupedByDate[dateKey] = [];
+              }
+              groupedByDate[dateKey].push(d);
             });
 
-            body.append(`
-              <tr style="background-color: #f9f9f9; font-weight: bold; border-top: 2px solid #ddd;">
-                <td class="td-detail w-50 td-footer">Total Outlet: ${Object.keys(grouped).length}</td>
-                <td class="td-detail w-25 td-footer">Total DUB: ${details.length}</td>
-                <td class="td-detail w-25 td-footer">Total Periode: ${distinctDates.size}</td>
-              </tr>
-            `);
+            $("#detail-total-outlet").text(`${uniqueOutlets.size} Outlet`);
+            $("#detail-total-periode").text(`${distinctDates.size} Hari`);
+            $("#detail-total-user").text(`${details.length} User`);
+
+            let sortedDates = Object.keys(groupedByDate).sort();
+
+            sortedDates.forEach(function (dateVal) {
+              let dateRecords = groupedByDate[dateVal];
+              let displayDate =
+                dateVal !== "Tanpa Tanggal"
+                  ? moment(dateVal).locale("id").format("dddd, DD MMM YYYY")
+                  : "Tanpa Tanggal";
+
+              let totalRecords = dateRecords.length;
+
+              let groupedByOutlet = {};
+              dateRecords.forEach(function (d) {
+                let key = d.customerid;
+                if (!groupedByOutlet[key]) {
+                  groupedByOutlet[key] = {
+                    outletName: d.outlet || "Outlet tidak diketahui",
+                    records: [],
+                  };
+                }
+                groupedByOutlet[key].records.push({
+                  user_id: d.user_id,
+                  user_name: d.user_name || "Professional tidak diketahui",
+                });
+              });
+
+              let accordionItem = $(`
+                <div class="panel panel-default planned-accordion-item">
+                  <div class="panel-heading">
+                    <div class="panel-title-label">
+                      <h4 class="panel-title">
+                        <i class="fa fa-calendar"></i> ${displayDate}
+                      </h4>
+                    </div>
+                    <div class="panel-title-icon">
+                      <span class="label label-success selected-count-badge">${totalRecords} terpilih</span>
+                      <i class="fa fa-chevron-down accordion-arrow"></i>
+                    </div>
+                  </div>
+                  <div class="panel-collapse" style="display: none;">
+                    <div class="panel-body">
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                          <tr class="bg-f5">
+                            <th class="th-detail w-50">Outlet (Customer)</th>
+                            <th class="th-detail w-50">Daftar User Binaan (DUB)</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              `);
+
+              let tbody = accordionItem.find("tbody");
+
+              Object.keys(groupedByOutlet).forEach(function (cid) {
+                let group = groupedByOutlet[cid];
+                let records = group.records;
+                let rowspan = records.length;
+
+                records.forEach(function (rec, index) {
+                  let userCell = `<b>${rec.user_id}</b> - ${rec.user_name}`;
+
+                  if (index === 0) {
+                    let outletCell = `<b>${cid}</b> - ${group.outletName}`;
+                    tbody.append(`
+                      <tr>
+                        <td rowspan="${rowspan}">${outletCell}</td>
+                        <td>${userCell}</td>
+                      </tr>
+                    `);
+                  } else {
+                    tbody.append(`
+                      <tr>
+                        <td>${userCell}</td>
+                      </tr>
+                    `);
+                  }
+                });
+              });
+
+              container.append(accordionItem);
+            });
+
+            $(document)
+              .off(
+                "click",
+                "#detail-accordion-container .planned-accordion-item .panel-heading",
+              )
+              .on(
+                "click",
+                "#detail-accordion-container .planned-accordion-item .panel-heading",
+                function (e) {
+                  let item = $(this).closest(".planned-accordion-item");
+                  let collapse = item.find(".panel-collapse");
+                  let arrow = item.find(".accordion-arrow");
+
+                  collapse.slideToggle(200, function () {
+                    if (collapse.is(":visible")) {
+                      arrow.css("transform", "rotate(180deg)");
+                    } else {
+                      arrow.css("transform", "rotate(0deg)");
+                    }
+                  });
+                },
+              );
           }
 
           let footer = $("#modalDetail .modal-footer");
@@ -347,7 +418,7 @@
             '<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>',
           );
 
-          if (val.status == "1") {
+          if (val.status == "1" && details.length > 0) {
             footer.prepend(`
               <button type="button" class="btn btn-danger pull-left" id="btn-detail-reject">Reject</button>
               <button type="button" class="btn btn-success pull-left" id="btn-detail-approve">Approve</button>

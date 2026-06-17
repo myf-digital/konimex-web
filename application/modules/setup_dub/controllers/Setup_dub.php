@@ -111,7 +111,6 @@ class Setup_dub extends BaseController
             'restrict_level' => $restrict_level,
             'filtername' => $filtername,
         ];
-        
         $datas = $this->setup_dub->load($data, 'export');
         
         $reqNos = !empty($datas) ? array_column($datas, 'req_no') : [];
@@ -131,7 +130,7 @@ class Setup_dub extends BaseController
             $detailsByReqNo[$rn][] = $detail;
         }
 
-        $filename = "Data_DUB_".str_replace(' ', '_', $filtername)."_".date('Ymd_His').".xlsx";
+        $filename = "Data_DUB_".str_replace(',', '_', $salesmanid)."_".date('Ymd_His').".xlsx";
 
         $spreadsheet = new Spreadsheet();
         $header = [
