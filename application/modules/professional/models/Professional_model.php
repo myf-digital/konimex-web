@@ -21,14 +21,20 @@ class Professional_model extends CI_Model
                             DISTINCT CONCAT(rpm.customerid, ' - ', rpm.nama_customer, ' - ', mc.typeid)
                             ORDER BY rpm.customerid 
                             SEPARATOR '||'
-                        ) as customer_list
+                        ) as customer_list,
+                        a.status,
+                        a.reason
                     FROM ref_professional a
                     LEFT JOIN ref_spesialisasi rs ON rs.id = a.spesialisasi_id
                     LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
                     LEFT JOIN m_customer mc ON mc.customerid = rpm.customerid
-                    WHERE rpm.customerid IS NOT NULL
                     GROUP BY a.id
-                    ORDER BY a.id DESC
+                    ORDER BY CASE a.status
+                        WHEN 1 THEN 1
+                        WHEN 5 THEN 2
+                        WHEN 3 THEN 3
+                        ELSE 4
+                    END ASC, a.id DESC
                 ) a ";
         return easy_pagging($data, $field, $table);
     }
@@ -94,6 +100,7 @@ class Professional_model extends CI_Model
             'tanggal_aniv_pernikahan' => (!empty($data['tanggal_aniv_pernikahan'])) ? $data['tanggal_aniv_pernikahan'] : null,
             'created_by' => $data['usersession'] ?? null,
             'created_date' => date('Y-m-d H:i:s'),
+            'status' => 3,
         ]);
         $professionalId = $this->db->insert_id();
 
@@ -141,6 +148,7 @@ class Professional_model extends CI_Model
                 'tanggal_aniv_pernikahan' => $data['tanggal_aniv_pernikahan'] ?? null,
                 'created_by' => $data['usersession'] ?? null,
                 'created_date' => date('Y-m-d H:i:s'),
+                'status' => 3,
             ]);
             $professionalId = $this->db->insert_id();
         } else {
@@ -154,6 +162,7 @@ class Professional_model extends CI_Model
                 'created_by' => $data['usersession'] ?? null,
                 'modified_by' => $data['usersession'],
                 'modified_date' => date('Y-m-d H:i:s'),
+                'status' => 3,
             ]);
         }
 
@@ -190,6 +199,50 @@ class Professional_model extends CI_Model
             'message' => 'Success',
             'result' => $status
         ];
+    }
+
+    public function update_status($data)
+    {
+        if (empty($data['id']) || empty($data['status'])) {
+            return [
+                'status' => false,
+                'message' => 'id dan status wajib diisi.'
+            ];
+        }
+
+        $id = $data['id'];
+        $status = $data['status'];
+        $reason = isset($data['reason']) ? $data['reason'] : '';
+        $user = isset($data['usersession']) ? $data['usersession'] : 'Admin';
+
+        $sqldate = "select sysdate() datetime;";
+        $datetime = $this->db->query($sqldate)->row();
+        $now = $datetime->datetime;
+
+        $this->db->trans_begin();
+
+        $this->db->where('id', $id);
+        $this->db->update('ref_professional', [
+            'status' => $status,
+            'reason' => $reason,
+            'modified_by' => $user,
+            'modified_date' => $now
+        ]);
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return [
+                'status' => false,
+                'message' => 'Gagal mengubah status.'
+            ];
+        } else {
+            $this->db->trans_commit();
+            return [
+                'status' => true,
+                'message' => 'Status berhasil diperbarui.',
+                'data' => $customerid
+            ];
+        }
     }
 
     public function savetoxlsx($data)

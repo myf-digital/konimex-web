@@ -62,6 +62,17 @@ class Professional extends BaseController
         responseJSON($this->professional->update($data));
     }
 
+    public function update_status()
+    {
+        $data = param_input();
+        $result = $this->professional->update_status($data);
+        if ($result['status'] == true) {
+            response($result['data'], 200, $result['message']);
+        } else {
+            response(null, 400, $result['message']);
+        }
+    }
+
     public function target()
     {
         $this->template->show($this, 'content_target');

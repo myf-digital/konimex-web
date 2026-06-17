@@ -6,6 +6,7 @@
   common.setTitle("List User");
   // ui components
   let uiTbl = $("#tbl-professional");
+  let paramsession = common.getCookie("session");
 
   initializeGrid();
   initialize();
@@ -97,6 +98,15 @@
             formatter: formatterDate,
           },
           {
+            field: "status",
+            title: "STATUS",
+            halign: "center",
+            align: "center",
+            sortable: "true",
+            width: 100,
+            formatter: formatterStatus,
+          },
+          {
             field: "customer_list",
             title: "TEMPAT PRAKTEK",
             halign: "left",
@@ -141,13 +151,45 @@
 
   function formatterButton(val, row, index) {
     let btnImage = "";
+    let btnApproval = "";
     if (
       (row.url_foto && row.url_foto != undefined) ||
       (row.url_img_signature && row.url_img_signature != undefined)
-    )
+    ) {
       btnImage = commonGrid.btnBuilder("btn-viem-image", "info", "fa fa-image");
-    const btnEdit = commonGrid.btnBuilder("btn-viem", "success", "fa fa-edit");
-    return '<div class="action-grid">' + btnImage + btnEdit + "</div>";
+    }
+
+    if (row.status == 1) {
+      btnApproval += commonGrid.btnBuilder(
+        "btn-approval",
+        "success",
+        "fa fa-check",
+        "Approve",
+      );
+      btnApproval += commonGrid.btnBuilder(
+        "btn-reject",
+        "danger",
+        "fa fa-times",
+        "Reject",
+      );
+    }
+
+    const btnEdit = commonGrid.btnBuilder("btn-viem", "warning", "fa fa-edit");
+    return (
+      '<div class="action-grid">' + btnEdit + btnApproval + btnImage + "</div>"
+    );
+  }
+
+  function formatterStatus(value, row, index) {
+    if (value === "1") {
+      return '<span class="label label-warning">Pending</span>';
+    } else if (value === "3") {
+      return `<span class="label label-success" title="${row.reason || ""}">Approved</span>`;
+    } else if (value === "5") {
+      return `<span class="label label-danger" title="${row.reason || ""}">Rejected</span>`;
+    } else {
+      return "-";
+    }
   }
 
   function formatterCustomerList(val, row, index) {
@@ -186,13 +228,17 @@
     let index = 0;
     for (const btns of btnContent) {
       const param = data.rows[index];
-      const btnEdit = $(btns).find("a.btn-success");
+      const btnEdit = $(btns).find("a.btn-warning");
       btnEdit.click(function () {
         open_edit(param);
       });
-      const btnImage = $(btns).find("a.btn-info");
-      btnImage.click(function () {
-        open_image(param);
+      const btnApproval = $(btns).find("a.btn-success");
+      btnApproval.click(function () {
+        handleApproveReject(param.id, 3);
+      });
+      const btnReject = $(btns).find("a.btn-danger");
+      btnReject.click(function () {
+        handleApproveReject(param.id, 5);
       });
       index++;
     }
@@ -207,22 +253,85 @@
     if (data && data != undefined) {
       $("#myModalImage").text(`User: ${data.nama_professional}`);
       $("#show-image").html(`
-                <div class="row text-left">
-                    <div class="col-md-12">
-                        <h5><b>1. Foto</b></h5>
-                        <img src="${data.url_foto}" alt="Foto" class="img-fluid">
-                    </div>
-                    <div class="col-md-12">
-                        <h5><b>2. Foto Signature</b></h5>
-                        ${data.url_img_signature ? `<img src="${data.url_img_signature}" alt="Foto Signature" class="img-fluid">` : "<p>-</p>"}
-                    </div>
-                </div>
-            `);
+        <div class="row text-left">
+          <div class="col-md-12">
+            <h5><b>1. Foto</b></h5>
+            <img src="${data.url_foto}" alt="Foto" class="img-fluid">
+          </div>
+          <div class="col-md-12">
+            <h5><b>2. Foto Signature</b></h5>
+            ${data.url_img_signature ? `<img src="${data.url_img_signature}" alt="Foto Signature" class="img-fluid">` : "<p>-</p>"}
+          </div>
+        </div>
+      `);
       $("#modal_image").modal("show");
     }
   }
 
   function save_xls(start, end) {
     common.direct("professional/savetoxlsx");
+  }
+
+  function handleApproveReject(id, targetStatus) {
+    let statusText = targetStatus == 3 ? "Approve" : "Reject";
+    let inputPlaceholder =
+      targetStatus == 3
+        ? "Alasan persetujuan (opsional)"
+        : "Alasan penolakan (wajib)";
+
+    Swal.fire({
+      title: statusText + " Request User",
+      input: "textarea",
+      inputLabel: "Masukkan keterangan/alasan:",
+      inputPlaceholder: inputPlaceholder,
+      showCancelButton: true,
+      confirmButtonText: "Kirim",
+      cancelButtonText: "Batal",
+      confirmButtonColor: targetStatus == 3 ? "#28a745" : "#d33",
+      inputValidator: (value) => {
+        if (targetStatus == 5 && !value) {
+          return "Alasan penolakan wajib diisi!";
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        common.loading();
+        $.post(
+          common.baseURL("professional/update_status"),
+          {
+            id: id,
+            status: targetStatus,
+            reason: result.value || "",
+            usersession: paramsession.username,
+          },
+          function (res) {
+            common.loadingClose();
+            if (res.code === 200) {
+              Swal.fire({
+                title: "Success",
+                text: "Status berhasil diperbarui",
+                icon: "success",
+              }).then(() => {
+                $("#modalDetail").modal("hide");
+                uiTbl.datagrid("reload");
+              });
+            } else {
+              Swal.fire({
+                title: "Gagal",
+                text: res.message || "Gagal memperbarui status",
+                icon: "error",
+              });
+            }
+          },
+        ).fail(function (xhr, status, error) {
+          common.loadingClose();
+          Swal.fire({
+            title: "Error",
+            text: "Terjadi kesalahan sistem: " + error,
+            icon: "error",
+          });
+        });
+      }
+    });
   }
 })();

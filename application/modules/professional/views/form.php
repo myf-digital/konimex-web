@@ -15,7 +15,14 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form User</h3>
+                    <div class="row">
+						<div class="col-md-6">
+							<h3 class="box-title">Form User</h3>
+						</div>
+						<div class="col-md-6" style="text-align: right;">
+							<span id="status-label">&nbsp;</span>
+						</div>
+					</div>
                 </div>
 
                 <form id="form-set-outlet" role="form" method="post">

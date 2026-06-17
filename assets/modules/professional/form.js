@@ -76,6 +76,20 @@
     loadSpesialisasi();
     if (isUpdate) {
       uiInputUser.val(param.nama_professional || "");
+
+      if (param.status) {
+        let sts = "";
+        if (param.status == "1") {
+          sts = '<span class="label label-warning">Pending</span>';
+        } else if (param.status == "5") {
+          sts = `
+            <span class="label label-danger">Rejected</span>
+            <div style="font-size: 12px; color: #666; margin-top: 5px;"><b>Ket:</b> ${param.reason || ""}</div>
+          `;
+        }
+
+        $("#status-label").html(sts);
+      }
     }
 
     uiSearchOutlet.multiselect({
