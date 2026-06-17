@@ -171,3 +171,92 @@ background: linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1))
     border-left: 1px solid #ddd !important;
     border-right: 1px solid #ddd !important;
 }
+.no-data-text {
+    color: #999;
+    font-size: 12px;
+}
+#outlet-accordion-container {
+    max-height: 550px; 
+    overflow-y: auto; 
+    padding: 5px; 
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    background-color: #fdfdfd;
+}
+#outlet-accordion-container .outlet-accordion-item {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+#outlet-accordion-container .panel-heading {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    user-select: none;
+}
+#outlet-accordion-container .panel-title-label {
+    flex: 1;
+    min-width: 0;
+    padding-right: 15px;
+}
+#outlet-accordion-container .panel-title-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+#outlet-accordion-container .panel-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#outlet-accordion-container .outlet-subtitle {
+    font-size: 11px;
+    color: #777;
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#outlet-accordion-container .selected-count-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+#outlet-accordion-container .accordion-arrow {
+    transition: transform 0.2s;
+    color: #aaa;
+}
+#outlet-accordion-container .professional-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+}
+#outlet-accordion-container .panel-collapse {
+    display: none;
+    background-color: #fff;
+    border-top: 1px solid #eee;
+}
+#outlet-accordion-container .panel-body {
+    padding: 15px;
+}
+#outlet-accordion-container .professional-label {
+    font-weight: normal;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+#outlet-accordion-container .professional-checkbox {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+}

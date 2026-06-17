@@ -5,7 +5,6 @@
   let uiForm = $("#fm-add-setup-dub");
   let uiBtnCancel = $("#btn-cancel-form");
   let uiSelectSalesman = $("#salesmanid-id");
-  let uiSearchOutlet = $("#customerid");
   let maxLimit = 0;
 
   let param = common.getCookie("module.setup_dub.update");
@@ -65,18 +64,8 @@
           return false;
         }
 
-        let customer = document.getElementById("customerid_to");
-        if (!customer || customer.options.length === 0) {
-          Swal.fire({
-            title: "Validation",
-            html: "Outlet wajib dipilih.",
-            icon: "warning",
-          });
-          return false;
-        }
-
-        let totalChecked = $(".professional-checkbox:checked").length;
-        if (totalChecked === 0) {
+        let checkedProfessionals = $(".professional-checkbox:checked");
+        if (checkedProfessionals.length === 0) {
           Swal.fire({
             title: "Validation",
             html: "DUB wajib dipilih.",
@@ -85,10 +74,10 @@
           return false;
         }
 
-        if (totalChecked !== maxLimit && maxLimit > 0) {
+        if (checkedProfessionals.length !== maxLimit && maxLimit > 0) {
           Swal.fire({
             title: "Validation",
-            html: `Jumlah DUB wajib tepat ${maxLimit}. Saat ini Anda memilih ${totalChecked}.`,
+            html: `Jumlah DUB wajib tepat ${maxLimit}. Saat ini Anda memilih ${checkedProfessionals.length}.`,
             icon: "warning",
           });
           return false;
@@ -102,15 +91,23 @@
         formData.push({ name: "usersession", value: paramsession.username });
         formData.push({ name: "rolename", value: paramsession.role_name });
 
-        for (let i = 0; i < customer.options.length; i++) {
+        let selectedCustomerIds = [];
+        checkedProfessionals.each(function () {
+          let cid = $(this).data("customerid");
+          if (!selectedCustomerIds.includes(cid)) {
+            selectedCustomerIds.push(cid);
+          }
+        });
+
+        selectedCustomerIds.forEach(function (cid) {
           formData.push({
             name: "customerid[]",
-            value: customer.options[i].value,
+            value: cid,
           });
-        }
+        });
 
         let index = 0;
-        $(".professional-checkbox:checked").each(function () {
+        checkedProfessionals.each(function () {
           let customerId = $(this).data("customerid");
           let userId = $(this).val();
 
@@ -192,27 +189,67 @@
           });
           return;
         }
+        updateTotalSelectedCount();
         loadOutlet(selectedMedrep);
       }
     });
 
-    uiSearchOutlet.multiselect({
-      search: {
-        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-        right:
-          '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+    $("#search-outlet").on("keyup", function () {
+      let query = $(this).val().toLowerCase();
+      $(".outlet-accordion-item").each(function () {
+        let outletName = $(this).find(".panel-title").text().toLowerCase();
+        let subtitle = $(this).find(".outlet-subtitle").text().toLowerCase();
+        if (outletName.indexOf(query) > -1 || subtitle.indexOf(query) > -1) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    $(document).on(
+      "click",
+      ".outlet-accordion-item .panel-heading",
+      function (e) {
+        if ($(e.target).closest("input, button, a").length) return;
+
+        let item = $(this).closest(".outlet-accordion-item");
+        let collapse = item.find(".panel-collapse");
+        let arrow = item.find(".accordion-arrow");
+
+        collapse.slideToggle(200, function () {
+          if (collapse.is(":visible")) {
+            arrow.css("transform", "rotate(180deg)");
+          } else {
+            arrow.css("transform", "rotate(0deg)");
+          }
+        });
       },
-      fireSearch: function (value) {
-        return value.length > 3;
-      },
-      submitAllLeft: false,
-      submitAllRight: false,
-      afterMoveToRight: function ($left, $right, $options) {
-        updateProfessionalCheckboxes();
-      },
-      afterMoveToLeft: function ($left, $right, $options) {
-        updateProfessionalCheckboxes();
-      },
+    );
+
+    $(document).on("change", ".professional-checkbox", function () {
+      let totalChecked = $(".professional-checkbox:checked").length;
+      if (totalChecked > maxLimit && maxLimit > 0) {
+        $(this).prop("checked", false);
+        Swal.fire({
+          title: "Batas Maksimum",
+          text: `Maksimal professional yang boleh dipilih adalah ${maxLimit}. Anda sudah memilih ${totalChecked}.`,
+          icon: "warning",
+        });
+        return;
+      }
+
+      let parentPanel = $(this).closest(".outlet-accordion-item");
+      let count = parentPanel.find(".professional-checkbox:checked").length;
+      let badge = parentPanel.find(".selected-count-badge");
+      badge.text(`${count} terpilih`);
+      if (count > 0) {
+        badge.removeClass("label-default").addClass("label-success");
+      } else {
+        badge.removeClass("label-success").addClass("label-default");
+      }
+
+      updateTotalSelectedCount();
     });
 
     uiBtnCancel.click(function () {
@@ -225,34 +262,6 @@
       todayHighlight: true,
       orientation: "bottom right",
     });
-
-    $(document).on("change", ".professional-checkbox", function () {
-      let totalChecked = $(".professional-checkbox:checked").length;
-      if (totalChecked > maxLimit && maxLimit > 0) {
-        $(this).prop("checked", false);
-        Swal.fire({
-          title: "Batas Maksimum",
-          text: `Maksimal professional yang boleh dipilih adalah ${maxLimit}. Anda sudah memilih ${totalChecked}.`,
-          icon: "warning",
-        });
-      }
-    });
-
-    if (isUpdate && param.status == "1") {
-      let footer = $(".box-footer");
-      footer.append(`
-        <button type="button" id="btn-form-reject" class="btn btn-danger" style="margin-left: 10px;">Reject</button>
-        <button type="button" id="btn-form-approve" class="btn btn-success" style="margin-left: 5px;">Approve</button>
-      `);
-
-      $("#btn-form-approve").click(function () {
-        handleFormApproveReject(param.req_no, 3);
-      });
-
-      $("#btn-form-reject").click(function () {
-        handleFormApproveReject(param.req_no, 5);
-      });
-    }
   }
 
   function loadSalesman(data) {
@@ -297,8 +306,18 @@
         salesmanid: data.salesmanid,
       },
       function (res) {
-        loadedOutlets = res.result || [];
-        let { select, selectTo } = resetSelectOutlet();
+        if (res.code == 200) {
+          loadedOutlets = res.result || [];
+        } else {
+          loadedOutlets = [];
+          Swal.fire({
+            title: "Informasi",
+            text: res.message || "Gagal memuat outlet",
+            icon: "warning",
+          });
+          common.loadingClose();
+          return;
+        }
 
         if (isUpdate) {
           $.post(
@@ -306,34 +325,29 @@
             { req_no: param.req_no },
             function (detailRes) {
               let savedDetails = detailRes.result || [];
-              let savedCustomerIds = [
-                ...new Set(savedDetails.map((d) => d.customerid)),
-              ];
+              renderOutletCheckboxes(savedDetails);
 
-              for (let i = 0; i < loadedOutlets.length; i++) {
-                let item = loadedOutlets[i];
-                let opt = document.createElement("option");
-                opt.value = item.customerid;
+              $("#btn-form-reject, #btn-form-approve").remove();
+              if (param.status == "1" && savedDetails.length > 0) {
+                let footer = $(".box-footer");
+                footer.append(`
+                  <button type="button" id="btn-form-reject" class="btn btn-danger" style="margin-left: 10px;">Reject</button>
+                  <button type="button" id="btn-form-approve" class="btn btn-success" style="margin-left: 5px;">Approve</button>
+                `);
 
-                let html = "";
-                if (item.customerid) html += item.customerid;
-                if (item.nama_customer) html += ` - ${item.nama_customer}`;
-                if (item.typeid) html += ` - ${item.typeid}`;
-                if (item.nama_class) html += ` - ${item.nama_class}`;
+                $("#btn-form-approve")
+                  .off("click")
+                  .on("click", function () {
+                    handleFormApproveReject(param.req_no, 3);
+                  });
 
-                opt.innerHTML = html;
-                opt.setAttribute("data-position", item.customerid);
-
-                if (savedCustomerIds.includes(item.customerid)) {
-                  selectTo.appendChild(opt);
-                } else {
-                  select.appendChild(opt);
-                }
+                $("#btn-form-reject")
+                  .off("click")
+                  .on("click", function () {
+                    handleFormApproveReject(param.req_no, 5);
+                  });
               }
 
-              uiSearchOutlet.find("option").prop("selected", false);
-
-              updateProfessionalCheckboxes(savedDetails);
               common.loadingClose();
             },
           );
@@ -341,147 +355,116 @@
           let savedDetails = [];
           for (let i = 0; i < loadedOutlets.length; i++) {
             let item = loadedOutlets[i];
-            let opt = document.createElement("option");
-            opt.value = item.customerid;
-
-            let html = "";
-            if (item.customerid) html += item.customerid;
-            if (item.nama_customer) html += ` - ${item.nama_customer}`;
-            if (item.typeid) html += ` - ${item.typeid}`;
-            if (item.nama_class) html += ` - ${item.nama_class}`;
-
-            opt.innerHTML = html;
-            opt.setAttribute("data-position", item.customerid);
-
             if (item.mapped_professionals) {
-              selectTo.appendChild(opt);
               let profs = item.mapped_professionals.split("||");
               profs.forEach(function (userId) {
                 savedDetails.push({
                   customerid: item.customerid,
-                  user_id: userId
+                  user_id: userId,
                 });
               });
-            } else {
-              select.appendChild(opt);
             }
           }
 
-          updateProfessionalCheckboxes(savedDetails);
+          renderOutletCheckboxes(savedDetails);
           common.loadingClose();
         }
       },
     );
   }
 
-  function resetSelectOutlet() {
-    let select = document.getElementById("customerid");
-    let selectTo = document.getElementById("customerid_to");
-
-    let length = select.options.length;
-    for (i = length - 1; i >= 0; i--) {
-      select.options[i] = null;
-    }
-
-    let selectToLength = selectTo.options.length;
-    for (i = selectToLength - 1; i >= 0; i--) {
-      selectTo.options[i] = null;
-    }
-
-    return { select, selectTo };
-  }
-
-  function updateProfessionalCheckboxes(savedDetails) {
-    let selectTo = document.getElementById("customerid_to");
-    let container = $("#professional-container");
-    let listDiv = $("#professional-list");
-
-    if (!selectTo || selectTo.options.length === 0) {
-      listDiv.empty();
-      container.hide();
-      return;
-    }
+  function renderOutletCheckboxes(savedDetails) {
+    let container = $("#outlet-accordion-container");
+    container.empty();
 
     let checkedProfIds = {};
-    $(".professional-checkbox:checked").each(function () {
-      let customerId = $(this).data("customerid");
-      let userId = $(this).val();
-      if (!checkedProfIds[customerId]) {
-        checkedProfIds[customerId] = [];
+    if (savedDetails && savedDetails.length > 0) {
+      savedDetails
+        .filter((sd) => sd.user_id && sd.user_id != "0" && sd.user_id != "-")
+        .forEach((d) => {
+          if (!checkedProfIds[d.customerid]) {
+            checkedProfIds[d.customerid] = [];
+          }
+          if (d.user_id && !checkedProfIds[d.customerid].includes(d.user_id)) {
+            checkedProfIds[d.customerid].push(d.user_id);
+          }
+        });
+    }
+
+    loadedOutlets.forEach((item) => {
+      let cid = item.customerid;
+      let listProfStr = item.list_professional || "";
+      let subtitle = listProfStr
+        .split("||")
+        .map((p) => p.trim())
+        .join(", ");
+
+      let checkedList = checkedProfIds[cid] || [];
+      let checkedCount = checkedList.length;
+      let badgeClass = checkedCount > 0 ? "label-success" : "label-default";
+
+      let html = "";
+      if (item.customerid) html += item.customerid;
+      if (item.nama_customer) html += ` - ${item.nama_customer}`;
+      if (item.typeid) html += ` - ${item.typeid}`;
+
+      let accordionItem = $(`
+        <div class="panel panel-default outlet-accordion-item" data-id="${cid}">
+          <div class="panel-heading">
+            <div class="panel-title-label">
+              <h4 class="panel-title">
+                ${html}
+              </h4>
+              <div class="outlet-subtitle" title="${subtitle}">
+                ${subtitle || "Tidak ada professional"}
+              </div>
+            </div>
+            <div class="panel-title-icon">
+              <span class="label ${badgeClass} selected-count-badge">${checkedCount} terpilih</span>
+              <i class="fa fa-chevron-down accordion-arrow"></i>
+            </div>
+          </div>
+          <div class="panel-collapse">
+            <div class="panel-body">
+              <div class="professional-checkbox-group">
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+
+      let checkboxGroup = accordionItem.find(".professional-checkbox-group");
+      if (listProfStr.trim() !== "") {
+        let profs = listProfStr.split("||");
+        profs.forEach((pStr) => {
+          let parts = pStr.split(" - ");
+          if (parts.length >= 1) {
+            let userId = parts[0].trim();
+            let profName = parts.slice(1).join(" - ").trim();
+
+            let isChecked = checkedList.includes(userId);
+            let checkAttr = isChecked ? "checked" : "";
+
+            let checkboxItem = $(`
+              <label class="professional-label">
+                <input type="checkbox" class="professional-checkbox" data-customerid="${cid}" value="${userId}" ${checkAttr}>
+                <span class="professional-name">${userId} - ${profName}</span>
+              </label>
+            `);
+            checkboxGroup.append(checkboxItem);
+          }
+        });
+      } else {
+        checkboxGroup.html(
+          '<span class="no-data-text">Tidak ada professional untuk outlet ini.</span>',
+        );
       }
-      checkedProfIds[customerId].push(userId);
+
+      container.append(accordionItem);
     });
 
-    if (savedDetails && savedDetails.length > 0) {
-      savedDetails.forEach((d) => {
-        if (!checkedProfIds[d.customerid]) {
-          checkedProfIds[d.customerid] = [];
-        }
-        if (d.user_id && !checkedProfIds[d.customerid].includes(d.user_id)) {
-          checkedProfIds[d.customerid].push(d.user_id);
-        }
-      });
-    }
-
-    listDiv.empty();
-    let hasProfessionals = false;
-
-    for (let i = 0; i < selectTo.options.length; i++) {
-      let cid = selectTo.options[i].value;
-      let outlet =
-        loadedOutlets.find((o) => o.customerid == cid) ||
-        dataOutlets.find((o) => o.customerid == cid);
-
-      if (outlet) {
-        let outletName = outlet.nama_customer || `Customer ${cid}`;
-        let listProfStr = outlet.list_professional || "";
-
-        if (listProfStr.trim() !== "") {
-          hasProfessionals = true;
-          let profs = listProfStr.split("||");
-
-          let customerBlock = $(
-            '<div class="customer-prof-block" style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;"></div>',
-          );
-          customerBlock.append(
-            `<h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: bold; color: #333;">${outletName}</h4>`,
-          );
-
-          let checkboxGroup = $(
-            '<div style="display: flex; flex-wrap: wrap; gap: 10px 20px; padding-left: 10px;"></div>',
-          );
-
-          profs.forEach((pStr) => {
-            let parts = pStr.split(" - ");
-            if (parts.length >= 1) {
-              let userId = parts[0].trim();
-              let profName = parts.slice(1).join(" - ").trim();
-
-              let isChecked =
-                checkedProfIds[cid] && checkedProfIds[cid].includes(userId);
-              let checkAttr = isChecked ? "checked" : "";
-
-              let checkboxItem = $(`
-                <label style="font-weight: normal; cursor: pointer; display: inline-flex; align-items: center; margin-bottom: 0;">
-                  <input type="checkbox" class="professional-checkbox" data-customerid="${cid}" value="${userId}" ${checkAttr} style="margin-right: 6px; cursor: pointer;">
-                  <span>${userId} - ${profName}</span>
-                </label>
-              `);
-              checkboxGroup.append(checkboxItem);
-            }
-          });
-
-          customerBlock.append(checkboxGroup);
-          listDiv.append(customerBlock);
-        }
-      }
-    }
-
-    if (hasProfessionals) {
-      container.show();
-    } else {
-      container.hide();
-    }
+    $("#search-outlet").trigger("keyup");
+    updateTotalSelectedCount();
   }
 
   function handleFormApproveReject(reqNo, targetStatus) {
@@ -544,5 +527,14 @@
         });
       }
     });
+  }
+
+  function updateTotalSelectedCount() {
+    let totalChecked = $(".professional-checkbox:checked").length;
+    let badgeText = `${totalChecked} terpilih`;
+    if (maxLimit > 0) {
+      badgeText = `${totalChecked}/${maxLimit} terpilih`;
+    }
+    $("#total-selected-badge").text(badgeText);
   }
 })();

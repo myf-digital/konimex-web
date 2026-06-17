@@ -1017,18 +1017,34 @@ class Api_v1_model extends CI_Model
     {
 		$where = '';
 		$salesmanid_val = '';
+		$area = [];
 		if (!empty($data['salesmanid'])) {
 			$salesmanid_val = $data['salesmanid'];
-			$salesman = $this->db->get_where('m_sales_salesman', ['salesmanid' => $data['salesmanid']])->row_array();
+			$sql_salesman = "
+				select
+					mss.*,
+					mar.nama_regional,
+					maa.nama_area,
+					mas.nama_area as nama_subarea
+				from m_sales_salesman mss
+				left join m_area_regional mar on mar.regionalid = mss.regionalid
+				left join m_area_areasite maa on maa.areaid = mss.areaid
+				left join m_area_subarea mas on mas.subareaid = mss.subareaid
+				where mss.salesmanid = ?
+			";
+			$salesman = $this->db->query($sql_salesman, [$data['salesmanid']])->row_array();
 			if ($salesman) {
 				if (!empty($salesman['regionalid'])) {
 					$where .= ' and a.regionalid = "'.$salesman['regionalid']. '"';
+					$area[] = $salesman['nama_regional'];
 				}
 				if (!empty($salesman['areaid'])) {
 					$where .= ' and a.areaid = "'.$salesman['areaid']. '"';
+					$area[] = $salesman['nama_area'];
 				}
 				if (!empty($salesman['subareaid'])) {
 					$where .= ' and a.subareaid = "'.$salesman['subareaid']. '"';
+					$area[] = $salesman['nama_subarea'];
 				}
 			}
 		}
@@ -1077,13 +1093,13 @@ class Api_v1_model extends CI_Model
 			group by a.customerid
 		";
 		$res = $this->db->query($sql);
-		if (count($res->result_array()) > 0) {
-			$response = new stdClass();
-			$response = $res->result_array();
-			//parsing to result
-			return result($response);
+		$data = $res->result_array();
+		
+		if (count($data) > 0) {
+			return result($data);
 		} else {
-			return result(new stdClass(), 200, "Data tidak ditemukan!");
+			$la = implode(" - ", $area);
+			return result([], 404, "Outlet area (".$la.") tidak ditemukan!");
 		}
     }
 

@@ -323,7 +323,7 @@
             '<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>',
           );
 
-          if (val.status == "1") {
+          if (val.status == "1" && details.length > 0) {
             footer.prepend(`
               <button type="button" class="btn btn-danger pull-left" id="btn-detail-reject">Reject</button>
               <button type="button" class="btn btn-success pull-left" id="btn-detail-approve">Approve</button>

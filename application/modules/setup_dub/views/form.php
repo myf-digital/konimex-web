@@ -37,27 +37,13 @@
 							<label for="keterangan">Keterangan</label>
 							<textarea id="keterangan" name="keterangan" class="form-control" placeholder="Keterangan" rows="1"></textarea>
 						</div>
-						<div class="form-group col-md-12">
-							<div class="col-sm-5">
-								<select id="customerid" class="form-control" size="8" multiple="multiple">
-								</select>
-							</div>
-							
-							<div class="col-sm-2">
-								<button type="button" id="customerid_rightAll" class="btn btn-block"><i class="glyphicon glyphicon-forward"></i></button>
-								<button type="button" id="customerid_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
-								<button type="button" id="customerid_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
-								<button type="button" id="customerid_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
-							</div>
-							
-							<div class="col-sm-5">
-								<select id="customerid_to" class="form-control" size="8" multiple="multiple"></select>
-							</div>
-						</div>
-						<div id="professional-container" class="form-group col-md-12" style="display: none; margin-top: 20px;">
-							<label id="list-professional">Daftar User Binaan (DUB)</label>
-							<div class="well well-sm" style="background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 4px; padding: 15px; max-height: 350px; overflow-y: auto;">
-								<div id="professional-list"></div>
+						<div class="form-group col-md-12" style="margin-top: 20px;">
+							<label>
+								User Binaan (DUB)
+								<span id="total-selected-badge" class="label label-success" style="margin-left: 5px;">0 terpilih</span>
+							</label>
+							<input type="text" id="search-outlet" class="form-control" placeholder="Cari Outlet atau User..." style="margin-bottom: 15px;">
+							<div id="outlet-accordion-container">
 							</div>
 						</div>
                     </div>
