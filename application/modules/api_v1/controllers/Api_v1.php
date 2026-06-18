@@ -688,5 +688,25 @@ class Api_v1 extends CI_Controller
         }
     }
 
+    function call_schedule_dub()
+    {
+        ini_set("memory_limit","512M");
+        ini_set('max_execution_time', '0');
+		
+        if (empty($_GET['periode'])) {
+            $vdate = date("Y-m"); //format date yyyy-mm
+        } else {
+            $vdate = $_GET['periode']; //format date yyyy-mm
+        }
+        
+        $createby = 'Scheduler';
+        $result = $this->api_v1->get_schedule_dub($vdate, $createby);
+        if (!empty($result) && count($result) > 0) {
+			return response("Schedule DUB Done");    
+        } else {
+			return response("Schedule DUB Not Done");
+        }
+
+    }
 }
 

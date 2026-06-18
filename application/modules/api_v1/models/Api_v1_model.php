@@ -1822,4 +1822,180 @@ class Api_v1_model extends CI_Model
             }
     }
 
+	function get_schedule_dub($date, $createby)
+	{
+		$time = strtotime($date);
+		if (!$time) {
+			if (strlen($date) == 7 && strpos($date, '-') !== false) {
+				$time = strtotime($date . '-01');
+			} else {
+				$time = time();
+			}
+		}
+		$tahun = (int) date('Y', $time);
+		$bulan = (int) date('n', $time);
+
+		$days_in_month = (int) date('t', $time);
+		$sundays = 0;
+		for ($d = 1; $d <= $days_in_month; $d++) {
+			$date_str = sprintf("%04d-%02d-%02d", $tahun, $bulan, $d);
+			$day_of_week = (int) date('w', strtotime($date_str));
+			if ($day_of_week == 0) {
+				$sundays++;
+			}
+		}
+		$running_hk = $days_in_month - $sundays;
+
+		$prev_time = strtotime("-1 month", $time);
+		$prev_tahun = (int) date('Y', $prev_time);
+		$prev_bulan = (int) date('n', $prev_time);
+
+		$dataRoles = [
+			'MEDREP' => [
+				'description' => 'MEDICAL REP',
+				'target_dub' => 40,
+			],
+			'MRC' => [
+				'description' => 'MEDICAL REP COORDINATOR',
+				'target_dub' => 30,
+			],
+			'ASS' => [
+				'description' => 'AREA SALES SUPERVISOR',
+				'target_dub' => 30,
+			],
+			'ASM' => [
+				'description' => 'AREA SALES MANAGER',
+				'target_dub' => 20,
+			],
+			'SM' => [
+				'description' => 'SALES MANAGER',
+				'target_dub' => 20,
+			],
+		];
+		$rolenames = array_keys($dataRoles);
+		
+		$sql_roles = "
+			select * from app_role 
+			where role_name in ('" . implode("','", $rolenames) . "')
+		";
+		$app_roles = $this->db->query($sql_roles)->result_array();
+		
+		$existing_role_names = array_column($app_roles, 'role_name');
+		foreach ($dataRoles as $role_name => $r_info) {
+			if (!in_array($role_name, $existing_role_names)) {
+				$insert_data = [
+					'role_name' => $role_name,
+					'description' => $r_info['description'],
+					'status' => 'RA',
+					'created_by' => $createby,
+					'created_date' => date('Y-m-d'),
+				];
+				$this->db->insert('app_role', $insert_data);
+				$new_id = $this->db->insert_id();
+				
+				$app_roles[] = [
+					'role_id' => $new_id,
+					'role_name' => $role_name,
+					'description' => $r_info['description'],
+					'status' => 'RA',
+				];
+			}
+		}
+		
+		$role_ids = array_column($app_roles, 'role_id');
+		$target_map = [];
+		if (!empty($role_ids)) {
+			$sql_targets = "
+				select role_id, tahun, bulan, target_dub, target_hk, target_call_dub, target_call_visit
+				from role_mapping_target
+				where role_id in (" . implode(",", $role_ids) . ")
+				  and (
+					(tahun = $tahun and bulan = $bulan)
+					or (tahun = $prev_tahun and bulan = $prev_bulan)
+				  )
+			";
+			$targets = $this->db->query($sql_targets)->result_array();
+			foreach ($targets as $t) {
+				$key = $t['role_id'] . '_' . $t['tahun'] . '_' . $t['bulan'];
+				$target_map[$key] = $t;
+			}
+		}
+		
+		$result_roles = [];
+		foreach ($app_roles as $ar) {
+			$role_id = $ar['role_id'];
+			$role_name = $ar['role_name'];
+			
+			$curr_key = $role_id . '_' . $tahun . '_' . $bulan;
+			$prev_key = $role_id . '_' . $prev_tahun . '_' . $prev_bulan;
+			
+			$target_dub = null;
+			$target_call_dub = null;
+			$target_call_visit = null;
+			$is_new_target = false;
+			
+			if (!empty($target_map[$curr_key])) {
+				$t = $target_map[$curr_key];
+				$target_dub = $t['target_dub'];
+				$target_call_dub = $t['target_call_dub'];
+				$target_call_visit = $t['target_call_visit'];
+			} else {
+				$is_new_target = true;
+				if (!empty($target_map[$prev_key])) {
+					$t = $target_map[$prev_key];
+					$target_dub = $t['target_dub'];
+					$target_call_dub = $t['target_call_dub'];
+					$target_call_visit = $t['target_call_visit'];
+				} else {
+					$target_dub = !empty($dataRoles[$role_name]['target_dub']) ? $dataRoles[$role_name]['target_dub'] : 0;
+					$target_call_dub = 2.5;
+					$target_call_visit = 8;
+				}
+			}
+			
+			if (empty($target_dub)) {
+				$target_dub = !empty($dataRoles[$role_name]['target_dub']) ? $dataRoles[$role_name]['target_dub'] : 0;
+			}
+			if (empty($target_call_dub)) {
+				$target_call_dub = 2.5;
+			}
+			if (empty($target_call_visit)) {
+				$target_call_visit = 8;
+			}
+
+			if ($is_new_target) {
+				$insert_target = [
+					'tahun' => $tahun,
+					'bulan' => $bulan,
+					'role_id' => $role_id,
+					'target_dub' => $target_dub,
+					'target_hk' => $running_hk,
+					'target_call_dub' => $target_call_dub,
+					'target_call_visit' => $target_call_visit,
+					'created_by' => $createby,
+					'created_date' => date('Y-m-d H:i:s'),
+				];
+				$this->db->insert('role_mapping_target', $insert_target);
+			}
+
+			$result_roles[] = [
+				'role_id' => (string)$role_id,
+				'role_name' => $role_name,
+				'description' => $ar['description'],
+				'status' => $ar['status'],
+				'tahun' => (string) $tahun,
+				'bulan' => (string) $bulan,
+				'target_dub' => (string) $target_dub,
+				'target_hk' => (string) $running_hk,
+				'target_call_dub' => number_format((float) $target_call_dub, 1, '.', ''),
+				'target_call_visit' => number_format((float) $target_call_visit, 1, '.', ''),
+			];
+		}
+		
+		if (count($result_roles) > 0) {
+			return $result_roles;
+		} else {
+			return [];
+		}
+	}
 }

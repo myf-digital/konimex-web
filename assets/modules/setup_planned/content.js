@@ -63,7 +63,7 @@
           },
           {
             field: "periode",
-            title: "PERIODE",
+            title: "TGL PENGAJUAN",
             halign: "center",
             align: "center",
             sortable: "true",

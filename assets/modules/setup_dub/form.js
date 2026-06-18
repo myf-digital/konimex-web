@@ -256,12 +256,7 @@
       common.direct("setup_dub");
     });
 
-    $(".datepicker").datepicker({
-      format: "yyyy-mm-dd",
-      autoclose: true,
-      todayHighlight: true,
-      orientation: "bottom right",
-    });
+    $("#periode").val(moment().format("YYYY-MM-DD"));
   }
 
   function loadSalesman(data) {

@@ -26,12 +26,12 @@
 							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP"></select>
 						</div>
 						<div class="form-group col-xs-12 col-sm-12 col-md-4">
-							<label for="periode">Periode</label>
+							<label for="periode">Tanggal Pengajuan</label>
 							<div class="input-group date">
 								<div class="input-group-addon">
 									<span class="glyphicon glyphicon-calendar"></span>
 								</div>
-								<input id="periode" placeholder="Periode" type="text" class="form-control datepicker" name="periode" readonly>
+								<input id="periode" placeholder="Tanggal Pengajuan" type="text" class="form-control datepicker" name="periode" readonly>
 							</div>
 						</div>
 						<div class="form-group col-xs-12 col-sm-12 col-md-4">

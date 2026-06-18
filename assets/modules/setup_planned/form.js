@@ -193,12 +193,7 @@
       common.direct("setup_planned");
     });
 
-    $(".datepicker").datepicker({
-      format: "yyyy-mm-dd",
-      autoclose: true,
-      todayHighlight: true,
-      orientation: "bottom right",
-    });
+    $("#periode").val(moment().format("YYYY-MM-DD"));
 
     $("#planned-daterange").daterangepicker({
       locale: {
