@@ -219,7 +219,9 @@
         firstDay: 1,
       },
       autoUpdateInput: false,
-      minDate: isUpdate ? null : moment().add(1, "days"),
+      minDate: (isUpdate && param && param.periode)
+        ? moment(param.periode)
+        : moment().add(1, "days"),
     });
 
     $("#planned-daterange").on("apply.daterangepicker", function (ev, picker) {
