@@ -634,8 +634,17 @@ class Api_v1_model extends CI_Model
 		}
 	}
 
-	function get_tipesalesman()
+	function get_tipesalesman($data)
     {
+		$params = [];
+		$where = '';
+		if (!empty($data['param'])) {
+			$paramGlobal = $this->db->query("select * from ref_param_global where key_param = ?", [$data['param']])->row();
+			if ($paramGlobal) {
+				$where = " and lower(a.role_name) in ?";
+				$params[] = explode("|", strtolower($paramGlobal->value));
+			}
+		}
 		$sql = "
 			select
 				a.role_name as idtipesales,
@@ -643,9 +652,9 @@ class Api_v1_model extends CI_Model
 			from app_role a
 			where a.role_name not like '%admin%' and 
 				a.description is not null
-				and a.description <> ''
+				and a.description <> '' $where
 		";
-		$res_ss = $this->db->query($sql);
+		$res_ss = $this->db->query($sql, $params);
 		if (count($res_ss->result_array()) > 0) {
 			$response = new stdClass();
 			$response = $res_ss->result_array();

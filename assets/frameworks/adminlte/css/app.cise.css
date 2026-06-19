@@ -318,3 +318,50 @@ background: linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1))
     transition: transform 0.2s;
     color: #aaa;
 }
+.dashboard {
+    .dashboard-card {
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    #col-barat .dashboard-card,
+    #col-timur .dashboard-card {
+        margin-bottom: 0;
+    }
+    #col-barat > div + div,
+    #col-timur > div + div {
+        margin-top: 20px;
+    }
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 300px;
+    }
+    .section-title {
+        font-size: 15px;
+        font-weight: bold;
+        margin: 0 0 16px;
+        padding: 10px 14px;
+        background: #f4f4f4;
+        border-left: 4px solid #00a65a;
+        border-radius: 4px;
+    }
+    #charts-row {
+        margin-bottom: 8px;
+    }
+    #charts-row .col-md-4 {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    #col-barat, #col-timur {
+        padding-top: 4px;
+    }
+    .clickable-card:hover {
+        box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    }
+}
+ .pointer {
+    cursor: pointer;
+}

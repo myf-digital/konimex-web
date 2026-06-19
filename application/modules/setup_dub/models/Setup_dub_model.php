@@ -350,6 +350,14 @@ class Setup_dub_model extends CI_Model
         }
 
         $req_no = $data['req_no'];
+        $req_data = $this->db->get_where('req_dub', ['req_no' => $req_no])->row_array();
+        if (empty($req_data)) {
+            return [
+                'status' => false,
+                'message' => 'Data request DUB tidak ditemukan.'
+            ];
+        }
+
         $status = $data['status'];
         $reason = isset($data['reason']) ? $data['reason'] : '';
         $user = isset($data['usersession']) ? $data['usersession'] : 'Admin';
@@ -380,6 +388,28 @@ class Setup_dub_model extends CI_Model
             ];
         } else {
             $this->db->trans_commit();
+
+            $x_players = get_x_player([$req_data['salesmanid']]);
+            if (count($x_players) > 0) {
+                foreach ($x_players as $xp) {
+                    if (isset($xp->account_id)) {
+                        send_onesignal_api([
+                            'player_ids' => $xp->player_id,
+                            'external_ids' => $xp->account_id,
+                            'title' => $status == 3 ? 'Approve DUB' : 'Reject DUB',
+                            'message' => $status == 3 ? 'DUB berhasil di Approve oleh ' . ($user ? ' (' . $user . ')' : '') : 'DUB berhasil di Reject oleh ' . ($user ? ' (' . $user . ')' : ''),
+                            'data' => array_merge(
+                                ['type' => $status == 3 ? 'Approve DUB' : 'Reject DUB'], [
+                                    'req_no' => $req_data['req_no'] ?? '',
+                                    'periode' => $req_data['periode'] ?? '',
+                                    'salesmanid' => $req_data['salesmanid'] ?? '',
+                                ]),
+                            'url' => '/setup_dub',
+                        ]);
+                    }
+                }
+            }
+
             return [
                 'status' => true,
                 'message' => 'Status berhasil diperbarui.',

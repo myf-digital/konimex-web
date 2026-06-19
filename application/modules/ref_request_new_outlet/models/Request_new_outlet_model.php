@@ -66,14 +66,6 @@ class Request_new_outlet_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    public function get_x_player($ids)
-    {
-        $this->db->select('*');
-		$this->db->from('x_player');
-        $this->db->where_in('account_id', $ids);
-        return $this->db->get()->result();
-    }
-
     public function update($data)
     {
         $data["modified_by"] = $data["usersession"];
@@ -112,12 +104,13 @@ class Request_new_outlet_model extends CI_Model
 
         // notif onesignal
         if (count($data_custob) > 0) {
-            $x_players = $this->get_x_player([$data_custob['salesmanid']]);
+            $x_players = get_x_player([$data_custob['salesmanid']]);
             if (count($x_players) > 0) {
                 foreach ($x_players as $xp) {
-                    if (isset($xp->player_id)) {
-                        send_onesignal([
+                    if (isset($xp->account_id)) {
+                        send_onesignal_api([
                             'player_ids' => $xp->player_id,
+                            'external_ids' => $xp->account_id,
                             'title' => 'Approve Outlet',
                             'message' => 'Outlet ' . ($data['kode_outlet'] ? '(' . $data['kode_outlet'] : '') . ($data['nama_customer'] ? ' ' . $data['nama_customer'] : '') . ') berhasil di Approve' . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : ''),
                             'data' => array_merge(['type' => 'Approve Outlet'], [
@@ -126,7 +119,7 @@ class Request_new_outlet_model extends CI_Model
                                 'nama_customer' => $data['nama_customer'] ?? '',
                                 'salesmanid' => $data['salesmanid'] ?? '',
                             ]),
-                            'url' => 'ref_customer',
+                            'url' => '/ref_customer',
                         ]);
                     }
                 }

@@ -725,23 +725,18 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 										a.customerid, v.latest_jjid, v.nama_customer, v.typeid, v.nama_account,
 										a.nourut, a.tipe_pic, a.professional_name, 
 										a.array_product, 
-										CASE
-											WHEN (
-												SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
-												FROM ref_brand rb
-												WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
-											) IS NOT NULL THEN (
-												SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
-												FROM ref_brand rb
-												WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
-											)
-											ELSE a.array_product
-										END as brands,
+										COALESCE(
+											(
+												SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ',')
+												FROM m_product mp
+												WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
+											),
+											a.array_product
+										) as brands,
 										a.keterangan, a.start_detailing, a.url_img_detailing, 
 										a.latitude_cell, a.longitude_cell, a.end_detailing, a.status, a.reason
 								FROM trx_visit_detailing a left join v_outlet_all v on a.customerid =v.customerid
-								where a.periode='".$periode."' and a.salesmanid='".$salesmanid."' and a.customerid='".$customerid."'
-								;");
+								where a.periode='".$periode."' and a.salesmanid='".$salesmanid."' and a.customerid='".$customerid."';");
 		$data = $q->result_array();
 		return $data;
 	}
@@ -755,18 +750,14 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		$this->db->select("
 			url_img_detailing,
 			keterangan,
-			CASE
-				WHEN (
-					SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
-					FROM ref_brand rb
-					WHERE FIND_IN_SET(rb.brandid, array_product) > 0
-				) IS NOT NULL THEN (
-					SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
-					FROM ref_brand rb
-					WHERE FIND_IN_SET(rb.brandid, array_product) > 0
-				)
-				ELSE array_product
-			END as brands
+			COALESCE(
+				(
+					SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ',')
+					FROM m_product mp
+					WHERE FIND_IN_SET(mp.productid, array_product) > 0
+				),
+				array_product
+			) as brands
 		");
 		$this->db->from("trx_visit_detailing");
 		$this->db->where("periode",$periode);

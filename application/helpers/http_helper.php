@@ -3,11 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 if (!function_exists('send_onesignal')) {
     function send_onesignal($payload) {
-        if (!$payload || !isset($payload['player_ids'])) {
-            log_message('error', 'Player Ids OneSignal configuration is incomplete.');
+        if (!$payload || !isset($payload['external_ids'])) {
+            log_message('error', 'External Ids OneSignal configuration is incomplete.');
             return [
                 'status' => false,
-                'message' => 'Player Ids OneSignal is incomplete.'
+                'message' => 'External Ids OneSignal is incomplete.'
             ];
         }
         if ($payload['title'] != 'Berhasil Login') send_onesignal_api($payload);
@@ -35,7 +35,7 @@ if (!function_exists('send_onesignal')) {
         ];
         $fields = [
             'app_id' => $app_id,
-            'include_player_ids' => is_array($payload['player_ids']) ? $payload['player_ids'] : [$payload['player_ids']],
+            'include_external_user_ids' => is_array($payload['external_ids']) ? $payload['external_ids'] : [$payload['external_ids']],
             'headings' => ['en' => $payload['title']],
             'contents' => ['en' => $payload['message']],
             'url' => $url_to . $payload['url'],
@@ -58,11 +58,11 @@ if (!function_exists('send_onesignal')) {
 
 if (!function_exists('send_onesignal_api')) {
     function send_onesignal_api($payload) {
-        if (!$payload || !isset($payload['player_ids'])) {
-            log_message('error', 'Player Ids OneSignal configuration is incomplete.');
+        if (!$payload || !isset($payload['external_ids'])) {
+            log_message('error', 'External Ids OneSignal configuration is incomplete.');
             return [
                 'status' => false,
-                'message' => 'Player Ids OneSignal is incomplete.'
+                'message' => 'External Ids OneSignal is incomplete.'
             ];
         }
 
@@ -89,7 +89,7 @@ if (!function_exists('send_onesignal_api')) {
         ];
         $fields = [
             'app_id' => $app_id,
-            'include_player_ids' => is_array($payload['player_ids']) ? $payload['player_ids'] : [$payload['player_ids']],
+            'include_external_user_ids' => is_array($payload['external_ids']) ? $payload['external_ids'] : [$payload['external_ids']],
             'headings' => ['en' => $payload['title']],
             'contents' => ['en' => $payload['message']],
             'url' => $url_to . $payload['url'],
@@ -614,5 +614,17 @@ if (!function_exists('get_status_po_label')) {
             case '3': return 'Closing';
             default:  return 'Pending';
         }
+    }
+}
+
+
+if (!function_exists('get_x_player')) {
+    function get_x_player($ids)
+    {
+        $CI =& get_instance();
+		$CI->db->select('*');
+		$CI->db->from('x_player');
+        $CI->db->where_in('account_id', $ids);
+        return $CI->db->get()->result();
     }
 }

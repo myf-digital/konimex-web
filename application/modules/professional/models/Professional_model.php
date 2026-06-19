@@ -211,6 +211,14 @@ class Professional_model extends CI_Model
         }
 
         $id = $data['id'];
+        $req_data = $this->db->get_where('ref_professional', ['id' => $id])->row_array();
+        if (empty($req_data)) {
+            return [
+                'status' => false,
+                'message' => 'Data request user tidak ditemukan.'
+            ];
+        }
+
         $status = $data['status'];
         $reason = isset($data['reason']) ? $data['reason'] : '';
         $user = isset($data['usersession']) ? $data['usersession'] : 'Admin';
@@ -237,10 +245,36 @@ class Professional_model extends CI_Model
             ];
         } else {
             $this->db->trans_commit();
+
+            $x_players = get_x_player([$req_data['created_by']]);
+            if (count($x_players) > 0) {
+                foreach ($x_players as $xp) {
+                    if (isset($xp->account_id)) {
+                        send_onesignal_api([
+                            'player_ids' => $xp->player_id,
+                            'external_ids' => $xp->account_id,
+                            'title' => $status == 3 ? 'Approve Professional' : 'Reject Professional',
+                            'message' => $status == 3 ? 'Professional ' . ($req_data['nama_professional'] ? '(' . $req_data['nama_professional'] : '') . ') berhasil di Approve' . ($user ? ' (' . $user . ')' : '') : 'Professional ' . ($req_data['nama_professional'] ? '(' . $req_data['nama_professional'] : '') . ') berhasil di Reject' . ($user ? ' (' . $user . ')' : ''),
+                            'data' => array_merge(
+                                ['type' => $status == 3 ? 'Approve Professional' : 'Reject Professional'], [
+                                    'id' => $req_data['id'] ?? '',
+                                    'nama_professional' => $req_data['nama_professional'] ?? '',
+                                    'type' => $req_data['type'] ?? '',
+                                    'tanggal_lahir' => $req_data['tanggal_lahir'] ?? '',
+                                    'tanggal_aniv_pernikahan' => $req_data['tanggal_aniv_pernikahan'] ?? '',
+                                    'spesialisasi_id' => $req_data['spesialisasi_id'] ?? '',
+                                    'salesmanid' => $req_data['salesmanid'] ?? '',
+                                ]),
+                            'url' => '/professional',
+                        ]);
+                    }
+                }
+            }
+
             return [
                 'status' => true,
                 'message' => 'Status berhasil diperbarui.',
-                'data' => $customerid
+                'data' => $id
             ];
         }
     }

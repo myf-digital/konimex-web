@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Dashboard_pjp_daily extends BaseController
+class Dashboard_activity extends BaseController
 {
     private $api_base = '';
 
@@ -24,13 +24,12 @@ class Dashboard_pjp_daily extends BaseController
         $ci_session = $_COOKIE['ci_session'] ?? '';
         $token      = $this->session->userdata('token') ?: 'expired';
 
-        $ch = curl_init($this->api_base . 'dash_pjp_daily_history');
+        $ch = curl_init($this->api_base . 'dashboard_activity');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => [
-                'start_date' => $param['start_date'] ?? date('Y-m-01'),
-                'end_date'   => $param['end_date']   ?? date('Y-m-d'),
+                'periode' => $param['periode'] ?? date('Y-m'),
             ],
             CURLOPT_HTTPHEADER     => [
                 'X-Token: ' . $token,

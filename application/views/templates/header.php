@@ -46,12 +46,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?php echo base_url('assets/multiselect/css/style.css'); ?>" />
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/calendar.css'); ?>"/>
 
-<style>
-    .pointer {
-        cursor: pointer;
-    }
-</style>
-
 <script src="<?php echo base_url('assets/frameworks/jquery/jquery.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/jquery-ui-1.11.4/jquery-ui.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/bootstrap/js/bootstrap.min.js'); ?>"></script>
@@ -67,15 +61,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/plugins/bootstrap-timepicker/bootstrap-clockpicker.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/moment/moment.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/daterangepicker/daterangepicker.min.js'); ?>"></script>
-<script>
-    moment.updateLocale("id", {
-        months: "Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember".split("_"),
-        monthsShort: "Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des".split("_"),
-        weekdays: "Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu".split("_"),
-        weekdaysShort: "Min_Sen_Sel_Rab_Kam_Jum_Sab".split("_"),
-        weekdaysMin: "Mg_Sn_Sl_Rb_Km_Jm_Sb".split("_")
-    });
-</script>
 <script src="<?php echo base_url('assets/plugins/validation/jquery.form.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/validation/jquery.validate.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/validation/additional-methods.min.js'); ?>"></script>
@@ -96,10 +81,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.js'); ?>"></script>
 
 <!-- Add fancyBox main JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="<?php echo base_url('assets/frameworks/adminlte/js/sweetalert2.js'); ?>"></script>
+<script src="<?php echo base_url('assets/frameworks/adminlte/js/chart.umd.js'); ?>"></script>
+<script src="<?php echo base_url('assets/frameworks/adminlte/js/xlsx.full.js'); ?>"></script>
 <script src="<?php echo base_url('assets/fancybox/jquery.mousewheel-3.0.6.pack.js'); ?>"></script>
 <script src="<?php echo base_url('assets/fancybox/jquery.fancybox.js?v=2.1.5'); ?>"></script>
 
 <script>
     const session = new Common().getCookie("session");
+    const URL_API = "<?php echo URL_API; ?>";
+    moment.updateLocale("id", {
+        months: "Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember".split("_"),
+        monthsShort: "Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des".split("_"),
+        weekdays: "Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu".split("_"),
+        weekdaysShort: "Min_Sen_Sel_Rab_Kam_Jum_Sab".split("_"),
+        weekdaysMin: "Mg_Sn_Sl_Rb_Km_Jm_Sb".split("_")
+    });
+    if ($.fn.datepicker && !$.fn.datepicker.dates['id']) {
+        $.fn.datepicker.dates['id'] = {
+            days: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+            daysShort: ["Mgu", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
+            daysMin: ["Mg", "Sn", "Sl", "Ra", "Ka", "Ju", "Sa"],
+            months: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+            monthsShort: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"],
+            today: "Hari Ini",
+            clear: "Kosongkan"
+        };
+    }
 </script>

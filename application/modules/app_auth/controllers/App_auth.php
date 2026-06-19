@@ -44,7 +44,7 @@ class App_auth extends CI_Controller
                         'telepon' => $result->session['salesmanid'] ?? '',
                         'user_type' => $result->session['type'] ?? '',
                     ]),
-                    'url' => 'app_dashboard',
+                    'url' => '/app_dashboard',
                 ]);
                 $result->res_onesignal = $resOnesignal ? $resOnesignal['data'] : false;
             }

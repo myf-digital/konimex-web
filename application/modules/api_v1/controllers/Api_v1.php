@@ -252,7 +252,7 @@ class Api_v1 extends CI_Controller
     function call_tipesalesman()
     {
         $data = param_input();
-        $result = $this->api_v1->get_tipesalesman();
+        $result = $this->api_v1->get_tipesalesman($data);
         if (200 == $result->code) {
             return response($result->result);
         } else {
@@ -706,7 +706,6 @@ class Api_v1 extends CI_Controller
         } else {
 			return response("Schedule DUB Not Done");
         }
-
     }
 }
 

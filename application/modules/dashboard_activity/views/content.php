@@ -1,8 +1,8 @@
 <section class="content-header">
-    <h1>Dashboard Visit</h1>
+    <h1>Dashboard Activity</h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Visit</li>
+        <li class="active">Activity</li>
     </ol>
 </section>
 
@@ -13,18 +13,15 @@
             <div class="box box-success">
                 <div class="box-header with-border">
                     <div class="form-group col-md-2">
-                        <label>Start Date</label>
+                        <label>Periode</label>
                         <div class="input-group date">
                             <div class="input-group-addon"><span class="glyphicon glyphicon-th"></span></div>
-                            <input id="start_date" type="text" class="form-control datepicker" readonly>
+                            <input id="periode" type="text" class="form-control datepicker" readonly>
                         </div>
                     </div>
-                    <div class="form-group col-md-2">
-                        <label>End Date</label>
-                        <div class="input-group date">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-th"></span></div>
-                            <input id="end_date" type="text" class="form-control datepicker" readonly>
-                        </div>
+                    <div class="form-group col-md-2" id="div_tipe_sales">
+                        <label>Tipe Sales</label>
+                        <select id="tipe_sales" class="form-control"></select>
                     </div>
                     <div class="form-group col-md-8" style="white-space: nowrap;">
                         <button id="btn_load" type="button" class="btn btn-warning" style="margin-top:2.7rem;">
@@ -91,4 +88,4 @@
     </div>
 </div>
 
-<script src="<?php echo base_url() . 'assets/modules/dashboard_pjp_daily/dashboard-pjp-daily-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/dashboard_activity/dashboard-activity-content.js' ?>"></script>

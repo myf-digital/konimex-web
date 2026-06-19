@@ -442,18 +442,14 @@ class Rep_productivity_model extends CI_Model
                                             WHEN a.status = 2 THEN 'Belum Valid'
                                             ELSE 'Butuh Verifikasi'
                                         END as status_label,
-                                        CASE
-                                            WHEN (
-                                                SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
-                                                FROM ref_brand rb
-                                                WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
-                                            ) IS NOT NULL THEN (
-                                                SELECT GROUP_CONCAT(DISTINCT rb.brand ORDER BY rb.brand SEPARATOR ',')
-                                                FROM ref_brand rb
-                                                WHERE FIND_IN_SET(rb.brandid, a.array_product) > 0
-                                            )
-                                            ELSE a.array_product
-                                        END as brands
+                                        COALESCE(
+                                            (
+                                                SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ',')
+                                                FROM m_product mp
+                                                WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
+                                            ),
+                                            a.array_product
+                                        ) as brands
                                     from trx_visit_detailing a
                                     left join v_gff_info b on a.salesmanid=b.salesmanid
                                     left join v_outlet_all c on a.customerid=c.customerid

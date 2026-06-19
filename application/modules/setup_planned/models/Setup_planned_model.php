@@ -341,6 +341,14 @@ class Setup_planned_model extends CI_Model
         }
 
         $req_no = $data['req_no'];
+        $req_data = $this->db->get_where('req_pjp_daily', ['req_no' => $req_no])->row_array();
+        if (empty($req_data)) {
+            return [
+                'status' => false,
+                'message' => 'Data request Planned tidak ditemukan.'
+            ];
+        }
+
         $status = $data['status'];
         $reason = isset($data['reason']) ? $data['reason'] : '';
         $user = isset($data['usersession']) ? $data['usersession'] : 'Admin';
@@ -371,6 +379,29 @@ class Setup_planned_model extends CI_Model
             ];
         } else {
             $this->db->trans_commit();
+
+            $x_players = get_x_player([$req_data['salesmanid']]);
+            if (count($x_players) > 0) {
+                foreach ($x_players as $xp) {
+                    if (isset($xp->account_id)) {
+                        send_onesignal_api([
+                            'player_ids' => $xp->player_id,
+                            'external_ids' => $xp->account_id,
+                            'title' => $status == 3 ? 'Approve Planned' : 'Reject Planned',
+                            'message' => $status == 3 ? 'Planned berhasil di Approve oleh ' . ($user ? ' (' . $user . ')' : '') : 'Planned berhasil di Reject oleh ' . ($user ? ' (' . $user . ')' : ''),
+                            'data' => array_merge(
+                                ['type' => $status == 3 ? 'Approve Planned' : 'Reject Planned'], [
+                                    'req_no' => $req_data['req_no'] ?? '',
+                                    'periode' => $req_data['periode'] ?? '',
+                                    'salesmanid' => $req_data['salesmanid'] ?? '',
+                                    'salesman_name' => $req_data['salesman_name'] ?? '',
+                                ]),
+                            'url' => '/setup_dub',
+                        ]);
+                    }
+                }
+            }
+
             return [
                 'status' => true,
                 'message' => 'Status berhasil diperbarui.',

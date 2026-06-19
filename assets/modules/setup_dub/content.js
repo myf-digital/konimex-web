@@ -2,6 +2,11 @@
   // import commons
   const common = new Common();
   const commonGrid = new CommonGrid();
+
+  if ($.fn.modal && $.fn.modal.Constructor) {
+    $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+  }
+
   // update title
   common.setTitle("Setup DUB");
   // ui components

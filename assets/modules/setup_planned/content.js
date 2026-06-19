@@ -8,6 +8,10 @@
   let uiTbl = $("#tbl-setup-planned");
   let paramsession = common.getCookie("session");
 
+  if ($.fn.modal && $.fn.modal.Constructor) {
+    $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+  }
+
   initializeGrid();
   initialize();
 
