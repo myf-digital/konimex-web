@@ -20,6 +20,18 @@
         display: block;
         margin: 0 auto 5px;
     }
+    .boc-edit-form {
+        position: fixed !important;
+        right: 0 !important;
+        top: 50px !important;
+        height: calc(100vh - 50px) !important;
+        z-index: 1020 !important;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2) !important;
+        max-width: 100% !important;
+    }
+    #tree {
+        height: 90vh !important;
+    }
 </style>
 
 <!-- Content Header (Page header) -->
@@ -50,5 +62,4 @@
 </section>
 
 <!-- JS content -->
-<script src="https://balkan.app/js/OrgChart.js"></script>
 <script src="<?php echo base_url() . 'assets/modules/ref_sales_salesman/sales-salesman-org.js' ?>"></script>

@@ -71,9 +71,9 @@ $(function () {
     let pct = target > 0 ? Math.round((actual / target) * 100) : 0;
     let barPct = Math.min(100, pct);
     return `
-      <div style="width: 100%; min-width: 140px; background-color: #ff4e00; border-radius: 4px; overflow: hidden; height: 18px; position: relative;">
-        <div style="width: ${barPct}%; background-color: #0b5394; height: 100%; transition: width 0.3s;"></div>
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-align: center; font-size: 11px; color: #fff; line-height: 18px; font-weight: bold; text-shadow: 0px 0px 2px rgba(0,0,0,0.5);">
+      <div class="dashboard-progress">
+        <div class="dashboard-progress-fill" style="width: ${barPct}%;"></div>
+        <div class="dashboard-progress-text">
           ${actual} / ${target} (${pct})
         </div>
       </div>
@@ -92,7 +92,7 @@ $(function () {
 
   $btnExport.on("click", exportExcel);
 
-  function initialize() {
+  function initialize(type = "") {
     if (paramsession) {
       if (paramsession.subareaid) {
         loadSubareaDetail(
@@ -116,10 +116,14 @@ $(function () {
       if (["medrep", "mrc"].includes(paramsession.role_name.toLowerCase())) {
         $divTipeSales.hide();
       } else {
-        loadTipeSales();
+        if (type != "load") {
+          loadTipeSales();
+        }
       }
     } else {
-      loadTipeSales();
+      if (type != "load") {
+        loadTipeSales();
+      }
       loadSummary();
     }
   }
@@ -134,7 +138,7 @@ $(function () {
       salesman: null,
       visits: null,
     };
-    initialize();
+    initialize("load");
   });
 
   function apiCall(extraData) {
@@ -236,7 +240,7 @@ $(function () {
   function loadRegionDetail(regionalid, nama) {
     $titleDetail.text(nama);
     $colDetail.html(
-      `<p class="text-muted" style="padding:10px;"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
+      `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
     );
     $rowDetail.show();
     $rowDetailArea.hide();
@@ -255,7 +259,7 @@ $(function () {
   function loadAreaDetail(regionalid, areaid, nama) {
     $titleDetailArea.text(nama);
     $colDetailArea.html(
-      `<p class="text-muted" style="padding:10px;"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
+      `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
     );
     $rowDetailArea.show();
     $rowDetailSubarea.hide();
@@ -272,7 +276,7 @@ $(function () {
   function loadSubareaDetail(regionalid, areaid, subareaid, nama) {
     $titleDetailSubarea.text(nama);
     $colDetailSubarea.html(
-      `<p class="text-muted" style="padding:10px;"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
+      `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
     );
     $rowDetailSubarea.show();
     $rowDetailSalesman.hide();
@@ -289,7 +293,7 @@ $(function () {
   function loadSalesmanDetail(salesmanid, nama) {
     $titleDetailSalesman.text(nama + " (" + salesmanid + ")");
     $colDetailSalesman.html(
-      `<p class="text-muted" style="padding:10px;"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
+      `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
     );
     $rowDetailSalesman.show();
 
@@ -499,20 +503,16 @@ $(function () {
   }
 
   function makeCard(canvasId, title, colClass, clickable) {
-    let style = "padding-left:10px;padding-right:10px;";
-    let cardStyle = clickable
-      ? "cursor:pointer;transition:box-shadow .2s;"
-      : "";
     let cardAttr = clickable
       ? 'class="dashboard-card clickable-card"'
       : 'class="dashboard-card"';
     let clickHelper = clickable
-      ? ` <small style="font-size:11px;color:#aaa;font-weight:normal;"><i class="fa fa-hand-pointer-o"></i> Klik untuk detail</small>`
+      ? ` <small><i class="fa fa-hand-pointer-o"></i> Klik untuk detail</small>`
       : "";
     return `
-      <div class="${colClass || "col-md-12"}" style="${style}">
-        <div ${cardAttr} style="${cardStyle}" data-canvas="${canvasId}">
-          <h5 style="margin:0 0 12px;font-weight:600;">
+      <div class="${colClass || "col-md-12"} dashboard-col-padding">
+        <div ${cardAttr} data-canvas="${canvasId}">
+          <h5>
             ${title}${clickHelper}
           </h5>
           <div class="chart-container">
@@ -575,6 +575,8 @@ $(function () {
   }
 
   function exportExcel() {
+    let selectedTipeSales = $tipeSales.val();
+
     let hdr = [
       "Nama",
       "Planned DUB (Actual)",
@@ -604,6 +606,13 @@ $(function () {
         };
         if (r.detail) {
           r.detail.forEach(function (d) {
+            if (
+              selectedTipeSales &&
+              d.tipe_sales &&
+              selectedTipeSales.toLowerCase() != d.tipe_sales.toLowerCase()
+            ) {
+              return;
+            }
             t.call_planned += parseInt(d.call_planned) || 0;
             t.target_planned += parseInt(d.target_planned) || 0;
             t.call_visit += parseInt(d.call_visit) || 0;
@@ -639,6 +648,13 @@ $(function () {
       exportData.summary.forEach(function (region) {
         if (region.detail) {
           region.detail.forEach(function (d) {
+            if (
+              selectedTipeSales &&
+              d.tipe_sales &&
+              selectedTipeSales.toLowerCase() != d.tipe_sales.toLowerCase()
+            ) {
+              return;
+            }
             totals.call_planned += parseInt(d.call_planned) || 0;
             totals.target_planned += parseInt(d.target_planned) || 0;
             totals.call_visit += parseInt(d.call_visit) || 0;
@@ -670,10 +686,19 @@ $(function () {
       );
     }
     if (exportData.salesman) {
+      let filteredSalesmanData = exportData.salesman.data;
+      if (selectedTipeSales) {
+        filteredSalesmanData = filteredSalesmanData.filter(function (r) {
+          return (
+            r.tipe_sales &&
+            selectedTipeSales.toLowerCase() == r.tipe_sales.toLowerCase()
+          );
+        });
+      }
       addSection(
         "Subarea: " + (exportData.salesman.label || "Subarea"),
         hdrSalesman,
-        exportData.salesman.data.map(function (r) {
+        filteredSalesmanData.map(function (r) {
           return [
             r.salesmanid,
             r.nama_salesman,
@@ -752,10 +777,31 @@ $(function () {
       return result;
     }
 
+    let salesmanId = "";
+    let salesmanName = "";
+    let periodVal = $periode.val() || moment().format("MM yyyy");
+
     if (exportData.visits) {
       let vData = exportData.visits.data;
       if (vData && vData.length > 0) {
         let salesmanObj = vData[0];
+        let firstVisit =
+          (salesmanObj.planned && salesmanObj.planned[0]) ||
+          (salesmanObj.unplanned && salesmanObj.unplanned[0]);
+        if (firstVisit) {
+          salesmanId = firstVisit.salesmanid || "";
+          salesmanName = firstVisit.nama_salesman || "";
+          periodVal = firstVisit.periode || periodVal;
+        }
+        if (!salesmanId && exportData.visits.label) {
+          let label = exportData.visits.label;
+          let match = label.match(/^(.*)\s*\((.*)\)$/);
+          if (match) {
+            salesmanName = match[1].trim();
+            salesmanId = match[2].trim();
+          }
+        }
+
         planRows = planRows.concat(
           visitRowsWithDetail(salesmanObj.planned || salesmanObj.plan_outlet),
         );
@@ -767,17 +813,92 @@ $(function () {
       }
     }
 
+    let hdrSpesialisasi = [
+      "Periode",
+      "Salesman ID",
+      "Nama Salesman",
+      "Spesialisasi",
+      "Target",
+      "Realisasi",
+      "Kekurangan",
+      "Pencapaian (%)",
+    ];
+    let spesialisasiRows = [hdrSpesialisasi];
+
+    let hdrProduk = [
+      "Periode",
+      "Salesman ID",
+      "Nama Salesman",
+      "Product ID",
+      "Nama Invoice",
+      "Target",
+      "Realisasi",
+      "Kekurangan",
+      "Pencapaian (%)",
+    ];
+    let produkRows = [hdrProduk];
+
+    if (exportData.visits) {
+      let vData = exportData.visits.data;
+      if (vData && vData.length > 0) {
+        let salesmanObj = vData[0];
+
+        let specTargets = salesmanObj.spesialis_target || [];
+        specTargets.forEach(function (t) {
+          let targetVal = parseInt(t.target) || 0;
+          let actualVal = parseInt(t.actual) || 0;
+          let kekurangan = Math.max(0, targetVal - actualVal);
+          let pct =
+            targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+          spesialisasiRows.push([
+            periodVal,
+            salesmanId,
+            salesmanName,
+            t.nama_spesialisasi || "",
+            targetVal,
+            actualVal,
+            kekurangan,
+            pct + "%",
+          ]);
+        });
+
+        let prodTargets = salesmanObj.produk_target || [];
+        prodTargets.forEach(function (t) {
+          let targetVal = parseInt(t.target) || 0;
+          let actualVal = parseInt(t.actual) || 0;
+          let kekurangan = Math.max(0, targetVal - actualVal);
+          let pct =
+            targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+          produkRows.push([
+            periodVal,
+            salesmanId,
+            salesmanName,
+            t.product_id || "",
+            t.nama_invoice || "",
+            targetVal,
+            actualVal,
+            kekurangan,
+            pct + "%",
+          ]);
+        });
+      }
+    }
+
     let wb = XLSX.utils.book_new();
     let wsSummary = XLSX.utils.aoa_to_sheet(rows);
     let wsPlan = XLSX.utils.aoa_to_sheet(planRows);
     let wsUnplan = XLSX.utils.aoa_to_sheet(unplanRows);
+    let wsSpesialisasi = XLSX.utils.aoa_to_sheet(spesialisasiRows);
+    let wsProduk = XLSX.utils.aoa_to_sheet(produkRows);
 
     let period = $periode.val() || moment().format("MM yyyy");
     XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
     XLSX.utils.book_append_sheet(wb, wsPlan, "Planned");
     XLSX.utils.book_append_sheet(wb, wsUnplan, "Unplanned");
+    XLSX.utils.book_append_sheet(wb, wsSpesialisasi, "Target Spesialisasi");
+    XLSX.utils.book_append_sheet(wb, wsProduk, "Target Produk");
 
-    XLSX.writeFile(wb, "PJP_Daily_" + period + ".xlsx");
+    XLSX.writeFile(wb, "Dashboard_Activity_" + period + ".xlsx");
   }
 
   function renderSubareaDetail(data) {
@@ -786,12 +907,12 @@ $(function () {
     let rows = data
       .map(function (r, i) {
         return `
-          <tr style="cursor:pointer;" data-salesmanid="${r.salesmanid}" data-nama="${r.nama_salesman || ""}">
+          <tr class="clickable-row" data-salesmanid="${r.salesmanid}" data-nama="${r.nama_salesman || ""}">
             <td>${i + 1}</td>
             <td>
               ${val(r.nama_salesman)}<br>
               <small class="text-muted">${val(r.salesmanid)}</small>
-              <small style="color:#aaa;font-size:10px;"><i class="fa fa-hand-pointer-o"></i></small>
+              <small class="dashboard-hint"><i class="fa fa-hand-pointer-o"></i></small>
             </td>
             <td>${val(r.tipe_sales)}</td>
             <td>${val(r.jabatan)}</td>
@@ -803,18 +924,18 @@ $(function () {
       .join("");
 
     $colDetailSubarea.append(`
-      <div style="padding-left:10px;padding-right:10px;">
+      <div class="dashboard-col-padding">
         <div class="dashboard-card">
           <div class="table-responsive">
-            <table id="tbl-salesman" class="table table-bordered table-striped table-hover" style="margin-bottom:0;">
+            <table id="tbl-salesman" class="table table-bordered table-striped table-hover">
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Nama Salesman</th>
                   <th>Tipe</th>
                   <th>Jabatan</th>
-                  <th style="width: 180px; text-align: center;">Planned</th>
-                  <th style="width: 180px; text-align: center;">Visit</th>
+                  <th class="th-planned">Planned</th>
+                  <th class="th-visit">Visit</th>
                 </tr>
               </thead>
               <tbody>
@@ -839,13 +960,150 @@ $(function () {
     $colDetailSalesman.empty();
     if (!result || result.length === 0) {
       $colDetailSalesman.append(
-        `<p class="text-muted" style="padding:10px;">Tidak ada data salesman</p>`,
+        `<p class="text-muted dashboard-loading">Tidak ada data salesman</p>`,
       );
       return;
     }
     let r = result[0];
 
-    function buildVisitTable(visits, label, headerColor) {
+    function buildSpesialisTargetHtml(targets) {
+      if (!targets || targets.length == 0) {
+        return `
+          <div class="dashboard-card mt-16">
+            <h4 class="card-header-custom">
+              Target Spesialisasi
+            </h4>
+            <p class="text-muted text-center dashboard-loading">Tidak ada data spesialis target</p>
+          </div>
+        `;
+      }
+
+      let rowsHtml = "";
+
+      targets.forEach(function (t) {
+        let targetVal = parseInt(t.target) || 0;
+        let actualVal = parseInt(t.actual) || 0;
+        let kekurangan = Math.max(0, targetVal - actualVal);
+        let pct =
+          targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+
+        let actualPct =
+          targetVal > 0 ? Math.min(100, (actualVal / targetVal) * 100) : 0;
+        let remainingPct = Math.max(0, 100 - actualPct);
+
+        rowsHtml += `
+          <tr>
+            <td><strong>${val(t.nama_spesialisasi)}</strong></td>
+            <td class="text-center">${targetVal}</td>
+            <td class="text-center">${actualVal}</td>
+            <td class="text-center">${kekurangan}</td>
+            <td>
+              <div class="table-progress-bar" title="Realisasi: ${actualVal} / Target: ${targetVal} (${Math.round(pct)}%)">
+                ${actualPct > 0 ? `<div class="achievement-chart-bar-actual" style="width: ${actualPct}%;"></div>` : ""}
+                ${remainingPct > 0 ? `<div class="achievement-chart-bar-remaining" style="width: ${remainingPct}%;"></div>` : ""}
+                <div class="table-progress-bar-text">${Math.round(pct)}%</div>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      return `
+        <div class="dashboard-card mt-16">
+          <h4 class="card-header-custom">
+            Target Spesialisasi
+          </h4>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover table-target">
+              <thead>
+                <tr>
+                  <th>Spesialis</th>
+                  <th class="th-w-150">Target</th>
+                  <th class="th-w-150">Realisasi</th>
+                  <th class="th-w-150">Kekurangan</th>
+                  <th class="th-w-graph">Grafik Pencapaian</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildProdukTargetHtml(targets) {
+      if (!targets || targets.length === 0) {
+        return `
+          <div class="dashboard-card mt-24">
+            <h4 class="card-header-custom">
+              Target Produk
+            </h4>
+            <p class="text-muted text-center dashboard-loading">Tidak ada data produk target</p>
+          </div>
+        `;
+      }
+
+      let rowsHtml = "";
+
+      targets.forEach(function (t) {
+        let targetVal = parseInt(t.target) || 0;
+        let actualVal = parseInt(t.actual) || 0;
+        let kekurangan = Math.max(0, targetVal - actualVal);
+        let pct =
+          targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+
+        let actualPct =
+          targetVal > 0 ? Math.min(100, (actualVal / targetVal) * 100) : 0;
+        let remainingPct = Math.max(0, 100 - actualPct);
+
+        rowsHtml += `
+          <tr>
+            <td>
+              <strong>${val(t.product_id)}</strong><br>
+              <small class="text-muted">${val(t.nama_invoice)}</small>
+            </td>
+            <td class="text-center">${targetVal}</td>
+            <td class="text-center">${actualVal}</td>
+            <td class="text-center">${kekurangan}</td>
+            <td>
+              <div class="table-progress-bar" title="Realisasi: ${actualVal} / Target: ${targetVal} (${Math.round(pct)}%)">
+                ${actualPct > 0 ? `<div class="achievement-chart-bar-actual" style="width: ${actualPct}%;"></div>` : ""}
+                ${remainingPct > 0 ? `<div class="achievement-chart-bar-remaining" style="width: ${remainingPct}%;"></div>` : ""}
+                <div class="table-progress-bar-text">${Math.round(pct)}%</div>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      return `
+        <div class="dashboard-card mt-24">
+          <h4 class="card-header-custom">
+            Target Produk
+          </h4>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover table-target">
+              <thead>
+                <tr>
+                  <th>Produk</th>
+                  <th class="th-w-150">Target</th>
+                  <th class="th-w-150">Realisasi</th>
+                  <th class="th-w-150">Kekurangan</th>
+                  <th class="th-w-graph">Grafik Pencapaian</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildVisitTable(visits, label, isPlanned) {
       let rowsHtml = "";
       if (!visits || visits.length === 0) {
         rowsHtml = `<tr><td colspan="8" class="text-center">Tidak ada data kunjungan</td></tr>`;
@@ -871,24 +1129,31 @@ $(function () {
         });
       }
 
+      let titleClass = isPlanned
+        ? "visit-title-planned"
+        : "visit-title-unplanned";
+      let theadClass = isPlanned
+        ? "visit-thead-planned"
+        : "visit-thead-unplanned";
+
       let tableId = "tbl-" + label.toLowerCase().replace(/\s+/g, "-");
       let cardHtml = `
-        <div class="dashboard-card" style="margin-top: 24px;">
-          <h4 style="margin: 0 0 16px; font-weight: bold; color: ${headerColor}; border-bottom: 2px solid #eee; padding-bottom: 8px;">
+        <div class="dashboard-card mt-24">
+          <h4 class="visit-title ${titleClass}">
             ${label} (${visits ? visits.length : 0})
           </h4>
           <div class="table-responsive">
-            <table id="${tableId}" class="table table-bordered table-striped table-hover" style="margin-bottom:0;">
+            <table id="${tableId}" class="table table-bordered table-striped table-hover">
               <thead>
-                <tr style="background-color: ${headerColor}; color: white;">
-                  <th style="width: 50px;">#</th>
+                <tr class="${theadClass}">
+                  <th class="th-w-50">#</th>
                   <th>Customer</th>
-                  <th style="width: 150px;">Check In</th>
-                  <th style="width: 150px;">Check Out</th>
-                  <th style="width: 100px;">Duration</th>
+                  <th class="th-w-150">Check In</th>
+                  <th class="th-w-150">Check Out</th>
+                  <th class="th-w-150">Duration</th>
                   <th>Keterangan</th>
                   <th>Reason</th>
-                  <th style="width: 100px; text-align: center;">Aksi</th>
+                  <th class="th-w-150-center">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -901,12 +1166,8 @@ $(function () {
       return cardHtml;
     }
 
-    let plannedHtml = buildVisitTable(r.planned, "Planned Visit", "#0b5394");
-    let unplannedHtml = buildVisitTable(
-      r.unplanned,
-      "Unplanned Visit",
-      "#3d85c6",
-    );
+    let plannedHtml = buildVisitTable(r.planned, "Planned Visit", true);
+    let unplannedHtml = buildVisitTable(r.unplanned, "Unplanned Visit", false);
 
     let $plannedContainer = $(plannedHtml);
     let $unplannedContainer = $(unplannedHtml);
@@ -922,6 +1183,8 @@ $(function () {
       });
     }
 
+    $colDetailSalesman.append(buildSpesialisTargetHtml(r.spesialis_target));
+    $colDetailSalesman.append(buildProdukTargetHtml(r.produk_target));
     $colDetailSalesman.append($plannedContainer);
     $colDetailSalesman.append($unplannedContainer);
 
@@ -954,7 +1217,7 @@ $(function () {
       .map(function (row) {
         return `
           <tr>
-            <td style="width:35%;font-weight:600;background:#f9f9f9;">${row[0]}</td>
+            <td class="modal-info-label">${row[0]}</td>
             <td>${row[1]}</td>
           </tr>
         `;
@@ -976,7 +1239,7 @@ $(function () {
               })
               .join("");
             productsHtml = `
-              <ul style="margin:0; padding-left:16px;">
+              <ul class="modal-product-list">
                 ${productList}
               </ul>
             `;
@@ -997,10 +1260,10 @@ $(function () {
         })
         .join("");
       detailTable = `
-        <h5 style="font-weight:600;margin:16px 0 8px;border-left:4px solid #0073b7;padding-left:8px;">Detailing</h5>
+        <h5 class="modal-section-title">Detailing</h5>
         <div class="table-responsive">
-          <table class="table table-bordered table-condensed" style="margin-bottom:0;">
-            <thead style="background:#0073b7;color:#fff;">
+          <table class="table table-bordered table-condensed">
+            <thead class="modal-thead-blue">
               <tr>
                 <th>#</th>
                 <th>Tipe</th>
@@ -1022,7 +1285,7 @@ $(function () {
 
     $modalVisitTitle.text(`${val(r.nama_customer)} — ${val(r.periode)}`);
     $modalVisitBody.html(`
-      <table class="table table-bordered" style="margin-bottom:0;">
+      <table class="table table-bordered">
         <tbody>
           ${infoRows}
         </tbody>

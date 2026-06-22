@@ -325,6 +325,17 @@ background: linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1))
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         margin-bottom: 20px;
+
+        h5 {
+            margin: 0 0 12px;
+            font-weight: 600;
+            
+            small {
+                font-size: 11px;
+                color: #aaa;
+                font-weight: normal;
+            }
+        }
     }
     #col-barat .dashboard-card,
     #col-timur .dashboard-card {
@@ -358,8 +369,244 @@ background: linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1))
     #col-barat, #col-timur {
         padding-top: 4px;
     }
-    .clickable-card:hover {
-        box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    
+    .clickable-card {
+        cursor: pointer;
+        transition: box-shadow .2s;
+        &:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+        }
+    }
+    
+    .card-header-custom {
+        margin: 0 0 16px;
+        font-weight: bold;
+        color: #0b5394;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 8px;
+    }
+
+    /* New Dashboard Styles migrated from inline styles */
+    .dashboard-loading {
+        padding: 10px;
+    }
+
+    .mt-16 {
+        margin-top: 16px;
+    }
+    .mt-24 {
+        margin-top: 24px;
+    }
+
+    .dashboard-progress {
+        width: 100%;
+        min-width: 140px;
+        background-color: #ff4e00;
+        border-radius: 4px;
+        overflow: hidden;
+        height: 18px;
+        position: relative;
+    }
+    .dashboard-progress-fill {
+        background-color: #0b5394;
+        height: 100%;
+        transition: width 0.3s;
+    }
+    .dashboard-progress-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        font-size: 11px;
+        color: #fff;
+        line-height: 18px;
+        font-weight: bold;
+        text-shadow: 0px 0px 2px rgba(0,0,0,0.5);
+    }
+
+    .dashboard-col-padding {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .clickable-row {
+        cursor: pointer;
+    }
+
+    .dashboard-hint {
+        color: #aaa;
+        font-size: 10px;
+    }
+
+    table {
+        margin-bottom: 0;
+    }
+
+    #tbl-salesman th {
+        &.th-planned, &.th-visit {
+            width: 180px;
+            text-align: center;
+        }
+    }
+
+    .table-target {
+        font-size: 12px;
+        
+        thead tr {
+            background-color: #0b5394;
+            color: white;
+        }
+    }
+
+    th {
+        &.th-w-50 {
+            width: 50px;
+        }
+        &.th-w-80 {
+            width: 80px;
+            text-align: center;
+        }
+        &.th-w-90 {
+            width: 90px;
+            text-align: center;
+        }
+        &.th-w-100 {
+            width: 100px;
+        }
+        &.th-w-100-center {
+            width: 100px;
+            text-align: center;
+        }
+        &.th-w-150 {
+            width: 150px;
+        }
+        &.th-w-graph {
+            width: 250px;
+        }
+    }
+
+    .table-progress-bar {
+        display: flex;
+        height: 16px;
+        border-radius: 3px;
+        overflow: hidden;
+        background-color: #eee;
+        width: 100%;
+        max-width: 240px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .table-progress-bar-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        font-size: 10px;
+        color: #fff;
+        line-height: 16px;
+        font-weight: bold;
+        text-shadow: 0px 0px 2px rgba(0,0,0,0.5);
+    }
+
+    .achievement-chart-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    .achievement-chart-label {
+        width: 120px;
+        font-weight: 500;
+        font-size: 12px;
+        text-align: right;
+        margin-right: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .achievement-chart-bar-container {
+        flex-grow: 1;
+        display: flex;
+        height: 18px;
+        border-radius: 3px;
+        overflow: hidden;
+        background-color: #eee;
+        margin-right: 12px;
+        max-width: 300px;
+    }
+    .achievement-chart-bar-actual {
+        background-color: #0b5394;
+        height: 100%;
+    }
+    .achievement-chart-bar-remaining {
+        background-color: #ff4e00;
+        height: 100%;
+    }
+    .achievement-chart-value {
+        width: 90px;
+        font-size: 11px;
+        color: #333;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .col-chart-panel {
+        border-left: 1px solid #eee;
+        padding-left: 20px;
+    }
+    .chart-panel-title {
+        margin: 0 0 16px;
+        font-weight: 600;
+        font-size: 13px;
+        color: #666;
+    }
+    .chart-panel-body {
+        padding-top: 10px;
+    }
+
+    .visit-title {
+        margin: 0 0 16px;
+        font-weight: bold;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 8px;
+    }
+    .visit-title-planned {
+        color: #0b5394;
+    }
+    .visit-title-unplanned {
+        color: #3d85c6;
+    }
+    .visit-thead-planned {
+        background-color: #0b5394;
+        color: white;
+    }
+    .visit-thead-unplanned {
+        background-color: #3d85c6;
+        color: white;
+    }
+
+    .modal-info-label {
+        width: 35%;
+        font-weight: 600;
+        background: #f9f9f9;
+    }
+    .modal-section-title {
+        font-weight: 600;
+        margin: 16px 0 8px;
+        border-left: 4px solid #0073b7;
+        padding-left: 8px;
+    }
+    .modal-thead-blue {
+        background: #0073b7;
+        color: #fff;
+    }
+    .modal-product-list {
+        margin: 0;
+        padding-left: 16px;
     }
 }
  .pointer {

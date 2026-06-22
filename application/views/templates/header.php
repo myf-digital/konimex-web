@@ -79,6 +79,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('assets/frameworks/flot/jquery.flot.pie.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/flot/jquery.flot.categories.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/app.cise.js'); ?>"></script>
+<script src="<?php echo base_url('assets/frameworks/adminlte/js/org_chart.js'); ?>"></script>
 
 <!-- Add fancyBox main JS -->
 <script src="<?php echo base_url('assets/frameworks/adminlte/js/sweetalert2.js'); ?>"></script>

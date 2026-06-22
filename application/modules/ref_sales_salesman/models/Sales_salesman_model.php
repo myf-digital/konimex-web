@@ -6,41 +6,101 @@ class Sales_salesman_model extends CI_Model
 
     public function create($data)
     {
+        $this->db->trans_start();
+
         $id = IDGenerator::getInstance()->nextID('m_sales_salesman');
         if (!empty($id)) {
             $data['siteid'] = $id;
         }
 
+        $salesmanid = $data['salesmanid'];
         $data_array_category = array(
             "categoryid" => "11",
-            "salesmanid" => $data['salesmanid'],
-            "nama_category" => "CATEGORY"." - ".$data['salesmanid']
+            "salesmanid" => $salesmanid,
+            "nama_category" => "CATEGORY" . " - " . $salesmanid
         );
         $this->db->insert('m_sales_salesman_category', $data_array_category);
 
-        $data['categoryid']="11";
+        $data['categoryid'] = "11";
         $data['password'] = md5($data['password']);
-        return $this->db->insert('m_sales_salesman', $data);
+
+        $target_data = $data;
+        $target_data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
+
+        unset($data['spesialisasiid']);
+        unset($data['periode_spesialisasi']);
+        unset($data['target_spesialisasi']);
+        unset($data['productid']);
+        unset($data['periode_product']);
+        unset($data['target_product']);
+
+        $data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
+        unset($data['usersession']);
+
+        $this->db->insert('m_sales_salesman', $data);
+
+        // Save targets
+        $this->save_targets($target_data);
+
+        $this->db->trans_complete();
+        return $this->db->trans_status();
     }
 
     public function update($data)
     {
-        $data['password'] = md5($data['password']);
-        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->trans_start();
+
+        $salesmanid = $data['salesmanid'];
+        if (!empty($data['password'])) {
+            $data['password'] = md5($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        $target_data = $data;
+        $target_data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
+
+        unset($data['spesialisasiid']);
+        unset($data['periode_spesialisasi']);
+        unset($data['target_spesialisasi']);
+        unset($data['productid']);
+        unset($data['periode_product']);
+        unset($data['target_product']);
+
+        $data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
+        unset($data['usersession']);
+
+        $this->db->where('salesmanid', $salesmanid);
         $this->db->where('siteid', $data['siteid']);
-        $this->db->where('salesmanid', $data['salesmanid']);
-        return $this->db->update('m_sales_salesman', $data);
+        $this->db->update('m_sales_salesman', $data);
+
+        // Save targets
+        $this->save_targets($target_data);
+
+        $this->db->trans_complete();
+        return $this->db->trans_status();
     }
 
     public function delete($data)
     {
+        $this->db->trans_start();
+
         $this->db->where('siteid', $data['siteid']);
         $this->db->where('salesmanid', $data['salesmanid']);
         $this->db->delete('m_sales_salesman_category');
 
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->delete('m_sales_spesialis_target');
+
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->delete('m_sales_produk_target');
+
         $this->db->where('siteid', $data['siteid']);
         $this->db->where('salesmanid', $data['salesmanid']);
-        return $this->db->delete('m_sales_salesman');
+        $this->db->delete('m_sales_salesman');
+
+        $this->db->trans_complete();
+        return $this->db->trans_status();
     }
 
     public function load($data)
@@ -145,5 +205,163 @@ class Sales_salesman_model extends CI_Model
             }
         }
         return [];
+    }
+
+    public function save_targets($data)
+    {
+        $salesmanid = $data['salesmanid'] ?? null;
+        if (empty($salesmanid)) {
+            return;
+        }
+
+        $nama_salesman = $data['nama_salesman'] ?? '';
+        if (empty($nama_salesman)) {
+            $salesman = $this->db->select('nama_salesman')
+                                 ->where('salesmanid', $salesmanid)
+                                 ->get('m_sales_salesman')
+                                 ->row_array();
+            if ($salesman) {
+                $nama_salesman = $salesman['nama_salesman'];
+            }
+        }
+
+        $usersession = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
+        if (isset($data['periode_spesialisasi'])) {
+            $periode_spesialisasi = $data['periode_spesialisasi'];
+            if (!empty($periode_spesialisasi)) {
+                $splitDate = explode('-', $periode_spesialisasi);
+                $tahun = $splitDate[0] ?? date('Y');
+                $bulan = $splitDate[1] ?? date('m');
+
+                $this->db->where('salesmanid', $salesmanid);
+                $this->db->where('tahun', $tahun);
+                $this->db->where('bulan', $bulan);
+                $this->db->delete('m_sales_spesialis_target');
+
+                $spesialisasi_ids = $data['spesialisasiid'] ?? [];
+                $target_spesialisasi = $data['target_spesialisasi'] ?? [];
+
+                if (!empty($spesialisasi_ids)) {
+                    $this->db->where_in('id', $spesialisasi_ids);
+                    $specialties = $this->db->get('ref_spesialisasi')->result_array();
+                    $specialtyMap = [];
+                    foreach ($specialties as $s) {
+                        $specialtyMap[$s['id']] = $s['name'];
+                    }
+
+                    $insertSpesialisasi = [];
+                    foreach ($spesialisasi_ids as $spId) {
+                        $tgt = isset($target_spesialisasi[$spId]) ? intval($target_spesialisasi[$spId]) : 0;
+                        $insertSpesialisasi[] = [
+                            'tahun' => $tahun,
+                            'bulan' => $bulan,
+                            'salesmanid' => $salesmanid,
+                            'nama_salesman' => $nama_salesman,
+                            'spesialisasi_id' => $spId,
+                            'nama_spesialisasi' => $specialtyMap[$spId] ?? '',
+                            'target' => $tgt,
+                            'created_by' => $usersession,
+                            'created_date' => date('Y-m-d H:i:s'),
+                        ];
+                    }
+                    if (!empty($insertSpesialisasi)) {
+                        $this->db->insert_batch('m_sales_spesialis_target', $insertSpesialisasi);
+                    }
+                }
+            }
+        }
+
+        if (isset($data['periode_product'])) {
+            $periode_product = $data['periode_product'];
+            if (!empty($periode_product)) {
+                $splitDate = explode('-', $periode_product);
+                $tahun = $splitDate[0] ?? date('Y');
+                $bulan = $splitDate[1] ?? date('m');
+
+                $this->db->where('salesmanid', $salesmanid);
+                $this->db->where('tahun', $tahun);
+                $this->db->where('bulan', $bulan);
+                $this->db->delete('m_sales_produk_target');
+
+                $product_ids = $data['productid'] ?? [];
+                $target_product = $data['target_product'] ?? [];
+
+                if (!empty($product_ids)) {
+                    $this->db->where_in('productid', $product_ids);
+                    $products = $this->db->get('m_product')->result_array();
+                    $productMap = [];
+                    foreach ($products as $p) {
+                        $productMap[$p['productid']] = $p['nama_invoice'];
+                    }
+
+                    $insertProduct = [];
+                    foreach ($product_ids as $prodId) {
+                        $tgt = isset($target_product[$prodId]) ? intval($target_product[$prodId]) : 0;
+                        $insertProduct[] = [
+                            'tahun' => $tahun,
+                            'bulan' => $bulan,
+                            'salesmanid' => $salesmanid,
+                            'nama_salesman' => $nama_salesman,
+                            'product_id' => $prodId,
+                            'nama_invoice' => $productMap[$prodId] ?? '',
+                            'target' => $tgt,
+                            'created_by' => $usersession,
+                            'created_date' => date('Y-m-d H:i:s'),
+                        ];
+                    }
+                    if (!empty($insertProduct)) {
+                        $this->db->insert_batch('m_sales_produk_target', $insertProduct);
+                    }
+                }
+            }
+        }
+    }
+
+    public function spesialisasi($data)
+    {
+        return $this->db->from('ref_spesialisasi')->order_by('name', 'ASC')->get()->result_array();
+    }
+
+    public function products($data)
+    {
+        if (!empty($data['q'])) {
+            $this->db->group_start();
+            $this->db->like('productid', $data['q']);
+            $this->db->or_like('nama_invoice', $data['q']);
+            $this->db->group_end();
+        }
+        $this->db->order_by('nama_invoice', 'ASC');
+        $this->db->limit(50);
+        return $this->db->from('m_product')->get()->result_array();
+    }
+
+    public function get_spesialisasi_targets($data)
+    {
+        if (empty($data['salesmanid']) || empty($data['periode'])) {
+            return [];
+        }
+        $parts = explode('-', $data['periode']);
+        $tahun = intval($parts[0]);
+        $bulan = intval($parts[1]);
+
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->where('tahun', $tahun);
+        $this->db->where('bulan', $bulan);
+        return $this->db->get('m_sales_spesialis_target')->result_array();
+    }
+
+    public function get_product_targets($data)
+    {
+        if (empty($data['salesmanid']) || empty($data['periode'])) {
+            return [];
+        }
+        $parts = explode('-', $data['periode']);
+        $tahun = intval($parts[0]);
+        $bulan = intval($parts[1]);
+
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->where('tahun', $tahun);
+        $this->db->where('bulan', $bulan);
+        return $this->db->get('m_sales_produk_target')->result_array();
     }
 }

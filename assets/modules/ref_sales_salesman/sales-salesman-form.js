@@ -21,6 +21,8 @@
   let paramsession = common.getCookie("session");
 
   let isUpdate = param !== undefined; // flag create update
+  let optionProducts = [];
+  let searchTimeout = null;
 
   initialize();
   initializeParam();
@@ -42,7 +44,7 @@
         if (param !== undefined) {
           form.push({ name: "siteid", value: param.siteid });
         }
-        //form.push({name: 'usersession', value: paramsession.username});
+        form.push({ name: "usersession", value: paramsession.username });
         return true; // MANDATORY!
       },
       rules: {
@@ -57,7 +59,7 @@
           },
         },
         password: {
-          required: true,
+          required: isUpdate ? false : true,
         },
         nama_salesman: {
           required: true,
@@ -112,7 +114,121 @@
     uiJoinDate.datepicker();
     uiResignDate.datepicker();
 
-    //loadRegional();
+    let now = new Date();
+    let currentMonth =
+      now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+    $("#periode_spesialisasi").val(currentMonth);
+    $("#periode_product").val(currentMonth);
+
+    $("#periode_spesialisasi")
+      .datepicker({
+        format: "yyyy-mm",
+        viewMode: "months",
+        minViewMode: "months",
+        autoclose: true,
+      })
+      .on("changeDate", function () {
+        loadSpesialisasiTargets();
+      });
+
+    $("#periode_product")
+      .datepicker({
+        format: "yyyy-mm",
+        viewMode: "months",
+        minViewMode: "months",
+        autoclose: true,
+      })
+      .on("changeDate", function () {
+        loadProductTargets();
+      });
+
+    $("#productid").select2({
+      placeholder: "Pilih Produk",
+      allowClear: true,
+      ajax: {
+        url: common.baseURL("ref_sales_salesman/products"),
+        dataType: "json",
+        type: "POST",
+        delay: 500,
+        data: function (params) {
+          return {
+            q: params.term || "",
+          };
+        },
+        transport: function (params, success, failure) {
+          let q = params.data.q || "";
+
+          if (q === "") {
+            if (optionProducts && optionProducts.length > 0) {
+              success(optionProducts);
+              return;
+            }
+          }
+
+          if (q !== "" && q.length < 2) {
+            success([]);
+            return;
+          }
+
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(function () {
+            fetchProducts(q, success, failure);
+          }, 500);
+        },
+        processResults: function (data) {
+          return {
+            results: $.map(data, function (item) {
+              return {
+                id: item.productid,
+                text: "(" + item.productid + ") - " + item.nama_invoice,
+              };
+            }),
+          };
+        },
+        cache: true,
+      },
+    });
+
+    // Initialize change event handlers to rebuild target tables
+    $("#spesialisasiid").on("change", function () {
+      updateSpesialisasiTable();
+      setTimeout(function () {
+        updateSelect2TagsCount("#spesialisasiid", "Spesialisasi");
+      }, 50);
+    });
+
+    $("#productid").on("change", function () {
+      updateProductTable();
+      setTimeout(function () {
+        updateSelect2TagsCount("#productid", "Produk");
+      }, 50);
+    });
+
+    $(document).on("click", ".btn-remove-spesialisasi", function () {
+      let id = $(this).data("id").toString();
+      let currentSelected = $("#spesialisasiid").val() || [];
+      let newSelected = currentSelected.filter((val) => val.toString() !== id);
+      $("#spesialisasiid").val(newSelected).trigger("change");
+    });
+
+    $(document).on("click", ".btn-remove-product", function () {
+      let id = $(this).data("id").toString();
+      let currentSelected = $("#productid").val() || [];
+      let newSelected = currentSelected.filter((val) => val.toString() !== id);
+      $("#productid").val(newSelected).trigger("change");
+    });
+
+    uiSalesmanid.on("change blur", function () {
+      loadSpesialisasiTargets();
+      loadProductTargets();
+    });
+
+    fetchProducts("", function (res) {
+      optionProducts = res;
+    });
+
+    initSpesialisasiOptions();
+
     loadRegional({
       usersession: paramsession.username,
       idjabatan: paramsession.idjabatan,
@@ -180,7 +296,197 @@
         usersession: paramsession.username,
         restrict_level: paramsession.restrict_level,
       });
+
+      loadSpesialisasiTargets();
+      loadProductTargets();
     }
+  }
+
+  let spesialisasiTargets = {};
+  let productTargets = {};
+
+  function initSpesialisasiOptions() {
+    common.loading();
+    $.post(
+      common.baseURL("ref_sales_salesman/spesialisasi"),
+      {},
+      function (res) {
+        $("#spesialisasiid").empty();
+        res.forEach(function (item) {
+          let option = new Option(item.name, item.id);
+          $("#spesialisasiid").append(option);
+        });
+        $("#spesialisasiid").select2({
+          placeholder: "Pilih Spesialisasi",
+          allowClear: true,
+        });
+        common.loadingClose();
+        loadSpesialisasiTargets();
+      },
+    ).fail(function () {
+      common.loadingClose();
+    });
+  }
+
+  function loadSpesialisasiTargets() {
+    let salesmanid = isUpdate ? param.salesmanid : uiSalesmanid.val();
+    let period = $("#periode_spesialisasi").val();
+    if (!salesmanid || !period) {
+      $("#spesialisasiid").val(null).trigger("change");
+      return;
+    }
+
+    common.loading();
+    $.post(
+      common.baseURL("ref_sales_salesman/get_spesialisasi_targets"),
+      { salesmanid: salesmanid, periode: period },
+      function (res) {
+        spesialisasiTargets = {};
+        let selectedIds = [];
+        res.forEach(function (item) {
+          spesialisasiTargets[item.spesialisasi_id] = item.target;
+          selectedIds.push(item.spesialisasi_id);
+        });
+        $("#spesialisasiid").val(selectedIds).trigger("change");
+        common.loadingClose();
+      },
+    ).fail(function () {
+      common.loadingClose();
+    });
+  }
+
+  function loadProductTargets() {
+    let salesmanid = isUpdate ? param.salesmanid : uiSalesmanid.val();
+    let period = $("#periode_product").val();
+    if (!salesmanid || !period) {
+      $("#productid").val(null).trigger("change");
+      return;
+    }
+
+    common.loading();
+    $.post(
+      common.baseURL("ref_sales_salesman/get_product_targets"),
+      { salesmanid: salesmanid, periode: period },
+      function (res) {
+        productTargets = {};
+        $("#productid").empty();
+        let selectedIds = [];
+        res.forEach(function (item) {
+          productTargets[item.product_id] = item.target;
+          selectedIds.push(item.product_id);
+
+          let option = new Option(
+            "(" + item.product_id + ") - " + item.nama_invoice,
+            item.product_id,
+            true,
+            true,
+          );
+          $("#productid").append(option);
+        });
+        $("#productid").val(selectedIds).trigger("change");
+        common.loadingClose();
+      },
+    ).fail(function () {
+      common.loadingClose();
+    });
+  }
+
+  function fetchProducts(keyword, success, failure) {
+    $.post(common.baseURL("ref_sales_salesman/products"), { q: keyword })
+      .done(function (res) {
+        if (success) success(res);
+      })
+      .fail(function (xhr, status, error) {
+        if (failure) failure(xhr, status, error);
+      });
+  }
+
+  function updateSpesialisasiTable() {
+    let selectedIds = $("#spesialisasiid").val() || [];
+    let currentInputs = {};
+    $("#tbl-spesialisasi-target tbody tr").each(function () {
+      let id = $(this).data("id");
+      let val = $(this).find(".target-input").val();
+      currentInputs[id] = val;
+    });
+
+    let tbody = $("#tbl-spesialisasi-target tbody");
+    tbody.empty();
+
+    if (selectedIds.length === 0) {
+      $("#tbl-spesialisasi-target").hide();
+      return;
+    }
+
+    selectedIds.forEach(function (id) {
+      let option = $("#spesialisasiid option[value='" + id + "']");
+      let name = option.text() || id;
+      let targetVal =
+        currentInputs[id] !== undefined
+          ? currentInputs[id]
+          : spesialisasiTargets[id] || 0;
+      tbody.append(`
+        <tr data-id="${id}">
+          <td>${name}</td>
+          <td>
+            <input type="text" name="target_spesialisasi[${id}]" class="form-control target-input text-right" value="${targetVal}" style="width: 100%;">
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-xs btn-danger btn-remove-spesialisasi" data-id="${id}"><i class="fa fa-trash"></i></button>
+          </td>
+        </tr>  
+      `);
+    });
+
+    $("#tbl-spesialisasi-target").show();
+
+    $(".target-input").on("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
+  }
+
+  function updateProductTable() {
+    let selectedIds = $("#productid").val() || [];
+    let currentInputs = {};
+    $("#tbl-product-target tbody tr").each(function () {
+      let id = $(this).data("id");
+      let val = $(this).find(".target-input").val();
+      currentInputs[id] = val;
+    });
+
+    let tbody = $("#tbl-product-target tbody");
+    tbody.empty();
+
+    if (selectedIds.length === 0) {
+      $("#tbl-product-target").hide();
+      return;
+    }
+
+    selectedIds.forEach(function (id) {
+      let option = $("#productid option[value='" + id + "']");
+      let name = option.text() || id;
+      let targetVal =
+        currentInputs[id] !== undefined
+          ? currentInputs[id]
+          : productTargets[id] || 0;
+      tbody.append(`
+        <tr data-id="${id}">
+          <td>${name}</td>
+          <td>
+            <input type="text" name="target_product[${id}]" class="form-control target-input text-right" value="${targetVal}" style="width: 100%;">
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-xs btn-danger btn-remove-product" data-id="${id}"><i class="fa fa-trash"></i></button>
+          </td>
+        </tr>  
+      `);
+    });
+
+    $("#tbl-product-target").show();
+
+    $(".target-input").on("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
   }
 
   function loadRegional(data) {
@@ -362,6 +668,32 @@
       uiSelectSiteid.val(null).trigger("change");
       uiSelectAktif.val(null).trigger("change");
       uiSelectTipesales.val(null).trigger("change");
+    }
+  }
+
+  function updateSelect2TagsCount(selectId, labelName) {
+    let select = $(selectId);
+    let selectedCount = select.val() ? select.val().length : 0;
+    let renderedList = select.parent().find(".select2-selection__rendered");
+
+    renderedList.find(".select2-selection__choice-counter").remove();
+
+    if (selectedCount > 0) {
+      let extraCount = selectedCount;
+      let counterLi = $(
+        '<li class="select2-selection__choice select2-selection__choice-counter badge-count-select2">' +
+          extraCount +
+          " " +
+          labelName +
+          " Terpilih</li>",
+      );
+
+      let searchLi = renderedList.find(".select2-search");
+      if (searchLi.length > 0) {
+        counterLi.insertBefore(searchLi);
+      } else {
+        renderedList.append(counterLi);
+      }
     }
   }
 })();

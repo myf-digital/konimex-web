@@ -77,6 +77,30 @@ class Ref_sales_salesman extends BaseController
         responseJSON($this->sales_salesman->supervisor($data));
     }
 
+    public function spesialisasi()
+    {
+        $data = param_input();
+        responseJSON($this->sales_salesman->spesialisasi($data));
+    }
+
+    public function products()
+    {
+        $data = param_input();
+        responseJSON($this->sales_salesman->products($data));
+    }
+
+    public function get_spesialisasi_targets()
+    {
+        $data = param_input();
+        responseJSON($this->sales_salesman->get_spesialisasi_targets($data));
+    }
+
+    public function get_product_targets()
+    {
+        $data = param_input();
+        responseJSON($this->sales_salesman->get_product_targets($data));
+    }
+
     public function form_upload()
     {
         $this->template->show($this, 'form_upload');
