@@ -364,4 +364,115 @@ class Sales_salesman_model extends CI_Model
         $this->db->where('bulan', $bulan);
         return $this->db->get('m_sales_produk_target')->result_array();
     }
+
+    public function detail_mapping($salesmanid)
+    {
+        if (empty($salesmanid)) {
+            return [
+                'status' => false,
+                'message' => 'salesmanid wajib diisi'
+            ];
+        }
+
+        $salesman = $this->db->query("
+            SELECT salesmanid, nama_salesman, tipe_sales, jabatan
+            FROM m_sales_salesman
+            WHERE salesmanid = ?
+        ", [$salesmanid])->row_array();
+        if (empty($salesman)) {
+            return [
+                'status' => false,
+                'message' => "Data salesman ($salesmanid) tidak ditemukan"
+            ];
+        }
+
+        $cur_year = intval(date('Y'));
+        $cur_month = intval(date('m'));
+
+        $role_targets = $this->db->query("
+            SELECT 
+                rmt.tahun,
+                rmt.bulan,
+                rmt.target_hk,
+                rmt.target_dub,
+                rmt.target_call_dub,
+                rmt.target_call_visit
+            FROM app_role r
+            JOIN role_mapping_target rmt ON r.role_id = rmt.role_id
+            WHERE r.role_name = ?
+            ORDER BY rmt.tahun DESC, rmt.bulan DESC
+        ", [$salesman['tipe_sales']])->result_array();
+
+        $role_active = [];
+        $role_history = [];
+        foreach ($role_targets as $rt) {
+            if (intval($rt['tahun']) == $cur_year && intval($rt['bulan']) == $cur_month) {
+                $role_active[] = $rt;
+            } else {
+                $role_history[] = $rt;
+            }
+        }
+
+        $spesialis_targets = $this->db->query("
+            SELECT 
+                tahun,
+                bulan,
+                nama_spesialisasi,
+                target
+            FROM m_sales_spesialis_target
+            WHERE salesmanid = ?
+            ORDER BY tahun DESC, bulan DESC, nama_spesialisasi ASC
+        ", [$salesmanid])->result_array();
+
+        $spesialis_active = [];
+        $spesialis_history = [];
+        foreach ($spesialis_targets as $st) {
+            if (intval($st['tahun']) == $cur_year && intval($st['bulan']) == $cur_month) {
+                $spesialis_active[] = $st;
+            } else {
+                $spesialis_history[] = $st;
+            }
+        }
+
+        $produk_targets = $this->db->query("
+            SELECT 
+                tahun,
+                bulan,
+                product_id,
+                nama_invoice,
+                target
+            FROM m_sales_produk_target
+            WHERE salesmanid = ?
+            ORDER BY tahun DESC, bulan DESC, nama_invoice ASC
+        ", [$salesmanid])->result_array();
+
+        $produk_active = [];
+        $produk_history = [];
+        foreach ($produk_targets as $pt) {
+            if (intval($pt['tahun']) == $cur_year && intval($pt['bulan']) == $cur_month) {
+                $produk_active[] = $pt;
+            } else {
+                $produk_history[] = $pt;
+            }
+        }
+
+        return [
+            'status' => true,
+            'message' => 'success',
+            'salesman' => $salesman,
+            'role' => [
+                'active' => $role_active,
+                'history' => $role_history
+            ],
+            'spesialis' => [
+                'active' => $spesialis_active,
+                'history' => $spesialis_history
+            ],
+            'produk' => [
+                'active' => $produk_active,
+                'history' => $produk_history
+            ]
+        ];
+    }
 }
+

@@ -353,4 +353,10 @@ class Ref_sales_salesman extends BaseController
         }
         return null;
     }
+
+    public function detail_mapping()
+    {
+        $salesmanid = $this->input->post('salesmanid');
+        responseJSON($this->sales_salesman->detail_mapping($salesmanid));
+    }
 }
