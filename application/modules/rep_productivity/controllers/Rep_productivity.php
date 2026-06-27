@@ -4,8 +4,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Font;
-use PhpOffice\PhpSpreadsheet\Style\Color;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class Rep_productivity extends BaseController
 {
@@ -33,16 +31,15 @@ class Rep_productivity extends BaseController
         responseJSON($this->report_productivity->get_area($data));
     }
 
-    public function load_city()
+    public function load_subarea()
     {
         $data = param_input();
-        responseJSON($this->report_productivity->get_city($data));
+        responseJSON($this->report_productivity->get_subarea($data));
     }
 
     function open_detail() {
 		$start = $this->input->post("start_period");
 		$end = $this->input->post("end_period");
-        //$position = $this->input->post("position");
 
 		$idjabatan = $this->input->post("idjabatan");
 		$restrict_level = $this->input->post("restrict_level");
@@ -50,14 +47,7 @@ class Rep_productivity extends BaseController
 
         $regionalid = $this->input->post("regionalid");
         $areaid = $this->input->post("areaid");
-
-		/*if ($year.'-'.$month==date("Y-m")){
-			$periodedate= date("Y-m-d");
-			//$periodedate= date("Y-m-d",strtotime($periode));
-		}else{
-			$periode = $year.'-'.$month.'-01';
-			$periodedate=date("Y-m-t",strtotime($periode));
-		}*/
+        $subareaid = $this->input->post("subareaid");
 
         $params = [
         	'start_period' => $start,
@@ -67,21 +57,19 @@ class Rep_productivity extends BaseController
         	'usersession' => $usersession,
         	'regionalid' => $regionalid,
         	'areaid' => $areaid,
+        	'subareaid' => $subareaid,
         ];
 
         $data = $this->report_productivity->getProductivity($params);
-        //echo $this->db->last_query();
-		//die();
 		
 		$html ='<div class="box-body">';
 		$html .= '<div class="container-table">';
-		//$html .= '<table class="table table-striped table-bordered table-condensed report-table">';
 		$html .= '<table class="table table-bordered table-condensed fixed-table">';
 		$html .= '<tbody>';
 		$html .= '<tr>';
         $html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 50px">No</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Area</th>';
-		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">User MEDREP</th>';
+		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">ID MEDREP</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 300px;">Nama MEDREP</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Position</th>';
 		$html .= '<th colspan="13" style="vertical-align : middle;text-align:center;width: 2600px;">Kuantitatif</th>';
@@ -89,13 +77,13 @@ class Rep_productivity extends BaseController
 		$html .= '<th style="vertical-align : middle;text-align:center;">HK</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">Absensi</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center;">%Kehadiran</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Keterangan</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Target Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Call on FJP</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Effective Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Extra Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Actual Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">%FJP Compliance</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Keterangan Absensi</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Call DUB</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Target DUB</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Efektif Call</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Call Visit</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Target Visit</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;">Rata-Rata Visit</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Keterangan</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Detailing</th>';
 		$html .= '</tr>';
@@ -110,25 +98,22 @@ class Rep_productivity extends BaseController
 		foreach ($data as $value) {
 			$html .= '<tr>';
 			$html .= '<td style="width: 50px;">'.$i.'</td>';
-			$html .= '<td style="width:150px;">'.$value['nama_area'].'</td>';
+			$html .= '<td style="width:150px;">'.($value['nama_subarea'] ?? $value['nama_area']).'</td>';
 			$html .= '<td style="width:150px;">'.$value['salesmanid'].'</td>';
 			$html .= '<td style="width:300px;">'.$value['nama_salesman'].'</td>';
 			$html .= '<td style="width:150px;">'.$value['tipe_sales'].'</td>';
 
-			$html .= '<td style="text-align:right;width: 200px">'.number_format($value['MEDREP Aktif'], 0, '.', ',').' </td>';
-			$html .= '<td style="text-align:right;width: 200px">'.number_format($value['MEDREP Hadir'], 0, '.', ',').' </td>';
-			$html .= '<td style="text-align:right;width: 200px">'.number_format($value['MEDREP Hadir']/$value['MEDREP Aktif']*100, 2, '.', ',').' %</td>';
-			$html .= '<td style="text-align:right;width: 200px">Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').') </td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['pjp'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['effective_call'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['extra_call'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call']+$value['extra_call'], 0, '.', ',').'</td>';
-            if ($value['pjp']) {
-			    $html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format($value['call']/$value['pjp']*100, 2, '.', ',').' %</td>';
-            } else {
-			    $html .= '<td style="white-space: nowrap;text-align:center;text-align:right;width: 200px;">'.number_format(0, 2, '.', ',').' %</td>';
-            }
+			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['MEDREP Aktif'], 0, '.', ',').' </td>';
+			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['MEDREP Hadir'], 0, '.', ',').' </td>';
+			$kehadiran_pct = $value['MEDREP Aktif'] > 0 ? ($value['MEDREP Hadir'] / $value['MEDREP Aktif'] * 100) : 0;
+			$html .= '<td style="text-align:center;width: 200px">'.number_format($kehadiran_pct, 2, '.', ',').' %</td>';
+			$html .= '<td style="text-align:center;width: 200px">Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').') </td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['call_dub'], 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['target_dub'], 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['efektif_dub'], 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['call_visit'], 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['target_visit'], 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['rata_rata_visit'], 2, '.', ',').'</td>';
 			$html .= '<td style="text-align:right; width: 200px;">'.$value['rrk_keterangan'].'</td>';
 			$html .= '<td style="text-align:right; width: 200px;">'.$value['rrk_detailing'].'</td>';
 			$html .= '</tr>';
@@ -162,13 +147,6 @@ class Rep_productivity extends BaseController
         $restrict_level = $this->uri->segment('8');
         $idjabatan = $this->uri->segment('9');
 
-		/*if ($year.'-'.$month==date("Y-m")){
-			$periodedate= date("Y-m-d");
-		}else{
-			$periode = $year.'-'.$month.'-01';
-			$periodedate=date("Y-m-t",strtotime($periode));
-		}*/
-
         $params = [
         	'start_period' => $start,
         	'end_period' => $end,
@@ -185,11 +163,11 @@ class Rep_productivity extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Area', 'User MEDREP', 'Nama MEDREP', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan', 'Target Call', 'Call on FJP', 'Extra Call', 'Actual Call', '%FJP Compliance', 'Keterangan', 'Detailing'];
+        $header = ['No', 'Area', 'ID MEDREP', 'Nama MEDREP', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan Absensi', 'Call DUB', 'Target DUB', 'Efektif Call', 'Call Visi', 'Target Visit', 'Rata-Rata Visit', 'Keterangan', 'Detailing'];
 
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue('F1', 'Kuantitatif')->mergeCells('F1:P1');
+        $sheet->setCellValue('F1', 'Kuantitatif')->mergeCells('F1:Q1');
 
         $sheet->fromArray($header,NULL,'A2');
 
@@ -199,19 +177,20 @@ class Rep_productivity extends BaseController
 
             $content = [
                 $i, 
-				$value['nama_area'],
+				$value['nama_subarea'] ?? $value['nama_area'],
 				$value['salesmanid'],
 				$value['nama_salesman'],
 				$value['tipe_sales'],
 				number_format($value['MEDREP Aktif'], 0, '.', ','),
 				number_format($value['MEDREP Hadir'], 0, '.', ','),
-				number_format($value['MEDREP Hadir']/$value['MEDREP Aktif']*100, 2, '.', ','),
+				$value['MEDREP Aktif'] > 0 ? number_format($value['MEDREP Hadir']/$value['MEDREP Aktif']*100, 2, '.', ',') : '0.00',
 				'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')',
-				number_format($value['pjp'], 0, '.', ','),
-				number_format($value['call'], 0, '.', ','),
-				number_format($value['extra_call'], 0, '.', ','),
-				number_format($value['call']+$value['extra_call'], 0, '.', ','),
-				number_format($value['call']/$value['pjp']*100, 2, '.', ',').' %',
+				number_format($value['call_dub'], 0, '.', ','),
+				number_format($value['target_dub'], 0, '.', ','),
+				number_format($value['efektif_dub'], 0, '.', ','),
+				number_format($value['call_visit'], 0, '.', ','),
+				number_format($value['target_visit'], 0, '.', ','),
+				number_format($value['rata_rata_visit'], 2, '.', ','),
 				$value['rrk_keterangan'],
 				$value['rrk_detailing']
 				];
@@ -232,17 +211,17 @@ class Rep_productivity extends BaseController
    }
 
 	function savexls_visit_and_order() {
-		//ini_set('memory_limit', '0MB');
         ini_set('max_execution_time', '300'); // atau set ke 300 (5 menit)
         ini_set('memory_limit', '1G'); // tambahkan memori jika datanya besar		
         $start = $this->uri->segment('3');
         $end = $this->uri->segment('4');
         $regionalid = $this->uri->segment('5');
         $areaid = $this->uri->segment('6');
+        $subareaid = $this->uri->segment('7');
 
-        $usersession = $this->uri->segment('7');
-        $restrict_level = $this->uri->segment('8');
-        $idjabatan = $this->uri->segment('9');
+        $usersession = $this->uri->segment('8');
+        $restrict_level = $this->uri->segment('9');
+        $idjabatan = $this->uri->segment('10');
 
         $params = [
         	'start_period' => $start,
@@ -251,7 +230,8 @@ class Rep_productivity extends BaseController
         	'restrict_level' => $restrict_level,
         	'usersession' => $usersession,
         	'regionalid' => $regionalid,
-        	'areaid' => $areaid
+        	'areaid' => $areaid,
+        	'subareaid' => $subareaid,
         ];
         
         $filename = "Report-Productivity-".$start."_".$end.".xlsx";
@@ -273,7 +253,7 @@ class Rep_productivity extends BaseController
         $sheetProductivity->setTitle('Productivity');
         $sheetProductivity
             ->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'City/Area')
+            ->setCellValue('B1', 'Area')
             ->setCellValue('C1', 'MEDREP')
             ->setCellValue('D1', 'MEDREP Name')
             ->setCellValue('E1', 'Position')
@@ -281,12 +261,12 @@ class Rep_productivity extends BaseController
             ->setCellValue('G1', 'Absensi')
             ->setCellValue('H1', '%Kehadiran')
             ->setCellValue('I1', 'Keterangan Absensi')
-            ->setCellValue('J1', 'Target Call')
-            ->setCellValue('K1', 'Effective Call')
-            ->setCellValue('L1', 'Call')
-            ->setCellValue('M1', 'Extra Call')
-            ->setCellValue('N1', 'Actual Call')
-            ->setCellValue('O1', '%FJP Compliance')
+            ->setCellValue('J1', 'Call DUB')
+            ->setCellValue('K1', 'Target DUB')
+            ->setCellValue('L1', 'Efektif Call')
+            ->setCellValue('M1', 'Call Visit')
+            ->setCellValue('N1', 'Target Visit')
+            ->setCellValue('O1', 'Rata-Rata Visit')
             ->setCellValue('P1', 'Outlet Order')
             ->setCellValue('Q1', 'Total Order')
             ->setCellValue('R1', 'Keterangan')
@@ -297,28 +277,27 @@ class Rep_productivity extends BaseController
         $row = 2;
         foreach ($data as $value) {
 			$sheetProductivity->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $value['city'] ?? '')
+                ->setCellValue('B'.$row, $value['nama_subarea'] ?? $value['nama_area'] ?? '')
                 ->setCellValue('C'.$row, $value['salesmanid'] ?? '')
                 ->setCellValue('D'.$row, $value['nama_salesman'] ?? '')
                 ->setCellValue('E'.$row, $value['tipe_sales'] ?? '')
                 ->setCellValue('F'.$row, $value['MEDREP Aktif'] ?? '')
                 ->setCellValue('G'.$row, $value['MEDREP Hadir'] ?? '')
-                ->setCellValue('H'.$row, '=G'.$row.'/F'.$row)
+                ->setCellValue('H'.$row, '=IF(F'.$row.'>0, G'.$row.'/F'.$row.', 0)')
                 ->setCellValue('I'.$row, 'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')')
-                ->setCellValue('J'.$row, $value['pjp'] ?? '')
-                ->setCellValue('K'.$row, $value['effective_call'] ?? '')
-                ->setCellValue('L'.$row, $value['call'] ?? '')
-                ->setCellValue('M'.$row, $value['extra_call'] ?? '')
-                ->setCellValue('N'.$row, '=K'.$row.'+L'.$row.'+M'.$row)
-                ->setCellValue('O'.$row, '=(K'.$row.'+L'.$row.')/J'.$row)
+                ->setCellValue('J'.$row, $value['call_dub'] ?? '')
+                ->setCellValue('K'.$row, $value['target_dub'] ?? '')
+                ->setCellValue('L'.$row, $value['efektif_dub'] ?? '')
+                ->setCellValue('M'.$row, $value['call_visit'] ?? '')
+                ->setCellValue('N'.$row, $value['target_visit'] ?? '')
+                ->setCellValue('O'.$row, $value['rata_rata_visit'] ?? '')
                 ->setCellValue('P'.$row, $value['jumlah_customer'] ?? '')
                 ->setCellValue('Q'.$row, $value['total_penjualan'] ?? '')
                 ->setCellValue('R'.$row, $value['rrk_keterangan'] ?? '')
                 ->setCellValue('S'.$row, $value['rrk_detailing'] ?? '');
 			
 			$objPHPExcel->getActiveSheet()->getStyle('H'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
-			$objPHPExcel->getActiveSheet()->getStyle('P'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
-			$objPHPExcel->getActiveSheet()->getStyle('R'.$row)->getNumberFormat()->setFormatCode('"Rp. "#,##0.00');
+			$objPHPExcel->getActiveSheet()->getStyle('Q'.$row)->getNumberFormat()->setFormatCode('"Rp. "#,##0.00');
 			$i++;
             $row++;
         }
@@ -332,11 +311,11 @@ class Rep_productivity extends BaseController
             ->setCellValue('C1', 'MEDREP')
             ->setCellValue('D1', 'MEDREP Name')
             ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'Latest JJid')
-            ->setCellValue('G1', 'MEDREP Nama Outlet')
-            ->setCellValue('H1', 'Cluster')
-            ->setCellValue('I1', 'Tier')
-            ->setCellValue('J1', 'Area')
+            ->setCellValue('F1', 'MEDREP Nama Outlet')
+            ->setCellValue('G1', 'Channel')
+            ->setCellValue('H1', 'Regional')
+            ->setCellValue('I1', 'Area')
+            ->setCellValue('J1', 'Sub Area')
             ->setCellValue('K1', 'CheckIn')
             ->setCellValue('L1', 'CheckOut')
             ->setCellValue('M1', 'Time Visit')
@@ -353,11 +332,11 @@ class Rep_productivity extends BaseController
                 ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
                 ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
                 ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
-                ->setCellValue('F'.$row, $valuevisit['latest_jjid'] ?? '')
-                ->setCellValue('G'.$row, $valuevisit['nama_customer'] ?? '')
-                ->setCellValue('H'.$row, $valuevisit['channel'] ?? '')
-                ->setCellValue('I'.$row, $valuevisit['account'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_area'] ?? '')
+                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
+                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
+                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
+                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
+                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
                 ->setCellValue('K'.$row, $valuevisit['check_in'] ?? '')
                 ->setCellValue('L'.$row, $valuevisit['check_out'] ?? '')
                 ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'] ?? '')
@@ -376,23 +355,22 @@ class Rep_productivity extends BaseController
             ->setCellValue('B1', 'Tanggal')
             ->setCellValue('C1', 'User MEDREP')
             ->setCellValue('D1', 'MEDREP ID Outlet')
-            ->setCellValue('E1', 'Latest JJid')
-            ->setCellValue('F1', 'ID Outlet Distributor')
-            ->setCellValue('G1', 'MEDREP Nama Outlet')
-            ->setCellValue('H1', 'Tier')
-            ->setCellValue('I1', 'No SP')
-            ->setCellValue('J1', 'No Sales Order')
-            ->setCellValue('K1', 'ProductID')
-            ->setCellValue('L1', 'Product Name')
-            ->setCellValue('M1', 'Qty (MEDREP Apps)')
-            ->setCellValue('N1', 'Price')
-            ->setCellValue('O1', 'Total GTS (MEDREP Apps)')
-            ->setCellValue('P1', 'Status')
-            ->setCellValue('Q1', 'JJID + Product Name')
-            ->setCellValue('R1', 'Qty Actual (Tableau Kenvue)')
-            ->setCellValue('S1', 'Total GTS (Tableau Kenvue)')
-            ->setCellValue('T1', 'Gap Qty')
-            ->setCellValue('U1', 'Gap Total GTS');
+            ->setCellValue('E1', 'ID Outlet Distributor')
+            ->setCellValue('F1', 'MEDREP Nama Outlet')
+            ->setCellValue('G1', 'Channel')
+            ->setCellValue('H1', 'No SP')
+            ->setCellValue('I1', 'No Sales Order')
+            ->setCellValue('J1', 'ProductID')
+            ->setCellValue('K1', 'Product Name')
+            ->setCellValue('L1', 'Qty (MEDREP Apps)')
+            ->setCellValue('M1', 'Price')
+            ->setCellValue('N1', 'Total GTS (MEDREP Apps)')
+            ->setCellValue('O1', 'Status')
+            ->setCellValue('P1', 'JJID + Product Name')
+            ->setCellValue('Q1', 'Qty Actual (Tableau Konimex)')
+            ->setCellValue('R1', 'Total GTS (Tableau Konimex)')
+            ->setCellValue('S1', 'Gap Qty')
+            ->setCellValue('T1', 'Gap Total GTS');
 
         $dataorder = $this->report_productivity->getOrder_salesman($params);
         $i = 1;
@@ -402,82 +380,45 @@ class Rep_productivity extends BaseController
                 ->setCellValue('B'.$row, $valueorder['period'] ?? '')
                 ->setCellValue('C'.$row, $valueorder['nama_salesman']." (".$valueorder['salesmanid'].")")
                 ->setCellValue('D'.$row, $valueorder['customerid'] ?? '')
-                ->setCellValue('E'.$row, $valueorder['latest_jjid'] ?? '')
-                ->setCellValue('F'.$row, $valueorder['cust_id_map'] ?? '')
-                ->setCellValue('G'.$row, $valueorder['nama_customer'] ?? '')
-                ->setCellValue('H'.$row, $valueorder['account'] ?? '')
-                ->setCellValue('I'.$row, $valueorder['no_po'] ?? '')
-                ->setCellValue('J'.$row, $valueorder['no_sales'] ?? '')
-                ->setCellValue('K'.$row, $valueorder['productid'] ?? '')
-                ->setCellValue('L'.$row, $valueorder['nama_invoice'] ?? '')
-                ->setCellValue('M'.$row, $valueorder['qty_jual_in_pcs'] ?? '')
-                ->setCellValue('N'.$row, $valueorder['h_jual'] ?? '')
-                ->setCellValue('O'.$row, '=M'.$row.'*N'.$row)
-                ->setCellValue('P'.$row, $valueorder['status'] ?? '')
-                ->setCellValue('Q'.$row, '=E'.$row.'&L'.$row)
+                ->setCellValue('E'.$row, $valueorder['cust_id_map'] ?? '')
+                ->setCellValue('F'.$row, $valueorder['nama_customer'] ?? '')
+                ->setCellValue('G'.$row, $valueorder['typeid'] ?? '')
+                ->setCellValue('H'.$row, $valueorder['no_po'] ?? '')
+                ->setCellValue('I'.$row, $valueorder['no_sales'] ?? '')
+                ->setCellValue('J'.$row, $valueorder['productid'] ?? '')
+                ->setCellValue('K'.$row, $valueorder['nama_invoice'] ?? '')
+                ->setCellValue('L'.$row, $valueorder['qty_jual_in_pcs'] ?? '')
+                ->setCellValue('M'.$row, $valueorder['h_jual'] ?? '')
+                ->setCellValue('N'.$row, '=L'.$row.'*M'.$row)
+                ->setCellValue('O'.$row, $valueorder['status'] ?? '')
+                ->setCellValue('P'.$row, ($valueorder['latest_jjid'] ?? '') . ($valueorder['nama_invoice'] ?? ''))
+                ->setCellValue('Q'.$row, '')
                 ->setCellValue('R'.$row, '')
-                ->setCellValue('S'.$row, '')
-                ->setCellValue('T'.$row, '=M'.$row.'-R'.$row)
-                ->setCellValue('U'.$row, '=O'.$row.'-S'.$row);
-			$i++;
-            $row++;
-        }
-
-        // CRC
-        $objPHPExcel->createSheet(3);
-        $sheetCRC = $objPHPExcel->setActiveSheetIndex(3);
-        $sheetCRC->setTitle('CRC');
-		$sheetCRC->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Period')
-            ->setCellValue('C1', 'User MEDREP')
-            ->setCellValue('D1', 'MEDREP Name')
-            ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'Latest JJid')
-            ->setCellValue('G1', 'MEDREP Nama Outlet')
-            ->setCellValue('H1', 'Tier')
-            ->setCellValue('I1', 'ProductID')
-            ->setCellValue('J1', 'Product Name')
-            ->setCellValue('K1', 'Brand')
-            ->setCellValue('L1', 'Qty Stock');
-
-        $datacrc = $this->report_productivity->getcrc_salesman($params);
-        $i = 1;
-        $row = 2;
-        foreach ($datacrc as $valuecrc) {
-            $sheetCRC->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $valuecrc['periode'] ?? '')
-                ->setCellValue('C'.$row, $valuecrc['salesmanid'] ?? '')
-                ->setCellValue('D'.$row, $valuecrc['nama_salesman'] ?? '')
-                ->setCellValue('E'.$row, $valuecrc['customerid'] ?? '')
-                ->setCellValue('F'.$row, $valuecrc['latest_jjid'] ?? '')
-                ->setCellValue('G'.$row, $valuecrc['nama_customer'] ?? '')
-                ->setCellValue('H'.$row, $valuecrc['account'] ?? '')
-                ->setCellValue('I'.$row, $valuecrc['productid'] ?? '')
-                ->setCellValue('J'.$row, $valuecrc['nama_invoice'] ?? '')
-                ->setCellValue('K'.$row, $valuecrc['nama_brand'] ?? '')
-                ->setCellValue('L'.$row, $valuecrc['qty_akhir'] ?? '');
+                ->setCellValue('S'.$row, '=L'.$row.'-Q'.$row)
+                ->setCellValue('T'.$row, '=N'.$row.'-R'.$row);
 			$i++;
             $row++;
         }
 
         // Detailing
-        $objPHPExcel->createSheet(4);
-        $sheetDetailing = $objPHPExcel->setActiveSheetIndex(4);
+        $objPHPExcel->createSheet(3);
+        $sheetDetailing = $objPHPExcel->setActiveSheetIndex(3);
 		$sheetDetailing->setTitle('Detailing');
         $sheetDetailing->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Period')
             ->setCellValue('C1', 'MEDREP')
             ->setCellValue('D1', 'MEDREP Name')
             ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'Latest JJid')
-            ->setCellValue('G1', 'MEDREP Nama Outlet')
-            ->setCellValue('H1', 'Cluster')
-            ->setCellValue('I1', 'Tier')
-            ->setCellValue('J1', 'Area')
-            ->setCellValue('K1', 'PIC Name')
-            ->setCellValue('L1', 'Brand Detailing')
-            ->setCellValue('M1', 'Reason')
-            ->setCellValue('N1', 'Description');
+            ->setCellValue('F1', 'MEDREP Nama Outlet')
+            ->setCellValue('G1', 'Channel')
+            ->setCellValue('H1', 'Regional')
+            ->setCellValue('I1', 'Area')
+            ->setCellValue('J1', 'Sub Area')
+            ->setCellValue('K1', 'Specialist')
+            ->setCellValue('L1', 'Spesialisasi')
+            ->setCellValue('M1', 'Product Detailing')
+            ->setCellValue('N1', 'Reason')
+            ->setCellValue('O1', 'Description');
 
         $datavisit = $this->report_productivity->get_detailing_parma($params);
         $i = 1;
@@ -488,23 +429,23 @@ class Rep_productivity extends BaseController
                 ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
                 ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
                 ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
-                ->setCellValue('F'.$row, $valuevisit['latest_jjid'] ?? '')
-                ->setCellValue('G'.$row, $valuevisit['nama_customer'] ?? '')
-                ->setCellValue('H'.$row, $valuevisit['channel'] ?? '')
-                ->setCellValue('I'.$row, $valuevisit['account'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_area'] ?? '')
+                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
+                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
+                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
+                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
+                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
                 ->setCellValue('K'.$row, $valuevisit['professional_name'] ?? '')
-                ->setCellValue('L'.$row, $valuevisit['brands'] ?? '')
-                //->setCellValue('M'.$row, $valuevisit['start_detailing'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['reason'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['keterangan'] ?? '');
+                ->setCellValue('L'.$row, $valuevisit['spesialisasi'] ?? '')
+                ->setCellValue('M'.$row, $valuevisit['products'] ?? '')
+                ->setCellValue('N'.$row, $valuevisit['reason'] ?? '')
+                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '');
 			$i++;
             $row++;
         }
         
         // Progress Listing
-        $objPHPExcel->createSheet(5);
-        $sheetProgressListing = $objPHPExcel->setActiveSheetIndex(5);
+        $objPHPExcel->createSheet(4);
+        $sheetProgressListing = $objPHPExcel->setActiveSheetIndex(4);
 		$sheetProgressListing->setTitle('Progress Listing');
         $sheetProgressListing->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Periode')
@@ -522,9 +463,7 @@ class Rep_productivity extends BaseController
             ->setCellValue('N1', 'Sign Dokter 3')
             ->setCellValue('O1', 'Sign Dokter 4')
             ->setCellValue('P1', 'Sign Dokter 5')
-            ->setCellValue('Q1', 'Dokumen Registrasi Lengkap')
-            ->setCellValue('R1', 'Estimasi PO')
-            ->setCellValue('S1', 'PO Release');
+            ->setCellValue('Q1', 'Dokumen Registrasi Lengkap');
 
         $progressListing = $this->report_productivity->get_progress_listing($params);
         $i = 1;
@@ -546,9 +485,7 @@ class Rep_productivity extends BaseController
                 ->setCellValue('N'.$row, $this->signFormat($value['sign_dokter_3']))
                 ->setCellValue('O'.$row, $this->signFormat($value['sign_dokter_4']))
                 ->setCellValue('P'.$row, $this->signFormat($value['sign_dokter_5']))
-                ->setCellValue('Q'.$row, $this->signFormat($value['dok_registrasi_lengkap']))
-                ->setCellValue('R'.$row, $this->signFormat($value['estimasi_po']))
-                ->setCellValue('S'.$row, $this->signFormat($value['po_release']));
+                ->setCellValue('Q'.$row, $this->signFormat($value['dok_registrasi_lengkap']));
 			$i++;
             $row++;
         }
@@ -610,7 +547,7 @@ class Rep_productivity extends BaseController
                 $salesman[] = [
                     'salesmanid' => $ap['salesmanid'],
                     'nama_salesman' => $ap['nama_salesman'],
-                    'nama_area' => $ap['nama_area'],
+                    'nama_area' => $ap['city'] ?? $ap['nama_area'],
                     'status' => $status,
                     'check_in' => $checkIn,
                     'check_in_img' => $checkInImg,
@@ -666,8 +603,8 @@ class Rep_productivity extends BaseController
         
         // target call daily
         $date_interval = date_interval($params['start_period'], $params['end_period']);
-        $objPHPExcel->createSheet(7);
-        $sheetcall = $objPHPExcel->setActiveSheetIndex(7);
+        $objPHPExcel->createSheet(6);
+        $sheetcall = $objPHPExcel->setActiveSheetIndex(6);
 		$sheetcall->setTitle('Call Daily');
         $sheetcall->setCellValue('A1', 'No.')
             ->setCellValue('B1', 'Medrep')
@@ -677,9 +614,6 @@ class Rep_productivity extends BaseController
         $sheetcall->mergeCells('B1:B2');
         $sheetcall->mergeCells('C1:C2');
         $sheetcall->mergeCells('D1:D2');
-        //$sheetAttendance->getStyle('A1')->getAlignment()->setHorizontal('center');
-        //$sheetAttendance->getStyle('B1')->getAlignment()->setHorizontal('center');
-        //$sheetAttendance->getStyle('C1')->getAlignment()->setHorizontal('center');
 
         $colIndex = 5;
         foreach ($date_interval as $dateObj) {
@@ -705,7 +639,7 @@ class Rep_productivity extends BaseController
                 $parmalist[$parmaKey] = [
                     'parma' => $ap['parma'],
                     'parma_name' => $ap['nama_parma'],
-                    'area' => $ap['nama_area'],
+                    'area' => $ap['nama_subarea'] ?? $ap['nama_area'],
                     'daily' => [] // simpan per tanggal
                 ];
             }

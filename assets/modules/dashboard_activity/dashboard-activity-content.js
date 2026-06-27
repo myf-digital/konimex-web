@@ -94,26 +94,40 @@ $(function () {
 
   function initialize(type = "") {
     if (paramsession) {
-      if (paramsession.subareaid) {
-        loadSubareaDetail(
-          paramsession.regionalid,
-          paramsession.areaid,
-          paramsession.subareaid,
-          paramsession.nama_subarea,
-        );
-      } else if (paramsession.areaid) {
-        loadAreaDetail(
-          paramsession.regionalid,
-          paramsession.areaid,
-          paramsession.nama_area,
-        );
-      } else if (paramsession.regionalid) {
-        loadRegionDetail(paramsession.regionalid, paramsession.nama_regional);
+      let rLoc = paramsession.restrict_location || [];
+
+      let regionalIds = "";
+      let areaIds = "";
+      let subareaIds = "";
+      let namaRegional = "";
+      let namaArea = "";
+      let namaSubarea = "";
+      if (rLoc && rLoc.length > 0) {
+        regionalIds = rLoc.map((v) => v.regionalid).join(",");
+        areaIds = rLoc.map((v) => v.areaid).join(",");
+        subareaIds = rLoc.map((v) => v.subareaid).join(",");
+
+        namaRegional = rLoc.map((v) => v.nama_regional).join(", ");
+        namaArea = rLoc.map((v) => v.nama_area).join(", ");
+        namaSubarea = rLoc.map((v) => v.nama_subarea).join(", ");
+      }
+
+      let restrictLevel = parseInt(paramsession.restrict_level);
+
+      if (restrictLevel == 4 && subareaIds) {
+        loadSubareaDetail(regionalIds, areaIds, subareaIds, namaSubarea);
+      } else if (restrictLevel == 3 && areaIds) {
+        loadAreaDetail(regionalIds, areaIds, namaArea);
+      } else if (restrictLevel == 2 && regionalIds) {
+        loadRegionDetail(regionalIds, namaRegional);
       } else {
         loadSummary();
       }
 
-      if (["medrep", "mrc"].includes(paramsession.role_name.toLowerCase())) {
+      if (
+        paramsession.role_name &&
+        ["medrep", "mrc"].includes(paramsession.role_name.toLowerCase())
+      ) {
         $divTipeSales.hide();
       } else {
         if (type != "load") {
@@ -589,6 +603,7 @@ $(function () {
       "Nama Salesman",
       "Tipe Sales",
       "Jabatan",
+      "Area",
       "Planned DUB (Actual)",
       "Planned DUB (Target)",
       "Visit (Actual)",
@@ -696,14 +711,18 @@ $(function () {
         });
       }
       addSection(
-        "Subarea: " + (exportData.salesman.label || "Subarea"),
+        "Sub Area: " + (exportData.salesman.label || "Sub Area"),
         hdrSalesman,
         filteredSalesmanData.map(function (r) {
+          let area = r.nama_subarea || "";
+          if (r.nama_area) area += ", " + r.nama_area;
+          if (r.nama_regional) area += ", " + r.nama_regional;
           return [
             r.salesmanid,
             r.nama_salesman,
             r.tipe_sales,
             r.jabatan,
+            area,
             r.call_planned,
             r.target_planned,
             r.call_visit,
@@ -906,6 +925,9 @@ $(function () {
 
     let rows = data
       .map(function (r, i) {
+        let area = r.nama_subarea || "";
+        if (r.nama_area) area += ", " + r.nama_area;
+        if (r.nama_regional) area += ", " + r.nama_regional;
         return `
           <tr class="clickable-row" data-salesmanid="${r.salesmanid}" data-nama="${r.nama_salesman || ""}">
             <td>${i + 1}</td>
@@ -916,6 +938,7 @@ $(function () {
             </td>
             <td>${val(r.tipe_sales)}</td>
             <td>${val(r.jabatan)}</td>
+            <td>${val(area)}</td>
             <td>${makeProgressBar(r.call_planned, r.target_planned)}</td>
             <td>${makeProgressBar(r.call_visit, r.target_visit)}</td>
           </tr>
@@ -934,6 +957,7 @@ $(function () {
                   <th>Nama Salesman</th>
                   <th>Tipe</th>
                   <th>Jabatan</th>
+                  <th>Area</th>
                   <th class="th-planned">Planned</th>
                   <th class="th-visit">Visit</th>
                 </tr>

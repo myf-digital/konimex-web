@@ -9,12 +9,9 @@
 
   let uiStartPeriode = $("#start_periode");
   let uiEndPeriode = $("#end_periode");
-  //let uiSelectMonth = $("#month-id");
-  //let uiSelectYear = $("#year-id");
-  //let uiSelectPosition = $("#tipe_sales-id");
   let uiSelectRegional = $("#regional-id");
   let uiSelectArea = $("#area-id");
-  //let uiSelectCity = $("#city-id");
+  let uiSelectSubArea = $("#subarea-id");
 
   let paramsession = common.getCookie("session");
 
@@ -24,28 +21,18 @@
     common.loading();
     let resolver = new HttpResolver();
     let filter = new Filter();
-    // console.log(filter);
 
     $.when(
       $.post(common.baseURL("rep_productivity/load_regional"), filter.build()),
     )
-      .done(function (data, textStatus, jqXHR) {
-        // console.log("done");
-        //console.log(d);
-      })
+      .done(function (data, textStatus, jqXHR) {})
       .then(function (r1) {
         common.loadingClose();
-        // console.log("then");
         setupForm(r1);
       })
       .fail(resolver.fail);
 
     uiBtnPreview.click(function () {
-      /*if (uiSelectYear.val()===null){
-                alert ('Tahun harus di isi...!');
-            }else if (uiSelectMonth.val()===null){
-                alert ('Bulan harus di isi...!');
-            } else*/
       if (uiStartPeriode.val() === "") {
         $.alert({
           title: "Error ",
@@ -64,11 +51,6 @@
     });
 
     uiBtnDownload.click(function () {
-      /*if (uiSelectYear.val()===null){
-                alert ('Tahun harus di isi...!');
-            }else if (uiSelectMonth.val()===null){
-                alert ('Bulan harus di isi...!');
-            } else*/
       if (uiStartPeriode.val() === "") {
         $.alert({
           title: "Error ",
@@ -87,11 +69,6 @@
     });
 
     uiBtnDownloadAllData.click(function () {
-      /*if (uiSelectYear.val()===null){
-                alert ('Tahun harus di isi...!');
-            }else if (uiSelectMonth.val()===null){
-                alert ('Bulan harus di isi...!');
-            } else*/
       if (uiStartPeriode.val() === "") {
         $.alert({
           title: "Error ",
@@ -121,9 +98,15 @@
       loadArea(regional);
     });
 
+    uiSelectArea.on("select2:select", function (e) {
+      area = e.params.data;
+
+      loadSubArea(area);
+    });
+
     uiStartPeriode.on("changeDate", function (selected) {
-      var startDate = new Date(selected.date.valueOf());
-      var endDate = new Date(selected.date.valueOf());
+      let startDate = new Date(selected.date.valueOf());
+      let endDate = new Date(selected.date.valueOf());
       endDate.setDate(endDate.getDate() + 90);
       uiEndPeriode.datepicker("setStartDate", startDate);
       uiEndPeriode.datepicker("setEndDate", endDate);
@@ -131,8 +114,6 @@
         uiEndPeriode.val(uiStartPeriode.val());
       }
     });
-
-    // load_tipegff();
   }
 
   function setupForm(r1) {
@@ -153,28 +134,29 @@
       allowClear: true,
     });
 
+    uiSelectSubArea.select2({
+      placeholder: "Select Sub Area",
+      allowClear: true,
+    });
+
     uiSelectRegional.val(null).trigger("change");
   }
 
   function open_preview() {
-    //var year = uiSelectYear.val();
-    //var month = uiSelectMonth.val();
     let start = uiStartPeriode.val();
     let end = uiEndPeriode.val();
-    var regionalid = uiSelectRegional.val();
-    var areaid = uiSelectArea.val();
-    //var position = uiSelectPosition.val();
+    let regionalid = uiSelectRegional.val();
+    let areaid = uiSelectArea.val();
+    let subareaid = uiSelectSubArea.val();
 
-    var idjabatan = paramsession.idjabatan;
-    var usersession = paramsession.username;
-    var restrict_level = paramsession.restrict_level;
+    let idjabatan = paramsession.idjabatan;
+    let usersession = paramsession.username;
+    let restrict_level = paramsession.restrict_level;
 
     $.ajax({
       type: "POST",
       dataType: "html",
-      beforeSend: function () {
-        //$("#map-content").html('Populating data, please wait..');
-      },
+      beforeSend: function () {},
       url: common.baseURL("rep_productivity/open_detail"),
       data:
         "start_period=" +
@@ -190,12 +172,12 @@
         "&usersession=" +
         usersession +
         "&restrict_level=" +
-        restrict_level,
+        restrict_level +
+        "&subareaid=" +
+        subareaid,
       success: function (res) {
         response = res;
-        //$('div .modal-header .modal-title').text('Detail Productifity Sales');
         $("#tbl-content").html(response);
-        //$("#modal_detail").modal('show');
       },
       error: function () {
         alert("Load failed");
@@ -225,18 +207,38 @@
     );
   }
 
+  function loadSubArea(data) {
+    common.loading();
+    $.post(
+      common.baseURL("rep_productivity/load_subarea"),
+      { areaid: data.areaid },
+      function (res) {
+        uiSelectSubArea.empty();
+        uiSelectSubArea.select2({
+          placeholder: "Select Sub Area",
+          allowClear: true,
+          data: $.map(res.rows, function (o) {
+            o.id = o.subareaid; // replace name with the property used for the text
+            o.text = o.nama_subarea;
+            return o;
+          }),
+        });
+        uiSelectSubArea.val(null).trigger("change");
+        common.loadingClose();
+      },
+    );
+  }
+
   function save_xls() {
-    //var year = uiSelectYear.val();
-    //var month = uiSelectMonth.val();
     let start = uiStartPeriode.val();
     let end = uiEndPeriode.val();
-    //var position = uiSelectPosition.val();
-    var regionalid = uiSelectRegional.val();
-    var areaid = uiSelectArea.val();
+    let regionalid = uiSelectRegional.val();
+    let areaid = uiSelectArea.val();
+    let subareaid = uiSelectSubArea.val();
 
-    var idjabatan = paramsession.idjabatan;
-    var usersession = paramsession.username;
-    var restrict_level = paramsession.restrict_level;
+    let idjabatan = paramsession.idjabatan;
+    let usersession = paramsession.username;
+    let restrict_level = paramsession.restrict_level;
 
     common.direct(
       "rep_productivity/savetoxlsx/" +
@@ -248,6 +250,8 @@
         "/" +
         areaid +
         "/" +
+        subareaid +
+        "/" +
         usersession +
         "/" +
         restrict_level +
@@ -257,17 +261,15 @@
   }
 
   function save_xls_all_data() {
-    //var year = uiSelectYear.val();
-    //var month = uiSelectMonth.val();
     let start = uiStartPeriode.val();
     let end = uiEndPeriode.val();
-    //var position = uiSelectPosition.val();
-    var regionalid = uiSelectRegional.val();
-    var areaid = uiSelectArea.val();
+    let regionalid = uiSelectRegional.val();
+    let areaid = uiSelectArea.val();
+    let subareaid = uiSelectSubArea.val();
 
-    var idjabatan = paramsession.idjabatan;
-    var usersession = paramsession.username;
-    var restrict_level = paramsession.restrict_level;
+    let idjabatan = paramsession.idjabatan;
+    let usersession = paramsession.username;
+    let restrict_level = paramsession.restrict_level;
 
     common.direct(
       "rep_productivity/savexls_visit_and_order/" +
@@ -278,6 +280,8 @@
         regionalid +
         "/" +
         areaid +
+        "/" +
+        subareaid +
         "/" +
         usersession +
         "/" +

@@ -94,36 +94,6 @@
                                 <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
                             </div>
                         </div>
-                                <!--<label for="year">Year</label>
-                                <select id="year-id" name="year" class="form-control" placeholder="Select Year Period">
-                                    <?php
-                                        for ($i=0; $i < 5; $i++) { 
-                                            $year = date('Y');
-                                            $opt = $year-$i;
-                                            echo '<option>'.$opt.'</option>';
-                                        }
-                                    ?>
-                                </select>
-							</div>
-							<div class="form-group col-md-2">
-								<label for="month">Month</label>
-                                <select id="month-id" name="month" class="form-control" placeholder="Select Month Period">
-                                    <?php
-                                        $monthNow = date('m');
-                                        $bulan=array("January","February","March","April","May","June","July","August","September","October","November","December");
-                                        $rtnbln=array("01","02","03","04","05","06","07","08","09","10","11","12");
-                                        $jlh_bln=count($bulan);
-                                        for($c=0; $c<$jlh_bln; $c+=1){
-                                            $select = $rtnbln[$c] == $monthNow ? 'selected' : '';
-                                            echo"<option value=$rtnbln[$c] $select> $bulan[$c] </option>";
-                                        }
-                                    ?>
-                                </select>
-							</div>
-                            <div class="form-group  col-md-2">
-								<label for="tipe_sales">Position</label>
-                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Position"></select>
-							</div>-->
                             <div class="form-group col-md-2">
                                 <label for="regional">Regional</label>
                                 <select id="regional-id" name="regional" class="form-control" placeholder="Select Regional"></select>
@@ -132,11 +102,14 @@
                                 <label for="area">Area</label>
                                 <select id="area-id" name="area" class="form-control" placeholder="Select Area"></select>
                             </div>
+                            <div class="form-group col-md-2">
+                                <label for="subarea">Sub Area</label>
+                                <select id="subarea-id" name="subarea" class="form-control" placeholder="Select Sub Area"></select>
+                            </div>
                     </div>
 
                     <div class="box-footer">
                         <button id="btn-preview-form" type="button" class="btn btn-success fa fa-book"> View</button>
-                        <!--<button id="btn-download-form" type="button" class="btn btn-primary fa fa-download">  Download</button>-->
                         <button id="btn-download-all-data-form" type="button" class="btn btn-primary fa fa-download">  Download Data Visit & Order</button>
                     </div>
                     <div class="row">
@@ -146,7 +119,6 @@
                         </div>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>

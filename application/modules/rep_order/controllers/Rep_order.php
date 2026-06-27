@@ -42,6 +42,12 @@ class Rep_order extends BaseController
         $data = param_input();
         responseJSON($this->order->get_city($data));
     }
+
+    public function load_salesman()
+    {
+        $data = param_input();
+        responseJSON($this->order->get_salesman($data));
+    }
     
 	function get_order_all() {
 	
@@ -188,8 +194,8 @@ class Rep_order extends BaseController
                     const common = new Common();
 
                     function savexls(salesmanid) {
-                        var startdate1 = $("#get_date1");
-                        var startdate2 = $("#get_date2");
+                        var startdate1 = $("#start_periode");
+                        var startdate2 = $("#end_periode");
                         common.direct("rep_order/savexls_order_all/"+salesmanid+"/"+startdate1.val()+"/"+startdate2.val());
                     }
 

@@ -42,7 +42,7 @@
                             <label for="role_name_desc">Custom Role Name</label>
                             <input id="role_name_desc" name="role_name_desc" class="form-control" placeholder="Enter Custom Role Name">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="mapping_target_group" style="display: none;">
                             <h5 class="font-weight-bold h5-title">Mapping Target</h5>
                             <div class="table-detail">
                                 <table class="table table-striped table-hover">

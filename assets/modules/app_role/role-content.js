@@ -6,9 +6,28 @@
   common.setTitle("Role");
   // ui components
   let uiTbl = $("#tbl-role");
+  let keyRoleSales = "";
 
-  initializeGrid();
-  initialize();
+  common.loading();
+  $.post(
+    common.baseURL("api_v1/call_param_key"),
+    { parkey: "key_role_sales" },
+    function (res) {
+      if (res.result && res.result.length > 0) {
+        const valRoles = res.result.find(
+          (r) => r.key_param == "key_role_sales",
+        );
+        keyRoleSales = valRoles.value;
+      }
+      initializeGrid();
+      initialize();
+      common.loadingClose();
+    }
+  ).fail(function () {
+    initializeGrid();
+    initialize();
+    common.loadingClose();
+  });
 
   /*
    * initialize content
@@ -119,22 +138,29 @@
       "success",
       "../assets/images/ic_edit.png",
     );
-    const btnDetail = commonGrid.btnBuilderDash(
-      "btn-detail",
-      "info",
-      "../assets/images/ic_detail.png",
-    );
     const btnDelete = commonGrid.btnBuilderDash(
       "btn-delete",
       "danger",
       "../assets/images/ic_trash.png",
     );
+
+    let btnDetail = "";
+    if (row.role_name && keyRoleSales) {
+      let normalized = row.role_name.toUpperCase();
+      if (keyRoleSales.includes(normalized)) {
+        btnDetail = commonGrid.btnBuilderDash(
+          "btn-detail",
+          "info",
+          "../assets/images/ic_detail.png",
+        ) + " ";
+      }
+    }
+
     return (
       '<div class="action-grid">' +
       btnUpdate +
       " " +
       btnDetail +
-      " " +
       btnDelete +
       "</div>"
     );

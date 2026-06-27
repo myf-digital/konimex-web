@@ -57,8 +57,8 @@
     scroll-behavior: smooth;
   }
 
-  .select2 {
-    width: 160px!important;
+  .select2, .select2-container {
+    width: 100% !important;
   }
 
   #btn-search {
@@ -94,16 +94,59 @@
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12">
         <div class="box box-success">
-            <div class="box-body col-md-12">
-                <table id="tbl"></table>
+            <div class="box-header with-border">
+                <h3 class="box-title">Report Order</h3>
             </div>
-            <div class="row">
-              <div class="col-xs-12">
-                <a href="#tbl-content" id="click-scroll" style="display: none;"></a>
-                <div id="tbl-content" class="box-table box-success" style="margin:10px; overflow: auto; max-height: 100%; max-width: 99%; white-space: nowrap;">
+
+            <form id="fm-report-order" role="form" method="post">
+                <div class="box-body col-md-12">
+                    <div class="form-group col-md-2">
+                        <label for="start_periode">Start Periode</label>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                            <input id="start_periode" placeholder="Periode" type="text" class="form-control datepicker" name="start_periode" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="end_periode">End Periode</label>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                            <input id="end_periode" placeholder="End Periode" type="text" class="form-control datepicker" name="end_periode" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="salesman">Salesman</label>
+                        <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select Salesman"></select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="regional">Regional</label>
+                        <select id="regional-id" name="regional" class="form-control" placeholder="Select Regional"></select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="area">Area</label>
+                        <select id="area-id" name="area" class="form-control" placeholder="Select Area"></select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="subarea">Sub Area</label>
+                        <select id="subarea-id" name="subarea" class="form-control" placeholder="Select Sub Area"></select>
+                    </div>
                 </div>
-              </div>
-            </div>
+
+                <div class="box-footer">
+                    <button id="btn-preview-form" type="button" class="btn btn-success fa fa-book"> View</button>
+                </div>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <a href="#tbl-content" id="click-scroll" style="display: none;"></a>
+                    <div id="tbl-content" class="box-table box-success" style="margin:10px; overflow: auto; max-height: 100%; max-width: 99%; white-space: nowrap;">
+                    </div>
+                  </div>
+                </div>
+            </form>
         </div>
     </div>
   </div>

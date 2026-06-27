@@ -148,13 +148,20 @@ class Rep_visit_detailing extends BaseController
 			$add = $d_position['alamat'];
 			$account = $d_position['account'];
 			$pic = $d_position['professional_name'];
+			$spesialisasi = $d_position['spesialisasi'];
 			$keterangan = $d_position['keterangan'];
 			$reason = $d_position['reason'];
 			$img = '';
 			if ($d_position['url_img_detailing']) {
 				$img = '<br/><img src="'.$d_position['url_img_detailing'].'" alt="foto" width="100">';
 			}
-			$brand = $d_position['brands'];
+			$products = "";
+			if (!empty($d_position['products'])) {
+				$p = explode('||',$d_position['products']);
+				foreach ($p as $k => $pr) {
+					$products .= ($k+1).'. '.$pr.'<br/>';
+				}
+			}
 			if ($d_position['tipe_pic']) $pic .= ' ('.$d_position['tipe_pic'].')';
 			$icon = base_url().'assets/mapIcon/tracking.png';
 			
@@ -199,14 +206,19 @@ class Rep_visit_detailing extends BaseController
 													\'<td class="text-muted">'.@$add.'</td>\'+	
 												\'</tr>\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">PIC</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">User</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$pic.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Brand</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">Spesialisasi</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$brand.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$spesialisasi.'</td>\'+
+												\'</tr>\'+
+												\'<tr>\'+
+													\'<td class="text-muted" style="white-space: nowrap;vertical-align: top;">Produk</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;vertical-align: top;">&nbsp;:&nbsp;</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.@$products.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Keterangan</td>\'+	
@@ -349,8 +361,9 @@ class Rep_visit_detailing extends BaseController
             'Salesman',
             'Outlet ID',
             'Outlet',
-            'PIC',
-            'Brand',
+            'User',
+            'Spesialisasi',
+            'Produk',
             'Status',
             'Keterangan',
             'Reason',
@@ -373,7 +386,8 @@ class Rep_visit_detailing extends BaseController
 				$value['customerid'],
 				$value['nama_customer'],
 				$value['professional_name'],
-				$value['brands'],
+				$value['spesialisasi'],
+				$value['products'],
 				$value['status_label'],
 				$value['keterangan'],
 				$value['reason'],

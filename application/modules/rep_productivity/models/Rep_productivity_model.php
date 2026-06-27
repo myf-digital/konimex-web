@@ -23,6 +23,15 @@ class Rep_productivity_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
 
+    public function get_subarea($data)
+    {
+        $field = " a.* ";
+        $table = " ( select subareaid, nama_area as nama_subarea from m_area_subarea where areaid = '".$data['areaid']."' 
+                        order by subareaid asc
+                    ) as a";
+        return easy_pagging($data, $field, $table);
+    }
+
     public function get_city($data)
     {
         $field = " a.* ";
@@ -32,129 +41,405 @@ class Rep_productivity_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
     
-    function getProductivity($data)
+    public function getProductivity($data)
     {
-		$sqlrecon = " 
-                    replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
-												effective_call, `call`, extra_call, invalid_call, crc, promo, competitor, `order`, sos, image)
-					select a.date, a.salesman_id, case when a.type='IST' then 'S' 
-													   when a.type='ICT' then 'C' 
-													   when a.type='AHR' then 'H'
-													   else 'HF' end tipe, 
-							check_in checkin, check_out checkout, ifnull(b.flag_adjust,0) as flag_adjust,
-							concat(ifnull(a.description,''),ifnull(concat('-',a.description_in),''),ifnull(concat('-',a.description_out),'')) as keterangan, 
-							case when a.type='ICT' then (select count(1) from t_sales_rrk where periode=a.date and salesmanid=a.salesman_id) 
-							when b.flag_adjust=1 then 0
-							else 0 
-							end _pjp, 0 _effective_call,
-							0 _call, 0 _extra_call, 0 _invalid_call,0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos, a.image 
-					from s_absensi a left join t_sales_absensi b on a.date=b.periode and a.salesman_id =b.salesmanid 
-					where a.date between DATE_ADD(?, INTERVAL -3 DAY) and ?
-					union
-					select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, ifnull(b.flag_adjust,0) as flag_adjust,'' keterangan, 
-						case when b.flag_adjust=0 or b.flag_adjust=1 then (select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) else 0 end _pjp,
-						(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) as _effective_call, 
-						case when b.flag_adjust=0 or b.flag_adjust=1 then 
-								(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-								and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
-								and customerid not in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid)) 
-							else 0 end _call,
-						case when b.flag_adjust=0 or b.flag_adjust=1 then 
-							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid))
-							else (select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid)
-						end _extra_call,
-							(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid 
-							and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)
-							and customerid not in (select customerid from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid))
-						as _invalid_call,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
-					(select count(1) from t_sales_master where tanggal=a.periode and salesmanid=a.salesmanid) _order,
-					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos, '' image
-					from t_sales_rrk_trans a left join t_sales_absensi b on a.periode=b.periode and a.salesmanid=b.salesmanid  
-					where a.periode between  DATE_ADD(?, INTERVAL -3 DAY) and ?
-					group by a.periode,a.salesmanid;
-                    ";
-			$res_ss = $this->db->query($sqlrecon, array($data['start_period'],$data['end_period'],$data['start_period'],$data['end_period']));
-	
+        $sqlrecon = "
+            REPLACE INTO t_sales_absensi (
+                periode, salesmanid, status, checkin, checkout, flag_adjust, keterangan, pjp, 
+                effective_call, `call`, extra_call, invalid_call, crc, promo, competitor, `order`, sos, image
+            )
+            SELECT 
+                a.date, 
+                a.salesman_id, 
+                CASE 
+                    WHEN a.type = 'IST' THEN 'S' 
+                    WHEN a.type = 'ICT' THEN 'C' 
+                    WHEN a.type = 'AHR' THEN 'H'
+                    ELSE 'HF' 
+                END AS tipe, 
+                a.check_in AS checkin, 
+                a.check_out AS checkout, 
+                IFNULL(b.flag_adjust, 0) AS flag_adjust,
+                CONCAT(
+                    IFNULL(a.description, ''), 
+                    IFNULL(CONCAT('-', a.description_in), ''), 
+                    IFNULL(CONCAT('-', a.description_out), '')
+                ) AS keterangan, 
+                CASE 
+                    WHEN a.type = 'ICT' THEN (
+                        SELECT COUNT(1) 
+                        FROM t_sales_rrk 
+                        WHERE periode = a.date AND salesmanid = a.salesman_id
+                    ) 
+                    WHEN b.flag_adjust = 1 THEN 0
+                    ELSE 0 
+                END AS _pjp, 
+                0 AS _effective_call,
+                0 AS _call, 
+                0 AS _extra_call, 
+                0 AS _invalid_call, 
+                0 AS _crc, 
+                0 AS _promo, 
+                0 AS _competitor, 
+                0 AS _order, 
+                0 AS _sos, 
+                a.image 
+            FROM s_absensi a 
+            LEFT JOIN t_sales_absensi b 
+                ON a.date = b.periode AND a.salesman_id = b.salesmanid 
+            WHERE a.date BETWEEN DATE_ADD(?, INTERVAL -3 DAY) AND ?
 
-        if ($data['restrict_level']=='4'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='3'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='2'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                ) ";
-        }
-        else {
+            UNION
+
+            SELECT 
+                a.periode, 
+                a.salesmanid, 
+                'H' AS status, 
+                MIN(a.check_in) AS checkin, 
+                MAX(a.check_out) AS checkout, 
+                IFNULL(b.flag_adjust, 0) AS flag_adjust,
+                '' AS keterangan, 
+                CASE 
+                    WHEN b.flag_adjust = 0 OR b.flag_adjust = 1 THEN (
+                        SELECT COUNT(1) 
+                        FROM t_sales_rrk 
+                        WHERE periode = a.periode AND salesmanid = a.salesmanid
+                    ) 
+                    ELSE 0 
+                END AS _pjp,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_rrk 
+                    WHERE periode = a.periode AND salesmanid = a.salesmanid 
+                      AND customerid IN (
+                          SELECT customerid 
+                          FROM t_sales_master 
+                          WHERE tanggal = a.periode AND salesmanid = a.salesmanid
+                      )
+                ) AS _effective_call, 
+                CASE 
+                    WHEN b.flag_adjust = 0 OR b.flag_adjust = 1 THEN (
+                        SELECT COUNT(1) 
+                        FROM t_sales_rrk_trans 
+                        WHERE periode = a.periode AND salesmanid = a.salesmanid 
+                          AND customerid IN (
+                              SELECT customerid 
+                              FROM t_sales_rrk 
+                              WHERE periode = a.periode AND salesmanid = a.salesmanid
+                          )
+                          AND customerid NOT IN (
+                              SELECT customerid 
+                              FROM t_sales_master 
+                              WHERE tanggal = a.periode AND salesmanid = a.salesmanid
+                          )
+                    ) 
+                    ELSE 0 
+                END AS _call,
+                CASE 
+                    WHEN b.flag_adjust = 0 OR b.flag_adjust = 1 THEN (
+                        SELECT COUNT(1) 
+                        FROM t_sales_rrk_trans 
+                        WHERE periode = a.periode AND salesmanid = a.salesmanid 
+                          AND customerid NOT IN (
+                              SELECT customerid 
+                              FROM t_sales_rrk 
+                              WHERE periode = a.periode AND salesmanid = a.salesmanid
+                          )
+                    )
+                    ELSE (
+                        SELECT COUNT(1) 
+                        FROM t_sales_rrk_trans 
+                        WHERE periode = a.periode AND salesmanid = a.salesmanid
+                    )
+                END AS _extra_call,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_rrk_trans 
+                    WHERE periode = a.periode AND salesmanid = a.salesmanid 
+                      AND customerid NOT IN (
+                          SELECT customerid 
+                          FROM t_sales_rrk 
+                          WHERE periode = a.periode AND salesmanid = a.salesmanid
+                      )
+                      AND customerid NOT IN (
+                          SELECT customerid 
+                          FROM t_sales_master 
+                          WHERE tanggal = a.periode AND salesmanid = a.salesmanid
+                      )
+                ) AS _invalid_call,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_rrk_trans 
+                    WHERE periode = a.periode AND salesmanid = a.salesmanid AND crc_time IS NOT NULL
+                ) AS _crc,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_rrk_trans 
+                    WHERE periode = a.periode AND salesmanid = a.salesmanid AND promo_time IS NOT NULL
+                ) AS _promo,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_rrk_trans 
+                    WHERE periode = a.periode AND salesmanid = a.salesmanid AND competitor_time IS NOT NULL
+                ) AS _competitor,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_master 
+                    WHERE tanggal = a.periode AND salesmanid = a.salesmanid
+                ) AS _order,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_rrk_trans 
+                    WHERE periode = a.periode AND salesmanid = a.salesmanid AND sos_time IS NOT NULL
+                ) AS _sos, 
+                '' AS image
+            FROM t_sales_rrk_trans a 
+            LEFT JOIN t_sales_absensi b 
+                ON a.periode = b.periode AND a.salesmanid = b.salesmanid  
+            WHERE a.periode BETWEEN DATE_ADD(?, INTERVAL -3 DAY) AND ?
+            GROUP BY a.periode, a.salesmanid;
+        ";
+
+        $this->db->query($sqlrecon, array(
+            $data['start_period'],
+            $data['end_period'],
+            $data['start_period'],
+            $data['end_period']
+        ));
+
+        if ($data['restrict_level'] == '4') {
+            $strquery = " AND a.salesmanid IN (
+                SELECT salesmanid 
+                FROM m_sales_salesman 
+                WHERE subareaid IN (
+                    SELECT DISTINCT b.subareaid 
+                    FROM app_resource a 
+                    LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                    WHERE a.username = '" . $data['usersession'] . "'
+                )
+            )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " AND a.salesmanid IN (
+                SELECT salesmanid 
+                FROM m_sales_salesman 
+                WHERE areaid IN (
+                    SELECT DISTINCT b.areaid 
+                    FROM app_resource a 
+                    LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                    WHERE a.username = '" . $data['usersession'] . "'
+                )
+            )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " AND a.salesmanid IN (
+                SELECT salesmanid 
+                FROM m_sales_salesman 
+                WHERE regionalid IN (
+                    SELECT DISTINCT b.regionalid 
+                    FROM app_resource a 
+                    LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
+                    WHERE a.username = '" . $data['usersession'] . "'
+                )
+            )";
+        } else {
             $strquery = "";
         }
 
-        $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
-        $start=$data['start_period'];
-        $end=$data['end_period'];
-        $year=date('Y', strtotime($end));
-        $month=date('m', strtotime($end));
-        
-        //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
-		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
-		$query = $this->db->query(" 
-									select d.regionalid, d.nama_regional, c.areaid, c.nama_area, c.nama_area city,
-                                            b.salesmanid,b.nama_salesman,b.tipe_sales, 
-											date_format('$end','%d')-FLOOR(date_format('$end','%d')/7)-(case when date_format('$end','%d') > 15 
-                                            then (select jml_libur from setup_jumlah_harilibur where tahun='$year' and bulan='$month') else 0 end) as 'MEDREP Aktif', 
-                                            (select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as 'MEDREP Hadir',
-                                            (select count(1) from t_sales_absensi where status='C' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as cuti,
-                                            (select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '".$start."' and '".$end."') as sakit, 
-                                            round((count(1)/(date_format('$end','%d')-FLOOR(date_format('$end','%d')/7)-(case when date_format('$end','%d') > 25 
-                                            then (select jml_libur from setup_jumlah_harilibur where tahun='$year' and bulan='$month') else 0 end)))*100,0) as persentasi,
-                                            sum(a.pjp) as pjp, sum(a.effective_call) as effective_call, sum(a.call) as `call`, sum(a.extra_call) as extra_call, sum(a.invalid_call) as invalid_call,
-                                            ifnull((
-                                            select GROUP_CONCAT(x.reason_rrk SEPARATOR ' , ') from ( 
-                                               SELECT z.salesmanid, CONCAT(y.reason, '(', count(y.reason), ')') AS reason_rrk 
-                                               from t_sales_rrk_trans z left join t_sales_rrk_reason y on z.call_reasonid=y.call_reasonid 
-                                               where z.periode between '".$start."' and '".$end."' 
-                                               and z.call_reasonid is not null 
-                                               group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
-                                            ),'-') as rrk_keterangan,
-                                            ifnull((
-                                            select GROUP_CONCAT(x.reason_detailing SEPARATOR ' , ') from (
-                                               SELECT z.salesmanid, CONCAT(y.reason, '(', count(y.reason), ')') AS reason_detailing
-                                               from t_sales_rrk_trans z left join trx_visit_detailing y on z.periode=y.periode and
-                                                    z.customerid=y.customerid and z.salesmanid=y.salesmanid 
-                                               where z.periode between '".$start."' and '".$end."' 
-                                               group by z.salesmanid,y.reason ) x where x.salesmanid=a.salesmanid GROUP BY x.salesmanid
-                                            ),'-') as rrk_detailing, sum(e.jumlah_customer) as jumlah_customer, sum(e.total_penjualan) as total_penjualan
-									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
-									left join m_area_areasite c on c.areaid=b.areaid left join m_area_regional d on d.regionalid=c.regionalid
-                                    left join (SELECT salesmanid,tanggal,
-										  COUNT(customerid) AS total_transaksi,
-										  COUNT(customerid) AS jumlah_customer,
-										  SUM(netto) AS total_penjualan
-										FROM t_sales_master where tanggal between '".$start."' and '".$end."'
-										group by salesmanid,tanggal) as e on a.salesmanid=e.salesmanid and a.periode =e.tanggal
-									where a.periode between '".$start."' and '".$end."' 
-                                        and b.tipe_sales not in ('ADMIN','SPV','FC') 
-                                    $strquery $area $regional
-									group by d.regionalid, d.nama_regional, c.areaid, c.nama_area, b.salesmanid,b.nama_salesman,b.tipe_sales
-									order by regionalid asc, areaid asc, subareaid asc, tipe_sales asc, nama_salesman asc;								
-									");
-                                    
-        return $query->result_array();
+        $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="' . $data['regionalid'] . '" ' : '';
+        $area = $data['areaid'] != 'null' ? ' and b.areaid="' . $data['areaid'] . '" ' : '';
+        $subarea = $data['subareaid'] != 'null' ? ' and b.subareaid="' . $data['subareaid'] . '" ' : '';
+        $start = $data['start_period'];
+        $end = $data['end_period'];
+        $year = date('Y', strtotime($end));
+        $month = date('m', strtotime($end));
+
+        $sqlTargets = "
+            SELECT
+                ar.role_name AS tipe_sales,
+                rmt.target_dub,
+                rmt.target_hk,
+                rmt.target_call_dub,
+                rmt.target_call_visit
+            FROM role_mapping_target rmt
+            JOIN app_role ar ON ar.role_id = rmt.role_id
+            WHERE rmt.tahun = ? AND rmt.bulan = ?
+        ";
+        $targetsResult = $this->db->query($sqlTargets, [$year, (int)$month])->result_array();
+        $targetsMap = [];
+        foreach ($targetsResult as $t) {
+            $targetsMap[strtolower($t['tipe_sales'])] = $t;
+        }
+
+        $query = $this->db->query(" 
+            SELECT 
+                d.regionalid, 
+                d.nama_regional, 
+                c.areaid, 
+                c.nama_area, 
+                c.nama_area AS city,
+                mas.subareaid,
+                mas.nama_area AS nama_subarea,
+                b.salesmanid,
+                b.nama_salesman,
+                b.tipe_sales, 
+                DATE_FORMAT('$end', '%d') - FLOOR(DATE_FORMAT('$end', '%d') / 7) - (
+                    CASE 
+                        WHEN DATE_FORMAT('$end', '%d') > 15 THEN (
+                            SELECT jml_libur 
+                            FROM setup_jumlah_harilibur 
+                            WHERE tahun = '$year' AND bulan = '$month'
+                        ) 
+                        ELSE 0 
+                    END
+                ) AS 'MEDREP Aktif', 
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_absensi 
+                    WHERE status = 'H' AND salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
+                ) AS 'MEDREP Hadir',
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_absensi 
+                    WHERE status = 'C' AND salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
+                ) AS cuti,
+                (
+                    SELECT COUNT(1) 
+                    FROM t_sales_absensi 
+                    WHERE status = 'S' AND salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
+                ) AS sakit, 
+                ROUND(
+                    (
+                        COUNT(1) / (
+                            DATE_FORMAT('$end', '%d') - FLOOR(DATE_FORMAT('$end', '%d') / 7) - (
+                                CASE 
+                                    WHEN DATE_FORMAT('$end', '%d') > 25 THEN (
+                                        SELECT jml_libur 
+                                        FROM setup_jumlah_harilibur 
+                                        WHERE tahun = '$year' AND bulan = '$month'
+                                    ) 
+                                    ELSE 0 
+                                END
+                            )
+                        )
+                    ) * 100, 
+                    0
+                ) AS persentasi,
+                (
+                    SELECT COUNT(DISTINCT CONCAT(tsrt.customerid, '-', tsrt.periode))
+                    FROM t_sales_rrk_trans tsrt
+                    JOIN trx_visit_detailing tvd
+                        ON tvd.salesmanid = tsrt.salesmanid
+                        AND tvd.customerid = tsrt.customerid
+                        AND tvd.periode = tsrt.periode
+                    JOIN m_customer_ob mco
+                        ON mco.salesmanid = tsrt.salesmanid
+                        AND mco.customerid = tsrt.customerid
+                        AND mco.user_id = tvd.user_id
+                    JOIN t_sales_rrk_user tsru
+                        ON tsru.salesmanid = tsrt.salesmanid
+                        AND tsru.customerid = tsrt.customerid
+                        AND tsru.periode = tsrt.periode
+                        AND tsru.user_id = tvd.user_id
+                    WHERE tsrt.salesmanid = a.salesmanid
+                      AND tsrt.periode BETWEEN '$start' AND '$end'
+                ) AS call_dub,
+                (
+                    SELECT COUNT(DISTINCT CONCAT(tsrt.customerid, '-', tsrt.periode))
+                    FROM t_sales_rrk_trans tsrt
+                    JOIN trx_visit_detailing tvd
+                        ON tvd.salesmanid = tsrt.salesmanid
+                        AND tvd.customerid = tsrt.customerid
+                        AND tvd.periode = tsrt.periode
+                    JOIN m_customer_ob mco
+                        ON mco.salesmanid = tsrt.salesmanid
+                        AND mco.customerid = tsrt.customerid
+                        AND mco.user_id = tvd.user_id
+                    WHERE tsrt.salesmanid = a.salesmanid
+                      AND tsrt.periode BETWEEN '$start' AND '$end'
+                ) AS efektif_dub,
+                (
+                    SELECT COUNT(DISTINCT CONCAT(tsrt.customerid, '-', tsrt.periode))
+                    FROM t_sales_rrk_trans tsrt
+                    WHERE tsrt.salesmanid = a.salesmanid
+                      AND tsrt.periode BETWEEN '$start' AND '$end'
+                ) AS call_visit,
+                IFNULL((
+                    SELECT GROUP_CONCAT(x.reason_rrk SEPARATOR ' , ') 
+                    FROM ( 
+                        SELECT 
+                            z.salesmanid, 
+                            CONCAT(y.reason, '(', COUNT(y.reason), ')') AS reason_rrk 
+                        FROM t_sales_rrk_trans z 
+                        LEFT JOIN t_sales_rrk_reason y ON z.call_reasonid = y.call_reasonid 
+                        WHERE z.periode BETWEEN '$start' AND '$end' 
+                          AND z.call_reasonid IS NOT NULL 
+                        GROUP BY z.salesmanid, y.reason
+                    ) x 
+                    WHERE x.salesmanid = a.salesmanid 
+                    GROUP BY x.salesmanid
+                ), '-') AS rrk_keterangan,
+                IFNULL((
+                    SELECT GROUP_CONCAT(x.reason_detailing SEPARATOR ' , ') 
+                    FROM (
+                        SELECT 
+                            z.salesmanid, 
+                            CONCAT(y.reason, '(', COUNT(y.reason), ')') AS reason_detailing
+                        FROM t_sales_rrk_trans z 
+                        LEFT JOIN trx_visit_detailing y 
+                            ON z.periode = y.periode 
+                           AND z.customerid = y.customerid 
+                           AND z.salesmanid = y.salesmanid 
+                        WHERE z.periode BETWEEN '$start' AND '$end' 
+                        GROUP BY z.salesmanid, y.reason
+                    ) x 
+                    WHERE x.salesmanid = a.salesmanid 
+                    GROUP BY x.salesmanid
+                ), '-') AS rrk_detailing, 
+                SUM(e.jumlah_customer) AS jumlah_customer, 
+                SUM(e.total_penjualan) AS total_penjualan
+            FROM t_sales_absensi a 
+            LEFT JOIN m_sales_salesman b ON a.salesmanid = b.salesmanid AND b.aktif = 1
+            LEFT JOIN m_area_areasite c ON c.areaid = b.areaid 
+            LEFT JOIN m_area_regional d ON d.regionalid = b.regionalid
+            LEFT JOIN m_area_subarea mas ON mas.subareaid = b.subareaid
+            LEFT JOIN (
+                SELECT 
+                    salesmanid, 
+                    tanggal,
+                    COUNT(customerid) AS total_transaksi,
+                    COUNT(customerid) AS jumlah_customer,
+                    SUM(netto) AS total_penjualan
+                FROM t_sales_master 
+                WHERE tanggal BETWEEN '$start' AND '$end'
+                GROUP BY salesmanid, tanggal
+            ) AS e ON a.salesmanid = e.salesmanid AND a.periode = e.tanggal
+            WHERE a.periode BETWEEN '$start' AND '$end' 
+              AND b.tipe_sales NOT IN ('ADMIN', 'SPV', 'FC') 
+              $strquery $subarea $area $regional
+            GROUP BY d.regionalid, d.nama_regional, c.areaid, c.nama_area, b.salesmanid, b.nama_salesman, b.tipe_sales
+            ORDER BY regionalid ASC, areaid ASC, subareaid ASC, tipe_sales ASC, nama_salesman ASC;
+        ");
+
+        $result = $query->result_array();
+
+        foreach ($result as $k => $row) {
+            $role = strtolower($row['tipe_sales']);
+
+            $target_dub_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_dub'] : 0;
+            $target_hk_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_hk'] : 0;
+            $target_call_dub_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_call_dub'] : 0;
+            $target_call_visit_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_call_visit'] : 0;
+
+            $target_planned = $target_dub_val * $target_call_dub_val;
+            $target_visit = $target_hk_val * $target_call_visit_val;
+
+            $result[$k]['target_dub'] = $target_planned;
+            $result[$k]['target_visit'] = $target_visit;
+
+            $result[$k]['efektif_dub'] = $target_dub_val > 0 ? round($row['call_dub'] / $target_dub_val, 2) : 0;
+            $result[$k]['rata_rata_visit'] = $target_hk_val > 0 ? round($row['call_visit'] / $target_hk_val, 2) : 0;
+        }
+
+        return $result;
     }
 
     function getOrder_salesman($data)
@@ -184,6 +469,7 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
+        $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and salesamn.subareaid="'.$data['subareaid'].'" ' : '';
         //$end=$data['periode'];
         $start=$data['start_period'];
         $end=$data['end_period'];
@@ -201,6 +487,7 @@ class Rep_productivity_model extends CI_Model
 									   cst.nama_customer,
 									   e.nama_class as account,
 									   cst.alamat,
+                                       cst.typeid,
                                        dtl.no_po,
                                        dtl.no_sales,
 									   dtl.productid,
@@ -222,7 +509,7 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.tanggal between '".$start."' and '".$end."' 
                                         and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
-									$area $regional
+									$area $regional $subarea
 									group by sls.siteid, 
 										   sls.salesmanid,
 										   salesamn.nama_salesman,
@@ -329,11 +616,12 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
+        $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
         $start=$data['start_period'];
         $end=$data['end_period'];
         //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		$query = $this->db->query(" 
-                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
+                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
                                             c.typeid as channel, e.nama_class as account,
                                             DATE_FORMAT(a.check_in, '%H:%i:%s') check_in, DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
                                             timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan, 
@@ -360,12 +648,14 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
+                                    left join m_area_subarea mas on mas.subareaid = c.subareaid
+                                    left join m_area_regional mar on mar.regionalid = c.regionalid
                                     where a.periode between '".$start."' and '".$end."' 
 									and b.tipe_sales not in ('ADMIN','SPV','FC') 
                                     and b.aktif = 1 $strquery
-									$area $regional
+									$area $regional $subarea
                                     union all
-                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, d.nama_area, 
+                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
                                             c.typeid as channel, e.nama_class as account,
                                             0 check_in, 0 check_out,
                                             0 lama_kunjungan, 
@@ -376,11 +666,13 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer c on a.customerid= c.customerid 
                                     left join m_customer_class e on e.classid=c.classid
                                     left join m_area_areasite d on c.areaid = d.areaid
+                                    left join m_area_subarea mas on mas.subareaid = c.subareaid
+                                    left join m_area_regional mar on mar.regionalid = c.regionalid
 									where a.periode between '".$start."' and '".$end."' 
                                     and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$start."' and '".$end."')
                                     and b.tipe_sales not in ('ADMIN','SPV','FC') 
                                     and b.aktif = 1 $strquery
-									$area $regional 
+									$area $regional $subarea
                                     ;
 									");
         return $query->result_array();
@@ -413,49 +705,58 @@ class Rep_productivity_model extends CI_Model
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
+        $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
         $start=$data['start_period'];
         $end=$data['end_period'];
-        //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		$query = $this->db->query(" select
-                                        a.periode,
-                                        a.siteid,
-                                        a.salesmanid,
-                                        a.salesman_name,
-                                        a.customerid,
-                                        c.latest_jjid,
-                                        a.professional_name,
-                                        a.array_product,
-                                        a.keterangan,
-                                        a.start_detailing,
-                                        a.end_detailing,
-                                        a.status,
-                                        a.reason,
-                                        a.latitude_cell,
-                                        a.longitude_cell,
-                                        concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
-                                        concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
-                                        b.nama_salesman,
-                                        c.nama_customer,c.typeid as channel,c.nama_account as account,b.nama_area as city,
-                                        CASE
-                                            WHEN a.status = 5 THEN 'Tidak Valid'
-                                            WHEN a.status = 3 THEN 'Valid'
-                                            WHEN a.status = 2 THEN 'Belum Valid'
-                                            ELSE 'Butuh Verifikasi'
-                                        END as status_label,
-                                        COALESCE(
-                                            (
-                                                SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ',')
-                                                FROM m_product mp
-                                                WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
-                                            ),
-                                            a.array_product
-                                        ) as brands
-                                    from trx_visit_detailing a
-                                    left join v_gff_info b on a.salesmanid=b.salesmanid
-                                    left join v_outlet_all c on a.customerid=c.customerid
-                                    where a.periode between '".$start."' and '".$end."'
-                                            $strquery
-                                            $area $regional;");
+                                         a.periode,
+                                         a.siteid,
+                                         a.salesmanid,
+                                         a.salesman_name,
+                                         a.customerid,
+                                         c.latest_jjid,
+                                         a.professional_name,
+                                         rp.spesialisasi,
+                                         a.array_product,
+                                         a.keterangan,
+                                         a.start_detailing,
+                                         a.end_detailing,
+                                         a.status,
+                                         a.reason,
+                                         a.latitude_cell,
+                                         a.longitude_cell,
+                                         concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
+                                         concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
+                                         b.nama_salesman,
+                                         c.nama_customer,c.typeid as channel,c.nama_account as account,b.nama_area as city,
+                                         CASE
+                                             WHEN a.status = 5 THEN 'Tidak Valid'
+                                             WHEN a.status = 3 THEN 'Valid'
+                                             WHEN a.status = 2 THEN 'Belum Valid'
+                                             ELSE 'Butuh Verifikasi'
+                                         END as status_label,
+                                         COALESCE(
+                                             (
+                                                 SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ', ')
+                                                 FROM m_product mp
+                                                 WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
+                                             ),
+                                             a.array_product
+                                         ) as products
+                                     from trx_visit_detailing a
+                                     left join v_gff_info b on a.salesmanid=b.salesmanid
+                                     left join v_outlet_all c on a.customerid=c.customerid
+                                        left join (
+                                            select 
+                                                a.id,
+                                                a.nama_professional,
+                                                b.name as spesialisasi
+                                            from ref_professional a
+                                            left join ref_spesialisasi b on b.id = a.spesialisasi_id
+                                        ) as rp on rp.id = a.user_id
+                                     where a.periode between '".$start."' and '".$end."'
+                                             $strquery
+                                             $area $regional $subarea;");
         return $query->result_array();
     }
 
@@ -505,6 +806,9 @@ class Rep_productivity_model extends CI_Model
         }
         if (isset($data['areaid']) && $data['areaid'] != 'null') {
             $where .= " AND mss.areaid ='".$data['areaid']."'";
+        }
+        if (isset($data['subareaid']) && $data['subareaid'] != 'null') {
+            $where .= " AND mss.subareaid ='".$data['subareaid']."'";
         }
 
 		$query = $this->db->query("
@@ -573,10 +877,13 @@ class Rep_productivity_model extends CI_Model
         if (isset($data['areaid']) && $data['areaid'] != 'null') {
             $where .= " AND mss.areaid ='".$data['areaid']."'";
         }
+        if (isset($data['subareaid']) && $data['subareaid'] != 'null') {
+            $where .= " AND mss.subareaid ='".$data['subareaid']."'";
+        }
 
 		$query = $this->db->query("
-        SELECT mss.nama_salesman, mss.salesmanid, mss.nama_area,tsa.status, tsa.periode, ap.start_time, ap.start_image, ap.end_time, ap.end_image
-        FROM t_sales_absensi tsa 
+        SELECT mss.nama_salesman, mss.salesmanid, mss.nama_area,mss.city, tsa.status, tsa.periode, ap.start_time, ap.start_image, ap.end_time, ap.end_image
+        FROM t_sales_absensi tsa
             LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
             left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
             WHERE ".$where . $strquery ."
@@ -632,6 +939,9 @@ class Rep_productivity_model extends CI_Model
         if (isset($data['areaid']) && $data['areaid'] != 'null') {
             $where .= " AND c.areaid ='".$data['areaid']."'";
         }
+        if (isset($data['subareaid']) && $data['subareaid'] != 'null') {
+            $where .= " AND c.subareaid ='".$data['subareaid']."'";
+        }
 
 		$query = $this->db->query("
             select
@@ -639,6 +949,7 @@ class Rep_productivity_model extends CI_Model
                 z.salesmanid AS parma,
                 z.nama_salesman AS nama_parma,
                 z.nama_area AS nama_area,
+                z.nama_subarea AS nama_subarea,
                 z.send_to AS send_to,
                 z.target_call AS target_call,
                 z.Call AS `Call`,
@@ -651,6 +962,7 @@ class Rep_productivity_model extends CI_Model
                     x.salesmanid AS salesmanid,
                     x.nama_salesman AS nama_salesman,
                     x.nama_area AS nama_area,
+                    x.nama_subarea AS nama_subarea,
                     x.email AS send_to,
                     (
                     select
@@ -669,6 +981,7 @@ class Rep_productivity_model extends CI_Model
                     a.salesmanid AS salesmanid,
                     a.nama_salesman AS nama_salesman,
                     c.nama_area AS nama_area,
+                    c.city AS nama_subarea,
                     e.email AS email,
                     a.customerid AS customerid,
                     b.nama_customer AS nama_customer,
@@ -708,7 +1021,10 @@ class Rep_productivity_model extends CI_Model
             group by
                 x.periode,
                 x.salesmanid,
-                x.nama_salesman) z
+                x.nama_salesman,
+                x.nama_area,
+                x.nama_subarea,
+                x.email) z
         ");
         return $query->result_array();
         

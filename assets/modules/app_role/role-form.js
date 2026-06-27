@@ -8,6 +8,7 @@
 
   let param = common.getCookie("module.role.update");
   let paramsession = common.getCookie("session");
+  let keyRoleSales = "";
 
   initialize();
 
@@ -58,6 +59,42 @@
       },
     });
 
+    $.post(
+      common.baseURL("api_v1/call_param_key"),
+      { parkey: "key_role_sales" },
+      function (res) {
+        if (res.result && res.result.length > 0) {
+          const valRoles = res.result.find(
+            (r) => r.key_param == "key_role_sales",
+          );
+          keyRoleSales = valRoles.value;
+        }
+        checkMappingTargetVisibility();
+      },
+    );
+
+    function checkMappingTargetVisibility() {
+      let selectedVal = uiSelectRole.val();
+      let roleName = "";
+      if (selectedVal == "other") {
+        roleName = $("#role_name_desc").val().trim();
+      } else {
+        roleName = selectedVal;
+      }
+
+      let match = false;
+      if (roleName) {
+        let normalized = roleName.toUpperCase();
+        match = keyRoleSales.includes(normalized);
+      }
+
+      if (match) {
+        $("#mapping_target_group").show();
+      } else {
+        $("#mapping_target_group").hide();
+      }
+    }
+
     uiSelectRole.select2({
       placeholder: "Select Role Name",
       allowClear: true,
@@ -73,9 +110,14 @@
         $("#custom_role_group").hide();
         $("#role_name_desc").val(text ? text.split("-")[1].trim() : "");
       }
+      checkMappingTargetVisibility();
       if (typeof $(this).valid === "function") {
         $(this).valid();
       }
+    });
+
+    $("#role_name_desc").on("input", function () {
+      checkMappingTargetVisibility();
     });
 
     $("#periode").datepicker({

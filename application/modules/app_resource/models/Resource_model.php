@@ -56,9 +56,6 @@ class Resource_model extends CI_Model
         }else{
             return false;
         }
-
-
-        //return $this->db->insert('app_resource', $data);
     }
 
     public function update($data)

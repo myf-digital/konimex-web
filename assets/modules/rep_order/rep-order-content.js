@@ -1,335 +1,289 @@
 (function () {
+  const common = new Common();
+  common.setTitle("Report Order");
 
-    // import commons
-    const common = new Common();
-    const commonGrid = new CommonGrid();
-    //
-    common.setTitle("Report Order");
-    // ui components
-    let uiTbl = $("#tbl");
-    var baseurl = window.location.origin;
-    let paramsession = common.getCookie("session");
-    
-    initializeGrid();
-    setupFormUI();
+  // DOM Elements
+  let uiStartPeriode = $("#start_periode");
+  let uiEndPeriode = $("#end_periode");
+  let uiSelectRegional = $("#regional-id");
+  let uiSelectArea = $("#area-id");
+  let uiSelectSubArea = $("#subarea-id");
+  let uiSelectSalesman = $("#salesmanid-id");
+  let uiBtnPreview = $("#btn-preview-form");
 
-    function initializeGrid() {
-      let option = {
-          title: "Table Sales Order",
-          toolbar: toolbar(),
-          url: common.baseURL("rep_order/load"),
-          pageNumber: 1,
-          pageSize: commonGrid.getCurentSize(),
-          pageList: commonGrid.getPageSize(),
-          height:400,
-          frozenColumns: [[
-              { 
-                  field: 'options',
-                  title: 'ACTION',
-                  width: 100,
-                  halign: 'center',
-                  align: 'center',
-                  formatter: formatterButton
+  let paramsession = common.getCookie("session");
+  let localSalesmen = [];
+
+  initializeParam();
+
+  function initializeParam() {
+    common.loading();
+
+    // Datepickers
+    $(".datepicker")
+      .datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        todayHighlight: true,
+      })
+      .datepicker("setDate", new Date());
+
+    // Datepicker date range constraint
+    uiStartPeriode.on("changeDate", function (selected) {
+      let startDate = new Date(selected.date.valueOf());
+      let endDate = new Date(selected.date.valueOf());
+      endDate.setDate(endDate.getDate() + 90);
+      uiEndPeriode.datepicker("setStartDate", startDate);
+      uiEndPeriode.datepicker("setEndDate", endDate);
+      if (uiStartPeriode.val() > uiEndPeriode.val()) {
+        uiEndPeriode.val(uiStartPeriode.val());
+      }
+    });
+
+    // Load initial dropdowns
+    $.post(common.baseURL("rep_order/load_regional"), {}, function (res) {
+      uiSelectRegional.select2({
+        placeholder: "Select Regional",
+        allowClear: true,
+        data: $.map(res.rows, function (o) {
+          o.id = o.regionalid;
+          o.text = o.nama_regional;
+          return o;
+        }),
+      });
+
+      uiSelectArea.select2({
+        placeholder: "Select Area",
+        allowClear: true,
+      });
+
+      uiSelectSubArea.select2({
+        placeholder: "Select Sub Area",
+        allowClear: true,
+      });
+
+      uiSelectSalesman.select2({
+        placeholder: "Select Salesman",
+        allowClear: true,
+        ajax: {
+          transport: function (params, success, failure) {
+            let term = params.data.q || "";
+            if (term.length < 2) {
+              // Return the cached localSalesmen list for empty or 1-char inputs
+              let filtered = localSalesmen;
+              if (term.length === 1) {
+                filtered = $.grep(localSalesmen, function (o) {
+                  return (
+                    o.nama_salesman.toLowerCase().indexOf(term.toLowerCase()) > -1 ||
+                    o.salesmanid.toLowerCase().indexOf(term.toLowerCase()) > -1
+                  );
+                });
               }
-          ]],
-          columns: [[
-            {field: 'salesmanid', title: 'Kode MEDREP', width: 60, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'nama_salesman', title: 'Nama MEDREP', width: 120, sortable: 'true', halign: 'left', align: 'left'},
-            {field: 'tipe_sales', title: 'Posisi', width: 80, sortable: 'true', halign: 'left', align: 'left'},
-            // {field: 'city', title: 'City', width: 100, sortable: 'true', halign: 'left', align: 'left'},
-            {field: '_jadwal', title: 'Schedule', width: 70, sortable: 'true', halign: 'center', align: 'center'},
-            {field: '_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_call.png"></img> Call', width: 70, sortable: 'true', halign: 'center', align: 'center'},
-            {field: '_extra_call', title: '<img class="color" src="'+baseurl+'/assets/images/ic_extra_call.png"></img> Extra Call', width: 70, sortable: 'true', halign: 'center', align: 'center'},
-            {field: '_crc', title: 'CRC', width: 70, sortable: 'true', halign: 'center', align: 'center'},
-            {field: '_order', title: 'Order', width: 70, sortable: 'true', halign: 'center', align: 'center', formatter: formatNumber},
-          ]],
-          onBeforeLoad: function (param) {
-              //param = common.replaceGridFilterPrefix(param, "a");
-              //param = common.replaceGridFilter(param,["periode"],["b.periode"]);
-          },
-          onLoadSuccess: function (data) {
-              $(this).datagrid('resize', 'fixRowHeight');
-              optionButton(data);
-          }
-      };
-      uiTbl.datagrid(commonGrid.optionValue(option));
-
-    }
-
-    function setupFormUI() {          
-        let uiTanggalPicker1 = $("#get_date1");
-        uiTanggalPicker1.datepicker({
-            format: 'yyyy-mm-dd',
-        }).datepicker("setDate", new Date())
-        .on('change', function(){
-            $('.datepicker').hide();
-        });
-
-        let uiTanggalPicker2 = $("#get_date2");
-        uiTanggalPicker2.datepicker({
-            format: 'yyyy-mm-dd',
-        }).datepicker("setDate", new Date())
-        .on('change', function(){
-            $('.datepicker').hide();
-        });
-
-        uiTanggalPicker1.on('changeDate', function(selected) {
-            var startDate = new Date(selected.date.valueOf());
-            uiTanggalPicker2.datepicker('setStartDate', startDate);
-            if(uiTanggalPicker1.val() > uiTanggalPicker2.val()){
-                uiTanggalPicker2.val(uiTanggalPicker1.val());
+              success({
+                rows: filtered,
+                total: filtered.length,
+              });
+              return;
             }
+
+            // Perform actual AJAX request only when search query has 2+ characters
+            var $request = $.ajax(params);
+            $request.then(success);
+            $request.fail(failure);
+            return $request;
+          },
+          url: common.baseURL("rep_order/load_salesman"),
+          dataType: "json",
+          type: "POST",
+          delay: 250,
+          data: function (params) {
+            return getSalesmanParams(params.term, params.page);
+          },
+          processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+              results: $.map(data.rows, function (o) {
+                return {
+                  id: o.salesmanid,
+                  text: o.salesmanid + " - " + o.nama_salesman,
+                };
+              }),
+              pagination: {
+                more: params.page * 30 < data.total,
+              },
+            };
+          },
+          cache: true,
+        },
+      });
+
+      uiSelectRegional.val(null).trigger("change");
+      loadInitialSalesmen();
+      common.loadingClose();
+    });
+
+    // Event Handlers for Chaining Selects
+    uiSelectRegional.on("select2:select", function (e) {
+      let regional = e.params.data;
+      loadArea(regional);
+    });
+
+    uiSelectRegional.on("change", function () {
+      if (!uiSelectRegional.val()) {
+        uiSelectArea.empty().trigger("change");
+        uiSelectSubArea.empty().trigger("change");
+      }
+      loadInitialSalesmen();
+    });
+
+    uiSelectArea.on("select2:select", function (e) {
+      let area = e.params.data;
+      loadSubArea(area);
+    });
+
+    uiSelectArea.on("change", function () {
+      if (!uiSelectArea.val()) {
+        uiSelectSubArea.empty().trigger("change");
+      }
+      loadInitialSalesmen();
+    });
+
+    uiSelectSubArea.on("change", function () {
+      loadInitialSalesmen();
+    });
+
+    // Action button
+    uiBtnPreview.click(function () {
+      if (uiStartPeriode.val() === "") {
+        $.alert({
+          title: "Error ",
+          content: "Periode harus di isi...!",
+          containerFluid: true,
         });
+      } else if (uiEndPeriode.val() === "") {
+        $.alert({
+          title: "Error ",
+          content: "Periode harus di isi...!",
+          containerFluid: true,
+        });
+      } else if (
+        uiSelectSalesman.val() === "" ||
+        uiSelectSalesman.val() === null
+      ) {
+        $.alert({
+          title: "Error ",
+          content: "Salesman harus di isi...!",
+          containerFluid: true,
+        });
+      } else {
+        open_preview();
+      }
+    });
+  }
 
-        loadRegional();
+  function getSalesmanParams(term, page) {
+    return {
+      q: term || "",
+      page: page || 1,
+      rows: 30,
+      regionalid: uiSelectRegional.val(),
+      areaid: uiSelectArea.val(),
+      subareaid: uiSelectSubArea.val(),
+      usersession: paramsession.username,
+      idjabatan: paramsession.idjabatan,
+      restrict_level: paramsession.restrict_level,
+    };
+  }
 
-        let uiSelectRegional = $("#regional-id");
-        let uiSelectArea = $("#area-id");
-        let uiSelectCity = $("#subarea-id");
+  function loadInitialSalesmen() {
+    $.post(
+      common.baseURL("rep_order/load_salesman"),
+      getSalesmanParams("", 1),
+      function (res) {
+        localSalesmen = res.rows || [];
+        uiSelectSalesman.empty();
+        $.each(localSalesmen, function (i, o) {
+          let newOption = new Option(
+            o.salesmanid + " - " + o.nama_salesman,
+            o.salesmanid,
+            false,
+            false
+          );
+          uiSelectSalesman.append(newOption);
+        });
+        uiSelectSalesman.val(null).trigger("change");
+      }
+    );
+  }
 
+  function loadArea(data) {
+    common.loading();
+    $.post(
+      common.baseURL("rep_order/load_area"),
+      { regionalid: data.regionalid },
+      function (res) {
+        uiSelectArea.empty();
         uiSelectArea.select2({
           placeholder: "Select Area",
           allowClear: true,
-        });
-
-        uiSelectCity.select2({
-          placeholder: "Select City",
-          allowClear: true,
-        });
-
-        uiSelectRegional.on('select2:select', function (e) {
-          regional = e.params.data;
-          loadArea(regional);
-        });
-
-        uiSelectArea.on('select2:select', function (e) {
-          area = e.params.data;
-          loadCity(area);
-        });
-
-        let uiBtnSearch = $("#btn-search");
-        let uiBtnDownload = $("#btn-download");
-
-        uiBtnSearch.click(function () {
-
-          if ( uiTanggalPicker1.val() === ''){
-            alert ('Periode harus di isi...!');
-          } else if(uiTanggalPicker2.val() === '') {
-            alert ('Periode harus di isi...!');
-          } else {
-            uiTbl.datagrid('load',{
-              get_date1: uiTanggalPicker1.val(),
-              get_date2: uiTanggalPicker2.val(),
-              regionalid: uiSelectRegional.val(),
-              areaid: uiSelectArea.val(),
-              subareaid: uiSelectCity.val(),
-              usersession: paramsession.username,
-              restrict_level: paramsession.restrict_level
-            });
-          }
-        });
-
-        uiBtnDownload.click(function () {
-          if ( uiTanggalPicker1.val() === ''){
-            alert ('Periode harus di isi...!');
-          } else if(uiTanggalPicker2.val() === '') {
-            alert ('Periode harus di isi...!');
-          } else {
-            let start = uiTanggalPicker1.val();
-            let end = uiTanggalPicker2.val();
-            
-            let usersession = paramsession.username;
-            let restrict_level = paramsession.restrict_level;
-
-            let regionalid = uiSelectRegional.val();
-            let areaid = uiSelectArea.val();
-            let subareaid = uiSelectCity.val();
-
-            common.direct("rep_order/savexls_order_all_salesman/"+start+"/"+end+"/"+usersession+"/"+restrict_level+"/"+regionalid+"/"+areaid+"/"+subareaid);
-          }
-        });
-    }
-
-    function toolbar() {
-        const btnSearch = commonGrid.btnBuilderText('btn-search', 'primary', 'fa fa-search', ' Search');
-        const btnDownload = commonGrid.btnBuilderText('btn-download', 'success', 'fa fa-download', ' Download');
-        return '<div class="action-grid-toolbar"> &nbsp;&nbsp;&nbsp; Periode : &nbsp;' +
-               '<input type="text" id="get_date1" value="" name="get_date1" readonly style="height: 33px;">' +
-               '&nbsp; - &nbsp; <input type="text" id="get_date2" value="" name="get_date2" readonly style="height: 33px;">' +
-               '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select id="regional-id" name="regional" placeholder="Regional"> '+
-               '</select>' +
-               '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select id="area-id" name="area" placeholder="Area"> '+
-               '</select>' +
-              //  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select id="subarea-id" name="subarea" placeholder="City"> '+
-              //  '</select>' +
-                btnSearch + btnDownload + '</div>';
-    }
-
-  function formatNumber(val, row, index) {
-    return Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  }
-    
-	function formatAmount(val, row, index) {
-		var result;
-		var valData = row.amount;
-		
-		result = CurrencyFormatted(valData);
-		return result;
-	}
-	
-	function CurrencyFormatted(amount) {
-		var delimiter = ","; // replace comma if desired
-		var a = amount.split('.',2);
-		var d = a[1];
-		var i = parseInt(a[0]);
-		if(isNaN(i)) { return ''; }
-		var minus = '';
-		if(i < 0) { minus = '-'; }
-		i = Math.abs(i);
-		var n = new String(i);
-		var a = [];
-		while(n.length > 3)
-		{
-			var nn = n.substr(n.length-3);
-			a.unshift(nn);
-			n = n.substr(0,n.length-3);
-		}
-		if(n.length > 0) { a.unshift(n); }
-		n = a.join(delimiter);
-		if(d.length < 1) { amount = n; }
-		else { amount = n + '.' + d; }
-		amount = minus + amount;
-		return amount;
-	}
-
-  function optionButton(data) {
-    let btnContent = $(".action-grid");
-    let index = 0;
-    for (const btns of btnContent) {
-        const param = data.rows[index];
-        const btnOrder = $(btns).find("a.btn-success");
-        const btnInvoice = $(btns).find("a.btn-info");
-
-        btnOrder.click(function () {
-          get_order_all(param.salesmanid);
-          var link = document.getElementById('click-scroll');
-          link.click();
-        });
-        btnInvoice.click(function () {
-          get_data_tagihan(param.salesmanid);
-          var link = document.getElementById('click-scroll');
-          link.click();
-        });
-        index++;
-    }
-}
-
-/*
-* action button generator
-*/
-function formatterButton(val, row, index) {
-    const btnOrder = commonGrid.btnBuilderText('btn-order', 'success', 'fa fa-calculator', ' Order');
-    //const btnInvoice = commonGrid.btnBuilderText('btn-invoice', 'info', 'fa fa-calendar-check-o', ' Invoice');
-
-    return '<div class="action-grid">' + btnOrder + '</div>';
-}
-
-function loadRegional() {
-  let uiSelectRegional = $("#regional-id");
-  $.post(common.baseURL("rep_order/load_regional"), {}, function (res) {
-      uiSelectRegional.empty();
-      uiSelectRegional.select2({
-          placeholder: "Select Regional",
-          allowClear: true,
           data: $.map(res.rows, function (o) {
-            o.id = o.regionalid; // replace name with the property used for the text
-            o.text = o.nama_regional; // replace name with the property used for the text
+            o.id = o.areaid;
+            o.text = o.nama_area;
             return o;
           }),
-      });
-      uiSelectRegional.val(null).trigger('change');
-  });
-}
+        });
+        uiSelectArea.val(null).trigger("change");
+        uiSelectSubArea.empty().trigger("change");
+        common.loadingClose();
+      },
+    );
+  }
 
-function loadArea(data) {
-  let uiSelectArea = $("#area-id");
-  common.loading();
-  $.post(common.baseURL("rep_order/load_area"), {regionalid: data.regionalid}, function (res) {
-      uiSelectArea.empty();
-      uiSelectArea.select2({
-          placeholder: "Select Area",
+  function loadSubArea(data) {
+    common.loading();
+    $.post(
+      common.baseURL("rep_order/load_city"),
+      { areaid: data.areaid },
+      function (res) {
+        uiSelectSubArea.empty();
+        uiSelectSubArea.select2({
+          placeholder: "Select Sub Area",
           allowClear: true,
           data: $.map(res.rows, function (o) {
-              o.id = o.areaid; // replace name with the property used for the text
-              o.text = o.nama_area;
-              return o;
+            o.id = o.subareaid;
+            o.text = o.nama_area;
+            return o;
           }),
-      });
-      uiSelectArea.val(null).trigger('change');
-      common.loadingClose();
-  });
-}
+        });
+        uiSelectSubArea.val(null).trigger("change");
+        common.loadingClose();
+      },
+    );
+  }
 
-function loadCity(data) {
-  let uiSelectCity = $("#subarea-id");
-  common.loading();
-  $.post(common.baseURL("rep_order/load_city"), {areaid: data.areaid}, function (res) {
-      uiSelectCity.empty();
-      uiSelectCity.select2({
-          placeholder: "Select City",
-          allowClear: true,
-          data: $.map(res.rows, function (o) {
-              o.id = o.subareaid; // replace name with the property used for the text
-              o.text = o.nama_area;
-              return o;
-          }),
-      });
-      uiSelectCity.val(null).trigger('change');
-      common.loadingClose();
-  });
-}
+  function open_preview() {
+    let start = uiStartPeriode.val();
+    let end = uiEndPeriode.val();
+    let salesmanid = uiSelectSalesman.val();
 
-function get_data_tagihan(salesmanid) {
-    var startdate1 = $("#get_date1");
-    var startdate2 = $("#get_date2");
-    
+    common.loading();
     $.ajax({
-        type:"POST",
-        dataType: "html",
-        beforeSend : function() {
-            //$("#map-content").html('Populating data, please wait..');
-        },
-        url: common.baseURL("rep_order/get_tagihan_all"),
-        data : "salesmanid="+salesmanid+"&startdate1="+startdate1.val()+"&startdate2="+startdate2.val(),
-        success:function(res){
-            response = res;
-            $('#tbl-content').html(response);
-        },
-        error:function(){
-            alert("Load failed");
-        }
+      type: "POST",
+      dataType: "html",
+      url: common.baseURL("rep_order/get_order_all"),
+      data: {
+        salesmanid: salesmanid,
+        startdate1: start,
+        startdate2: end,
+      },
+      success: function (res) {
+        $("#tbl-content").html(res);
+        common.loadingClose();
+      },
+      error: function () {
+        common.loadingClose();
+        alert("Load failed");
+      },
     });
-}
-
-function get_order_all(salesmanid) {
-    var startdate1 = $("#get_date1");
-    var startdate2 = $("#get_date2");
-
-    $.ajax({
-        type:"POST",
-        dataType: "html",
-        beforeSend : function() {
-            //$("#map-content").html('Populating data, please wait..');
-        },
-        url: common.baseURL("rep_order/get_order_all"),
-        data : "salesmanid="+salesmanid+"&startdate1="+startdate1.val()+"&startdate2="+startdate2.val(),
-        success:function(res){
-            response = res;
-            $('#tbl-content').html(response);
-        },
-        error:function(){
-            alert("Load failed");
-        }
-    });
-}
+  }
 })();

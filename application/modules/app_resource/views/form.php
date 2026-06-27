@@ -58,10 +58,6 @@
                     <h3 class="box-title">Restrict</h3>
                 </div>
                 <div class="box-body">
-                        <!--<div class="form-group col-md-2">
-                            <label for="siteid">Site</label>
-                            <select id="siteid-id" name="siteid" class="form-control" placeholder="Site"></select>
-                        </div>-->
                         <div class="form-group col-md-3">
                             <label for="regionalid">Regional</label>
                             <select id="regionalid-id" name="regionalid[]" class="form-control" multiple = "multiple" placeholder="Regional"></select>
@@ -70,10 +66,10 @@
                             <label for="areaid">Area</label>
                             <select id="areaid-id" name="areaid[]" class="form-control" multiple = "multiple" placeholder="Area"></select>
                         </div>
-                        <!-- <div class="form-group col-md-5">
-                            <label for="subareaid">City</label>
-                            <select id="subareaid-id" name="subareaid[]" class="form-control" multiple = "multiple" placeholder="City"></select>
-                        </div> -->
+                        <div class="form-group col-md-5">
+                            <label for="subareaid">Sub Area</label>
+                            <select id="subareaid-id" name="subareaid[]" class="form-control" multiple = "multiple" placeholder="Sub Area"></select>
+                        </div>
                     </div>
 
                     <div class="box-footer">

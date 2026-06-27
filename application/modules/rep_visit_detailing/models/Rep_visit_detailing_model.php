@@ -31,10 +31,19 @@ class Rep_visit_detailing_model extends CI_Model
                     WHEN a.status = 3 THEN 'Valid'
                     WHEN a.status = 2 THEN 'Belum Valid'
                     ELSE 'Butuh Verifikasi'
-                END as status_label
+                END as status_label,
+                rp.spesialisasi
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid
+            left join (
+                select 
+                    a.id,
+                    a.nama_professional,
+                    b.name as spesialisasi
+                from ref_professional a
+                left join ref_spesialisasi b on b.id = a.spesialisasi_id
+            ) as rp on rp.id = a.user_id
             where a.periode between '".(@$data["get_date1"] ?? today())."' and '".(@$data["get_date2"] ?? today())."'
         ) a";        
         return easy_pagging($data, $field, $table);
@@ -70,10 +79,28 @@ class Rep_visit_detailing_model extends CI_Model
                 DATE_FORMAT(a.start_detailing,'%H:%i') start_detailing,
                 DATE_FORMAT(a.end_detailing,'%H:%i') end_detailing,
                 timediff(a.end_detailing,a.start_detailing) lamakunjungan,
-                a.keterangan, a.reason
+                a.keterangan,
+                a.reason,
+                rp.spesialisasi,
+                COALESCE(
+                    (
+                        SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR '||')
+                        FROM m_product mp
+                        WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
+                    ),
+                    a.array_product
+                ) as products
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid
+            left join (
+                select 
+                    a.id,
+                    a.nama_professional,
+                    b.name as spesialisasi
+                from ref_professional a
+                left join ref_spesialisasi b on b.id = a.spesialisasi_id
+            ) as rp on rp.id = a.user_id
             where a.periode = '".$periode."'" . $where . "
             order by a.start_detailing asc		
         ");
@@ -107,10 +134,27 @@ class Rep_visit_detailing_model extends CI_Model
                     WHEN a.status = 3 THEN 'Valid'
                     WHEN a.status = 2 THEN 'Belum Valid'
                     ELSE 'Butuh Verifikasi'
-                END as status_label
+                END as status_label,
+                rp.spesialisasi,
+                COALESCE(
+                    (
+                        SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ', ')
+                        FROM m_product mp
+                        WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
+                    ),
+                    a.array_product
+                ) as products
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid 
             left join m_customer c on a.customerid=c.customerid
+            left join (
+                select 
+                    a.id,
+                    a.nama_professional,
+                    b.name as spesialisasi
+                from ref_professional a
+                left join ref_spesialisasi b on b.id = a.spesialisasi_id
+            ) as rp on rp.id = a.user_id
             where a.periode between '".@$data["get_date1"]."' and '".@$data["get_date2"]."'"
         );
 		return $q->result_array();
@@ -120,9 +164,12 @@ class Rep_visit_detailing_model extends CI_Model
     {
         $q = $this->db->query(" 
             select
-                a.*, b.nama_professional
+                a.*,
+                b.nama_professional,
+                rs.name as spesialisasi
             from trx_visit_detailing_survei a
             left join ref_professional b on a.user_id=b.id
+            left join ref_spesialisasi rs on rs.id = b.spesialisasi_id
             where a.siteid = '".$data["siteid"]."' and a.periode = '".$data["periode"]."' and a.salesmanid = '".$data["salesmanid"]."' and a.customerid = '".$data["customerid"]."'		
         ");
         return $q->result_array();

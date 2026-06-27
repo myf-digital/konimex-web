@@ -58,8 +58,6 @@ class Rep_progress_listing extends BaseController
                                 <th style="text-align:center;width:225px;">Dokter 4</th>
                                 <th style="text-align:center;width:225px;">Dokter 5</th>
                                 <th style="text-align:center;width:225px">Dok Registrasi Lengkap</th>
-                                <th style="text-align:center;width:225px;">Estimasi PO</th>
-                                <th style="text-align:center;width:225px;">PO Release</th>
                             </tr>
                         </tbody>
                     </table>
@@ -82,8 +80,6 @@ class Rep_progress_listing extends BaseController
                 <td style="text-align:center;width:225px;text-align:center;">'.$this->progress_listing->signFormat($v_detail['sign_dokter_4']).'</td>
                 <td style="text-align:center;width:225px;text-align:center;">'.$this->progress_listing->signFormat($v_detail['sign_dokter_5']).'</td>
                 <td style="text-align:center;width:225px;text-align:center;">'.$this->progress_listing->signFormat($v_detail['dok_registrasi_lengkap']).'</td>
-                <td style="text-align:center;width:225px;text-align:center;">'.$this->progress_listing->signFormat($v_detail['estimasi_po']).'</td>
-                <td style="text-align:center;width:225px;text-align:center;">'.$this->progress_listing->signFormat($v_detail['po_release']).'</td>
             </tr>';
         }
         
@@ -151,13 +147,12 @@ class Rep_progress_listing extends BaseController
             'Sign Dokter 4',
             'Sign Dokter 5',
             'Dokumen Registrasi Lengkap',
-            'Estimasi PO',
-            'PO Release',
         ];
         $filename = "Progress_Listing_".$salesmanid."_".$startdate."_".$enddate;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Progress Listing');
         $sheet->fromArray($header,NULL,'A1');
 
         $row = 2;
@@ -180,8 +175,6 @@ class Rep_progress_listing extends BaseController
                 $this->progress_listing->signFormat($value['sign_dokter_4']),
                 $this->progress_listing->signFormat($value['sign_dokter_5']),
                 $this->progress_listing->signFormat($value['dok_registrasi_lengkap']),
-                $this->progress_listing->signFormat($value['estimasi_po']),
-                $this->progress_listing->signFormat($value['po_release']),
             ];
             $sheet->fromArray($content,NULL,'A'.$row);
             $row++;
@@ -233,13 +226,12 @@ class Rep_progress_listing extends BaseController
             'Sign Dokter 4',
             'Sign Dokter 5',
             'Dokumen Registrasi Lengkap',
-            'Estimasi PO',
-            'PO Release',
         ];
 		$filename = "Progress_Listing_All_Salesman_".$startdate."_".$enddate;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Progress Listing');
         $sheet->fromArray($header,NULL,'A1');
 
         $row = 2;
@@ -262,8 +254,6 @@ class Rep_progress_listing extends BaseController
                 $this->progress_listing->signFormat($value['sign_dokter_4']),
                 $this->progress_listing->signFormat($value['sign_dokter_5']),
                 $this->progress_listing->signFormat($value['dok_registrasi_lengkap']),
-                $this->progress_listing->signFormat($value['estimasi_po']),
-                $this->progress_listing->signFormat($value['po_release']),
             ];
             $sheet->fromArray($content,NULL,'A'.$row);
 

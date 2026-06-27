@@ -59,20 +59,10 @@ function authUserApplication($data)
             b.restrict_level,
             b.restrict_bu,
             (select aktif_week from m_setup_site) as week_aktif,
-            c.role_name,
-            arl.regionalid,
-            arl.areaid,
-            arl.subareaid,
-            mar.nama_regional,
-            mas.nama_area,
-            mss.nama_area as nama_subarea
+            c.role_name
         FROM app_resource a
         LEFT JOIN ref_jabatan b ON a.idjabatan=b.idjabatan
-        LEFT JOIN app_restrict_location arl ON a.resource_id=arl.resource_id
         LEFT JOIN app_role c on c.role_id = a.role_id
-        LEFT JOIN m_area_regional mar on mar.regionalid=arl.regionalid
-        LEFT JOIN m_area_areasite mas on mas.areaid=arl.areaid
-        LEFT JOIN m_area_subarea mss on mss.subareaid=arl.subareaid
 		WHERE a.username=? AND a.password=md5(?) AND a.status='RA'";
     $res = $ci->db->query($sql, $values)->result_array();
     $form_response = new stdClass();
@@ -85,12 +75,20 @@ function authUserApplication($data)
         $_SESSION['role_id'] = $res[0]['role_id'];
         $_SESSION['role_name'] = $res[0]['role_name'];
         $_SESSION['idjabatan'] = $res[0]['idjabatan'];
-        $_SESSION['regionalid'] = $res[0]['regionalid'];
-        $_SESSION['areaid'] = $res[0]['areaid'];
-        $_SESSION['subareaid'] = $res[0]['subareaid'];
-        $_SESSION['nama_regional'] = $res[0]['nama_regional'];
-        $_SESSION['nama_area'] = $res[0]['nama_area'];
-        $_SESSION['nama_subarea'] = $res[0]['nama_subarea'];
+        
+        $restrict_locations = $ci->db->query("
+            SELECT arl.regionalid, arl.areaid, arl.subareaid, 
+                   mar.nama_regional, mas.nama_area, mss.nama_area as nama_subarea
+            FROM app_restrict_location arl
+            LEFT JOIN m_area_regional mar on mar.regionalid=arl.regionalid
+            LEFT JOIN m_area_areasite mas on mas.areaid=arl.areaid
+            LEFT JOIN m_area_subarea mss on mss.subareaid=arl.subareaid
+            WHERE arl.resource_id = ?
+        ", array($res[0]['resource_id']))->result_array();
+
+        $_SESSION['restrict_location'] = $restrict_locations;
+        $res[0]['restrict_location'] = $restrict_locations;
+
         $_SESSION['expired_at'] = strtotime("+30 minutes");
         unset($res[0]["password"]);
         $form_response->session = $res[0];

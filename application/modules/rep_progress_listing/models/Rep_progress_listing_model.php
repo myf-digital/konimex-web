@@ -35,8 +35,6 @@ class Rep_progress_listing_model extends CI_Model
                     \'<th style="white-space: nowrap;text-align:right;padding-right:10px;">Dokter 4</th>\'+	
                     \'<th style="white-space: nowrap;text-align:right;padding-right:10px;">Dokter 5</th>\'+	
                     \'<th style="white-space: nowrap;text-align:right;padding-right:10px;">Dokumen Registrasi Lengkap</th>\'+	
-                    \'<th style="white-space: nowrap;text-align:right;padding-right:10px;">Estimasi PO</th>\'+	
-                    \'<th style="white-space: nowrap;text-align:right;padding-right:10px;">PO Release</th>\'+	
                     \'</tr>\'+
                     \'</thead>\'+
                     \'<tbody>\'+';
@@ -62,8 +60,6 @@ class Rep_progress_listing_model extends CI_Model
                         \'<td style="white-space: nowrap;text-align:right;padding-right:10px;">'.$this->signFormat($v_detail['sign_dokter_4']).'</td>\'+
                         \'<td style="white-space: nowrap;text-align:right;padding-right:10px;">'.$this->signFormat($v_detail['sign_dokter_5']).'</td>\'+
                         \'<td style="white-space: nowrap;text-align:right;padding-right:10px;">'.$this->signFormat($v_detail['dok_registrasi_lengkap']).'</td>\'+
-                        \'<td style="white-space: nowrap;text-align:right;padding-right:10px;">'.$this->signFormat($v_detail['estimasi_po']).'</td>\'+
-                        \'<td style="white-space: nowrap;text-align:right;padding-right:10px;">'.$this->signFormat($v_detail['po_release']).'</td>\'+
                         \'</tr>\'+';
         }
         $return .= '\'</tbody>\'+ \'</table>\'+';

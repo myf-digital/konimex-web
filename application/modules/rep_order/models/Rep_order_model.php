@@ -470,8 +470,8 @@ class Rep_order_model extends CI_Model
                                 let paramsession = common.getCookie("session");
                 
                                 function savexlstagihan(salesmanid) {
-                                    var startdate1 = $("#get_date1");
-                                    var startdate2 = $("#get_date2");
+                                    var startdate1 = $("#start_periode");
+                                    var startdate2 = $("#end_periode");
                                     common.direct("rep_order/savexls_tagihan_all/"+salesmanid+"/"+startdate1.val()+"/"+startdate2.val());
                                 }
 
@@ -510,6 +510,46 @@ class Rep_order_model extends CI_Model
         
         return $this->db->query($sqltagihan)->result_array();	
     }		
+
+    public function get_salesman($data)
+    {
+        if ($data['restrict_level'] == '4') {
+            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='" . $data["usersession"] . "')
+                                                )";
+        } else if ($data['restrict_level'] == '3') {
+            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
+                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                            where a.username='" . $data["usersession"] . "')
+                                                )";
+        } else if ($data['restrict_level'] == '2') {
+            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
+                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
+                                                where a.username='" . $data["usersession"] . "')
+                                                ) ";
+        } else {
+            $strquery = "";
+        }
+
+        $regional = !empty($data['regionalid']) && $data['regionalid'] != 'null' ? ' and b.regionalid="' . $data['regionalid'] . '" ' : '';
+        $area = !empty($data['areaid']) && $data['areaid'] != 'null' ? ' and b.areaid="' . $data['areaid'] . '" ' : '';
+        $subarea = !empty($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.subareaid="' . $data['subareaid'] . '" ' : '';
+
+        $search = "";
+        if (!empty($data['q'])) {
+            $search = " and (b.nama_salesman like '%" . $this->db->escape_like_str($data['q']) . "%' or b.salesmanid like '%" . $this->db->escape_like_str($data['q']) . "%') ";
+        }
+
+        $field = " a.* ";
+        $table = " ( select b.salesmanid, b.nama_salesman from m_sales_salesman b
+                     where b.aktif = 1 
+                       and b.tipe_sales not in ('ADMIN', 'SPV', 'FC')
+                       " . $regional . $area . $subarea . $strquery . $search . "
+                     order by b.nama_salesman asc
+                    ) as a";
+        return easy_pagging($data, $field, $table);
+    }
 
 	function get_fancy_order() {
 		$tanggal = $_POST['tanggal'];
