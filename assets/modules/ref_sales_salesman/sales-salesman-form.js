@@ -45,6 +45,11 @@
           form.push({ name: "siteid", value: param.siteid });
         }
         form.push({ name: "usersession", value: paramsession.username });
+        for (let i = 0; i < form.length; i++) {
+          if (form[i].name === "total_target") {
+            form[i].value = form[i].value.replace(/\./g, "");
+          }
+        }
         return true; // MANDATORY!
       },
       rules: {
@@ -85,6 +90,10 @@
       common.direct("ref_sales_salesman");
     });
 
+    $("#total_target").on("keyup input", function () {
+      $(this).val(formatRupiah($(this).val()));
+    });
+
     uiSelectAktif.select2({
       placeholder: "Select Status",
       allowClear: true,
@@ -119,6 +128,7 @@
       now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
     $("#periode_spesialisasi").val(currentMonth);
     $("#periode_product").val(currentMonth);
+    $("#periode_sales").val(currentMonth);
 
     $("#periode_spesialisasi")
       .datepicker({
@@ -140,6 +150,17 @@
       })
       .on("changeDate", function () {
         loadProductTargets();
+      });
+
+    $("#periode_sales")
+      .datepicker({
+        format: "yyyy-mm",
+        viewMode: "months",
+        minViewMode: "months",
+        autoclose: true,
+      })
+      .on("changeDate", function () {
+        loadSalesTargets();
       });
 
     $("#productid").select2({
@@ -221,6 +242,7 @@
     uiSalesmanid.on("change blur", function () {
       loadSpesialisasiTargets();
       loadProductTargets();
+      loadSalesTargets();
     });
 
     fetchProducts("", function (res) {
@@ -299,6 +321,7 @@
 
       loadSpesialisasiTargets();
       loadProductTargets();
+      loadSalesTargets();
     }
   }
 
@@ -384,6 +407,31 @@
           $("#productid").append(option);
         });
         $("#productid").val(selectedIds).trigger("change");
+        common.loadingClose();
+      },
+    ).fail(function () {
+      common.loadingClose();
+    });
+  }
+
+  function loadSalesTargets() {
+    let salesmanid = isUpdate ? param.salesmanid : uiSalesmanid.val();
+    let period = $("#periode_sales").val();
+    if (!salesmanid || !period) {
+      $("#total_target").val("");
+      return;
+    }
+
+    common.loading();
+    $.post(
+      common.baseURL("ref_sales_salesman/get_sales_targets"),
+      { salesmanid: salesmanid, periode: period },
+      function (res) {
+        if (res && res.length > 0) {
+          $("#total_target").val(formatRupiah(res[0].total_target));
+        } else {
+          $("#total_target").val("");
+        }
         common.loadingClose();
       },
     ).fail(function () {
@@ -695,5 +743,20 @@
         renderedList.append(counterLi);
       }
     }
+  }
+
+  function formatRupiah(value) {
+    if (!value) return "";
+    let numberString = value.toString().replace(/[^0-9]/g, "");
+    let split = numberString.split("");
+    let sisa = split.length % 3;
+    let rupiah = split.slice(0, sisa).join("");
+    let ribuan = split.slice(sisa).join("").match(/\d{3}/gi);
+
+    if (ribuan) {
+      let separator = sisa ? "." : "";
+      rupiah += separator + ribuan.join(".");
+    }
+    return rupiah;
   }
 })();

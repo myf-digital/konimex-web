@@ -33,6 +33,8 @@ class Sales_salesman_model extends CI_Model
         unset($data['productid']);
         unset($data['periode_product']);
         unset($data['target_product']);
+        unset($data['periode_sales']);
+        unset($data['total_target']);
 
         $data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
         unset($data['usersession']);
@@ -66,6 +68,8 @@ class Sales_salesman_model extends CI_Model
         unset($data['productid']);
         unset($data['periode_product']);
         unset($data['target_product']);
+        unset($data['periode_sales']);
+        unset($data['total_target']);
 
         $data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
         unset($data['usersession']);
@@ -94,6 +98,9 @@ class Sales_salesman_model extends CI_Model
 
         $this->db->where('salesmanid', $data['salesmanid']);
         $this->db->delete('m_sales_produk_target');
+
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->delete('target_tpe');
 
         $this->db->where('siteid', $data['siteid']);
         $this->db->where('salesmanid', $data['salesmanid']);
@@ -315,6 +322,41 @@ class Sales_salesman_model extends CI_Model
                 }
             }
         }
+
+        if (isset($data['periode_sales'])) {
+            $periode_sales = $data['periode_sales'];
+            if (!empty($periode_sales)) {
+                $splitDate = explode('-', $periode_sales);
+                $tahun = $splitDate[0] ?? date('Y');
+                $bulan = $splitDate[1] ?? date('m');
+
+                $target_tpe = $this->db->select('id')
+                                     ->where('salesmanid', $salesmanid)
+                                     ->where('tahun', $tahun)
+                                     ->where('bulan', $bulan)
+                                     ->get('target_tpe')
+                                     ->row_array();
+
+                if ($target_tpe) {
+                    $this->db->where('id', $target_tpe['id']);
+                    $this->db->update('target_tpe', [
+                        'total_target' => $data['total_target'] ?? 0,
+                        'modified_by' => $usersession,
+                        'modified_at' => date('Y-m-d H:i:s'),
+                    ]);
+                } else {
+                    $this->db->insert('target_tpe', [
+                        'tahun' => $tahun,
+                        'bulan' => $bulan,
+                        'salesmanid' => $salesmanid,
+                        'nama_salesman' => $nama_salesman,
+                        'total_target' => $data['total_target'] ?? 0,
+                        'created_by' => $usersession,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ]);
+                }
+            }
+        }
     }
 
     public function spesialisasi($data)
@@ -363,6 +405,21 @@ class Sales_salesman_model extends CI_Model
         $this->db->where('tahun', $tahun);
         $this->db->where('bulan', $bulan);
         return $this->db->get('m_sales_produk_target')->result_array();
+    }
+
+    public function get_sales_targets($data)
+    {
+        if (empty($data['salesmanid']) || empty($data['periode'])) {
+            return [];
+        }
+        $parts = explode('-', $data['periode']);
+        $tahun = intval($parts[0]);
+        $bulan = intval($parts[1]);
+
+        $this->db->where('salesmanid', $data['salesmanid']);
+        $this->db->where('tahun', $tahun);
+        $this->db->where('bulan', $bulan);
+        return $this->db->get('target_tpe')->result_array();
     }
 
     public function detail_mapping($salesmanid)
@@ -456,6 +513,28 @@ class Sales_salesman_model extends CI_Model
             }
         }
 
+        $sales_targets = $this->db->query("
+            SELECT 
+                tahun,
+                bulan,
+                salesmanid,
+                nama_salesman,
+                total_target
+            FROM target_tpe
+            WHERE salesmanid = ?
+            ORDER BY tahun DESC, bulan DESC, nama_salesman ASC
+        ", [$salesmanid])->result_array();
+
+        $sales_active = [];
+        $sales_history = [];
+        foreach ($sales_targets as $st) {
+            if (intval($st['tahun']) == $cur_year && intval($st['bulan']) == $cur_month) {
+                $sales_active[] = $st;
+            } else {
+                $sales_history[] = $st;
+            }
+        }
+
         return [
             'status' => true,
             'message' => 'success',
@@ -471,6 +550,10 @@ class Sales_salesman_model extends CI_Model
             'produk' => [
                 'active' => $produk_active,
                 'history' => $produk_history
+            ],
+            'sales' => [
+                'active' => $sales_active,
+                'history' => $sales_history
             ]
         ];
     }

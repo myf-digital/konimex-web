@@ -59,6 +59,9 @@
 					<li class="nav-item">
 						<a class="nav-link" id="produk-tab" data-toggle="tab" href="#produk-target" role="tab" aria-controls="produk-target" aria-selected="false">Mapping Produk Target</a>
 					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales-target" role="tab" aria-controls="sales-target" aria-selected="false">Mapping Sales Target</a>
+					</li>
 				</ul>
 				
 				<div class="tab-content">
@@ -165,6 +168,39 @@
 										</tr>
 									</thead>
 									<tbody id="produk-history-body">
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="tab-pane fade" id="sales-target" role="tabpanel" aria-labelledby="sales-tab">
+						<div style="margin-bottom: 20px;">
+							<h5 class="font-weight-bold h5-title">Mapping Target (Aktif)</h5>
+							<div class="table-responsive table-detail">
+								<table class="table table-striped table-hover" style="margin-bottom: 0;">
+									<thead>
+										<tr class="bg-f5">
+											<th class="th-detail">Periode</th>
+											<th class="th-detail">Target</th>
+										</tr>
+									</thead>
+									<tbody id="sales-active-body">
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div>
+							<h5 class="font-weight-bold h5-title">Mapping Target (Histori)</h5>
+							<div class="table-responsive table-detail">
+								<table class="table table-striped table-hover" style="margin-bottom: 0;">
+									<thead>
+										<tr class="bg-f5">
+											<th class="th-detail">Periode</th>
+											<th class="th-detail">Target</th>
+										</tr>
+									</thead>
+									<tbody id="sales-history-body">
 									</tbody>
 								</table>
 							</div>

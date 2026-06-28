@@ -903,12 +903,48 @@ $(function () {
       }
     }
 
+    let hdrSales = [
+      "Periode",
+      "Salesman ID",
+      "Nama Salesman",
+      "Target Nominal",
+      "Realisasi",
+      "Kekurangan",
+      "Pencapaian (%)",
+    ];
+    let salesRows = [hdrSales];
+
+    if (exportData.visits) {
+      let vData = exportData.visits.data;
+      if (vData && vData.length > 0) {
+        let salesmanObj = vData[0];
+        let t = salesmanObj.sales_target;
+        if (t) {
+          let targetVal = parseInt(t.target) || 0;
+          let actualVal = parseInt(t.actual) || 0;
+          let kekurangan = Math.max(0, targetVal - actualVal);
+          let pct =
+            targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+          salesRows.push([
+            periodVal,
+            salesmanId,
+            salesmanName,
+            targetVal,
+            actualVal,
+            kekurangan,
+            pct + "%",
+          ]);
+        }
+      }
+    }
+
     let wb = XLSX.utils.book_new();
     let wsSummary = XLSX.utils.aoa_to_sheet(rows);
     let wsPlan = XLSX.utils.aoa_to_sheet(planRows);
     let wsUnplan = XLSX.utils.aoa_to_sheet(unplanRows);
     let wsSpesialisasi = XLSX.utils.aoa_to_sheet(spesialisasiRows);
     let wsProduk = XLSX.utils.aoa_to_sheet(produkRows);
+    let wsSales = XLSX.utils.aoa_to_sheet(salesRows);
 
     let period = $periode.val() || moment().format("MM yyyy");
     XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
@@ -916,6 +952,7 @@ $(function () {
     XLSX.utils.book_append_sheet(wb, wsUnplan, "Unplanned");
     XLSX.utils.book_append_sheet(wb, wsSpesialisasi, "Target Spesialisasi");
     XLSX.utils.book_append_sheet(wb, wsProduk, "Target Produk");
+    XLSX.utils.book_append_sheet(wb, wsSales, "Target Sales");
 
     XLSX.writeFile(wb, "Dashboard_Activity_" + period + ".xlsx");
   }
@@ -1127,6 +1164,73 @@ $(function () {
       `;
     }
 
+    function buildSalesTargetHtml(salesTarget) {
+      if (!salesTarget) {
+        return `
+          <div class="dashboard-card mt-16">
+            <h4 class="card-header-custom">
+              Target Sales
+            </h4>
+            <p class="text-muted text-center dashboard-loading">Tidak ada data sales target</p>
+          </div>
+        `;
+      }
+
+      let targetVal = parseInt(salesTarget.target) || 0;
+      let actualVal = parseInt(salesTarget.actual) || 0;
+      let kekurangan = Math.max(0, targetVal - actualVal);
+      let pct =
+        targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+
+      let actualPct =
+        targetVal > 0 ? Math.min(100, (actualVal / targetVal) * 100) : 0;
+      let remainingPct = Math.max(0, 100 - actualPct);
+
+      function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      }
+
+      let rowHtml = `
+        <tr>
+          <td><strong>Sales TPE</strong></td>
+          <td class="text-right">Rp ${formatNumber(targetVal)}</td>
+          <td class="text-right">Rp ${formatNumber(actualVal)}</td>
+          <td class="text-right">Rp ${formatNumber(kekurangan)}</td>
+          <td>
+            <div class="table-progress-bar" title="Realisasi: Rp ${formatNumber(actualVal)} / Target: Rp ${formatNumber(targetVal)} (${Math.round(pct)}%)">
+              ${actualPct > 0 ? `<div class="achievement-chart-bar-actual" style="width: ${actualPct}%;"></div>` : ""}
+              ${remainingPct > 0 ? `<div class="achievement-chart-bar-remaining" style="width: ${remainingPct}%;"></div>` : ""}
+              <div class="table-progress-bar-text">${Math.round(pct)}%</div>
+            </div>
+          </td>
+        </tr>
+      `;
+
+      return `
+        <div class="dashboard-card mt-16">
+          <h4 class="card-header-custom">
+            Target Sales
+          </h4>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover table-target">
+              <thead>
+                <tr>
+                  <th>Target</th>
+                  <th class="th-w-150 text-center">Target Nominal</th>
+                  <th class="th-w-150 text-center">Realisasi</th>
+                  <th class="th-w-150 text-center">Kekurangan</th>
+                  <th class="th-w-graph text-center">Grafik Pencapaian</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
     function buildVisitTable(visits, label, isPlanned) {
       let rowsHtml = "";
       if (!visits || visits.length === 0) {
@@ -1207,6 +1311,7 @@ $(function () {
       });
     }
 
+    $colDetailSalesman.append(buildSalesTargetHtml(r.sales_target));
     $colDetailSalesman.append(buildSpesialisTargetHtml(r.spesialis_target));
     $colDetailSalesman.append(buildProdukTargetHtml(r.produk_target));
     $colDetailSalesman.append($plannedContainer);

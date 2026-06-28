@@ -101,6 +101,12 @@ class Ref_sales_salesman extends BaseController
         responseJSON($this->sales_salesman->get_product_targets($data));
     }
 
+    public function get_sales_targets()
+    {
+        $data = param_input();
+        responseJSON($this->sales_salesman->get_sales_targets($data));
+    }
+
     public function form_upload()
     {
         $this->template->show($this, 'form_upload');

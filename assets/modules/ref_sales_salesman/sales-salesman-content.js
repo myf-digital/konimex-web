@@ -317,6 +317,40 @@
                 `);
             });
           }
+
+          let salesActiveBody = $("#sales-active-body");
+          salesActiveBody.empty();
+          if (!res.sales || !res.sales.active || res.sales.active.length === 0) {
+            salesActiveBody.append(
+              `<tr><td colspan="2" style="text-align:center;color:#999;padding:12px;">Belum ada mapping target.</td></tr>`,
+            );
+          } else {
+            res.sales.active.forEach(function (h) {
+              salesActiveBody.append(`
+                    <tr>
+                        <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
+                        <td class="td-detail">Rp ${formatRupiah(h.total_target || 0)}</td>
+                    </tr>
+                `);
+            });
+          }
+
+          let salesHistoryBody = $("#sales-history-body");
+          salesHistoryBody.empty();
+          if (!res.sales || !res.sales.history || res.sales.history.length === 0) {
+            salesHistoryBody.append(
+              `<tr><td colspan="2" style="text-align:center;color:#999;padding:12px;">Belum ada history mapping target.</td></tr>`,
+            );
+          } else {
+            res.sales.history.forEach(function (h) {
+              salesHistoryBody.append(`
+                    <tr>
+                        <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
+                        <td class="td-detail">Rp ${formatRupiah(h.total_target || 0)}</td>
+                    </tr>
+                `);
+            });
+          }
           $("#mappingTabs a:first").tab("show");
 
           $("#modalMappingDetail").modal("show");
@@ -336,5 +370,10 @@
         icon: "error",
       });
     });
+  }
+
+  function formatRupiah(value) {
+    if (!value) return "0";
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
 })();

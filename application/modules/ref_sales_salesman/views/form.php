@@ -78,6 +78,27 @@
 						<div class="clearfix"></div>
 						<hr style="border-top: 2px solid #eee; margin-top: 2rem; margin-bottom: 2rem;">
 						
+						<div class="row" style="margin-left: 0; margin-right: 0;margin-bottom: 2rem;">
+							<!-- Mapping Sales -->
+							<div class="col-md-6" style="border: 1px solid #eee;">
+								<div class="row" style="padding-top: 1rem;">
+									<div class="form-group col-xs-12 col-sm-12 col-md-6">
+										<label for="periode_sales">Periode Target Sales</label>
+										<div class="input-group date">
+											<div class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</div>
+											<input id="periode_sales" placeholder="Periode Target Spesialisasi" type="text" class="form-control yearpicker" name="periode_sales" readonly>
+										</div>
+									</div>
+									<div class="form-group col-xs-12 col-sm-12 col-md-6">
+										<label for="total_target">Total Target</label>
+										<input id="total_target" name="total_target" class="form-control" placeholder="Total Target" />
+									</div>
+								</div>
+							</div>
+						</div>
+
 						<div class="row" style="margin-left: 0; margin-right: 0;">
 							<!-- Mapping Spesialisasi -->
 							<div class="col-md-6" style="border: 1px solid #eee;">
