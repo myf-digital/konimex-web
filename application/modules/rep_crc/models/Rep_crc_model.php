@@ -28,30 +28,6 @@ class Rep_crc_model extends CI_Model
 		else {
 			$strqueryarea ="";
 		}
-
-		/*old
-    	if ($data['restrict_level']=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-				app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-				where a.username='".$data['usersession']."')
-				)";
-		}
-		else if ($data['restrict_level']=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-				app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-				where a.username='".$data['usersession']."')
-					)";
-}
-		else if ($data['restrict_level']=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-				app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-				where a.username='".$data['usersession']."')
-				) ";
-		}
-		else {
-			$strquery = "";
-		}
-		*/
 		
         $field = " a.* ";
         $table = " ( select a.customerid, a.nama_customer from m_customer a where classid = '".$data['classid']."' ".$strqueryarea."
@@ -78,7 +54,6 @@ class Rep_crc_model extends CI_Model
 	function getCustomerStockRekap($data) {
 
 		$query = $this->db->query("select qty_akhir, total_qty_exp, price, productid, periode from t_sales_crc where customerid='".$data['customerid']."' and periode between '".$data['start']."' and '".$data['end']."' ");
-			//var_dump($this->db->last_query());die;
 		return $query->result_array();
 	}
 

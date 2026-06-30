@@ -83,33 +83,19 @@ class Conf_setup_pjp extends BaseController
         $username = $this->uri->segment('4');
         $jabatan = $this->uri->segment('5');
         $restrict_level = $this->uri->segment('6');
-        //$filename = $this->uri->segment('7');
 
         ini_set("memory_limit","2048M");
         ini_set('max_execution_time', '0');
         
         if ($salesmanid=='' or empty($salesmanid) or $salesmanid=='null'){
             $filename='All_MEDREP';
-            if ($restrict_level=='4'){
-                $strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                    app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                    where a.username='".$username."')
-                                                    )";
-            }
-            else if ($restrict_level=='3'){
-                $strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$username."')
-                                                    )";
-            }
-            else if ($restrict_level=='2'){
-                $strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                    app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                    where a.username='".$username."')
-                                                    ) ";
-            }
-            else {
-                $strquery = "";
+            
+            $strquery = "";
+            if (!empty($restrict_level)) {
+                $restrict_query = get_salesman_restrict($username, $restrict_level);
+                if ($restrict_query) {
+                    $strquery = " WHERE a.salesmanid IN (" . $restrict_query . ")";
+                }
             }
         }else{
             $filename=$salesmanid;
@@ -119,7 +105,7 @@ class Conf_setup_pjp extends BaseController
             $filename = "FJP_".$filename.".xlsx";
             $query = "select a.siteid, a.salesmanid, d.nama_salesman, d.tipe_sales as position, a.ram_rsm, a.aas_aam_tss_tsm, 
                                 a.customerid, b.typeid channel, GROUP_CONCAT(a.minggu ORDER BY a.minggu ASC SEPARATOR ',') as minggu, a.hari,
-                                b.kode_outlet, b.latest_jjid, b.latest_customer_name, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
+                                b.kode_outlet, b.latest_customer_name, b.nama_customer, b.alamat, b.mcc as dc, b.spot_id as outlet_type,c.nama_class, e.nama_area city
                         from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
                         left join m_sales_salesman d on d.salesmanid=a.salesmanid
                         left join m_area_areasite e on e.areaid = b.areaid
@@ -145,19 +131,18 @@ class Conf_setup_pjp extends BaseController
                         ->setCellValue('C2', 'NAMA MEDREP')
                         ->setCellValue('D2', 'POSITION')
                         ->setCellValue('E2', 'MEDREP ID OUTLET')
-                        ->setCellValue('F2', 'LATEST JJID')
-                        ->setCellValue('G2', 'LATEST CUSTOMER NAME')
-                        ->setCellValue('H2', 'MEDREP NAMA OUTLET')
-                        ->setCellValue('I2', 'ALAMAT')
-                        ->setCellValue('J2', 'CLUSTER')
-                        ->setCellValue('K2', 'TIER')
-                        ->setCellValue('L2', 'MINGGU')
-                        ->setCellValue('M2', 'HARI')
-                        ->setCellValue('N2', 'KOTA')
-                        ;
+                        ->setCellValue('F2', 'LATEST CUSTOMER NAME')
+                        ->setCellValue('G2', 'MEDREP NAMA OUTLET')
+                        ->setCellValue('H2', 'ALAMAT')
+                        ->setCellValue('I2', 'CLUSTER')
+                        ->setCellValue('J2', 'TIER')
+                        ->setCellValue('K2', 'MINGGU')
+                        ->setCellValue('L2', 'HARI')
+                        ->setCellValue('M2', 'KOTA');
+                        
                         $objPHPExcel->getActiveSheet()->getStyle('B2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
+                        $objPHPExcel->getActiveSheet()->getStyle('K2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
                         $objPHPExcel->getActiveSheet()->getStyle('L2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
-                        $objPHPExcel->getActiveSheet()->getStyle('M2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('009900');
                         $i = 3;
                         foreach ($lovpjp as $vpjp) {
                             $objPHPExcel->setActiveSheetIndex(0)
@@ -166,7 +151,6 @@ class Conf_setup_pjp extends BaseController
                                         ->setCellValue('C'.$i, $vpjp['nama_salesman'])
                                         ->setCellValue('D'.$i, $vpjp['position'])
                                         ->setCellValue('E'.$i, $vpjp['customerid'])
-                                        ->setCellValue('F'.$i, $vpjp['latest_jjid'])
                                         ->setCellValue('G'.$i, $vpjp['latest_customer_name'])
                                         ->setCellValue('H'.$i, $vpjp['nama_customer'])
                                         ->setCellValue('I'.$i, $vpjp['alamat'])

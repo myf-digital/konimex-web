@@ -41,32 +41,18 @@ class Rep_kunjungan extends BaseController
 		$restrict_level = $this->input->post("restrict_level");
 		$usersession = $this->input->post("usersession");
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
-		}
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
 
         if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
         $q = $this->db->query(" 
                                 select a.periode, a.salesmanid, c.nama_salesman, c.nama_area, concat(a.salesmanid,'-',c.nama_salesman, '-',c.nama_area) as parma_user,
-                                    a.customerid, b.latest_jjid,b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
+                                    a.customerid, b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
                                     b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
                                     CASE
                                         WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
@@ -97,7 +83,6 @@ class Rep_kunjungan extends BaseController
 		$html .= '<th style="width: 100px">Periode</th>';
 		$html .= '<th style="width: 150px">User Medrep</th>';
 		$html .= '<th style="width: 150px">Medrep Outlet ID</th>';
-		$html .= '<th style="width: 150px">Latest JJID</th>';
 		$html .= '<th style="width: 150px">Customer ID Map</th>';
 		$html .= '<th style="width: 200px">Latest Customer Name</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';
@@ -124,7 +109,6 @@ class Rep_kunjungan extends BaseController
 			$html .= '<td style="width: 100px">'.$value['periode'].'</td>';
 			$html .= '<td style="width: 150px">'.$value['parma_user'].'</td>';
 			$html .= '<td style="width: 150px">'.$value['customerid'].'</td>';
-			$html .= '<td style="width: 150px">'.$value['latest_jjid'].'</td>';
             $html .= '<td style="width: 150px">'.$value['cust_id_map'].'</td>';
 			$html .= '<td style="width: 200px">'.$value['nama_customer'].'</td>';
 			$html .= '<td style="width: 200px">'.$value['alamat'].'</td>';
@@ -187,32 +171,18 @@ class Rep_kunjungan extends BaseController
 
 		$filename = "Report_Kunjungan_".$start."-".$end.".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
-		}
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
 
         if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
         $q = $this->db->query(" 
                                 select a.periode, a.salesmanid, c.nama_salesman, c.nama_area, concat(a.salesmanid,'-',c.nama_salesman, '-',c.nama_area) as parma_user,
-                                    a.customerid, b.latest_jjid,b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
+                                    a.customerid, b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
                                     b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
                                     CASE
                                         WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
@@ -240,17 +210,16 @@ class Rep_kunjungan extends BaseController
             ->setCellValue('B2', 'Periode')
             ->setCellValue('C2', 'User Medrep')
             ->setCellValue('D2', 'Medrep Outlet ID')
-            ->setCellValue('E2', 'Latest JJID')
-            ->setCellValue('F2', 'Customer ID Map')
-            ->setCellValue('G2', 'Latest Customer Name')
-            ->setCellValue('H2', 'Alamat')
-            ->setCellValue('I2', 'Area')
-            ->setCellValue('J2', 'Cluster')
-            ->setCellValue('K2', 'CheckIn')
-            ->setCellValue('L2', 'CheckOut')
-            ->setCellValue('M2', 'Durasi')
-            ->setCellValue('N2', 'Jarak')
-            ->setCellValue('O2', 'Foto')
+            ->setCellValue('E2', 'Customer ID Map')
+            ->setCellValue('F2', 'Latest Customer Name')
+            ->setCellValue('G2', 'Alamat')
+            ->setCellValue('H2', 'Area')
+            ->setCellValue('I2', 'Cluster')
+            ->setCellValue('J2', 'CheckIn')
+            ->setCellValue('K2', 'CheckOut')
+            ->setCellValue('L2', 'Durasi')
+            ->setCellValue('M2', 'Jarak')
+            ->setCellValue('N2', 'Foto')
             ;
 
             $i = 3;
@@ -261,16 +230,15 @@ class Rep_kunjungan extends BaseController
                     ->setCellValue('B'.$i, $vkunjungan['periode'])
                     ->setCellValue('C'.$i, $vkunjungan['parma_user'])
                     ->setCellValue('D'.$i, $vkunjungan['customerid'])
-                    ->setCellValue('E'.$i, $vkunjungan['latest_jjid'])
-                    ->setCellValue('F'.$i, $vkunjungan['cust_id_map'])
-                    ->setCellValue('G'.$i, $vkunjungan['nama_customer'])
-                    ->setCellValue('H'.$i, $vkunjungan['alamat'])
-                    ->setCellValue('I'.$i, $vkunjungan['city'])
-                    ->setCellValue('J'.$i, $vkunjungan['cluster'])
-                    ->setCellValue('K'.$i, format_time($vkunjungan['check_in']))
-                    ->setCellValue('L'.$i, format_time($vkunjungan['check_out']))
-                    ->setCellValue('M'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
-                    ->setCellValue('N'.$i, format_jarak($vkunjungan['jarak_meter']));
+                    ->setCellValue('E'.$i, $vkunjungan['cust_id_map'])
+                    ->setCellValue('F'.$i, $vkunjungan['nama_customer'])
+                    ->setCellValue('G'.$i, $vkunjungan['alamat'])
+                    ->setCellValue('H'.$i, $vkunjungan['city'])
+                    ->setCellValue('I'.$i, $vkunjungan['cluster'])
+                    ->setCellValue('J'.$i, format_time($vkunjungan['check_in']))
+                    ->setCellValue('K'.$i, format_time($vkunjungan['check_out']))
+                    ->setCellValue('L'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
+                    ->setCellValue('M'.$i, format_jarak($vkunjungan['jarak_meter']));
 
                     if (!empty($vkunjungan['image'])) {
                         if (file_exists(DIR_IMAGE_PATH.$vkunjungan['image'])) {

@@ -44,14 +44,14 @@
 					<tr>
 						<th width="15%">Nama Salesman</th>
 						<td width="35%" id="detail-salesman-name">-</td>
-						<th>Jabatan</th>
-						<td id="detail-salesman-jabatan">-</td>
+						<th>Leader</th>
+						<td id="detail-salesman-supervisor">-</td>
 					</tr>
 				</table>
 				
 				<ul class="nav nav-tabs" id="mappingTabs" role="tablist" style="margin-bottom: 15px;">
 					<li class="nav-item">
-						<a class="nav-link active" id="role-tab" data-toggle="tab" href="#role-target" role="tab" aria-controls="role-target" aria-selected="true">Mapping Role Target</a>
+						<a class="nav-link active" id="role-tab" data-toggle="tab" href="#role-target" role="tab" aria-controls="role-target" aria-selected="true">Mapping Target DUB</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" id="spesialis-tab" data-toggle="tab" href="#spesialis-target" role="tab" aria-controls="spesialis-target" aria-selected="false">Mapping Spesialis Target</a>
@@ -149,6 +149,7 @@
 											<th class="th-detail">Periode</th>
 											<th class="th-detail">Produk</th>
 											<th class="th-detail">Target</th>
+											<th class="th-detail">Target Quantity</th>
 										</tr>
 									</thead>
 									<tbody id="produk-active-body">
@@ -165,6 +166,7 @@
 											<th class="th-detail">Periode</th>
 											<th class="th-detail">Produk</th>
 											<th class="th-detail">Target</th>
+											<th class="th-detail">Target Quantity</th>
 										</tr>
 									</thead>
 									<tbody id="produk-history-body">

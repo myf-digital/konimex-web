@@ -65,15 +65,15 @@
 						
 						<div class="form-group col-md-4">
 							<label for="regionalid">Regional</label>
-							<select id="regionalid-id" name="regionalid" class="form-control" placeholder="Regional"></select>
+							<select id="regionalid-id" name="regionalid[]" class="form-control" multiple="multiple" style="width: 100%;" placeholder="Regional"></select>
 						</div>
 						<div class="form-group col-md-4">
 							<label for="areaid">Area</label>
-							<select id="areaid-id" name="areaid" class="form-control" placeholder="Area"></select>
+							<select id="areaid-id" name="areaid[]" class="form-control" multiple="multiple" style="width: 100%;" placeholder="Area"></select>
 						</div>
 						<div class="form-group col-md-4">
 							<label for="subareaid">Sub Area</label>
-							<select id="subareaid-id" name="subareaid" class="form-control" placeholder="Sub Area"></select>
+							<select id="subareaid-id" name="subareaid[]" class="form-control" multiple="multiple" style="width: 100%;" placeholder="Sub Area"></select>
 						</div>
 						<div class="clearfix"></div>
 						<hr style="border-top: 2px solid #eee; margin-top: 2rem; margin-bottom: 2rem;">
@@ -98,74 +98,6 @@
 								</div>
 							</div>
 						</div>
-
-						<div class="row" style="margin-left: 0; margin-right: 0;">
-							<!-- Mapping Spesialisasi -->
-							<div class="col-md-6" style="border: 1px solid #eee;">
-								<div class="row" style="padding-top: 1rem;">
-									<div class="form-group col-xs-12 col-sm-12 col-md-6">
-										<label for="periode_spesialisasi">Periode Target Spesialisasi</label>
-										<div class="input-group date">
-											<div class="input-group-addon">
-												<span class="glyphicon glyphicon-calendar"></span>
-											</div>
-											<input id="periode_spesialisasi" placeholder="Periode Target Spesialisasi" type="text" class="form-control yearpicker" name="periode_spesialisasi" readonly>
-										</div>
-									</div>
-									<div class="form-group col-xs-12 col-sm-12 col-md-6">
-										<label for="spesialisasiid">Mapping Spesialisasi</label>
-										<select id="spesialisasiid" name="spesialisasiid[]" class="form-control" multiple="multiple" style="width: 100%;">
-										</select>
-									</div>
-								</div>
-								<div class="table-responsive" style="margin-top: 1rem;">
-									<table class="table table-bordered table-hover" id="tbl-spesialisasi-target" style="display: none;">
-										<thead>
-											<tr class="bg-primary">
-												<th>Spesialisasi</th>
-												<th style="width: 150px; text-align: center;">Target</th>
-												<th style="width: 50px; text-align: center;">Aksi</th>
-											</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
-								</div>
-							</div>
-							
-							<!-- Mapping Produk -->
-							<div class="col-md-6" style="border: 1px solid #eee;">
-								<div class="row" style="padding-top: 1rem;">
-									<div class="form-group col-xs-12 col-sm-12 col-md-6">
-										<label for="periode_product">Periode Target Produk</label>
-										<div class="input-group date">
-											<div class="input-group-addon">
-												<span class="glyphicon glyphicon-calendar"></span>
-											</div>
-											<input id="periode_product" placeholder="Periode Target Produk" type="text" class="form-control yearpicker" name="periode_product" readonly>
-										</div>
-									</div>
-									<div class="form-group col-xs-12 col-sm-12 col-md-6">
-										<label for="productid">Mapping Produk</label>
-										<select id="productid" name="productid[]" class="form-control" multiple="multiple" style="width: 100%;">
-										</select>
-									</div>
-								</div>
-								<div class="table-responsive" style="margin-top: 1rem;">
-									<table class="table table-bordered table-hover" id="tbl-product-target" style="display: none;">
-										<thead>
-											<tr class="bg-primary">
-												<th>Produk</th>
-												<th style="width: 150px; text-align: center;">Target</th>
-												<th style="width: 50px; text-align: center;">Aksi</th>
-											</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
                     </div>
 
                     <div class="box-footer">
@@ -179,9 +111,9 @@
 </section>
 <script src="<?php echo base_url() . 'assets/modules/ref_sales_salesman/sales-salesman-form.js' ?>"></script>
 <style>
-    .select2-container--default .select2-selection--multiple .select2-selection__rendered li.select2-selection__choice:not(.select2-selection__choice-counter) {
-        display: none !important;
-    }
+	.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+		color: #fff;
+	}
 	.select2-container--default .select2-selection--multiple .select2-selection__choice {
 		background: #3c8dbc !important;
 		border: 1px solid #3c8dbc !important;

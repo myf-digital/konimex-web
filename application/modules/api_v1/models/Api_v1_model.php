@@ -12,7 +12,6 @@ class Api_v1_model extends CI_Model
             if (count($res_ss->result_array()) > 0) {
                 $response = new stdClass();
                 $response = $res_ss->result_array();
-                //parsing to result
                 return result($response);
             } else {
                 return result(new stdClass(), 200, "Siteid Invalid!");
@@ -25,21 +24,9 @@ class Api_v1_model extends CI_Model
 		if (!empty($data['salesmanid'])) {
 			$strquery .= " and a.salesmanid = '".$data['salesmanid']."'";
 		} else {
-			if ($data["restrict_level"]=='4'){ 
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-								app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-								where a.username='".$data["usersession"]."')
-							)";
-			} else if ($data["restrict_level"]=='3') {
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-								app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-								where a.username='".$data["usersession"]."')
-							)";
-			} else if ($data["restrict_level"]=='2') {
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-								app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-								where a.username='".$data["usersession"]."')
-							) ";
+			$restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+			if ($restrict_query) {
+				$strquery = " and a.salesmanid in (" . $restrict_query . ")";
 			}
 		}
 		
@@ -104,54 +91,28 @@ class Api_v1_model extends CI_Model
 
 	function get_all_gff_admin($data)
     {
+		$restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+		if ($restrict_query) {
+			$strquery = " and a.salesmanid in (" . $restrict_query . ")";
+		} else {
+			$strquery = "";
+		}
 
-			if ($data["restrict_level"]=='4'){
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-													app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-													where a.username='".$data["usersession"]."')
-													)";
-			}
-			else if ($data["restrict_level"]=='3'){
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."')
-													)";
-			}
-			else if ($data["restrict_level"]=='2'){
-				$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-													app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-													where a.username='".$data["usersession"]."')
-													) ";
-			}
-			else {
-				$strquery = "";
-			}
-
-
-			/*if ($data["idjabatan"]=='2' or $data["idjabatan"]=='3')
-				$strquery = " where a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b 
-								on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm where a.ram_rsm = '".$data["usersession"]."') ";
-			else if($data["idjabatan"]=='16'  or $data["idjabatan"]=='17'){
-				$strquery = " where a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$data["usersession"]."') ";
-			}else{
-				$strquery = "";
-			}*/
-
-            $sql = "select a.*
-						from m_sales_salesman a
-						where a.aktif='1' 
-					".$strquery."
-						order by a.nama_salesman asc
-						";
-            $res_ss = $this->db->query($sql);
-            if (count($res_ss->result_array()) > 0) {
-                $response = new stdClass();
-                $response = $res_ss->result_array();
-                //parsing to result
-                return result($response);
-            } else {
-                return result(new stdClass(), 200, "Siteid Invalid!");
-            }
+		$sql = "select a.*
+					from m_sales_salesman a
+					where a.aktif='1' 
+				".$strquery."
+					order by a.nama_salesman asc
+					";
+		$res_ss = $this->db->query($sql);
+		if (count($res_ss->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res_ss->result_array();
+			//parsing to result
+			return result($response);
+		} else {
+			return result(new stdClass(), 200, "Siteid Invalid!");
+		}
     }
 
 	function get_salesman_mapping_area($data)
@@ -297,23 +258,24 @@ class Api_v1_model extends CI_Model
 			$strquery = "";
 		}
 
-            $sql = "select a.*
-						from m_area_areasite a 
-					where a.regionalid = ?
-					$strquery
-						order by a.nama_area asc
-						";
-			
-			if (is_null(@$data["regionalid"])) 
-			{
-				$res_ss = $this->db->query($sql, array("regionalid"=>"%"));
-			}else{
-				$res_ss = $this->db->query($sql, array($data["regionalid"]));
-			}
-                $response = new stdClass();
-                $response = $res_ss->result_array();
-                //parsing to result
-                return result($response);
+        $regionalids = $data["regionalid"] ?? null;
+        if (empty($regionalids)) {
+            $sql = "select a.* from m_area_areasite a where 1=1 $strquery order by a.nama_area asc";
+            $res_ss = $this->db->query($sql);
+        } else {
+            $regional_arr = is_array($regionalids) ? $regionalids : explode(',', $regionalids);
+            $this->db->select('a.*');
+            $this->db->from('m_area_areasite a');
+            $this->db->where_in('a.regionalid', $regional_arr);
+            if ($strquery != "") {
+                $this->db->where(substr(trim($strquery), 4));
+            }
+            $this->db->order_by('a.nama_area', 'asc');
+            $res_ss = $this->db->get();
+        }
+
+        $response = $res_ss->result_array();
+        return result($response);
 	}
 
 	function get_subarea_restrict($data)
@@ -328,24 +290,31 @@ class Api_v1_model extends CI_Model
 			$strquery = "";
 		}
 
-        if ( is_null($data["regionalid"]) or is_null($data["areaid"]) ) {
+        $regionalids = $data["regionalid"] ?? null;
+        $areaids = $data["areaid"] ?? null;
+
+        if (empty($regionalids) || empty($areaids)) {
             return result(new stdClass(), 400, "Parameter not allowed");
+        }
+
+        $regional_arr = is_array($regionalids) ? $regionalids : explode(',', $regionalids);
+        $area_arr = is_array($areaids) ? $areaids : explode(',', $areaids);
+
+        $this->db->select('a.*');
+        $this->db->from('m_area_subarea a');
+        $this->db->where_in('a.regionalid', $regional_arr);
+        $this->db->where_in('a.areaid', $area_arr);
+        if ($strquery != "") {
+            $this->db->where(substr(trim($strquery), 4));
+        }
+        $this->db->order_by('a.nama_area', 'asc');
+        $res_ss = $this->db->get();
+
+        if (count($res_ss->result_array()) > 0) {
+            $response = $res_ss->result_array();
+            return result($response);
         } else {
-            $sql = "select a.*
-						from m_area_subarea a 
-					where a.regionalid=? and a.areaid=?
-					$strquery
-						order by a.nama_area asc
-						";
-            $res_ss = $this->db->query($sql, array($data["regionalid"],$data["areaid"]));
-            if (count($res_ss->result_array()) > 0) {
-                $response = new stdClass();
-                $response = $res_ss->result_array();
-                //parsing to result
-                return result($response);
-            } else {
-                return result(new stdClass(), 200, "Data Invalid!");
-            }
+            return result(new stdClass(), 200, "Data Invalid!");
         }
     }
 
@@ -764,11 +733,11 @@ class Api_v1_model extends CI_Model
 	}
 
 	function get_tracking($data) {
-		$siteid = $this->get_siteid(); 
+		$site = $this->get_siteid(); 
 		$q = $this->db->query(" select ifnull(latitude_cell,0) latitude_cell, ifnull(longitude_cell,0) longitude_cell,
 										DATE_FORMAT(createdate,'%H:%i') waktu
 								from t_tracker_salesman
-								where siteid = '".$siteid."' AND salesmanid = ? AND periode = ?
+								where siteid = '".($site->siteid ?? 'KNX01')."' AND salesmanid = ? AND periode = ?
 								order by DATE_FORMAT(createdate,'%H:%i') asc
 								", array($data["sid"],$data["periode"]));
 								
@@ -971,6 +940,7 @@ class Api_v1_model extends CI_Model
 					return false;
 				}else{
 					if ($weekday=='0'){
+						$tsql = "update m_setup_site set tanggal=?;";
 						$tres = $this->db->query($tsql,array($vdate));
 						if(!$tres){
 							$sqldeleterrk = "delete from t_sales_rrk where periode=?;";
@@ -1589,55 +1559,6 @@ class Api_v1_model extends CI_Model
 				; ");
 				$this->db->last_query();
 			if (!$exec_create_stock_awal) {return false;}
-
-			//Query get data all stock doi bulan sebelumnya 
-			/*$q1 = $this->db->query(" select tahun,bulan,salesmanid,customerid,productid,qty_stock_awal,qty_sell_in,qty_stock_akhir,qty_sell_out,harga,doi 
-									from t_stock_all_outlet_doi where
-									customerid='".$rowscrc['customerid']."' and productid='".$rowscrc['customerid']."'
-									and tahun = date_format(CONCAT(LEFT('$vdate' - INTERVAL 1 MONTH,7),'-01'),'%Y') 
-									and bulan = date_format(LAST_DAY(DATE_ADD('$vdate', INTERVAL -1 MONTH)),'%m')
-								; ");
-			if (!$q1) {return false;}
-
-			$rowdata1 = $q1->result_array();
-			if (count($rowdata1) > 0) {
-				$exec_stock = $this->db->query(" 
-												update t_stock_all_outlet_doi set qty_stock_akhir=".$rowscrc['qty_akhir'].", 
-														update_stock_akhir='".$rowscrc['periode']."'
-												where tahun = date_format(CONCAT(LEFT('$vdate' - INTERVAL 1 MONTH,7),'-01'),'%Y') 
-												and bulan = date_format(LAST_DAY(DATE_ADD('$vdate', INTERVAL -1 MONTH)),'%m');
-												customerid='".$rowscrc['customerid']."' and productid='".$rowscrc['customerid']."'
-												; ");
-				if (!$exec_stock) {
-					return false;
-				} else {
-					if($rowscrc['qty_fix_order']>0){
-						$exec_sellin = $this->db->query(" 
-														update t_stock_all_outlet_doi set qty_sell_in=".$rowscrc['qty_fix_order'].", 
-																update_sell_in='".$rowscrc['periode']."' 
-														where tahun = date_format(CONCAT(LEFT('$vdate' - INTERVAL 1 MONTH,7),'-01'),'%Y') 
-														and bulan = date_format(LAST_DAY(DATE_ADD('$vdate', INTERVAL -1 MONTH)),'%m');
-														customerid='".$rowscrc['customerid']."' and productid='".$rowscrc['customerid']."'
-														; ");
-						if (!$exec_stock) {
-							return false;
-						} else {
-							$exec_sellout = $this->db->query(" 
-														update t_stock_all_outlet_doi set qty_sell_out=(qty_stock_awal+qty_sell_in)-qty_stock_akhir
-														where tahun = date_format(CONCAT(LEFT('$vdate' - INTERVAL 1 MONTH,7),'-01'),'%Y') 
-														and bulan = date_format(LAST_DAY(DATE_ADD('$vdate', INTERVAL -1 MONTH)),'%m');
-														customerid='".$rowscrc['customerid']."' and productid='".$rowscrc['customerid']."'
-														; ");
-														if (!$exec_stock) {
-															return false;
-														} else {
-															return true;
-														}
-						}
-
-					}
-				}
-			}*/
 			}
 
 			foreach($data_sellin as $rowssellin){
@@ -1845,15 +1766,15 @@ class Api_v1_model extends CI_Model
 		$bulan = (int) date('n', $time);
 
 		$days_in_month = (int) date('t', $time);
-		$sundays = 0;
+		$weekends = 0;
 		for ($d = 1; $d <= $days_in_month; $d++) {
 			$date_str = sprintf("%04d-%02d-%02d", $tahun, $bulan, $d);
 			$day_of_week = (int) date('w', strtotime($date_str));
-			if ($day_of_week == 0) {
-				$sundays++;
+			if ($day_of_week == 0 || $day_of_week == 6) {
+				$weekends++;
 			}
 		}
-		$running_hk = $days_in_month - $sundays;
+		$running_hk = $days_in_month - $weekends;
 
 		$prev_time = strtotime("-1 month", $time);
 		$prev_tahun = (int) date('Y', $prev_time);
@@ -1985,6 +1906,65 @@ class Api_v1_model extends CI_Model
 					'created_date' => date('Y-m-d H:i:s'),
 				];
 				$this->db->insert('role_mapping_target', $insert_target);
+
+				$prev_specialties = $this->db->query("
+					select spesialisasi_id, nama_spesialisasi, target
+					from m_sales_spesialis_target
+					where roleid = ? and tahun = ? and bulan = ?
+				", [$role_id, $prev_tahun, $prev_bulan])->result_array();
+
+				if (!empty($prev_specialties)) {
+					$this->db->where('roleid', $role_id);
+					$this->db->where('tahun', $tahun);
+					$this->db->where('bulan', $bulan);
+					$this->db->delete('m_sales_spesialis_target');
+
+					$insert_specialties = [];
+					foreach ($prev_specialties as $ps) {
+						$insert_specialties[] = [
+							'tahun' => $tahun,
+							'bulan' => $bulan,
+							'roleid' => $role_id,
+							'role_name' => $role_name,
+							'spesialisasi_id' => $ps['spesialisasi_id'],
+							'nama_spesialisasi' => $ps['nama_spesialisasi'],
+							'target' => $ps['target'],
+							'created_by' => $createby,
+							'created_date' => date('Y-m-d H:i:s'),
+						];
+					}
+					$this->db->insert_batch('m_sales_spesialis_target', $insert_specialties);
+				}
+
+				$prev_products = $this->db->query("
+					select product_id, nama_invoice, target, target_qty
+					from m_sales_produk_target
+					where roleid = ? and tahun = ? and bulan = ?
+				", [$role_id, $prev_tahun, $prev_bulan])->result_array();
+
+				if (!empty($prev_products)) {
+					$this->db->where('roleid', $role_id);
+					$this->db->where('tahun', $tahun);
+					$this->db->where('bulan', $bulan);
+					$this->db->delete('m_sales_produk_target');
+
+					$insert_products = [];
+					foreach ($prev_products as $pp) {
+						$insert_products[] = [
+							'tahun' => $tahun,
+							'bulan' => $bulan,
+							'roleid' => $role_id,
+							'role_name' => $role_name,
+							'product_id' => $pp['product_id'],
+							'nama_invoice' => $pp['nama_invoice'],
+							'target' => $pp['target'],
+							'target_qty' => $pp['target_qty'],
+							'created_by' => $createby,
+							'created_date' => date('Y-m-d H:i:s'),
+						];
+					}
+					$this->db->insert_batch('m_sales_produk_target', $insert_products);
+				}
 			}
 
 			$result_roles[] = [

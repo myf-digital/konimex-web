@@ -14,6 +14,7 @@ class Professional_model extends CI_Model
                         a.tanggal_lahir,
                         a.tanggal_aniv_pernikahan,
                         a.spesialisasi_id,
+                        a.spesialisasi_name,
                         rs.name as spesialisasi,
                         concat('".URL_IMAGE."', a.url_foto) as url_foto,
                         concat('".URL_IMAGE."', a.url_img_signature) as url_img_signature,
@@ -91,10 +92,16 @@ class Professional_model extends CI_Model
             ];
         }
 
+        if (empty($data['spesialisasi_name'])) {
+            $spesialisasi = $this->db->get_where('ref_spesialisasi', ['id' => $data['spesialisasi']])->row_array();
+            $data['spesialisasi_name'] = $spesialisasi['nama_spesialisasi'] ?? null;
+        }
+
         $this->db->insert('ref_professional', [
             'siteid' => "KNX01",
             'nama_professional' => $data['professional'] ?? null,
             'spesialisasi_id' => $data['spesialisasi'] ?? null,
+            'spesialisasi_name' => $data['spesialisasi_name'] ?? null,
             'type' => $data['type'] ?? null,
             'tanggal_lahir' => (!empty($data['tanggal_lahir'])) ? $data['tanggal_lahir'] : null,
             'tanggal_aniv_pernikahan' => (!empty($data['tanggal_aniv_pernikahan'])) ? $data['tanggal_aniv_pernikahan'] : null,
@@ -136,6 +143,11 @@ class Professional_model extends CI_Model
             ];
         }
 
+        if (empty($data['spesialisasi_name'])) {
+            $spesialisasi = $this->db->get_where('ref_spesialisasi', ['id' => $data['spesialisasi']])->row_array();
+            $data['spesialisasi_name'] = $spesialisasi['nama_spesialisasi'] ?? null;
+        }
+        
         $professionalId = $data['id_professional'] ?? null;
         $namaProfessional = $data['professional'] ?? null;
         if (empty($professionalId)) {
@@ -143,6 +155,7 @@ class Professional_model extends CI_Model
                 'siteid' => "KNX01",
                 'nama_professional' => $namaProfessional,
                 'spesialisasi_id' => $data['spesialisasi'] ?? null,
+                'spesialisasi_name' => $data['spesialisasi_name'] ?? null,
                 'type' => $data['type'] ?? null,
                 'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
                 'tanggal_aniv_pernikahan' => $data['tanggal_aniv_pernikahan'] ?? null,

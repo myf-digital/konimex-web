@@ -207,41 +207,12 @@ class Rep_productivity_model extends CI_Model
             $data['end_period']
         ));
 
-        if ($data['restrict_level'] == '4') {
-            $strquery = " AND a.salesmanid IN (
-                SELECT salesmanid 
-                FROM m_sales_salesman 
-                WHERE subareaid IN (
-                    SELECT DISTINCT b.subareaid 
-                    FROM app_resource a 
-                    LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                    WHERE a.username = '" . $data['usersession'] . "'
-                )
-            )";
-        } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND a.salesmanid IN (
-                SELECT salesmanid 
-                FROM m_sales_salesman 
-                WHERE areaid IN (
-                    SELECT DISTINCT b.areaid 
-                    FROM app_resource a 
-                    LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                    WHERE a.username = '" . $data['usersession'] . "'
-                )
-            )";
-        } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND a.salesmanid IN (
-                SELECT salesmanid 
-                FROM m_sales_salesman 
-                WHERE regionalid IN (
-                    SELECT DISTINCT b.regionalid 
-                    FROM app_resource a 
-                    LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                    WHERE a.username = '" . $data['usersession'] . "'
-                )
-            )";
-        } else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="' . $data['regionalid'] . '" ' : '';
@@ -444,37 +415,19 @@ class Rep_productivity_model extends CI_Model
 
     function getOrder_salesman($data)
     {
-
-        if ($data['restrict_level']=='4'){
-            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='3'){
-            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='2'){
-            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND sls.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
         $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and salesamn.subareaid="'.$data['subareaid'].'" ' : '';
-        //$end=$data['periode'];
         $start=$data['start_period'];
         $end=$data['end_period'];
-        //$tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
-		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
 		$query = $this->db->query(" 
 									select 
 									   sls.tanggal as period,
@@ -482,7 +435,6 @@ class Rep_productivity_model extends CI_Model
 									   sls.salesmanid,
 									   salesamn.nama_salesman,
 									   sls.customerid,
-									   cst.latest_jjid,
 									   cst.cust_id_map,
 									   cst.nama_customer,
 									   e.nama_class as account,
@@ -524,35 +476,18 @@ class Rep_productivity_model extends CI_Model
 
     function getcrc_salesman($data)
     {
-
-        if ($data['restrict_level']=='4'){
-            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='3'){
-            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='2'){
-            $strquery = " and sls.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND sls.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
         $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
         $start=$data['start_period'];
         $end=$data['end_period'];
-        //$tipesales=$data['tipe_sales'] != 'null' ? ' and salesamn.tipe_sales ="'.$data['tipe_sales'].'"' : '';
-		//if ($tipesales==''){$tipesales='%';} else {$tipesales=$data['tipe_sales'];}
 		$query = $this->db->query(" 
 									select 
 									   sls.periode,
@@ -560,7 +495,6 @@ class Rep_productivity_model extends CI_Model
 									   sls.salesmanid,
 									   salesamn.nama_salesman,
 									   sls.customerid,
-									   cst.latest_jjid,
 									   cst.nama_customer,
 									   e.nama_class as account,
 									   sls.productid,
@@ -591,27 +525,12 @@ class Rep_productivity_model extends CI_Model
 
     function getVisit_salesman($data)
     {
-
-        if ($data['restrict_level']=='4'){
-            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='3'){
-            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='2'){
-            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND b.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
@@ -619,9 +538,8 @@ class Rep_productivity_model extends CI_Model
         $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
         $start=$data['start_period'];
         $end=$data['end_period'];
-        //$tipesales=$data['tipe_sales'] != 'null' ? ' and b.tipe_sales ="'.$data['tipe_sales'].'"' : '';
 		$query = $this->db->query(" 
-                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
+                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
                                             c.typeid as channel, e.nama_class as account,
                                             DATE_FORMAT(a.check_in, '%H:%i:%s') check_in, DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
                                             timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan, 
@@ -655,7 +573,7 @@ class Rep_productivity_model extends CI_Model
                                     and b.aktif = 1 $strquery
 									$area $regional $subarea
                                     union all
-                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.latest_jjid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
+                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
                                             c.typeid as channel, e.nama_class as account,
                                             0 check_in, 0 check_out,
                                             0 lama_kunjungan, 
@@ -680,27 +598,12 @@ class Rep_productivity_model extends CI_Model
 
     function get_detailing_parma($data)
     {
-
-        if ($data['restrict_level']=='4'){
-            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='3'){
-            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='2'){
-            $strquery = " and b.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND b.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
@@ -714,7 +617,6 @@ class Rep_productivity_model extends CI_Model
                                          a.salesmanid,
                                          a.salesman_name,
                                          a.customerid,
-                                         c.latest_jjid,
                                          a.professional_name,
                                          rp.spesialisasi,
                                          a.array_product,
@@ -762,40 +664,13 @@ class Rep_productivity_model extends CI_Model
 
     function get_progress_listing($data)
     {
-        if ($data['restrict_level'] == '4') {
-            $strquery = " AND tpl.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE subareaid IN (
-                                SELECT DISTINCT b.subareaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND tpl.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE areaid IN (
-                                SELECT DISTINCT b.areaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND tpl.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE regionalid IN (
-                                SELECT DISTINCT b.regionalid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        ) ";
-        } else $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND tpl.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
 
         $where = "";
         if (isset($data['start_period']) && isset($data['end_period'])) {
@@ -832,40 +707,13 @@ class Rep_productivity_model extends CI_Model
 
     function get_attendance_parma($data)
     {
-        if ($data['restrict_level'] == '4') {
-            $strquery = " AND tsa.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE subareaid IN (
-                                SELECT DISTINCT b.subareaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND tsa.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE areaid IN (
-                                SELECT DISTINCT b.areaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND tsa.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE regionalid IN (
-                                SELECT DISTINCT b.regionalid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        ) ";
-        } else $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND tsa.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
 
         $where = "";
         if (isset($data['start_period']) && isset($data['end_period'])) {
@@ -894,40 +742,13 @@ class Rep_productivity_model extends CI_Model
 
     function get_daily_target_call($data)
     {
-        if ($data['restrict_level'] == '4') {
-            $strquery = " AND a.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE subareaid IN (
-                                SELECT DISTINCT b.subareaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND a.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE areaid IN (
-                                SELECT DISTINCT b.areaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND a.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE regionalid IN (
-                                SELECT DISTINCT b.regionalid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        ) ";
-        } else $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
 
         $where = "";
         if (isset($data['start_period']) && isset($data['end_period'])) {

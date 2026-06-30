@@ -214,6 +214,26 @@
     return form;
   };
 
+  Common.prototype.formatListArea = function (val) {
+    if (val) {
+      let list = val.split(", ");
+
+      let result = "";
+      if (list.length > 1) {
+        result += '<ul style="padding-left: 15px;">';
+        list.forEach((item) => {
+          result += `<li>${item}</li>`;
+        });
+        result += "</ul>";
+      } else {
+        result = list.join(", ");
+      }
+
+      return result;
+    }
+    return "";
+  };
+
   Common.prototype.pluginFilerOption = function () {
     return {
       limit: 1000,

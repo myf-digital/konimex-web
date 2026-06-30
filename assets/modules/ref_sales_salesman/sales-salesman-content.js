@@ -84,6 +84,7 @@
             align: "left",
             sortable: "true",
             width: 120,
+            formatter: common.formatListArea,
           },
           {
             field: "nama_area",
@@ -92,6 +93,16 @@
             align: "left",
             sortable: "true",
             width: 120,
+            formatter: common.formatListArea,
+          },
+          {
+            field: "nama_subarea",
+            title: "Sub Area",
+            halign: "left",
+            align: "left",
+            sortable: "true",
+            width: 120,
+            formatter: common.formatListArea,
           },
           {
             field: "aktifstatus",
@@ -203,8 +214,12 @@
         if (res.status) {
           $("#detail-salesman-name").text(res.salesman.nama_salesman || "-");
           $("#detail-salesman-id").text(res.salesman.salesmanid || "-");
-          $("#detail-salesman-jabatan").text(res.salesman.jabatan || "-");
           $("#detail-salesman-tipe").text(res.salesman.tipe_sales || "-");
+          if (res.salesman && res.salesman.supervisorid) {
+            $("#detail-salesman-supervisor").text(
+              res.salesman.supervisorid + " - " + res.salesman.supervisor,
+            );
+          }
 
           let roleActiveBody = $("#role-active-body");
           roleActiveBody.empty();
@@ -295,6 +310,7 @@
                         <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
                         <td class="td-detail">${h.product_id || ""} - ${h.nama_invoice || ""}</td>
                         <td class="td-detail">${h.target || 0}</td>
+                        <td class="td-detail">${h.target_qty || 0}</td>
                     </tr>
                 `);
             });
@@ -313,6 +329,7 @@
                         <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
                         <td class="td-detail">${h.product_id || ""} - ${h.nama_invoice || ""}</td>
                         <td class="td-detail">${h.target || 0}</td>
+                        <td class="td-detail">${h.target_qty || 0}</td>
                     </tr>
                 `);
             });
@@ -320,7 +337,11 @@
 
           let salesActiveBody = $("#sales-active-body");
           salesActiveBody.empty();
-          if (!res.sales || !res.sales.active || res.sales.active.length === 0) {
+          if (
+            !res.sales ||
+            !res.sales.active ||
+            res.sales.active.length === 0
+          ) {
             salesActiveBody.append(
               `<tr><td colspan="2" style="text-align:center;color:#999;padding:12px;">Belum ada mapping target.</td></tr>`,
             );
@@ -337,7 +358,11 @@
 
           let salesHistoryBody = $("#sales-history-body");
           salesHistoryBody.empty();
-          if (!res.sales || !res.sales.history || res.sales.history.length === 0) {
+          if (
+            !res.sales ||
+            !res.sales.history ||
+            res.sales.history.length === 0
+          ) {
             salesHistoryBody.append(
               `<tr><td colspan="2" style="text-align:center;color:#999;padding:12px;">Belum ada history mapping target.</td></tr>`,
             );

@@ -122,12 +122,52 @@ if (!function_exists('today')) {
 }
 
 if (!function_exists('payload')) {
-    function payload($fields = [], $data) {
+    function payload($fields = [], $data = []) {
         $result = [];
         foreach ($fields as $f) {
             if (isset($data[$f]) && $data[$f]) $result[$f] = $data[$f];
         }
         return $result;
+    }
+}
+
+if (!function_exists('get_salesman_restrict')) {
+    function get_salesman_restrict($usersession, $restrict_level) {
+        if ($restrict_level == '4') {
+            return "
+                select distinct msa.salesmanid 
+                from m_salesman_area msa
+                where msa.subareaid in (
+                    select distinct b.subareaid 
+                    from app_resource a 
+                    join app_restrict_location b on a.resource_id=b.resource_id 
+                    where a.username='" . $usersession . "'
+                )
+            ";
+        } else if ($restrict_level == '3') {
+            return "
+                select distinct msa.salesmanid 
+                from m_salesman_area msa
+                where msa.areaid in (
+                    select distinct b.areaid 
+                    from app_resource a 
+                    join app_restrict_location b on a.resource_id=b.resource_id 
+                    where a.username='" . $usersession . "'
+                )
+            ";
+        } else if ($restrict_level == '2') {
+            return "
+                select distinct msa.salesmanid 
+                from m_salesman_area msa
+                where msa.regionalid in (
+                    select distinct b.regionalid 
+                    from app_resource a 
+                    join app_restrict_location b on a.resource_id=b.resource_id 
+                    where a.username='" . $usersession . "'
+                )
+            ";
+        }
+        return null;
     }
 }
 ?>

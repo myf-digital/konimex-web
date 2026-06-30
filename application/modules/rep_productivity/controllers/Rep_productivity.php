@@ -391,7 +391,7 @@ class Rep_productivity extends BaseController
                 ->setCellValue('M'.$row, $valueorder['h_jual'] ?? '')
                 ->setCellValue('N'.$row, '=L'.$row.'*M'.$row)
                 ->setCellValue('O'.$row, $valueorder['status'] ?? '')
-                ->setCellValue('P'.$row, ($valueorder['latest_jjid'] ?? '') . ($valueorder['nama_invoice'] ?? ''))
+                ->setCellValue('P'.$row, ($valueorder['nama_invoice'] ?? ''))
                 ->setCellValue('Q'.$row, '')
                 ->setCellValue('R'.$row, '')
                 ->setCellValue('S'.$row, '=L'.$row.'-Q'.$row)

@@ -79,20 +79,9 @@ class Rep_join_visit_outlet_model extends CI_Model
 
     public function get_product_knowledge_xls($data) {
 
-        if ($data["restrict_level"]=='4'){
-            $strquery = " and a.subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."')";
-        }
-        else if ($data["restrict_level"]=='3'){
-            $strquery = " and a.areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data["usersession"]."')";
-        }
-        else if ($data["restrict_level"]=='2'){
-            $strquery = " and a.regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."')";
+        $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+        if ($restrict_query){
+            $strquery = " and a.username in (" . $restrict_query . ")";
         }
         else {
             $strquery = "";

@@ -184,15 +184,7 @@ class Setup_pjp_model extends CI_Model
     }
 
     public function load($data)
-    {
-        /*if ($data["idjabatan"]=='2' or $data["idjabatan"]=='3')
-            $strquery = " where a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm where a.ram_rsm = '".$data["usersession"]."') ";
-        else if($data["idjabatan"]=='16' or $data["idjabatan"]=='17'){
-            $strquery = " where a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$data["usersession"]."') ";
-        }else{
-            $strquery = "";
-        }*/
-        
+    {        
         if ($data["restrict_level"]=='4'){
             $strquery = " where b.subareaid in (select distinct b.subareaid from  
                                                 app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
@@ -221,7 +213,7 @@ class Setup_pjp_model extends CI_Model
                     select x.siteid, x.salesmanid, x.nama_salesman, x.position, 
                     concat(x.nama_salesman,' (',x.position,')') as gffname, 
                     x.ram_rsm, x.aas_aam_tss_tsm, x.customerid, 
-                    x.latest_jjid, x.latest_customer_name, x.kode_outlet, x.nama_customer, x.alamat, x.mcc, x.nama_class,
+                    x.latest_customer_name, x.kode_outlet, x.nama_customer, x.alamat, x.mcc, x.nama_class,
                     GROUP_CONCAT(x.minggu SEPARATOR ',') AS group_minggu,
                     GROUP_CONCAT(x.hari SEPARATOR ',') AS group_hari, 
                     GROUP_CONCAT(distinct(x.minggu) SEPARATOR ',') AS group_nama_minggu,
@@ -238,7 +230,7 @@ class Setup_pjp_model extends CI_Model
                         when a.hari=4 then 'Kamis' 
                         when a.hari=5 then 'Jumat'
                         when a.hari=6 then 'Sabtu' end nama_hari,
-                    b.latest_jjid, b.kode_outlet, b.latest_customer_name, b.nama_customer, b.alamat, e.nama_area as city,b.mcc, c.nama_class
+                    b.kode_outlet, b.latest_customer_name, b.nama_customer, b.alamat, e.nama_area as city,b.mcc, c.nama_class
                     from t_sales_setup_rrk a left join m_customer b on a.customerid = b.customerid left join m_customer_class c on b.classid=c.classid 
                     left join m_sales_salesman d on d.salesmanid=a.salesmanid
                     left join m_area_areasite e on e.areaid = b.areaid
@@ -246,7 +238,7 @@ class Setup_pjp_model extends CI_Model
                     limit 0,200000
                     ) x
                     group by x.siteid, x.salesmanid, x.nama_salesman, x.position, x.ram_rsm, x.aas_aam_tss_tsm, x.customerid, 
-                            x.latest_jjid, x.kode_outlet, x.nama_customer, x.alamat, x.mcc, x.nama_class
+                            x.kode_outlet, x.nama_customer, x.alamat, x.mcc, x.nama_class
                 ) a 
                 ";
         //$filter = "where aas_aam_tss_tsm like ".$data['userlogin']."";

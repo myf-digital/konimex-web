@@ -25,29 +25,6 @@ class Tracking_product_model extends CI_Model
 
     function getTrackingProduct($data)
     {
-
-        if ($data['restrict_level']=='4'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='3'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data['usersession']."')
-                                                )";
-        }
-        else if ($data['restrict_level']=='2'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data['usersession']."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
-        }
-
         //$brand = $data['brand'] != 'null' ? ' and c.brandid="'.$data['brand'].'" ' : '';
         $arraysku = explode(",", $data['sku']);
         $strsku = implode(',', array_map(function($item) {

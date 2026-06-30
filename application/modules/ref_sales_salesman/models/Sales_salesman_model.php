@@ -24,15 +24,19 @@ class Sales_salesman_model extends CI_Model
         $data['categoryid'] = "11";
         $data['password'] = md5($data['password']);
 
-        $target_data = $data;
-        $target_data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
+        $this->save_targets($data);
+        $this->save_salesman_area($data);
 
-        unset($data['spesialisasiid']);
-        unset($data['periode_spesialisasi']);
-        unset($data['target_spesialisasi']);
-        unset($data['productid']);
-        unset($data['periode_product']);
-        unset($data['target_product']);
+        if (isset($data['regionalid'])) {
+            $data['regionalid'] = is_array($data['regionalid']) ? implode(',', $data['regionalid']) : $data['regionalid'];
+        }
+        if (isset($data['areaid'])) {
+            $data['areaid'] = is_array($data['areaid']) ? implode(',', $data['areaid']) : $data['areaid'];
+        }
+        if (isset($data['subareaid'])) {
+            $data['subareaid'] = is_array($data['subareaid']) ? implode(',', $data['subareaid']) : $data['subareaid'];
+        }
+
         unset($data['periode_sales']);
         unset($data['total_target']);
 
@@ -40,9 +44,6 @@ class Sales_salesman_model extends CI_Model
         unset($data['usersession']);
 
         $this->db->insert('m_sales_salesman', $data);
-
-        // Save targets
-        $this->save_targets($target_data);
 
         $this->db->trans_complete();
         return $this->db->trans_status();
@@ -59,15 +60,19 @@ class Sales_salesman_model extends CI_Model
             unset($data['password']);
         }
 
-        $target_data = $data;
-        $target_data['usersession'] = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
+        $this->save_targets($data);
+        $this->save_salesman_area($data);
 
-        unset($data['spesialisasiid']);
-        unset($data['periode_spesialisasi']);
-        unset($data['target_spesialisasi']);
-        unset($data['productid']);
-        unset($data['periode_product']);
-        unset($data['target_product']);
+        if (isset($data['regionalid'])) {
+            $data['regionalid'] = is_array($data['regionalid']) ? implode(',', $data['regionalid']) : $data['regionalid'];
+        }
+        if (isset($data['areaid'])) {
+            $data['areaid'] = is_array($data['areaid']) ? implode(',', $data['areaid']) : $data['areaid'];
+        }
+        if (isset($data['subareaid'])) {
+            $data['subareaid'] = is_array($data['subareaid']) ? implode(',', $data['subareaid']) : $data['subareaid'];
+        }
+
         unset($data['periode_sales']);
         unset($data['total_target']);
 
@@ -77,9 +82,6 @@ class Sales_salesman_model extends CI_Model
         $this->db->where('salesmanid', $salesmanid);
         $this->db->where('siteid', $data['siteid']);
         $this->db->update('m_sales_salesman', $data);
-
-        // Save targets
-        $this->save_targets($target_data);
 
         $this->db->trans_complete();
         return $this->db->trans_status();
@@ -116,15 +118,27 @@ class Sales_salesman_model extends CI_Model
         $table = " (
             select
                 a.*,
-                b.nama_regional,
-                c.nama_area,
-                d.nama_area as city,
+                (
+                    select group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') 
+                    from m_salesman_area msa
+                    join m_area_regional b on msa.regionalid = b.regionalid
+                    where msa.salesmanid = a.salesmanid
+                ) as nama_regional,
+                (
+                    select group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') 
+                    from m_salesman_area msa
+                    join m_area_areasite c on msa.areaid = c.areaid
+                    where msa.salesmanid = a.salesmanid
+                ) as nama_area,
+                (
+                    select group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') 
+                    from m_salesman_area msa
+                    join m_area_subarea d on msa.subareaid = d.subareaid
+                    where msa.salesmanid = a.salesmanid
+                ) as nama_subarea,
                 case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
                 mss.nama_salesman as supervisor
             from m_sales_salesman a 
-            left join m_area_regional b on a.regionalid=b.regionalid
-            left join m_area_areasite c on a.areaid=c.areaid
-            left join m_area_subarea d on a.subareaid=d.subareaid
             left join m_sales_salesman mss on a.supervisorid=mss.salesmanid
         ) a";
         return easy_pagging($data, $field, $table);
@@ -150,14 +164,26 @@ class Sales_salesman_model extends CI_Model
                 a.jabatan,
                 a.kpp_area,
                 COALESCE(NULLIF(a.supervisorid, 0), '') as pid,
-                b.nama_regional,
-                c.nama_area,
-                d.nama_area as nama_subarea,
+                (
+                    select group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') 
+                    from m_salesman_area msa
+                    join m_area_regional b on msa.regionalid = b.regionalid
+                    where msa.salesmanid = a.salesmanid
+                ) as nama_regional,
+                (
+                    select group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') 
+                    from m_salesman_area msa
+                    join m_area_areasite c on msa.areaid = c.areaid
+                    where msa.salesmanid = a.salesmanid
+                ) as nama_area,
+                (
+                    select group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') 
+                    from m_salesman_area msa
+                    join m_area_subarea d on msa.subareaid = d.subareaid
+                    where msa.salesmanid = a.salesmanid
+                ) as nama_subarea,
                 'https://cdn-icons-png.flaticon.com/512/149/149071.png' as img
             FROM m_sales_salesman a
-            LEFT JOIN m_area_regional b ON a.regionalid = b.regionalid
-            LEFT JOIN m_area_areasite c ON a.areaid = c.areaid
-            LEFT JOIN m_area_subarea d ON a.subareaid = d.subareaid
             WHERE a.salesmanid NOT IN (00332,09174,09159,09173)
         ")->result_array();
         return $data;
@@ -233,96 +259,6 @@ class Sales_salesman_model extends CI_Model
         }
 
         $usersession = $data['usersession'] ?? $this->session->userdata('username') ?? 'Admin';
-        if (isset($data['periode_spesialisasi'])) {
-            $periode_spesialisasi = $data['periode_spesialisasi'];
-            if (!empty($periode_spesialisasi)) {
-                $splitDate = explode('-', $periode_spesialisasi);
-                $tahun = $splitDate[0] ?? date('Y');
-                $bulan = $splitDate[1] ?? date('m');
-
-                $this->db->where('salesmanid', $salesmanid);
-                $this->db->where('tahun', $tahun);
-                $this->db->where('bulan', $bulan);
-                $this->db->delete('m_sales_spesialis_target');
-
-                $spesialisasi_ids = $data['spesialisasiid'] ?? [];
-                $target_spesialisasi = $data['target_spesialisasi'] ?? [];
-
-                if (!empty($spesialisasi_ids)) {
-                    $this->db->where_in('id', $spesialisasi_ids);
-                    $specialties = $this->db->get('ref_spesialisasi')->result_array();
-                    $specialtyMap = [];
-                    foreach ($specialties as $s) {
-                        $specialtyMap[$s['id']] = $s['name'];
-                    }
-
-                    $insertSpesialisasi = [];
-                    foreach ($spesialisasi_ids as $spId) {
-                        $tgt = isset($target_spesialisasi[$spId]) ? intval($target_spesialisasi[$spId]) : 0;
-                        $insertSpesialisasi[] = [
-                            'tahun' => $tahun,
-                            'bulan' => $bulan,
-                            'salesmanid' => $salesmanid,
-                            'nama_salesman' => $nama_salesman,
-                            'spesialisasi_id' => $spId,
-                            'nama_spesialisasi' => $specialtyMap[$spId] ?? '',
-                            'target' => $tgt,
-                            'created_by' => $usersession,
-                            'created_date' => date('Y-m-d H:i:s'),
-                        ];
-                    }
-                    if (!empty($insertSpesialisasi)) {
-                        $this->db->insert_batch('m_sales_spesialis_target', $insertSpesialisasi);
-                    }
-                }
-            }
-        }
-
-        if (isset($data['periode_product'])) {
-            $periode_product = $data['periode_product'];
-            if (!empty($periode_product)) {
-                $splitDate = explode('-', $periode_product);
-                $tahun = $splitDate[0] ?? date('Y');
-                $bulan = $splitDate[1] ?? date('m');
-
-                $this->db->where('salesmanid', $salesmanid);
-                $this->db->where('tahun', $tahun);
-                $this->db->where('bulan', $bulan);
-                $this->db->delete('m_sales_produk_target');
-
-                $product_ids = $data['productid'] ?? [];
-                $target_product = $data['target_product'] ?? [];
-
-                if (!empty($product_ids)) {
-                    $this->db->where_in('productid', $product_ids);
-                    $products = $this->db->get('m_product')->result_array();
-                    $productMap = [];
-                    foreach ($products as $p) {
-                        $productMap[$p['productid']] = $p['nama_invoice'];
-                    }
-
-                    $insertProduct = [];
-                    foreach ($product_ids as $prodId) {
-                        $tgt = isset($target_product[$prodId]) ? intval($target_product[$prodId]) : 0;
-                        $insertProduct[] = [
-                            'tahun' => $tahun,
-                            'bulan' => $bulan,
-                            'salesmanid' => $salesmanid,
-                            'nama_salesman' => $nama_salesman,
-                            'product_id' => $prodId,
-                            'nama_invoice' => $productMap[$prodId] ?? '',
-                            'target' => $tgt,
-                            'created_by' => $usersession,
-                            'created_date' => date('Y-m-d H:i:s'),
-                        ];
-                    }
-                    if (!empty($insertProduct)) {
-                        $this->db->insert_batch('m_sales_produk_target', $insertProduct);
-                    }
-                }
-            }
-        }
-
         if (isset($data['periode_sales'])) {
             $periode_sales = $data['periode_sales'];
             if (!empty($periode_sales)) {
@@ -359,53 +295,96 @@ class Sales_salesman_model extends CI_Model
         }
     }
 
-    public function spesialisasi($data)
-    {
-        return $this->db->from('ref_spesialisasi')->order_by('name', 'ASC')->get()->result_array();
-    }
-
-    public function products($data)
-    {
-        if (!empty($data['q'])) {
-            $this->db->group_start();
-            $this->db->like('productid', $data['q']);
-            $this->db->or_like('nama_invoice', $data['q']);
-            $this->db->group_end();
+    public function save_salesman_area($data) {
+        $salesmanid = $data['salesmanid'] ?? null;
+        if (empty($salesmanid)) {
+            return;
         }
-        $this->db->order_by('nama_invoice', 'ASC');
-        $this->db->limit(50);
-        return $this->db->from('m_product')->get()->result_array();
-    }
 
-    public function get_spesialisasi_targets($data)
-    {
-        if (empty($data['salesmanid']) || empty($data['periode'])) {
-            return [];
+        $this->db->where('salesmanid', $salesmanid);
+        $this->db->delete('m_salesman_area');
+
+        // Filter out '0' or empty string values
+        $subareaids = isset($data['subareaid']) ? (is_array($data['subareaid']) ? $data['subareaid'] : [$data['subareaid']]) : [];
+        $subareaids = array_filter($subareaids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
+
+        $areaids = isset($data['areaid']) ? (is_array($data['areaid']) ? $data['areaid'] : [$data['areaid']]) : [];
+        $areaids = array_filter($areaids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
+
+        $regionalids = isset($data['regionalid']) ? (is_array($data['regionalid']) ? $data['regionalid'] : [$data['regionalid']]) : [];
+        $regionalids = array_filter($regionalids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
+
+        $insertData = [];
+        if (!empty($subareaids)) {
+            $this->db->select('regionalid, areaid, subareaid');
+            $this->db->where_in('subareaid', $subareaids);
+            $subareas = $this->db->get('m_area_subarea')->result_array();
+            
+            foreach ($subareas as $sa) {
+                $insertData[] = [
+                    'salesmanid' => $salesmanid,
+                    'regionalid' => $sa['regionalid'],
+                    'areaid'     => $sa['areaid'],
+                    'subareaid'  => $sa['subareaid'],
+                ];
+            }
+        } 
+        else if (!empty($areaids)) {
+            $this->db->select('regionalid, areaid');
+            $this->db->where_in('areaid', $areaids);
+            $areas = $this->db->get('m_area_areasite')->result_array();
+
+            foreach ($areas as $ar) {
+                $insertData[] = [
+                    'salesmanid' => $salesmanid,
+                    'regionalid' => $ar['regionalid'],
+                    'areaid'     => $ar['areaid'],
+                    'subareaid'  => null,
+                ];
+            }
+        } 
+        else if (!empty($regionalids)) {
+            foreach ($regionalids as $regId) {
+                $insertData[] = [
+                    'salesmanid' => $salesmanid,
+                    'regionalid' => $regId,
+                    'areaid'     => null,
+                    'subareaid'  => null,
+                ];
+            }
         }
-        $parts = explode('-', $data['periode']);
-        $tahun = intval($parts[0]);
-        $bulan = intval($parts[1]);
 
-        $this->db->where('salesmanid', $data['salesmanid']);
-        $this->db->where('tahun', $tahun);
-        $this->db->where('bulan', $bulan);
-        return $this->db->get('m_sales_spesialis_target')->result_array();
-    }
-
-    public function get_product_targets($data)
-    {
-        if (empty($data['salesmanid']) || empty($data['periode'])) {
-            return [];
+        if (!empty($insertData)) {
+            $this->db->insert_batch('m_salesman_area', $insertData);
         }
-        $parts = explode('-', $data['periode']);
-        $tahun = intval($parts[0]);
-        $bulan = intval($parts[1]);
-
-        $this->db->where('salesmanid', $data['salesmanid']);
-        $this->db->where('tahun', $tahun);
-        $this->db->where('bulan', $bulan);
-        return $this->db->get('m_sales_produk_target')->result_array();
     }
+
+    public function sync_all_salesman_area() {
+        $this->db->trans_start();
+        
+        $this->db->select('salesmanid, regionalid, areaid, subareaid');
+        $salesmen = $this->db->get('m_sales_salesman')->result_array();
+        
+        $count = 0;
+        foreach ($salesmen as $s) {
+            $data = [
+                'salesmanid' => $s['salesmanid'],
+                'regionalid' => !empty($s['regionalid']) ? explode(',', $s['regionalid']) : [],
+                'areaid'     => !empty($s['areaid']) ? explode(',', $s['areaid']) : [],
+                'subareaid'  => !empty($s['subareaid']) ? explode(',', $s['subareaid']) : [],
+            ];
+            
+            $this->save_salesman_area($data);
+            $count++;
+        }
+        
+        $this->db->trans_complete();
+        return [
+            'status' => $this->db->trans_status(),
+            'message' => 'Successfully synced ' . $count . ' salesmen areas'
+        ];
+    }
+
 
     public function get_sales_targets($data)
     {
@@ -432,9 +411,16 @@ class Sales_salesman_model extends CI_Model
         }
 
         $salesman = $this->db->query("
-            SELECT salesmanid, nama_salesman, tipe_sales, jabatan
-            FROM m_sales_salesman
-            WHERE salesmanid = ?
+            SELECT
+                a.salesmanid,
+                a.nama_salesman,
+                a.tipe_sales,
+                a.jabatan,
+                a.supervisorid,
+                mss.nama_salesman as supervisor
+            FROM m_sales_salesman a
+            LEFT JOIN m_sales_salesman mss on mss.salesmanid = a.supervisorid
+            WHERE a.salesmanid = ?
         ", [$salesmanid])->row_array();
         if (empty($salesman)) {
             return [
@@ -472,14 +458,14 @@ class Sales_salesman_model extends CI_Model
 
         $spesialis_targets = $this->db->query("
             SELECT 
-                tahun,
-                bulan,
-                nama_spesialisasi,
-                target
-            FROM m_sales_spesialis_target
-            WHERE salesmanid = ?
-            ORDER BY tahun DESC, bulan DESC, nama_spesialisasi ASC
-        ", [$salesmanid])->result_array();
+                mst.tahun,
+                mst.bulan,
+                mst.nama_spesialisasi,
+                mst.target
+            FROM m_sales_spesialis_target mst
+            WHERE mst.role_name = ?
+            ORDER BY mst.tahun DESC, mst.bulan DESC, mst.nama_spesialisasi ASC
+        ", [$salesman['tipe_sales']])->result_array();
 
         $spesialis_active = [];
         $spesialis_history = [];
@@ -493,15 +479,16 @@ class Sales_salesman_model extends CI_Model
 
         $produk_targets = $this->db->query("
             SELECT 
-                tahun,
-                bulan,
-                product_id,
-                nama_invoice,
-                target
-            FROM m_sales_produk_target
-            WHERE salesmanid = ?
-            ORDER BY tahun DESC, bulan DESC, nama_invoice ASC
-        ", [$salesmanid])->result_array();
+                mpt.tahun,
+                mpt.bulan,
+                mpt.product_id,
+                mpt.nama_invoice,
+                mpt.target,
+                mpt.target_qty
+            FROM m_sales_produk_target mpt
+            WHERE mpt.role_name = ?
+            ORDER BY mpt.tahun DESC, mpt.bulan DESC, mpt.nama_invoice ASC
+        ", [$salesman['tipe_sales']])->result_array();
 
         $produk_active = [];
         $produk_history = [];

@@ -293,40 +293,13 @@ class Rep_gffaktif_model extends CI_Model
 
     function get_attendance_parma($data)
     {
-        if ($data['restrict_level'] == '4') {
-            $strquery = " AND tsa.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE subareaid IN (
-                                SELECT DISTINCT b.subareaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '3') {
-            $strquery = " AND tsa.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE areaid IN (
-                                SELECT DISTINCT b.areaid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id = b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        )";
-        } else if ($data['restrict_level'] == '2') {
-            $strquery = " AND tsa.salesmanid IN (
-                            SELECT salesmanid
-                            FROM m_sales_salesman
-                            WHERE regionalid IN (
-                                SELECT DISTINCT b.regionalid
-                                FROM app_resource a
-                                LEFT JOIN app_restrict_location b ON a.resource_id=b.resource_id 
-                                WHERE a.username='".$data['usersession']."'
-                            )
-                        ) ";
-        } else $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND tsa.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
 
         $where = "";
         if (isset($data['start_period']) && isset($data['end_period'])) {

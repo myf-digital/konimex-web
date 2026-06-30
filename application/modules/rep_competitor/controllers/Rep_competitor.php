@@ -46,43 +46,13 @@ class Rep_competitor extends BaseController
 		$usersession = $this->input->post("usersession");
 		$restrict_level = $this->input->post("restrict_level");
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
-
-        //if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
-
-        /*$qold = $this->db->query(" 
-                                select b.nama_invoice, b.category, d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                f.nama_regional, g.nama_area, h.nama_area as city 
-                                from t_activity_competitor a
-                                join m_product_competitor b on a.productid=b.productid 
-                                left join m_customer c on a.customerid=c.customerid
-                                left join m_customer_class d on c.classid=d.classid
-                                left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                                left join m_area_regional f on c.regionalid=f.regionalid
-                                left join m_area_areasite g on c.areaid = g.areaid
-                                left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.periode between '".$start."' and '".$end."' ".$strquery.";
-                            ");*/
 
         $q = $this->db->query(" 
                                 select b.nama_invoice, b.category, d.nama_class,a.*,e.nama_salesman,e.tipe_sales,
@@ -96,7 +66,6 @@ class Rep_competitor extends BaseController
                                 left join m_area_subarea h on e.subareaid = h.subareaid
                                 where a.periode between '".$start."' and '".$end."' ".$strquery.";
                             ");
-        //echo $this->db->last_query();
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
 		
@@ -182,40 +151,15 @@ class Rep_competitor extends BaseController
 		$usersession = $this->input->post("usersession");
 		$restrict_level = $this->input->post("restrict_level");
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
-        /*$qold = $this->db->query(" 
-                                select d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                       f.nama_regional, g.nama_area, h.nama_area as city 
-                                from t_activity_npd_competitor a
-                                left join m_customer c on a.customerid=c.customerid
-                                left join m_customer_class d on c.classid=d.classid
-                                left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                                left join m_area_regional f on c.regionalid=f.regionalid
-                                left join m_area_areasite g on c.areaid = g.areaid
-                                left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.periode between '".$start."' and '".$end."' ".$strquery.";
-                            ");*/
         $q = $this->db->query(" 
                                 select d.nama_class,a.*,e.nama_salesman,e.tipe_sales,
                                        f.nama_regional, g.nama_area, h.nama_area as city 
@@ -227,7 +171,6 @@ class Rep_competitor extends BaseController
                                 left join m_area_subarea h on e.subareaid = h.subareaid
                                 where a.periode between '".$start."' and '".$end."' ".$strquery.";
                             ");
-		//echo $this->db->last_query();
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
 		
@@ -240,10 +183,6 @@ class Rep_competitor extends BaseController
 		$html .= '<th style="width: 80px">Tanggal</th>';
 		$html .= '<th style="width: 200px">User MEDREP</th>';
 		$html .= '<th style="width: 200px">Account</th>';
-		//$html .= '<th style="width: 200px">Outlet ID</th>';
-		//$html .= '<th style="width: 200px">Kode Outlet</th>';
-		//$html .= '<th style="width: 200px">Nama Outlet</th>';
-		//$html .= '<th style="width: 200px">Alamat</th>';
 		$html .= '<th style="width: 200px">Area</th>';
         $html .= '<th style="width: 450px">Nama Produk</th>';
         $html .= '<th style="width: 200px">Harga</th>';
@@ -308,26 +247,12 @@ class Rep_competitor extends BaseController
 		$period=date_create($start);
 		$filename = "Promo_competitor_".date_format($period,"M-Y").".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $q = $this->db->query(" 
@@ -457,26 +382,12 @@ class Rep_competitor extends BaseController
 		$period=date_create($start);
 		$filename = "Promo_competitor_".date_format($period,"M-Y").".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $q = $this->db->query(" 
@@ -564,26 +475,12 @@ class Rep_competitor extends BaseController
 		$period=date_create($start);
         $filename = "Product_new_competitor_".date_format($period,"M-Y").".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $q = $this->db->query(" 
@@ -697,26 +594,12 @@ class Rep_competitor extends BaseController
 		$period=date_create($start);
         $filename = "Product_new_competitor_".date_format($period,"M-Y").".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $q = $this->db->query(" 

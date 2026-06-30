@@ -21,53 +21,28 @@ class Api_v1_model extends CI_Model
 
 	function get_salesman($data)
     {
-
-			if ($data["restrict_level"]=='4'){
-				$strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-													app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-													where a.username='".$data["usersession"]."')
-													)";
-			}
-			else if ($data["restrict_level"]=='3'){
-				$strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."')
-													)";
-			}
-			else if ($data["restrict_level"]=='2'){
-				$strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-													app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-													where a.username='".$data["usersession"]."')
-													) ";
-			}
-			else {
-				$strquery = "";
-			}
-
-
-			/*if ($data["idjabatan"]=='2' or $data["idjabatan"]=='3')
-				$strquery = " where a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b 
-								on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm where a.ram_rsm = '".$data["usersession"]."') ";
-			else if($data["idjabatan"]=='16'  or $data["idjabatan"]=='17'){
-				$strquery = " where a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$data["usersession"]."') ";
-			}else{
-				$strquery = "";
-			}*/
-
-            $sql = "select a.*
-						from m_sales_salesman a 
-					".$strquery."
-						order by a.nama_salesman asc
-						";
-            $res_ss = $this->db->query($sql);
-            if (count($res_ss->result_array()) > 0) {
-                $response = new stdClass();
-                $response = $res_ss->result_array();
-                //parsing to result
-                return result($response);
-            } else {
-                return result(new stdClass(), 201, "Siteid Invalid!");
+        $strquery = "";
+        if (!empty($data["restrict_level"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
             }
+        }
+
+		$sql = "select a.*
+					from m_sales_salesman a 
+				".$strquery."
+					order by a.nama_salesman asc
+					";
+		$res_ss = $this->db->query($sql);
+		if (count($res_ss->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res_ss->result_array();
+			//parsing to result
+			return result($response);
+		} else {
+			return result(new stdClass(), 201, "Siteid Invalid!");
+		}
     }
 
 	function get_salesman_mapping_area($data)

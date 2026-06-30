@@ -34,23 +34,15 @@ class App_dashboard_model extends CI_Model
 
     public function load($data)
     {
-		if ($data["restrict_level"]=='4'){
-			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."') and tipe_sales='MEDREP' and aktif=1
-												)";
-		}
-		else if ($data["restrict_level"]=='3'){
-			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$data["usersession"]."') and tipe_sales='MEDREP' and aktif=1
-												)";
-		}
-		else if ($data["restrict_level"]=='2'){
-			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$data["usersession"]."') and tipe_sales='MEDREP' and aktif=1
-												) ";
+		$restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+		if ($restrict_query) {
+			$strquery = " where b.salesmanid in (
+								select distinct mss.salesmanid
+								from m_sales_salesman mss
+								where mss.salesmanid in (" . $restrict_query . ")
+								  and mss.tipe_sales='MEDREP'
+								  and mss.aktif=1
+							)";
 		}
 		else {
 			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where tipe_sales='MEDREP' and aktif=1)";
@@ -58,7 +50,13 @@ class App_dashboard_model extends CI_Model
 
 		$field = " a.* ";
 		$table = " (
-					select distinct b.siteid, b.salesmanid, b.nama_salesman, b.tipe_sales, a.periode, c.nama_area city,
+					select distinct b.siteid, b.salesmanid, b.nama_salesman, b.tipe_sales, a.periode,
+					(
+						select group_concat(distinct c.nama_area order by c.nama_area asc separator ', ')
+						from m_salesman_area msa
+						join m_area_subarea c on msa.subareaid = c.subareaid
+						where msa.salesmanid = b.salesmanid
+					) subarea,
 					(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) _jadwal, 
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
@@ -81,7 +79,6 @@ class App_dashboard_model extends CI_Model
 					from m_sales_salesman b
 					left join t_sales_rrk a on b.salesmanid=a.salesmanid and a.periode = '".($data["get_date"] ?? today())."'
 					left join t_sales_rrk_trans z  on b.salesmanid=z.salesmanid and z.periode = '".($data["get_date"] ?? today())."'
-					left join m_area_areasite c on b.areaid=c.areaid
 					left join attendance_parma ap on ap.salesmanid = b.salesmanid and ap.periode = '".($data["get_date"] ?? today())."'
 					$strquery
 					) a
@@ -139,14 +136,7 @@ class App_dashboard_model extends CI_Model
 			$return .= '\'<td style="text-align:left;padding:10px;">'.$value['nama_invoice'].'</td>\'+';
 			
 				$return .= '\'<td style="text-align:right;padding:10px;">'.$value['a1'].'</td>\'+';
-				$return .= '\'<td style="text-align:right;padding:10px;">'.number_format($value['price'], 2, '.', ',').'</td>\'+';			
-				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_qty'].'</td>\'+';
-				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['exp_date'].'</td>\'+';
-				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['sell_out'].'</td>\'+';
-				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['r1'].'</td>\'+';
-				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['s1'].'</td>\'+';
-				//$return .= '\'<td style="text-align:right;padding:10px;">'.$value['f1'].'</td>\'+';
-			
+				$return .= '\'<td style="text-align:right;padding:10px;">'.number_format($value['price'], 2, '.', ',').'</td>\'+';
 				$return .= '\'</tr>\'+';
 					
 		}
@@ -607,7 +597,6 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 		$this->db->where("salesmanid",$salesmanid);
 		$this->db->where("image_type","IMG_OUTLET");
 		$this->db->where("customerid",$customerid);
-		//$this->db->or_where("customerid_m",$customerid_m);
 		$this->db->order_by("created_date","desc");
 		$this->db->limit(1, 0);
 		$data = $this->db->get()->row();
@@ -722,7 +711,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 
 	function get_detailing($siteid,$periode,$salesmanid,$customerid) {
 		$q = $this->db->query(" SELECT a.periode, a.siteid, a.salesmanid, a.salesman_name, 
-										a.customerid, v.latest_jjid, v.nama_customer, v.typeid, v.nama_account,
+										a.customerid, v.nama_customer, v.typeid, v.nama_account,
 										a.nourut, a.tipe_pic, a.professional_name, 
 										a.array_product, 
 										COALESCE(

@@ -57,4 +57,28 @@ class App_role extends BaseController
         $data = param_input();
         responseJSON($this->role->detail($data));
     }
+
+    public function spesialisasi()
+    {
+        $data = param_input();
+        responseJSON($this->role->spesialisasi($data));
+    }
+
+    public function products()
+    {
+        $data = param_input();
+        responseJSON($this->role->products($data));
+    }
+
+    public function get_spesialisasi_targets()
+    {
+        $data = param_input();
+        responseJSON($this->role->get_spesialisasi_targets($data));
+    }
+
+    public function get_product_targets()
+    {
+        $data = param_input();
+        responseJSON($this->role->get_product_targets($data));
+    }
 }

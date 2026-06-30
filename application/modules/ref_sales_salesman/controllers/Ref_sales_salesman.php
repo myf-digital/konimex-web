@@ -65,6 +65,11 @@ class Ref_sales_salesman extends BaseController
         $this->template->show($this, 'salesman_org');
     }
 
+    public function sync_salesman_area()
+    {
+        responseJSON($this->sales_salesman->sync_all_salesman_area());
+    }
+
     public function data_salesman()
     {
         $data = param_input();

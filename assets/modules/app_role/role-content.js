@@ -236,10 +236,10 @@
                         .format("MMMM YYYY")
                     : "-"
                 }</td>
-                <td class="td-detail">${detail.target_hk}</td>
-                <td class="td-detail">${detail.target_dub}</td>
-                <td class="td-detail">${detail.target_call_dub}</td>
-                <td class="td-detail">${detail.target_call_visit}</td>
+                <td class="td-detail">${detail.target_hk || 0}</td>
+                <td class="td-detail">${detail.target_dub || 0}</td>
+                <td class="td-detail">${detail.target_call_dub || 0}</td>
+                <td class="td-detail">${detail.target_call_visit || 0}</td>
               </tr>
             `);
           }
@@ -267,14 +267,99 @@
                           .format("MMMM YYYY")
                       : "-"
                   }</td>
-                  <td class="td-detail">${h.target_hk}</td>
-                  <td class="td-detail">${h.target_dub}</td>
-                  <td class="td-detail">${h.target_call_dub}</td>
-                  <td class="td-detail">${h.target_call_visit}</td>
+                  <td class="td-detail">${h.target_hk || 0}</td>
+                  <td class="td-detail">${h.target_dub || 0}</td>
+                  <td class="td-detail">${h.target_call_dub || 0}</td>
+                  <td class="td-detail">${h.target_call_visit || 0}</td>
                 </tr>
               `);
             });
           }
+
+          // Populate Specialty Active Target
+          let spesialisActiveBody = $("#spesialis-active-body");
+          spesialisActiveBody.empty();
+          let spesialisActive = res.result && res.result.spesialis_active;
+          if (!spesialisActive || spesialisActive.length === 0) {
+            spesialisActiveBody.append(
+              `<tr><td colspan="3" style="text-align:center;color:#999;padding:12px;">Belum ada mapping target.</td></tr>`
+            );
+          } else {
+            spesialisActive.forEach(function (h) {
+              spesialisActiveBody.append(`
+                <tr>
+                  <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
+                  <td class="td-detail">${h.nama_spesialisasi || "-"}</td>
+                  <td class="td-detail">${h.target || 0}</td>
+                </tr>
+              `);
+            });
+          }
+
+          // Populate Specialty History Target
+          let spesialisHistoryBody = $("#spesialis-history-body");
+          spesialisHistoryBody.empty();
+          let spesialisHistory = res.result && res.result.spesialis_history;
+          if (!spesialisHistory || spesialisHistory.length === 0) {
+            spesialisHistoryBody.append(
+              `<tr><td colspan="3" style="text-align:center;color:#999;padding:12px;">Belum ada history mapping target.</td></tr>`
+            );
+          } else {
+            spesialisHistory.forEach(function (h) {
+              spesialisHistoryBody.append(`
+                <tr>
+                  <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
+                  <td class="td-detail">${h.nama_spesialisasi || "-"}</td>
+                  <td class="td-detail">${h.target || 0}</td>
+                </tr>
+              `);
+            });
+          }
+
+          // Populate Product Active Target
+          let produkActiveBody = $("#produk-active-body");
+          produkActiveBody.empty();
+          let produkActive = res.result && res.result.produk_active;
+          if (!produkActive || produkActive.length === 0) {
+            produkActiveBody.append(
+              `<tr><td colspan="4" style="text-align:center;color:#999;padding:12px;">Belum ada mapping target.</td></tr>`
+            );
+          } else {
+            produkActive.forEach(function (h) {
+              produkActiveBody.append(`
+                <tr>
+                  <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
+                  <td class="td-detail">${h.product_id || ""} - ${h.nama_invoice || ""}</td>
+                  <td class="td-detail">${h.target || 0}</td>
+                  <td class="td-detail">${h.target_qty || 0}</td>
+                </tr>
+              `);
+            });
+          }
+
+          // Populate Product History Target
+          let produkHistoryBody = $("#produk-history-body");
+          produkHistoryBody.empty();
+          let produkHistory = res.result && res.result.produk_history;
+          if (!produkHistory || produkHistory.length === 0) {
+            produkHistoryBody.append(
+              `<tr><td colspan="4" style="text-align:center;color:#999;padding:12px;">Belum ada history mapping target.</td></tr>`
+            );
+          } else {
+            produkHistory.forEach(function (h) {
+              produkHistoryBody.append(`
+                <tr>
+                  <td class="td-detail">${h.tahun && h.bulan ? moment(`${h.tahun}-${h.bulan}-01`, "YYYY-M-DD").locale("id").format("MMMM YYYY") : "-"}</td>
+                  <td class="td-detail">${h.product_id || ""} - ${h.nama_invoice || ""}</td>
+                  <td class="td-detail">${h.target || 0}</td>
+                  <td class="td-detail">${h.target_qty || 0}</td>
+                </tr>
+              `);
+            });
+          }
+
+          // Reset and activate first tab
+          $('#mappingTabs a:first').tab('show');
 
           let footer = $("#modalDetail .modal-footer");
           footer.empty();

@@ -190,7 +190,6 @@ class App_dashboard extends BaseController
 										<td valign="top" style="text-align:center;">'.$img_detailing.'</td>
 										<td valign="center" style="text-align:left;">
 										<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>
-										<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>
 										<p>Nama Customer : '.htmlspecialchars(@$rowsdetailing['nama_customer'], ENT_QUOTES, 'UTF-8').'</p>
 										<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>
 										<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>
@@ -857,7 +856,6 @@ class App_dashboard extends BaseController
 												\'<td valign="top" style="text-align:center;">'.$img_detailing.'</td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
-												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
 												\'<p>Nama Customer : '.htmlspecialchars(@$rowsdetailing['nama_customer'], ENT_QUOTES, 'UTF-8').'</p>\'+
 												\'<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
@@ -1003,7 +1001,6 @@ class App_dashboard extends BaseController
 												\'<td valign="top" style="text-align:center;">'.$img_detailing.'</td>\'+
 												\'<td valign="center" style="text-align:left;">\'+
 												\'<p>CustomerID : '.@$rowsdetailing['customerid'].'</p>\'+
-												\'<p>Latest JJID : '.@$rowsdetailing['latest_jjid'].'</p>\'+
 												\'<p>Nama Customer : '.htmlspecialchars(@$rowsdetailing['nama_customer'], ENT_QUOTES, 'UTF-8').'</p>\'+
 												\'<p>Channel - Class : '.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC : '.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+

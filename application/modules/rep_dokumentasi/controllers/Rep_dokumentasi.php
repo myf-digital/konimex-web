@@ -42,29 +42,13 @@ class Rep_dokumentasi extends BaseController
 		$restrict_level = $this->input->post("restrict_level");
 		$usersession = $this->input->post("usersession");
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
-		}
-
-        //if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
 
         $q = $this->db->query(" 
                                 select a.periode, d.nama_class,a.customerid, a.salesmanid, a.check_in, a.check_out, a.latitude_cell, a.longitude_cell, e.nama_salesman,e.tipe_sales, 

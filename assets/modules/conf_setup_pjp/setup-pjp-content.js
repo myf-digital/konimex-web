@@ -88,14 +88,6 @@
             width: 100,
           },
           {
-            field: "latest_jjid",
-            title: "LATEST JJID",
-            halign: "center",
-            align: "left",
-            sortable: "true",
-            width: 100,
-          },
-          {
             field: "latest_customer_name",
             title: "LATEST CUSTOMER NAME",
             halign: "center",

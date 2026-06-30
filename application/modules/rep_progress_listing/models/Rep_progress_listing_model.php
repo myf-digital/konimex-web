@@ -67,21 +67,9 @@ class Rep_progress_listing_model extends CI_Model
     }
 
     function sql_progress_listing($data) {
-        if ($data["restrict_level"]=='4') {
-            $strquery = " and mss.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                        app_resource a left join app_restrict_location b on mss.resource_id=b.resource_id 
-                        where mss.username='".$data["usersession"]."')
-                    )";
-        } else if ($data["restrict_level"]=='3') {
-            $strquery = " and mss.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                        app_resource a left join app_restrict_location b on mss.resource_id=b.resource_id 
-                        where mss.username='".$data["usersession"]."')
-                    )";
-        } else if ($data["restrict_level"]=='2') {
-            $strquery = " and mss.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                        app_resource a left join app_restrict_location b on mss.resource_id=b.resource_id 
-                        where mss.username='".$data["usersession"]."')
-                    ) ";
+        $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+        if ($restrict_query){
+            $strquery = " and mss.salesmanid in (" . $restrict_query . ")";
         } else {
             $strquery = "";
         }

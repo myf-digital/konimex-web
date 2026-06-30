@@ -284,28 +284,6 @@ class Rep_return_detector_model extends CI_Model
 
     function get_subarea($data)
     {
-        // if ($data["restrict_level"]=='4'){
-        //     $strquery = " and a.subareaid in (select distinct b.subareaid from  
-        //                                         app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-        //                                         where a.username='".$data["usersession"]."'
-        //                                         )";
-        // }
-        // else if ($data["restrict_level"]=='3'){
-        //     $strquery = " and a.subareaid in (select distinct b.subareaid from  
-        //                                         app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-        //                                         where a.username='".$data["usersession"]."'
-        //                                         )";
-        // }
-        // else if ($data["restrict_level"]=='2'){
-        //     $strquery = " and a.subareaid in (select distinct b.subareaid from  
-        //                                         app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-        //                                         where a.username='".$data["usersession"]."'
-        //                                         )";
-        // }
-        // else {
-        //     $strquery = "";
-        // }
-
         if ( is_null($data["regionalid"]) or is_null($data["areaid"]) ) {
             return result(new stdClass(), 400, "Parameter not allowed");
         } else {
@@ -315,12 +293,6 @@ class Rep_return_detector_model extends CI_Model
                         order by a.nama_area asc
                         ";
 
-            // $sql = "select a.*
-            //             from m_area_subarea a 
-            //         where a.regionalid=? and a.areaid=?
-            //         $strquery
-            //             order by a.nama_area asc
-            //             ";
             $query = $this->db->query($sql, array($data["regionalid"],$data["areaid"]));
             if (count($query->result_array()) > 0) {
                 return $query->result_array();
