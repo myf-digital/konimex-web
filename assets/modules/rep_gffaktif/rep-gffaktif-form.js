@@ -57,6 +57,13 @@
       regional = e.params.data;
 
       loadArea(regional);
+      loadCity(regional);
+    });
+
+    uiSelectArea.on("select2:select", function (e) {
+      area = e.params.data;
+
+      loadCity(area);
     });
 
     uiStartPeriode.on("changeDate", function (selected) {
@@ -90,7 +97,7 @@
     });
 
     uiSelectCity.select2({
-      placeholder: "Select City",
+      placeholder: "Select Sub Area",
       allowClear: true,
     });
 
@@ -105,7 +112,7 @@
       function (res) {
         uiSelectArea.empty();
         uiSelectArea.select2({
-          placeholder: "Select City",
+          placeholder: "Select Area",
           allowClear: true,
           data: $.map(res.rows, function (o) {
             o.id = o.areaid; // replace name with the property used for the text
@@ -119,6 +126,30 @@
     );
   }
 
+  function loadCity(data) {
+    common.loading();
+    let postData = {};
+    if (data.areaid) {
+      postData.areaid = data.areaid;
+    } else {
+      postData.regionalid = data.regionalid;
+    }
+    $.post(common.baseURL("rep_gffaktif/load_city"), postData, function (res) {
+      uiSelectCity.empty();
+      uiSelectCity.select2({
+        placeholder: "Select Sub Area",
+        allowClear: true,
+        data: $.map(res.rows, function (o) {
+          o.id = o.subareaid; // replace name with the property used for the text
+          o.text = o.nama_area;
+          return o;
+        }),
+      });
+      uiSelectCity.val(null).trigger("change");
+      common.loadingClose();
+    });
+  }
+
   function open_preview() {
     var start = uiStartPeriode.val();
     var end = uiEndPeriode.val();
@@ -129,6 +160,7 @@
 
     var regionalid = uiSelectRegional.val();
     var areaid = uiSelectArea.val();
+    var subareaid = uiSelectCity.val();
     $.ajax({
       type: "GET",
       dataType: "html",
@@ -163,7 +195,9 @@
         "&regionalid=" +
         regionalid +
         "&areaid=" +
-        areaid,
+        areaid +
+        "&subareaid=" +
+        subareaid,
       success: function (res) {
         $("#tbl-content").html(res);
       },
@@ -211,8 +245,10 @@
 
     var regionalid = uiSelectRegional.val();
     var areaid = uiSelectArea.val();
-    //idpromo = idpromo.replace(",", "|");
-    //var url = encodeURI();
+    var subareaid = uiSelectCity.val();
+    if (!subareaid) {
+      subareaid = "null";
+    }
     common.direct(
       "rep_gffaktif/savetoxlsx/" +
         start +
@@ -229,7 +265,9 @@
         "/" +
         regionalid +
         "/" +
-        areaid,
+        areaid +
+        "/" +
+        subareaid,
     );
     /*
         $.ajax({

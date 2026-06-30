@@ -65,6 +65,7 @@ class Rep_promo extends BaseController
 		$end = $this->input->post("end");
 		$regional = $this->input->post("regional");
 		$area = $this->input->post("area");
+		$subarea = $this->input->post("subarea");
 		$idjabatan = $this->input->post("idjabatan");
 		$restrict_level = $this->input->post("restrict_level");
 		$usersession = $this->input->post("usersession");
@@ -79,6 +80,7 @@ class Rep_promo extends BaseController
         
         $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
         $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
+        $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
 
         if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
 
@@ -93,7 +95,7 @@ class Rep_promo extends BaseController
                                 left join m_area_regional f on c.regionalid=f.regionalid
                                 left join m_area_areasite g on c.areaid = g.areaid
                                 left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$addquery.$strquery.";
+                                where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$addquery.$strquery.";
                             ");
 		//echo $this->db->last_query();
 		$data = $q->result_array();
@@ -175,6 +177,7 @@ class Rep_promo extends BaseController
 		$end = $this->input->post("end");
 		$regional = $this->input->post("regional");
 		$area = $this->input->post("area");
+		$subarea = $this->input->post("subarea");
 		$idjabatan = $this->input->post("idjabatan");
 		$restrict_level = $this->input->post("restrict_level");
 		$usersession = $this->input->post("usersession");
@@ -189,6 +192,7 @@ class Rep_promo extends BaseController
 
         $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
         $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
+        $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
 
         if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
 
@@ -203,7 +207,7 @@ class Rep_promo extends BaseController
                                 left join m_area_regional f on c.regionalid=f.regionalid
                                 left join m_area_areasite g on c.areaid = g.areaid
                                 left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$addquery.$strquery.";
+                                where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$addquery.$strquery.";
                             ");
 		//echo $this->db->last_query();
 		$data = $q->result_array();
@@ -292,6 +296,8 @@ class Rep_promo extends BaseController
 		$regional = $this->uri->segment('10');
 		$area = $this->uri->segment('11');
 
+        $subarea = $this->uri->segment('12');
+
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
             $filename='selected';
@@ -301,30 +307,17 @@ class Rep_promo extends BaseController
         }
 		$filename = "Promo_".$start.".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
         $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
+        $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
         
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
@@ -337,7 +330,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
+                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
                         ");
         $lovpjp = $q->result_array();
         //echo $this->db->last_query();
@@ -447,6 +440,7 @@ class Rep_promo extends BaseController
         $restrict_level = $this->uri->segment('8');
         $regional = $this->uri->segment('9');
         $area = $this->uri->segment('10');
+        $subarea = $this->uri->segment('11');
 
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
@@ -457,30 +451,17 @@ class Rep_promo extends BaseController
         }
 		$filename = "Promo_Gimmick".$start.".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
         $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
+        $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
 
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
@@ -493,7 +474,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
+                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
                         ");
         ini_set('memory_limit', '512M');
 
@@ -620,6 +601,7 @@ class Rep_promo extends BaseController
 		$tipepromo = $this->uri->segment('9');
 		$regional = $this->uri->segment('10');
 		$area = $this->uri->segment('11');
+        $subarea = $this->uri->segment('12');
 
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
@@ -630,31 +612,18 @@ class Rep_promo extends BaseController
         }
 		$filename = "Promo_".$start.".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
         $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
-        
+        $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
+
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
                                    f.nama_regional, g.nama_area, h.nama_area as city 
@@ -666,7 +635,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
+                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
                         ");
         $lovpjp = $q->result_array();
         //echo $this->db->last_query();
@@ -747,6 +716,7 @@ class Rep_promo extends BaseController
         $restrict_level = $this->uri->segment('8');
         $regional = $this->uri->segment('9');
         $area = $this->uri->segment('10');
+        $subarea = $this->uri->segment('11');
 
         if ($idpromo!='null'){
             $addquery=" and a.idpromo in (".$idpromo.") ";
@@ -757,30 +727,17 @@ class Rep_promo extends BaseController
         }
 		$filename = "Promo_Gimmick".$start.".xlsx";
 
-        if ($restrict_level=='4'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='3'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-											app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-											where a.username='".$usersession."')
-												)";
-		}
-		else if ($restrict_level=='2'){
-			$strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-												app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-												where a.username='".$usersession."')
-												) ";
-		}
-		else {
-			$strquery = "";
+        $strquery = "";
+        if (!empty($restrict_level)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
         }
 
         $regionalquery = $regional != 'null' ? ' and c.regionalid="'.$regional.'" ' : '';
         $areaquery = $area != 'null' ? ' and c.areaid="'.$area.'" ' : '';
+        $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
 
         $q = $this->db->query(" 
                             select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
@@ -793,7 +750,7 @@ class Rep_promo extends BaseController
                             left join m_area_regional f on c.regionalid=f.regionalid
                             left join m_area_areasite g on c.areaid = g.areaid
                             left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$strquery.$addquery.";
+                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
                         ");
         ini_set('memory_limit', '512M');
 

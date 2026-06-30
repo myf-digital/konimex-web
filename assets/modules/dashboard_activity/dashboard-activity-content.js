@@ -403,18 +403,18 @@ $(function () {
       rawDetails: details,
       datasets: [
         {
-          label: "Planned DUB (Actual)",
+          label: "DUB (Actual)",
           data: callPlannedData,
           backgroundColor: "#3d85c6",
-          stack: "Planned DUB",
+          stack: "DUB",
           barPercentage: 0.8,
           categoryPercentage: 0.8,
         },
         {
-          label: "Planned DUB (Target)",
+          label: "DUB (Target)",
           data: remainingPlannedData,
           backgroundColor: "#ff4e00",
-          stack: "Planned DUB",
+          stack: "DUB",
           barPercentage: 0.8,
           categoryPercentage: 0.8,
         },
@@ -593,8 +593,8 @@ $(function () {
 
     let hdr = [
       "Nama",
-      "Planned DUB (Actual)",
-      "Planned DUB (Target)",
+      "DUB (Actual)",
+      "DUB (Target)",
       "Visit (Actual)",
       "Visit (Target)",
     ];
@@ -604,8 +604,8 @@ $(function () {
       "Tipe Sales",
       "Jabatan",
       "Area",
-      "Planned DUB (Actual)",
-      "Planned DUB (Target)",
+      "DUB (Actual)",
+      "DUB (Target)",
       "Visit (Actual)",
       "Visit (Target)",
     ];
@@ -995,7 +995,7 @@ $(function () {
                   <th>Tipe</th>
                   <th>Jabatan</th>
                   <th>Area</th>
-                  <th class="th-planned">Planned</th>
+                  <th class="th-planned">DUB</th>
                   <th class="th-visit">Visit</th>
                 </tr>
               </thead>

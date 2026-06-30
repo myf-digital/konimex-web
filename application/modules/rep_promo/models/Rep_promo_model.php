@@ -3,22 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Rep_promo_model extends CI_Model
 {
-
-    /*public function create($data)
-    {
-        $id = IDGenerator::getInstance()->nextID('mapping_promo_active');
-        if (!empty($id)) {
-            $data['idpromo'] = $id;
-        }
-        $data["created_by"] = $data["usersession"];
-        $sqldate = "select sysdate() datetime;";
-        $datetime = $this->db->query($sqldate)->row();
-        $data["created_date"] = $datetime->datetime;
-        unset($data["usersession"]);
-
-        return $this->db->insert('mapping_promo_active', $data);
-    }*/
-
     public function update($data)
     {
         $data["modified_by"] = $data["usersession"];
@@ -59,7 +43,7 @@ class Rep_promo_model extends CI_Model
     public function load_account($data)
     {
         $field = " a.* ";
-        $table = " ( select classid, nama_class from m_customer_class order by nama_class asc
+        $table = " ( select typeid as classid, nama_type as nama_class from m_customer_type order by nama_type asc
                     ) as a";
         return easy_pagging($data, $field, $table);
     }
@@ -84,7 +68,13 @@ class Rep_promo_model extends CI_Model
     public function load_city($data)
     {
         $field = " a.* ";
-        $table = " ( select subareaid,nama_area from m_area_subarea where regionalid='".$data['regionalid']."' order by nama_area asc
+        $where = " 1=1 ";
+        if (!empty($data['areaid'])) {
+            $where .= " and areaid = '".$data['areaid']."' ";
+        } else if (!empty($data['regionalid'])) {
+            $where .= " and regionalid = '".$data['regionalid']."' ";
+        }
+        $table = " ( select subareaid,nama_area from m_area_subarea where $where order by nama_area asc
                     ) as a";
         return easy_pagging($data, $field, $table);
     }

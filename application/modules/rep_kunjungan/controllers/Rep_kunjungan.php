@@ -51,8 +51,14 @@ class Rep_kunjungan extends BaseController
 
         if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
         $q = $this->db->query(" 
-                                select a.periode, a.salesmanid, c.nama_salesman, c.nama_area, concat(a.salesmanid,'-',c.nama_salesman, '-',c.nama_area) as parma_user,
-                                    a.customerid, b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
+                                select
+                                    a.periode,
+                                    a.salesmanid,
+                                    c.nama_salesman,
+                                    c.nama_area,
+                                    concat(a.salesmanid, '-', c.nama_salesman) as parma_user,
+                                    coalesce(nullif(c.nama_subarea, ''), nullif(c.nama_area, ''), nullif(c.nama_regional, ''), '') as parma_area,
+                                    a.customerid,b.nama_customer,b.typeid as cluster, b.alamat,
                                     b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
                                     CASE
                                         WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
@@ -64,7 +70,30 @@ class Rep_kunjungan extends BaseController
                                     END AS jarak_meter,
                                     a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
                                     t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
-                                    left join v_gff_info c on a.salesmanid =c.salesmanid 
+                                    left join (
+                                        select 
+                                            s.salesmanid,
+                                            s.nama_salesman,
+                                            (
+                                                select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                                                from m_salesman_area msa
+                                                join m_area_subarea sa on msa.subareaid = sa.subareaid
+                                                where msa.salesmanid = s.salesmanid
+                                            ) as nama_subarea,
+                                            (
+                                                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                                from m_salesman_area msa
+                                                join m_area_areasite ar on msa.areaid = ar.areaid
+                                                where msa.salesmanid = s.salesmanid
+                                            ) as nama_area,
+                                            (
+                                                select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                                from m_salesman_area msa
+                                                join m_area_regional r on r.regionalid = msa.regionalid
+                                                where msa.salesmanid = s.salesmanid
+                                            ) as nama_regional
+                                        from m_sales_salesman s
+                                    ) c on a.salesmanid = c.salesmanid 
                                     left join m_customer_image d on a.periode =d.periode and a.salesmanid =d.salesmanid and a.customerid =d.customerid and d.image_type ='IMG_CHECKIN'
                                     where a.periode between '$start' and '$end' $addquery $strquery
                                 order by a.periode desc;
@@ -84,9 +113,8 @@ class Rep_kunjungan extends BaseController
 		$html .= '<th style="width: 150px">User Medrep</th>';
 		$html .= '<th style="width: 150px">Medrep Outlet ID</th>';
 		$html .= '<th style="width: 150px">Customer ID Map</th>';
-		$html .= '<th style="width: 200px">Latest Customer Name</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';
-		$html .= '<th style="width: 100px">Area</th>';
+		$html .= '<th style="width: 200px">Area</th>';
 		$html .= '<th style="width: 100px">Cluster</th>';
 		$html .= '<th style="width: 100px">Checkin</th>';
         $html .= '<th style="width: 100px">Checkout</th>';
@@ -109,10 +137,9 @@ class Rep_kunjungan extends BaseController
 			$html .= '<td style="width: 100px">'.$value['periode'].'</td>';
 			$html .= '<td style="width: 150px">'.$value['parma_user'].'</td>';
 			$html .= '<td style="width: 150px">'.$value['customerid'].'</td>';
-            $html .= '<td style="width: 150px">'.$value['cust_id_map'].'</td>';
 			$html .= '<td style="width: 200px">'.$value['nama_customer'].'</td>';
 			$html .= '<td style="width: 200px">'.$value['alamat'].'</td>';
-			$html .= '<td style="width: 100px">'.$value['city'].'</td>';
+			$html .= '<td style="width: 200px">'.$value['parma_area'].'</td>';
 			$html .= '<td style="width: 100px">'.$value['cluster'].'</td>';
 			$html .= '<td style="width: 100px">'.format_time($value['check_in']).'</td>';
 			$html .= '<td style="width: 100px">'.format_time($value['check_out']).'</td>';
@@ -181,8 +208,14 @@ class Rep_kunjungan extends BaseController
 
         if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
         $q = $this->db->query(" 
-                                select a.periode, a.salesmanid, c.nama_salesman, c.nama_area, concat(a.salesmanid,'-',c.nama_salesman, '-',c.nama_area) as parma_user,
-                                    a.customerid, b.cust_id_map,b.nama_customer,b.typeid as cluster, b.alamat,
+                                select 
+                                    a.periode, 
+                                    a.salesmanid, 
+                                    c.nama_salesman, 
+                                    c.nama_area, 
+                                    concat(a.salesmanid, '-', c.nama_salesman) as parma_user,
+                                    coalesce(nullif(c.nama_subarea, ''), nullif(c.nama_area, ''), nullif(c.nama_regional, ''), '') as parma_area,
+                                    a.customerid, b.nama_customer,b.typeid as cluster, b.alamat,
                                     b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
                                     CASE
                                         WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
@@ -194,7 +227,30 @@ class Rep_kunjungan extends BaseController
                                     END AS jarak_meter,
                                     a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
                                     t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
-                                    left join v_gff_info c on a.salesmanid =c.salesmanid 
+                                    left join (
+                                        select 
+                                            s.salesmanid,
+                                            s.nama_salesman,
+                                            (
+                                                select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                                                from m_salesman_area msa
+                                                join m_area_subarea sa on msa.subareaid = sa.subareaid
+                                                where msa.salesmanid = s.salesmanid
+                                            ) as nama_subarea,
+                                            (
+                                                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                                from m_salesman_area msa
+                                                join m_area_areasite ar on msa.areaid = ar.areaid
+                                                where msa.salesmanid = s.salesmanid
+                                            ) as nama_area,
+                                            (
+                                                select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                                from m_salesman_area msa
+                                                join m_area_regional r on r.regionalid = msa.regionalid
+                                                where msa.salesmanid = s.salesmanid
+                                            ) as nama_regional
+                                        from m_sales_salesman s
+                                    ) c on a.salesmanid = c.salesmanid 
                                     left join m_customer_image d on a.periode =d.periode and a.salesmanid =d.salesmanid and a.customerid =d.customerid and d.image_type ='IMG_CHECKIN'
                                     where a.periode between '$start' and '$end' $addquery $strquery
                                 order by a.periode desc;
@@ -210,16 +266,15 @@ class Rep_kunjungan extends BaseController
             ->setCellValue('B2', 'Periode')
             ->setCellValue('C2', 'User Medrep')
             ->setCellValue('D2', 'Medrep Outlet ID')
-            ->setCellValue('E2', 'Customer ID Map')
-            ->setCellValue('F2', 'Latest Customer Name')
-            ->setCellValue('G2', 'Alamat')
-            ->setCellValue('H2', 'Area')
-            ->setCellValue('I2', 'Cluster')
-            ->setCellValue('J2', 'CheckIn')
-            ->setCellValue('K2', 'CheckOut')
-            ->setCellValue('L2', 'Durasi')
-            ->setCellValue('M2', 'Jarak')
-            ->setCellValue('N2', 'Foto')
+            ->setCellValue('E2', 'Latest Customer Name')
+            ->setCellValue('F2', 'Alamat')
+            ->setCellValue('G2', 'Area')
+            ->setCellValue('H2', 'Cluster')
+            ->setCellValue('I2', 'CheckIn')
+            ->setCellValue('J2', 'CheckOut')
+            ->setCellValue('K2', 'Durasi')
+            ->setCellValue('L2', 'Jarak')
+            ->setCellValue('M2', 'Foto')
             ;
 
             $i = 3;
@@ -230,15 +285,14 @@ class Rep_kunjungan extends BaseController
                     ->setCellValue('B'.$i, $vkunjungan['periode'])
                     ->setCellValue('C'.$i, $vkunjungan['parma_user'])
                     ->setCellValue('D'.$i, $vkunjungan['customerid'])
-                    ->setCellValue('E'.$i, $vkunjungan['cust_id_map'])
-                    ->setCellValue('F'.$i, $vkunjungan['nama_customer'])
-                    ->setCellValue('G'.$i, $vkunjungan['alamat'])
-                    ->setCellValue('H'.$i, $vkunjungan['city'])
-                    ->setCellValue('I'.$i, $vkunjungan['cluster'])
-                    ->setCellValue('J'.$i, format_time($vkunjungan['check_in']))
-                    ->setCellValue('K'.$i, format_time($vkunjungan['check_out']))
-                    ->setCellValue('L'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
-                    ->setCellValue('M'.$i, format_jarak($vkunjungan['jarak_meter']));
+                    ->setCellValue('E'.$i, $vkunjungan['nama_customer'])
+                    ->setCellValue('F'.$i, $vkunjungan['alamat'])
+                    ->setCellValue('G'.$i, $vkunjungan['parma_area'])
+                    ->setCellValue('H'.$i, $vkunjungan['cluster'])
+                    ->setCellValue('I'.$i, format_time($vkunjungan['check_in']))
+                    ->setCellValue('J'.$i, format_time($vkunjungan['check_out']))
+                    ->setCellValue('K'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
+                    ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']));
 
                     if (!empty($vkunjungan['image'])) {
                         if (file_exists(DIR_IMAGE_PATH.$vkunjungan['image'])) {

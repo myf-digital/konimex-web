@@ -142,10 +142,11 @@ class Rep_productivity extends BaseController
         $end = $this->uri->segment('4');
         $regionalid = $this->uri->segment('5');
         $areaid = $this->uri->segment('6');
+        $subareaid = $this->uri->segment('7');
 
-        $usersession = $this->uri->segment('7');
-        $restrict_level = $this->uri->segment('8');
-        $idjabatan = $this->uri->segment('9');
+        $usersession = $this->uri->segment('8');
+        $restrict_level = $this->uri->segment('9');
+        $idjabatan = $this->uri->segment('10');
 
         $params = [
         	'start_period' => $start,
@@ -155,6 +156,7 @@ class Rep_productivity extends BaseController
         	'usersession' => $usersession,
         	'regionalid' => $regionalid,
         	'areaid' => $areaid,
+        	'subareaid' => $subareaid,
         ];
 
         $data = $this->report_productivity->getProductivity($params);

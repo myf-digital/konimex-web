@@ -40,14 +40,34 @@ class Api_v1_model extends CI_Model
 
 		$sql = "select
 					a.*,
-					regional.nama_regional,
-					area.nama_area,
-					area.latitude,
-					area.longitude,
+					(
+						select group_concat(distinct regional.nama_regional order by regional.nama_regional asc separator ', ')
+						from m_salesman_area msa
+						join m_area_regional regional on regional.regionalid = msa.regionalid
+						where msa.salesmanid = a.salesmanid
+					) as nama_regional,
+					(
+						select group_concat(distinct area.nama_area order by area.nama_area asc separator ', ')
+						from m_salesman_area msa
+						join m_area_areasite area on area.areaid = msa.areaid
+						where msa.salesmanid = a.salesmanid
+					) as nama_area,
+					(
+						select area.latitude
+						from m_salesman_area msa
+						join m_area_areasite area on area.areaid = msa.areaid
+						where msa.salesmanid = a.salesmanid
+						limit 1
+					) as latitude,
+					(
+						select area.longitude
+						from m_salesman_area msa
+						join m_area_areasite area on area.areaid = msa.areaid
+						where msa.salesmanid = a.salesmanid
+						limit 1
+					) as longitude,
 					ifnull(rmt.target_dub,0) as target_dub
 				from m_sales_salesman a
-				left join m_area_regional regional on regional.regionalid = a.regionalid
-				left join m_area_areasite area on area.areaid = a.areaid
 				left join app_role role on role.role_name = a.tipe_sales
 				left join role_mapping_target rmt on rmt.role_id = role.role_id
 					and rmt.tahun = YEAR(CURRENT_DATE) and rmt.bulan = MONTH(CURRENT_DATE)
@@ -1910,11 +1930,11 @@ class Api_v1_model extends CI_Model
 				$prev_specialties = $this->db->query("
 					select spesialisasi_id, nama_spesialisasi, target
 					from m_sales_spesialis_target
-					where roleid = ? and tahun = ? and bulan = ?
+					where role_id = ? and tahun = ? and bulan = ?
 				", [$role_id, $prev_tahun, $prev_bulan])->result_array();
 
 				if (!empty($prev_specialties)) {
-					$this->db->where('roleid', $role_id);
+					$this->db->where('role_id', $role_id);
 					$this->db->where('tahun', $tahun);
 					$this->db->where('bulan', $bulan);
 					$this->db->delete('m_sales_spesialis_target');
@@ -1924,7 +1944,7 @@ class Api_v1_model extends CI_Model
 						$insert_specialties[] = [
 							'tahun' => $tahun,
 							'bulan' => $bulan,
-							'roleid' => $role_id,
+							'role_id' => $role_id,
 							'role_name' => $role_name,
 							'spesialisasi_id' => $ps['spesialisasi_id'],
 							'nama_spesialisasi' => $ps['nama_spesialisasi'],
@@ -1939,11 +1959,11 @@ class Api_v1_model extends CI_Model
 				$prev_products = $this->db->query("
 					select product_id, nama_invoice, target, target_qty
 					from m_sales_produk_target
-					where roleid = ? and tahun = ? and bulan = ?
+					where role_id = ? and tahun = ? and bulan = ?
 				", [$role_id, $prev_tahun, $prev_bulan])->result_array();
 
 				if (!empty($prev_products)) {
-					$this->db->where('roleid', $role_id);
+					$this->db->where('role_id', $role_id);
 					$this->db->where('tahun', $tahun);
 					$this->db->where('bulan', $bulan);
 					$this->db->delete('m_sales_produk_target');
@@ -1953,7 +1973,7 @@ class Api_v1_model extends CI_Model
 						$insert_products[] = [
 							'tahun' => $tahun,
 							'bulan' => $bulan,
-							'roleid' => $role_id,
+							'role_id' => $role_id,
 							'role_name' => $role_name,
 							'product_id' => $pp['product_id'],
 							'nama_invoice' => $pp['nama_invoice'],

@@ -215,9 +215,18 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="' . $data['regionalid'] . '" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and b.areaid="' . $data['areaid'] . '" ' : '';
-        $subarea = $data['subareaid'] != 'null' ? ' and b.subareaid="' . $data['subareaid'] . '" ' : '';
+        $regional = "";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $regional = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."') ";
+        }
+        $area = "";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $area = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."') ";
+        }
+        $subarea = "";
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $subarea = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."') ";
+        }
         $start = $data['start_period'];
         $end = $data['end_period'];
         $year = date('Y', strtotime($end));
@@ -242,13 +251,45 @@ class Rep_productivity_model extends CI_Model
 
         $query = $this->db->query(" 
             SELECT 
-                d.regionalid, 
-                d.nama_regional, 
-                c.areaid, 
-                c.nama_area, 
-                c.nama_area AS city,
-                mas.subareaid,
-                mas.nama_area AS nama_subarea,
+                (
+                    select group_concat(distinct msa.regionalid separator ', ')
+                    from m_salesman_area msa
+                    where msa.salesmanid = b.salesmanid
+                ) as regionalid,
+                (
+                    select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                    from m_salesman_area msa
+                    join m_area_regional r on r.regionalid = msa.regionalid
+                    where msa.salesmanid = b.salesmanid
+                ) as nama_regional,
+                (
+                    select group_concat(distinct msa.areaid separator ', ')
+                    from m_salesman_area msa
+                    where msa.salesmanid = b.salesmanid
+                ) as areaid,
+                (
+                    select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                    from m_salesman_area msa
+                    join m_area_areasite ar on msa.areaid = ar.areaid
+                    where msa.salesmanid = b.salesmanid
+                ) as nama_area,
+                (
+                    select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                    from m_salesman_area msa
+                    join m_area_areasite ar on msa.areaid = ar.areaid
+                    where msa.salesmanid = b.salesmanid
+                ) as city,
+                (
+                    select group_concat(distinct msa.subareaid separator ', ')
+                    from m_salesman_area msa
+                    where msa.salesmanid = b.salesmanid
+                ) as subareaid,
+                (
+                    select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                    from m_salesman_area msa
+                    join m_area_subarea sa on msa.subareaid = sa.subareaid
+                    where msa.salesmanid = b.salesmanid
+                ) as nama_subarea,
                 b.salesmanid,
                 b.nama_salesman,
                 b.tipe_sales, 
@@ -369,9 +410,6 @@ class Rep_productivity_model extends CI_Model
                 SUM(e.total_penjualan) AS total_penjualan
             FROM t_sales_absensi a 
             LEFT JOIN m_sales_salesman b ON a.salesmanid = b.salesmanid AND b.aktif = 1
-            LEFT JOIN m_area_areasite c ON c.areaid = b.areaid 
-            LEFT JOIN m_area_regional d ON d.regionalid = b.regionalid
-            LEFT JOIN m_area_subarea mas ON mas.subareaid = b.subareaid
             LEFT JOIN (
                 SELECT 
                     salesmanid, 
@@ -386,8 +424,8 @@ class Rep_productivity_model extends CI_Model
             WHERE a.periode BETWEEN '$start' AND '$end' 
               AND b.tipe_sales NOT IN ('ADMIN', 'SPV', 'FC') 
               $strquery $subarea $area $regional
-            GROUP BY d.regionalid, d.nama_regional, c.areaid, c.nama_area, b.salesmanid, b.nama_salesman, b.tipe_sales
-            ORDER BY regionalid ASC, areaid ASC, subareaid ASC, tipe_sales ASC, nama_salesman ASC;
+            GROUP BY b.salesmanid, b.nama_salesman, b.tipe_sales
+            ORDER BY b.nama_salesman ASC;
         ");
 
         $result = $query->result_array();
@@ -423,9 +461,18 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
-        $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and salesamn.subareaid="'.$data['subareaid'].'" ' : '';
+        $regional = "";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $regional = " and sls.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."') ";
+        }
+        $area = "";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $area = " and sls.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."') ";
+        }
+        $subarea = "";
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $subarea = " and sls.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."') ";
+        }
         $start=$data['start_period'];
         $end=$data['end_period'];
 		$query = $this->db->query(" 
@@ -435,7 +482,6 @@ class Rep_productivity_model extends CI_Model
 									   sls.salesmanid,
 									   salesamn.nama_salesman,
 									   sls.customerid,
-									   cst.cust_id_map,
 									   cst.nama_customer,
 									   e.nama_class as account,
 									   cst.alamat,
@@ -460,7 +506,7 @@ class Rep_productivity_model extends CI_Model
 									m_product product on dtl.productid = product.productid 
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.tanggal between '".$start."' and '".$end."' 
-                                        and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
+                                         and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
 									$area $regional $subarea
 									group by sls.siteid, 
 										   sls.salesmanid,
@@ -484,8 +530,18 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
+        $regional = "";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $regional = " and sls.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."') ";
+        }
+        $area = "";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $area = " and sls.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."') ";
+        }
+        $subarea = "";
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $subarea = " and sls.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."') ";
+        }
         $start=$data['start_period'];
         $end=$data['end_period'];
 		$query = $this->db->query(" 
@@ -510,7 +566,7 @@ class Rep_productivity_model extends CI_Model
                                     left join m_customer_class e on e.classid=cst.classid
 									where sls.periode between '".$start."' and '".$end."' 
                                     and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
-									$area $regional
+									$area $regional $subarea
 									group by sls.siteid, 
 										   sls.salesmanid,
 										   salesamn.nama_salesman,
@@ -533,9 +589,18 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
-        $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
+        $regional = "";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $regional = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."') ";
+        }
+        $area = "";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $area = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."') ";
+        }
+        $subarea = "";
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $subarea = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."') ";
+        }
         $start=$data['start_period'];
         $end=$data['end_period'];
 		$query = $this->db->query(" 
@@ -606,9 +671,18 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $regional = $data['regionalid'] != 'null' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
-        $subarea = isset($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
+        $regional = "";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $regional = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."') ";
+        }
+        $area = "";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $area = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."') ";
+        }
+        $subarea = "";
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $subarea = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."') ";
+        }
         $start=$data['start_period'];
         $end=$data['end_period'];
 		$query = $this->db->query(" select
@@ -630,7 +704,13 @@ class Rep_productivity_model extends CI_Model
                                          concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
                                          concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
                                          b.nama_salesman,
-                                         c.nama_customer,c.typeid as channel,c.nama_account as account,b.nama_area as city,
+                                         c.nama_customer,c.typeid as channel,c.nama_account as account,
+                                         (
+                                             select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                             from m_salesman_area msa
+                                             join m_area_areasite ar on msa.areaid = ar.areaid
+                                             where msa.salesmanid = a.salesmanid
+                                         ) as city,
                                          CASE
                                              WHEN a.status = 5 THEN 'Tidak Valid'
                                              WHEN a.status = 3 THEN 'Valid'
@@ -645,8 +725,8 @@ class Rep_productivity_model extends CI_Model
                                              ),
                                              a.array_product
                                          ) as products
-                                     from trx_visit_detailing a
-                                     left join v_gff_info b on a.salesmanid=b.salesmanid
+                                      from trx_visit_detailing a
+                                      left join m_sales_salesman b on a.salesmanid=b.salesmanid
                                      left join v_outlet_all c on a.customerid=c.customerid
                                         left join (
                                             select 
@@ -672,18 +752,18 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $where = "";
-        if (isset($data['start_period']) && isset($data['end_period'])) {
-            $where .= " tpl.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+        $where = " 1=1 ";
+        if (!empty($data['start_period']) && !empty($data['end_period'])) {
+            $where .= " AND tpl.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
         }
-        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
-            $where .= " AND mss.regionalid ='".$data['regionalid']."'";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND tpl.salesmanid IN (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."')";
         }
-        if (isset($data['areaid']) && $data['areaid'] != 'null') {
-            $where .= " AND mss.areaid ='".$data['areaid']."'";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND tpl.salesmanid IN (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."')";
         }
-        if (isset($data['subareaid']) && $data['subareaid'] != 'null') {
-            $where .= " AND mss.subareaid ='".$data['subareaid']."'";
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $where .= " AND tpl.salesmanid IN (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."')";
         }
 
 		$query = $this->db->query("
@@ -715,24 +795,44 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $where = "";
-        if (isset($data['start_period']) && isset($data['end_period'])) {
-            $where .= " tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+        $where = " 1=1 ";
+        if (!empty($data['start_period']) && !empty($data['end_period'])) {
+            $where .= " AND tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
         }
-        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
-            $where .= " AND mss.regionalid ='".$data['regionalid']."'";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND tsa.salesmanid IN (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."')";
         }
-        if (isset($data['areaid']) && $data['areaid'] != 'null') {
-            $where .= " AND mss.areaid ='".$data['areaid']."'";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND tsa.salesmanid IN (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."')";
         }
-        if (isset($data['subareaid']) && $data['subareaid'] != 'null') {
-            $where .= " AND mss.subareaid ='".$data['subareaid']."'";
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $where .= " AND tsa.salesmanid IN (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."')";
         }
 
 		$query = $this->db->query("
-        SELECT mss.nama_salesman, mss.salesmanid, mss.nama_area,mss.city, tsa.status, tsa.periode, ap.start_time, ap.start_image, ap.end_time, ap.end_image
+        SELECT 
+            mss.nama_salesman, 
+            tsa.salesmanid, 
+            (
+                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                from m_salesman_area msa
+                join m_area_areasite ar on msa.areaid = ar.areaid
+                where msa.salesmanid = tsa.salesmanid
+            ) as nama_area,
+            (
+                select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                from m_salesman_area msa
+                join m_area_subarea sa on msa.subareaid = sa.subareaid
+                where msa.salesmanid = tsa.salesmanid
+            ) as city, 
+            tsa.status, 
+            tsa.periode, 
+            ap.start_time, 
+            ap.start_image, 
+            ap.end_time, 
+            ap.end_image
         FROM t_sales_absensi tsa
-            LEFT JOIN v_gff_info mss ON mss.salesmanid = tsa.salesmanid 
+            LEFT JOIN m_sales_salesman mss ON mss.salesmanid = tsa.salesmanid 
             left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
             WHERE ".$where . $strquery ."
             order by tsa.periode, tsa.salesmanid 
@@ -750,18 +850,18 @@ class Rep_productivity_model extends CI_Model
             }
         }
 
-        $where = "";
+        $where = " 1=1 ";
         if (isset($data['start_period']) && isset($data['end_period'])) {
-            $where .= " a.periode BETWEEN '".$data['start_period']."' AND '".$data['end_period']."'";
+            $where .= " AND a.periode BETWEEN '".$data['start_period']."' AND '".$data['end_period']."'";
         }
         if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
-            $where .= " AND c.regionalid ='".$data['regionalid']."'";
+            $where .= " AND a.salesmanid IN (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."')";
         }
         if (isset($data['areaid']) && $data['areaid'] != 'null') {
-            $where .= " AND c.areaid ='".$data['areaid']."'";
+            $where .= " AND a.salesmanid IN (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."')";
         }
         if (isset($data['subareaid']) && $data['subareaid'] != 'null') {
-            $where .= " AND c.subareaid ='".$data['subareaid']."'";
+            $where .= " AND a.salesmanid IN (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."')";
         }
 
 		$query = $this->db->query("
@@ -800,7 +900,7 @@ class Rep_productivity_model extends CI_Model
                 select
                     a.periode AS periode,
                     a.salesmanid AS salesmanid,
-                    a.nama_salesman AS nama_salesman,
+                    c.nama_salesman AS nama_salesman,
                     c.nama_area AS nama_area,
                     c.city AS nama_subarea,
                     e.email AS email,
@@ -817,8 +917,30 @@ class Rep_productivity_model extends CI_Model
                     ((((t_sales_rrk_trans a
                 left join v_outlet_all b on
                     (b.customerid = a.customerid))
-                left join v_gff_info c on
-                    (c.salesmanid = a.salesmanid and c.tipe_sales = 'MEDREP'))
+                 left join (
+                    select 
+                        s.salesmanid,
+                        s.nama_salesman,
+                        (
+                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                            from m_salesman_area msa
+                            join m_area_areasite ar on msa.areaid = ar.areaid
+                            where msa.salesmanid = s.salesmanid
+                        ) as nama_area,
+                        (
+                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                            from m_salesman_area msa
+                            join m_area_subarea sa on msa.subareaid = sa.subareaid
+                            where msa.salesmanid = s.salesmanid
+                        ) as city,
+                        (
+                            select group_concat(distinct msa.areaid separator ', ')
+                            from m_salesman_area msa
+                            where msa.salesmanid = s.salesmanid
+                        ) as areaid
+                    from m_sales_salesman s
+                    where s.tipe_sales = 'MEDREP'
+                ) c on (c.salesmanid = a.salesmanid))
                 left join t_sales_rrk d on
                     (d.customerid = a.customerid and d.salesmanid = a.salesmanid and d.periode = a.periode))
                 left join (
@@ -836,7 +958,7 @@ class Rep_productivity_model extends CI_Model
                         (o.areaid = n.areaid))
                     where
                         m.idjabatan = 24) e on
-                    (e.areaid = c.areaid))
+                    (FIND_IN_SET(e.areaid, replace(c.areaid, ' ', '')) > 0))
             WHERE ".$where . $strquery ."
             ) x
             group by

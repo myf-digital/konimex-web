@@ -98,8 +98,8 @@
                             </select>
                         </div>
                         <div class="form-group col-md-2">
-                            <label for="account">SubChannel / Account</label>
-                            <select id="account-id" name="account" class="form-control" placeholder="Select Account"></select>
+                            <label for="account">Channel</label>
+                            <select id="account-id" name="account" class="form-control" placeholder="Select Channel"></select>
                         </div>
                         <div class="form-group col-md-2">
                             <label for="regional">Regional</label>
@@ -109,8 +109,12 @@
                             <label for="area">Area</label>
                             <select id="area-id" name="area" class="form-control" placeholder="Select Area"></select>
                         </div>
-					</div>
+ 					</div>
                     <div class="box-body col-md-12">
+                        <div class="form-group col-md-2">
+                            <label for="city">Sub Area</label>
+                            <select id="city-id" name="city" class="form-control" placeholder="Select Sub Area"></select>
+                        </div>
                         <div class="form-group col-md-6">
                             <label for="idpromo">Promo</label>
                             <select id="idpromo-id" name="idpromo" class="form-control" placeholder="Select Promo"></select>

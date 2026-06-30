@@ -48,8 +48,13 @@ class Rep_gffaktif_model extends CI_Model
     public function get_city($data)
     {
         $field = " a.* ";
-        $table = " ( select subareaid, nama_area from m_area_subarea where regionalid = '".$data['regionalid']."' 
-                        order by subareaid asc
+        $where = " 1=1 ";
+        if (!empty($data['areaid'])) {
+            $where .= " and areaid = '".$data['areaid']."' ";
+        } else if (!empty($data['regionalid'])) {
+            $where .= " and regionalid = '".$data['regionalid']."' ";
+        }
+        $table = " ( select subareaid, nama_area from m_area_subarea where $where order by nama_area asc
                     ) as a";
         return easy_pagging($data, $field, $table);
     }
@@ -62,54 +67,62 @@ class Rep_gffaktif_model extends CI_Model
 		
 	}
 	
-	function get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel,$regionalid,$areaid) {
+	function get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel,$regionalid,$areaid,$subareaid=null) {
 
-		/*if ($idjabatan=='2' or $idjabatan=='3')
-			$strquery = " and a.salesmanid in (select distinct b.salesmanid from mapping_ram_aas a join mapping_sales_aas_aam b on a.aas_aam_tss_tsm=b.aas_aam_tss_tsm where a.ram_rsm = '".$usersession."') ";
-		else if($idjabatan=='16' or $idjabatan=='17'){
-			$strquery = " and a.salesmanid in (select salesmanid from mapping_sales_aas_aam where aas_aam_tss_tsm='".$usersession."') ";
-		}else{
-            $strquery = "";
-        }*/
-        if ($restrictlevel=='4'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='3'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='2'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($restrictlevel)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrictlevel);
+            if ($restrict_query) {
+                $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+            }
         }
 
-        if ($position=='null'){
+        if (empty($position) || $position == 'null') {
             $val = '%';
         }else{
             $val = $position;
         }
 
-		$regional = $regionalid != 'null' ? ' and d.regionalid="'.$regionalid.'" ' : '';
-        $area = $areaid != 'null' ? ' and b.areaid="'.$areaid.'" ' : '';
+        $regional = "";
+        if (!empty($regionalid) && $regionalid != 'null') {
+            $regional = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($regionalid)."') ";
+        }
+        $area = "";
+        if (!empty($areaid) && $areaid != 'null') {
+            $area = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($areaid)."') ";
+        }
+        $subarea = "";
+        if (!empty($subareaid) && $subareaid != 'null') {
+            $subarea = " and a.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($subareaid)."') ";
+        }
 
 		$q = $this->db->query("
-                                select a.salesmanid, a.nama_salesman, a.tipe_sales,d.nama_regional,c.nama_area,b.nama_area city from 
-                                m_sales_salesman a left join m_area_subarea b on b.subareaid = a.subareaid 
-                                left join m_area_areasite c on c.areaid=a.areaid
-                                left join m_area_regional d on d.regionalid = a.regionalid
+                                select 
+                                    a.salesmanid, 
+                                    a.nama_salesman, 
+                                    a.tipe_sales,
+                                    (
+                                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                        from m_salesman_area msa
+                                        join m_area_regional r on r.regionalid = msa.regionalid
+                                        where msa.salesmanid = a.salesmanid
+                                    ) as nama_regional,
+                                    (
+                                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                        from m_salesman_area msa
+                                        join m_area_areasite ar on msa.areaid = ar.areaid
+                                        where msa.salesmanid = a.salesmanid
+                                    ) as nama_area,
+                                    (
+                                        select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                                        from m_salesman_area msa
+                                        join m_area_subarea sa on msa.subareaid = sa.subareaid
+                                        where msa.salesmanid = a.salesmanid
+                                    ) as nama_subarea 
+                                from m_sales_salesman a
                                 where a.salesmanid in (select distinct salesmanid from t_sales_absensi
-                                                     where a.tipe_sales like '$val' and periode>=DATE_FORMAT('".$periode."','%Y-%m-%d') and periode<=DATE_FORMAT('".$until."','%Y-%m-%d')) ".$regional.$area.$strquery."
-                                order by a.tipe_sales, d.regionalid,c.areaid,b.subareaid;            
+                                                     where a.tipe_sales like '$val' and periode>=DATE_FORMAT('".$periode."','%Y-%m-%d') and periode<=DATE_FORMAT('".$until."','%Y-%m-%d')) ".$regional.$area.$subarea.$strquery."
+                                order by a.tipe_sales;            
                             ");
 		return $q->result_array();
 	}
@@ -172,29 +185,15 @@ class Rep_gffaktif_model extends CI_Model
     }
 
     function get_salesman_sum_daily($date1,$position,$restrictlevel,$usersession) {
-        if ($restrictlevel=='4'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='3'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='2'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($restrictlevel)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrictlevel);
+            if ($restrict_query) {
+                $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+            }
         }
 
-        if($position=='null'){
+        if(empty($position) || $position=='null'){
             $val='%';
         }else{
             $val=$position;
@@ -212,29 +211,15 @@ class Rep_gffaktif_model extends CI_Model
 	}
 
     function get_salesman_sum_daily_new($date1,$position,$restrictlevel,$usersession) {
-        if ($restrictlevel=='4'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='3'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='2'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($restrictlevel)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrictlevel);
+            if ($restrict_query) {
+                $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+            }
         }
 
-        if($position=='null'){
+        if(empty($position) || $position=='null'){
             $val='%';
         }else{
             $val=$position;
@@ -252,29 +237,15 @@ class Rep_gffaktif_model extends CI_Model
     }
 
     function get_salesman_sum_periode($date1,$date2,$position,$restrictlevel,$usersession) {
-        if ($restrictlevel=='4'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='3'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$usersession."')
-                                                )";
-        }
-        else if ($restrictlevel=='2'){
-            $strquery = " and a.salesmanid in (select salesmanid from m_sales_salesman where regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$usersession."')
-                                                ) ";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($restrictlevel)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrictlevel);
+            if ($restrict_query) {
+                $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+            }
         }
 
-        if($position=='null'){
+        if(empty($position) || $position=='null'){
             $val='%';
         }else{
             $val=$position;
@@ -301,15 +272,18 @@ class Rep_gffaktif_model extends CI_Model
             }
         }
 
-        $where = "";
-        if (isset($data['start_period']) && isset($data['end_period'])) {
-            $where .= " tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
+        $where = " 1=1 ";
+        if (!empty($data['start_period']) && !empty($data['end_period'])) {
+            $where .= " AND tsa.periode BETWEEN '".$data['start_period']."' AND LAST_DAY('".$data['end_period']."')";
         }
-        if (isset($data['regionalid']) && $data['regionalid'] != 'null') {
-            $where .= " AND mss.regionalid ='".$data['regionalid']."'";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND tsa.salesmanid IN (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($data['regionalid'])."')";
         }
-        if (isset($data['areaid']) && $data['areaid'] != 'null') {
-            $where .= " AND mss.areaid ='".$data['areaid']."'";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND tsa.salesmanid IN (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($data['areaid'])."')";
+        }
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $where .= " AND tsa.salesmanid IN (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($data['subareaid'])."')";
         }
         
 		$query = $this->db->query("

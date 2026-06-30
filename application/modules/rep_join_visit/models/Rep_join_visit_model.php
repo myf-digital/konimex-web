@@ -6,28 +6,16 @@ class Rep_join_visit_model extends CI_Model
 
     public function load($data)
     {
-
-        if ($data["restrict_level"]=='4'){
-            $strquery = " and a.subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."')";
-        }
-        else if ($data["restrict_level"]=='3'){
-            $strquery = " and a.areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data["usersession"]."')";
-        }
-        else if ($data["restrict_level"]=='2'){
-            $strquery = " and a.regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."')";
+        $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+        if ($restrict_query){
+            $strquery = " and a.salesmanid in (" . $restrict_query . ")";
         }
         else {
             $strquery = "";
         }
 
-		$start_date = $data['start_date'];
-		$end_date = $data['end_date'];
+		$start_date = !empty($data['start_date']) ? $data['start_date'] : today();
+		$end_date = !empty($data['end_date']) ? $data['end_date'] : today();
         $field = " a.* ";
         $table = " (
 						select a.id_evaluation, a.periode, a.review_by, a.salesmanid, a.nama_salesman, a.nama_regional, a.nama_area, a.city, a.tipe_sales, a.review,
@@ -70,27 +58,16 @@ class Rep_join_visit_model extends CI_Model
 
     public function get_join_visit_gff_xls($data) {
 
-        if ($data["restrict_level"]=='4'){
-            $strquery = " and a.subareaid in (select distinct b.subareaid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."')";
-        }
-        else if ($data["restrict_level"]=='3'){
-            $strquery = " and a.areaid in (select distinct b.areaid from  
-                                            app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                            where a.username='".$data["usersession"]."')";
-        }
-        else if ($data["restrict_level"]=='2'){
-            $strquery = " and a.regionalid in (select distinct b.regionalid from  
-                                                app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
-                                                where a.username='".$data["usersession"]."')";
+        $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+        if ($restrict_query){
+            $strquery = " and a.salesmanid in (" . $restrict_query . ")";
         }
         else {
             $strquery = "";
         }
 
-		$start_date = $data['start_date'];
-		$end_date = $data['end_date'];
+		$start_date = !empty($data['start_date']) ? $data['start_date'] : today();
+		$end_date = !empty($data['end_date']) ? $data['end_date'] : today();
         $exec_query = $this->db->query("
 						select a.id_evaluation, a.periode, a.review_by, a.salesmanid, a.nama_salesman, a.nama_regional, a.nama_area, a.city, a.tipe_sales, a.review,
 								FORMAT(a.final_score,0) as final_score, a.preparation, a.approach, a.regular_shelf_merchandising, a.advance_merchandising_on_regular_shelves,

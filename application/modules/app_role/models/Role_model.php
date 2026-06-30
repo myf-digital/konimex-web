@@ -174,10 +174,10 @@ class Role_model extends CI_Model
     {
         $this->db->trans_begin();
 
-        $this->db->where('roleid', $data['role_id']);
+        $this->db->where('role_id', $data['role_id']);
         $this->db->delete('m_sales_spesialis_target');
 
-        $this->db->where('roleid', $data['role_id']);
+        $this->db->where('role_id', $data['role_id']);
         $this->db->delete('m_sales_produk_target');
 
         $this->db->where('role_id', $data['role_id']);
@@ -248,28 +248,28 @@ class Role_model extends CI_Model
         $detail->spesialis_active = $this->db->query("
             select tahun, bulan, nama_spesialisasi, target
             from m_sales_spesialis_target
-            where roleid = ? and tahun = ? and bulan = ?
+            where role_id = ? and tahun = ? and bulan = ?
             order by nama_spesialisasi asc
         ", [$data['role_id'], date('Y'), date('m')])->result_array();
 
         $detail->spesialis_history = $this->db->query("
             select tahun, bulan, nama_spesialisasi, target
             from m_sales_spesialis_target
-            where roleid = ? and (tahun <> ? or bulan <> ?)
+            where role_id = ? and (tahun <> ? or bulan <> ?)
             order by tahun desc, bulan desc, nama_spesialisasi asc
         ", [$data['role_id'], date('Y'), date('m')])->result_array();
 
         $detail->produk_active = $this->db->query("
             select tahun, bulan, product_id, nama_invoice, target, target_qty
             from m_sales_produk_target
-            where roleid = ? and tahun = ? and bulan = ?
+            where role_id = ? and tahun = ? and bulan = ?
             order by nama_invoice asc
         ", [$data['role_id'], date('Y'), date('m')])->result_array();
 
         $detail->produk_history = $this->db->query("
             select tahun, bulan, product_id, nama_invoice, target, target_qty
             from m_sales_produk_target
-            where roleid = ? and (tahun <> ? or bulan <> ?)
+            where role_id = ? and (tahun <> ? or bulan <> ?)
             order by tahun desc, bulan desc, nama_invoice asc
         ", [$data['role_id'], date('Y'), date('m')])->result_array();
 
@@ -322,7 +322,7 @@ class Role_model extends CI_Model
         $tahun = intval($parts[0]);
         $bulan = intval($parts[1]);
 
-        $this->db->where('roleid', $data['role_id']);
+        $this->db->where('role_id', $data['role_id']);
         $this->db->where('tahun', $tahun);
         $this->db->where('bulan', $bulan);
         return $this->db->get('m_sales_spesialis_target')->result_array();
@@ -337,7 +337,7 @@ class Role_model extends CI_Model
         $tahun = intval($parts[0]);
         $bulan = intval($parts[1]);
 
-        $this->db->where('roleid', $data['role_id']);
+        $this->db->where('role_id', $data['role_id']);
         $this->db->where('tahun', $tahun);
         $this->db->where('bulan', $bulan);
         return $this->db->get('m_sales_produk_target')->result_array();
@@ -354,7 +354,7 @@ class Role_model extends CI_Model
                 $tahun = $splitDate[0] ?? date('Y');
                 $bulan = $splitDate[1] ?? date('m');
 
-                $this->db->where('roleid', $roleId);
+                $this->db->where('role_id', $roleId);
                 $this->db->where('tahun', $tahun);
                 $this->db->where('bulan', $bulan);
                 $this->db->delete('m_sales_spesialis_target');
@@ -376,7 +376,7 @@ class Role_model extends CI_Model
                         $insertSpesialisasi[] = [
                             'tahun' => $tahun,
                             'bulan' => $bulan,
-                            'roleid' => $roleId,
+                            'role_id' => $roleId,
                             'role_name' => $roleName,
                             'spesialisasi_id' => $spId,
                             'nama_spesialisasi' => $specialtyMap[$spId] ?? '',
@@ -399,7 +399,7 @@ class Role_model extends CI_Model
                 $tahun = $splitDate[0] ?? date('Y');
                 $bulan = $splitDate[1] ?? date('m');
 
-                $this->db->where('roleid', $roleId);
+                $this->db->where('role_id', $roleId);
                 $this->db->where('tahun', $tahun);
                 $this->db->where('bulan', $bulan);
                 $this->db->delete('m_sales_produk_target');
@@ -423,7 +423,7 @@ class Role_model extends CI_Model
                         $insertProduct[] = [
                             'tahun' => $tahun,
                             'bulan' => $bulan,
-                            'roleid' => $roleId,
+                            'role_id' => $roleId,
                             'role_name' => $roleName,
                             'product_id' => $prodId,
                             'nama_invoice' => $productMap[$prodId] ?? '',

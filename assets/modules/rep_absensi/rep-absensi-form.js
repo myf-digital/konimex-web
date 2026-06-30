@@ -74,8 +74,9 @@
             placeholder: 'Select User Medrep',
             allowClear: true,
             data: $.map(rows1, function (o) {
+                let locationName = o.nama_subarea || o.nama_area || o.nama_regional || '';
                 o.id = o.salesmanid; // replace name with the property used for the text
-                o.text = o.salesmanid+'-'+o.nama_salesman+'-'+o.nama_area; // replace name with the property used for the text
+                o.text = o.salesmanid + '-' + o.nama_salesman + '-' + locationName; // replace name with the property used for the text
                 return o;
             }),
         });

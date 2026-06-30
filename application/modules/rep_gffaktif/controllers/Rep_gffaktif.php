@@ -90,6 +90,7 @@ class Rep_gffaktif extends BaseController
 
 		$regionalid = $this->input->post("regionalid");
         $areaid = $this->input->post("areaid");
+        $subareaid = $this->input->post("subareaid");
 
 		$html = '<div class="box-body">';
 		$html .= '<div class="container-table">';
@@ -102,7 +103,8 @@ class Rep_gffaktif extends BaseController
 		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama MEDREP</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Area FC</th>';
+        $html .='<th rowspan="2" style="text-align:left;width: 200px">Area</th>';
+        $html .='<th rowspan="2" style="text-align:left;width: 200px">Sub Area</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -143,7 +145,7 @@ class Rep_gffaktif extends BaseController
         $html .= '<tbody>';
 
 		/*Close Header*/
-		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel, $regionalid, $areaid);
+		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel, $regionalid, $areaid, $subareaid);
         $no = 1;
 						
 		foreach ($get_salesman as $v_salesman) {
@@ -155,6 +157,7 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['tipe_sales'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_regional'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_area'].'</td>';
+			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_subarea'].'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -205,7 +208,7 @@ class Rep_gffaktif extends BaseController
 		}
 		$html .='</tr>';
 		$html .='<tr>';
-		$html .='<td colspan="6" style="text-align:right;font-size:13px;">TOTAL</td>';
+		$html .='<td colspan="7" style="text-align:right;font-size:13px;">TOTAL</td>';
 				$start = date_create($periode);
 				$end = date_create($until);
 				while($start <= $end)
@@ -267,6 +270,7 @@ class Rep_gffaktif extends BaseController
 
 		$regionalid = $this->uri->segment('9');
         $areaid = $this->uri->segment('10');
+        $subareaid = $this->uri->segment('11');
 		
         /*Header*/
 		$html ='<style>
@@ -304,7 +308,8 @@ class Rep_gffaktif extends BaseController
 		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama MEDREP</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Regional</th>';
-        $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area FC</th>';
+        $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area</th>';
+        $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Sub Area</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -344,7 +349,7 @@ class Rep_gffaktif extends BaseController
         $html .= '<tbody>';
 
 		/*Close Header*/
-		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel,$regionalid,$areaid);
+		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel,$regionalid,$areaid,$subareaid);
         $no = 1;
 						
 		foreach ($get_salesman as $v_salesman) {
@@ -356,6 +361,7 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['tipe_sales'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_regional'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_area'].'</td>';
+			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_subarea'].'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -484,6 +490,7 @@ class Rep_gffaktif extends BaseController
 
 		$regionalid = $this->uri->segment('9');
         $areaid = $this->uri->segment('10');
+        $subareaid = $this->uri->segment('11');
 
         $start = date_create($periode);
 		$end = date_create($until);
@@ -491,7 +498,7 @@ class Rep_gffaktif extends BaseController
 
 		$spreadsheet = new Spreadsheet();
 		$nb = ['Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti'];
-		$header = ['No', 'Medrep', 'Medrep Name', 'Area'];
+		$header = ['No', 'Medrep', 'Medrep Name', 'Area', 'Sub Area'];
 
 		$headerDate = [];
 		$headerDay = [];
@@ -518,10 +525,10 @@ class Rep_gffaktif extends BaseController
 		$sheet->setTitle('Attendance');
 		$sheet->fromArray($nb,NULL,'A1');
 		$sheet->fromArray($header,NULL,'A2');
-		$sheet->fromArray(array_merge($headerDate, ['Total']),NULL,'H2');
-		$sheet->fromArray(array_merge($headerDay, ['H', 'HF', 'S', 'C']),NULL,'H3');
+		$sheet->fromArray(array_merge($headerDate, ['Total']),NULL,'F2');
+		$sheet->fromArray(array_merge($headerDay, ['H', 'HF', 'S', 'C']),NULL,'F3');
 
-		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel,$regionalid,$areaid);
+		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel,$regionalid,$areaid,$subareaid);
 
 		$sids = [];
         $no = 1;
@@ -535,7 +542,7 @@ class Rep_gffaktif extends BaseController
                 $value['salesmanid'], 
                 $value['nama_salesman'],
                 $value['nama_area'],
-                // $value['city']
+                $value['nama_subarea']
             ];
 
             $sheet->fromArray($content,NULL,'A'.$row);
@@ -568,23 +575,21 @@ class Rep_gffaktif extends BaseController
 				$get_salesman_aktif_sum->sumc
 			];
 
-            $sheet->fromArray(array_merge($status, $sumArr),NULL,'H'.$row);
+            $sheet->fromArray(array_merge($status, $sumArr),NULL,'F'.$row);
 			
 			$no++;
 			$row++;
 		}
 
-		$sheet->setCellValue('F'.$row, 'Total');
-		$sheet->fromArray($sumStatus,NULL,'H'.$row);
+		$sheet->setCellValue('E'.$row, 'Total');
+		$sheet->fromArray($sumStatus,NULL,'F'.$row);
 		$sheet->mergeCells('A2:A3');
 		$sheet->mergeCells('B2:B3');
 		$sheet->mergeCells('C2:C3');
 		$sheet->mergeCells('D2:D3');
 		$sheet->mergeCells('E2:E3');
-		$sheet->mergeCells('F2:F3');
 
-		// $sheet->mergeCells('G2:G3');
-		$sheet->getStyle('A2:F2')->getAlignment()->setHorizontal('center')->setVertical('center');
+		$sheet->getStyle('A2:E2')->getAlignment()->setHorizontal('center')->setVertical('center');
 
 		//new tab sheet
 		$spreadsheet->createSheet();
