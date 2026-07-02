@@ -7,16 +7,16 @@ class Product_knowledge_model extends CI_Model
     {
         $this->load->library('upload');
 
-        if (isset($data['brand'])) {
-            $brand = explode('||', $data['brand']);
-            $data['brandid'] = $brand[0] ?? 0;
-            $data['brand'] = $brand[1] ?? null;
+        if (isset($data['product'])) {
+            $product = explode('||', $data['product']);
+            $data['productid'] = $product[0] ?? 0;
+            $data['nama_product'] = $product[1] ?? null;
         }
         $payload = payload([
             'siteid',
             'judul',
-            'brandid',
-            'brand',
+            'productid',
+            'nama_product',
         ], $data);
 
         $payload["created_by"] = $data["usersession"];
@@ -69,16 +69,16 @@ class Product_knowledge_model extends CI_Model
     {
         $this->load->library('upload');
 
-        if (isset($data['brand'])) {
-            $brand = explode('||', $data['brand']);
-            $data['brandid'] = $brand[0] ?? 0;
-            $data['brand'] = $brand[1] ?? null;
+        if (isset($data['product'])) {
+            $product = explode('||', $data['product']);
+            $data['productid'] = $product[0] ?? 0;
+            $data['nama_product'] = $product[1] ?? null;
         }
         $payload = payload([
             'siteid',
             'judul',
-            'brandid',
-            'brand',
+            'productid',
+            'nama_product',
         ], $data);
 	
         $data["modified_by"] = $data["usersession"];
@@ -137,8 +137,22 @@ class Product_knowledge_model extends CI_Model
     public function load($data)
     {
         $field = " a.* ";
-        $table = " ( select a.* from product_knowledge a ) as a";
+        $table = " (
+            select 
+                a.id,
+                a.judul,
+                a.productid,
+                a.nama_product,
+                b.nama_invoice,
+                b.nama_brand,
+                a.files,
+                a.created_by,
+                a.created_date,
+                a.modified_by,
+                a.modified_date
+            from product_knowledge a
+            left join m_product b on a.productid=b.productid
+        ) as a";
         return easy_pagging($data, $field, $table);
     }
-
 }

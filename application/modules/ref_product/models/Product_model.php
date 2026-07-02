@@ -55,4 +55,22 @@ class Product_model extends CI_Model
         return easy_pagging($data, $field, $table);
     }
 
+    public function list()
+    {
+        $sql = "select
+                a.productid,
+                a.barcode,
+                a.nama_invoice,
+                a.group_product,
+                a.category_product,
+                a.brandid,
+                a.h_grosir,
+                a.h_ritel,
+                a.status,
+                case when a.status='A' then 'ACTIVE' else 'DISCONTINUE' end status_desc,
+                b.brand nama_brand                           
+        from m_product a left join ref_brand b on a.brandid=b.brandid
+        order by a.productid";
+        return $this->db->query($sql)->result_array();
+    }
 }

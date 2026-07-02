@@ -91,6 +91,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script>
     const session = new Common().getCookie("session");
     const URL_API = "<?php echo URL_API; ?>";
+    const BASE_URL = "<?php echo base_url(); ?>";
     moment.updateLocale("id", {
         months: "Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des".split("_"),

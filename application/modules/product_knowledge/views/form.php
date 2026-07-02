@@ -25,11 +25,11 @@
                             <input name="judul" class="form-control" placeholder="Judul" required>
                         </div>
                         <div class="form-group">
-                            <label for="brand">Brand</label>
-                            <select id="brand" name="brand" class="form-control" placeholder="Brand"></select>
+                            <label for="product">Produk</label>
+                            <select id="product" name="product" class="form-control" placeholder="Produk"></select>
                         </div>
                         <div class="form-group">
-                            <label for="brand">
+                            <label for="product">
                                 Files
                                 <i><small class="form-text text-danger">*Hanya PDF dan gambar (JPG, PNG, GIF) yang diperbolehkan.</small></i>
                             </label>

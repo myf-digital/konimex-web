@@ -44,4 +44,9 @@ class Ref_product extends BaseController
         responseJSON($this->product->load($data));
     }
 
+    public function list()
+    {
+        $data = param_input();
+        responseJSON($this->product->list($data));
+    }
 }
