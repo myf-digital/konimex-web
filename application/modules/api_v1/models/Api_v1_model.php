@@ -85,6 +85,28 @@ class Api_v1_model extends CI_Model
 		}
     }
 
+	function get_spesialisasi($data)
+    {
+		$where = "";
+		if (!empty($data['q'])) {
+			$where = " where a.name like '%" . $data['q'] . "%'";
+		}
+
+		$sql = "select a.*
+				from ref_spesialisasi a
+				$where
+				order by a.id asc
+			";
+		$res_ss = $this->db->query($sql);
+		if (count($res_ss->result_array()) > 0) {
+			$response = new stdClass();
+			$response = $res_ss->result_array();
+			return result($response);
+		} else {
+			return result(new stdClass(), 200, "Data not found");
+		}
+    }
+
 	function get_professional($data)
     {
 		$where = "";

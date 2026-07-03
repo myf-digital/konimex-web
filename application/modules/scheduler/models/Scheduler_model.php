@@ -57,7 +57,6 @@ class Scheduler_model extends CI_Model
 		$year = date('Y', strtotime($date));
 		$month = (int)date('m', strtotime($date));
 
-		// target salesmen
 		$sqlTargets = "
 			SELECT 
 				mss.salesmanid,
@@ -75,66 +74,99 @@ class Scheduler_model extends CI_Model
 		";
 		$salesmenTargets = $this->db->query($sqlTargets, [$year, $month])->result_array();
 
-		// planned DUB
-		$sqlActualPlanned = "
+		$sqlVisits = "
 			SELECT 
 				tvd.salesmanid,
-				COUNT(DISTINCT tsrt.customerid) AS actual_call_planned
+				mss.nama_salesman,
+				mss.tipe_sales,
+				tvd.customerid,
+				mc.nama_customer,
+				tvd.user_id AS professional_id,
+				rp.nama_professional,
+				tsrt.check_in,
+				tsrt.check_out,
+				tsrt.keterangan,
+				tvd.array_product,
+				CASE WHEN mco.customerid IS NOT NULL THEN 1 ELSE 0 END AS is_planned
 			FROM trx_visit_detailing tvd
 			JOIN t_sales_rrk_trans tsrt ON tsrt.salesmanid = tvd.salesmanid
 				AND tsrt.customerid = tvd.customerid
 				AND tsrt.periode = tvd.periode
-			JOIN m_customer_ob mco ON mco.salesmanid = tsrt.salesmanid
+			JOIN m_sales_salesman mss ON mss.salesmanid = tvd.salesmanid
+			LEFT JOIN m_customer mc ON mc.customerid = tvd.customerid
+			LEFT JOIN ref_professional rp ON rp.id = tvd.user_id
+			LEFT JOIN m_customer_ob mco ON mco.salesmanid = tsrt.salesmanid
 				AND mco.customerid = tsrt.customerid
 				AND mco.user_id = tvd.user_id
-			JOIN t_sales_rrk_user tsru ON tsru.salesmanid = tsrt.salesmanid
-				AND tsru.customerid = tsrt.customerid
-				AND tsru.periode = tsrt.periode
-				AND tsru.user_id = tvd.user_id
 			WHERE DATE(tsrt.check_in) = ?
-			GROUP BY tvd.salesmanid
 		";
-		$actualPlanned = $this->db->query($sqlActualPlanned, [$date])->result_array();
-		$plannedMap = array_column($actualPlanned, 'actual_call_planned', 'salesmanid');
+		$visits = $this->db->query($sqlVisits, [$date])->result_array();
 
-		// visit (planned & unplanned)
-		$sqlActualVisit = "
-			SELECT 
-				tvd.salesmanid,
-				COUNT(DISTINCT tsrt.customerid) AS actual_call_visit
-			FROM trx_visit_detailing tvd
-			JOIN t_sales_rrk_trans tsrt ON tsrt.salesmanid = tvd.salesmanid
-				AND tsrt.customerid = tvd.customerid
-				AND tsrt.periode = tvd.periode
-			WHERE DATE(tsrt.check_in) = ?
-			GROUP BY tvd.salesmanid
-		";
-		$actualVisit = $this->db->query($sqlActualVisit, [$date])->result_array();
-		$visitMap = array_column($actualVisit, 'actual_call_visit', 'salesmanid');
+		$salesmanVisits = [];
+		foreach ($visits as $v) {
+			$salesmanVisits[$v['salesmanid']][] = $v;
+		}
 
-		// rekap_dub_visit
 		foreach ($salesmenTargets as $sm) {
 			$smId = $sm['salesmanid'];
-			$actPlanned = isset($plannedMap[$smId]) ? (int)$plannedMap[$smId] : 0;
-			$actVisit = isset($visitMap[$smId]) ? (int)$visitMap[$smId] : 0;
 
-			$insertData = [
+			if ($sm['target_dub'] === null) {
+				continue;
+			}
+
+			if (!isset($salesmanVisits[$smId])) {
+				continue;
+			}
+			
+			$targetRow = [
 				'tanggal' => $date,
 				'salesmanid' => $smId,
 				'nama_salesman' => $sm['nama_salesman'] ?? '',
 				'tipe_sales' => $sm['tipe_sales'] ?? '',
-				'target_dub' => isset($sm['target_dub']) ? (int)$sm['target_dub'] : 0,
-				'target_hk' => isset($sm['target_hk']) ? (int)$sm['target_hk'] : 0,
-				'target_call_dub' => isset($sm['target_call_dub']) ? (int)$sm['target_call_dub'] : 0,
-				'target_call_visit' => isset($sm['target_call_visit']) ? (int)$sm['target_call_visit'] : 0,
-				'actual_call_planned' => $actPlanned,
-				'actual_call_visit' => $actVisit
+				'customerid' => null,
+				'nama_customer' => null,
+				'professional_id' => null,
+				'nama_professional' => null,
+				'check_in' => null,
+				'check_out' => null,
+				'duration' => null,
+				'keterangan' => null,
+				'array_product' => null,
+				'target_dub' => (int)$sm['target_dub'],
+				'target_hk' => (int)$sm['target_hk'],
+				'target_call_dub' => (int)$sm['target_call_dub'],
+				'target_call_visit' => (int)$sm['target_call_visit'],
+				'actual_call_planned' => 0,
+				'actual_call_visit' => 0
 			];
+			$this->db->replace('rekap_dub_visit', $targetRow);
 
-			$this->db->replace('rekap_dub_visit', $insertData);
+			foreach ($salesmanVisits[$smId] as $v) {
+				$visitRow = [
+					'tanggal' => $date,
+					'salesmanid' => $smId,
+					'nama_salesman' => $v['nama_salesman'] ?? '',
+					'tipe_sales' => $v['tipe_sales'] ?? '',
+					'customerid' => $v['customerid'],
+					'nama_customer' => $v['nama_customer'] ?? '',
+					'professional_id' => !empty($v['professional_id']) ? (int)$v['professional_id'] : null,
+					'nama_professional' => $v['nama_professional'] ?? '',
+					'check_in' => $v['check_in'],
+					'check_out' => $v['check_out'],
+					'duration' => $this->calculate_php_duration($v['check_in'], $v['check_out']),
+					'keterangan' => $v['keterangan'],
+					'array_product' => $v['array_product'],
+					'target_dub' => 0,
+					'target_hk' => 0,
+					'target_call_dub' => 0,
+					'target_call_visit' => 0,
+					'actual_call_planned' => (int)$v['is_planned'],
+					'actual_call_visit' => 1
+				];
+				$this->db->replace('rekap_dub_visit', $visitRow);
+			}
 		}
 
-		// target spesialisasi
 		$sqlSpecTargets = "
 			SELECT 
 				mss.salesmanid,
@@ -151,66 +183,113 @@ class Scheduler_model extends CI_Model
 		";
 		$specTargets = $this->db->query($sqlSpecTargets, [$year, $month])->result_array();
 
-		$specMap = [];
+		$specTargetsMap = [];
 		foreach ($specTargets as $t) {
-			$key = $t['salesmanid'] . '_' . $t['spesialisasi_id'];
-			$specMap[$key] = [
-				'tanggal' => $date,
-				'salesmanid' => $t['salesmanid'],
-				'nama_salesman' => $t['nama_salesman'] ?? '',
-				'tipe_sales' => $t['tipe_sales'] ?? '',
-				'spesialisasi_id' => $t['spesialisasi_id'],
-				'nama_spesialisasi' => $t['nama_spesialisasi'] ?? '',
-				'target' => (int)$t['target'],
-				'actual' => 0
-			];
+			$specTargetsMap[$t['salesmanid']][$t['spesialisasi_id']] = (int)$t['target'];
 		}
 
-		$sqlSpecActuals = "
+		$sqlSpecVisits = "
 			SELECT 
 				tvd.salesmanid,
 				mss.nama_salesman,
 				mss.tipe_sales,
 				rp.spesialisasi_id,
 				rs.name AS nama_spesialisasi,
-				COUNT(*) AS actual
+				tvd.customerid,
+				mc.nama_customer,
+				tvd.user_id AS professional_id,
+				rp.nama_professional,
+				tsrt.check_in,
+				tsrt.check_out,
+				tsrt.keterangan,
+				tvd.array_product
 			FROM trx_visit_detailing tvd
 			JOIN ref_professional rp ON rp.id = tvd.user_id
 			LEFT JOIN ref_spesialisasi rs ON rs.id = rp.spesialisasi_id
-			LEFT JOIN t_sales_rrk_trans tsrt ON tsrt.salesmanid = tvd.salesmanid
+			JOIN t_sales_rrk_trans tsrt ON tsrt.salesmanid = tvd.salesmanid
 				AND tsrt.customerid = tvd.customerid
 				AND tsrt.periode = tvd.periode
 			JOIN m_sales_salesman mss ON mss.salesmanid = tvd.salesmanid
+			LEFT JOIN m_customer mc ON mc.customerid = tvd.customerid
 			WHERE DATE(tsrt.check_in) = ?
-			GROUP BY tvd.salesmanid, mss.nama_salesman, mss.tipe_sales, rp.spesialisasi_id, rs.name
 		";
-		$specActuals = $this->db->query($sqlSpecActuals, [$date])->result_array();
+		$specVisits = $this->db->query($sqlSpecVisits, [$date])->result_array();
 
-		foreach ($specActuals as $a) {
-			$sp_id = $a['spesialisasi_id'];
+		$salesmanSpecVisits = [];
+		foreach ($specVisits as $v) {
+			$sp_id = $v['spesialisasi_id'];
 			if (empty($sp_id)) continue;
-			$key = $a['salesmanid'] . '_' . $sp_id;
-			if (isset($specMap[$key])) {
-				$specMap[$key]['actual'] = (int)$a['actual'];
-			} else {
-				$specMap[$key] = [
-					'tanggal' => $date,
-					'salesmanid' => $a['salesmanid'],
-					'nama_salesman' => $a['nama_salesman'] ?? '',
-					'tipe_sales' => $a['tipe_sales'] ?? '',
-					'spesialisasi_id' => $sp_id,
-					'nama_spesialisasi' => $a['nama_spesialisasi'] ?? 'Unknown Specialization',
-					'target' => 0,
-					'actual' => (int)$a['actual']
-				];
+			$smId = $v['salesmanid'];
+
+			if (isset($specTargetsMap[$smId][$sp_id])) {
+				$salesmanSpecVisits[$smId][$sp_id][] = $v;
 			}
 		}
 
-		foreach ($specMap as $dataRow) {
-			$this->db->replace('rekap_spesialis_visit', $dataRow);
+		foreach ($specTargetsMap as $smId => $specs) {
+			foreach ($specs as $spId => $targetVal) {
+				if (!isset($salesmanSpecVisits[$smId][$spId])) {
+					continue;
+				}
+
+				$smName = '';
+				$smType = '';
+				$specName = '';
+				foreach ($specTargets as $t) {
+					if ($t['salesmanid'] == $smId && $t['spesialisasi_id'] == $spId) {
+						$smName = $t['nama_salesman'];
+						$smType = $t['tipe_sales'];
+						$specName = $t['nama_spesialisasi'];
+						break;
+					}
+				}
+
+				$targetRow = [
+					'tanggal' => $date,
+					'salesmanid' => $smId,
+					'nama_salesman' => $smName,
+					'tipe_sales' => $smType,
+					'spesialisasi_id' => $spId,
+					'nama_spesialisasi' => $specName,
+					'customerid' => null,
+					'nama_customer' => null,
+					'professional_id' => null,
+					'nama_professional' => null,
+					'check_in' => null,
+					'check_out' => null,
+					'duration' => null,
+					'keterangan' => null,
+					'array_product' => null,
+					'target' => $targetVal,
+					'actual' => 0
+				];
+				$this->db->replace('rekap_spesialis_visit', $targetRow);
+
+				foreach ($salesmanSpecVisits[$smId][$spId] as $v) {
+					$visitRow = [
+						'tanggal' => $date,
+						'salesmanid' => $smId,
+						'nama_salesman' => $v['nama_salesman'] ?? '',
+						'tipe_sales' => $v['tipe_sales'] ?? '',
+						'spesialisasi_id' => $spId,
+						'nama_spesialisasi' => $v['nama_spesialisasi'] ?? '',
+						'customerid' => $v['customerid'],
+						'nama_customer' => $v['nama_customer'] ?? '',
+						'professional_id' => !empty($v['professional_id']) ? (int)$v['professional_id'] : null,
+						'nama_professional' => $v['nama_professional'] ?? '',
+						'check_in' => $v['check_in'],
+						'check_out' => $v['check_out'],
+						'duration' => $this->calculate_php_duration($v['check_in'], $v['check_out']),
+						'keterangan' => $v['keterangan'],
+						'array_product' => $v['array_product'],
+						'target' => 0,
+						'actual' => 1
+					];
+					$this->db->replace('rekap_spesialis_visit', $visitRow);
+				}
+			}
 		}
 
-		// target produk
 		$sqlProdTargets = "
 			SELECT 
 				mss.salesmanid,
@@ -228,133 +307,184 @@ class Scheduler_model extends CI_Model
 		";
 		$prodTargets = $this->db->query($sqlProdTargets, [$year, $month])->result_array();
 
-		$prodMap = [];
+		$prodTargetsMap = [];
 		foreach ($prodTargets as $t) {
-			$key = $t['salesmanid'] . '_' . $t['product_id'];
-			$prodMap[$key] = [
-				'tanggal' => $date,
-				'salesmanid' => $t['salesmanid'],
-				'nama_salesman' => $t['nama_salesman'] ?? '',
-				'tipe_sales' => $t['tipe_sales'] ?? '',
-				'product_id' => $t['product_id'],
-				'nama_invoice' => $t['nama_invoice'] ?? '',
+			$prodTargetsMap[$t['salesmanid']][$t['product_id']] = [
+				'nama_invoice' => $t['nama_invoice'],
+				'nama_salesman' => $t['nama_salesman'],
+				'tipe_sales' => $t['tipe_sales'],
 				'target' => (int)$t['target'],
-				'target_qty' => (int)$t['target_qty'],
-				'actual_visit' => 0,
-				'actual_qty' => 0
+				'target_qty' => (int)$t['target_qty']
 			];
 		}
 
 		$sqlProdVisits = "
 			SELECT 
-				tvd.salesmanid, 
-				tvd.array_product,
+				tvd.salesmanid,
 				mss.nama_salesman,
-				mss.tipe_sales
+				mss.tipe_sales,
+				tvd.array_product,
+				tvd.customerid,
+				mc.nama_customer,
+				tvd.user_id AS professional_id,
+				rp.nama_professional,
+				tsrt.check_in,
+				tsrt.check_out,
+				tsrt.keterangan
 			FROM trx_visit_detailing tvd
-			LEFT JOIN t_sales_rrk_trans tsrt ON tsrt.salesmanid = tvd.salesmanid
+			JOIN t_sales_rrk_trans tsrt ON tsrt.salesmanid = tvd.salesmanid
 				AND tsrt.customerid = tvd.customerid
 				AND tsrt.periode = tvd.periode
 			JOIN m_sales_salesman mss ON mss.salesmanid = tvd.salesmanid
+			LEFT JOIN m_customer mc ON mc.customerid = tvd.customerid
+			LEFT JOIN ref_professional rp ON rp.id = tvd.user_id
 			WHERE DATE(tsrt.check_in) = ?
 		";
 		$prodVisits = $this->db->query($sqlProdVisits, [$date])->result_array();
 
-		$missingProdNames = [];
+		$salesmanProdVisits = [];
 		foreach ($prodVisits as $v) {
 			if (empty($v['array_product'])) continue;
+			$smId = $v['salesmanid'];
 			$p_ids = explode(',', $v['array_product']);
 			foreach ($p_ids as $p_id) {
 				$p_id = trim($p_id);
 				if ($p_id === '') continue;
 
-				$key = $v['salesmanid'] . '_' . $p_id;
-				if (!isset($prodMap[$key])) {
-					$prodMap[$key] = [
-						'tanggal' => $date,
-						'salesmanid' => $v['salesmanid'],
-						'nama_salesman' => $v['nama_salesman'] ?? '',
-						'tipe_sales' => $v['tipe_sales'] ?? '',
-						'product_id' => $p_id,
-						'nama_invoice' => '',
-						'target' => 0,
-						'target_qty' => 0,
-						'actual_visit' => 0,
-						'actual_qty' => 0
-					];
-					$missingProdNames[$p_id] = true;
+				if (isset($prodTargetsMap[$smId][$p_id])) {
+					$salesmanProdVisits[$smId][$p_id][] = $v;
 				}
-				$prodMap[$key]['actual_visit']++;
 			}
 		}
 
 		$sqlProdSales = "
 			SELECT 
 				tsm.salesmanid, 
-				tsd.productid, 
-				mp.nama_invoice, 
 				mss.nama_salesman,
 				mss.tipe_sales,
-				SUM(tsd.qty_kecil) AS actual_qty
+				tsd.productid AS product_id, 
+				mp.nama_invoice, 
+				tsm.customerid,
+				mc.nama_customer,
+				tsm.no_po,
+				SUM(tsd.qty_kecil) AS actual_qty,
+				tsm.tanggal AS check_in
 			FROM t_sales_detail tsd
 			JOIN t_sales_master tsm ON tsm.no_po = tsd.no_po
 			LEFT JOIN m_product mp ON mp.productid = tsd.productid
 			JOIN m_sales_salesman mss ON mss.salesmanid = tsm.salesmanid
+			LEFT JOIN m_customer mc ON mc.customerid = tsm.customerid
 			WHERE tsm.tanggal = ?
 			  AND tsm.retur = 0
-			GROUP BY tsm.salesmanid, mss.nama_salesman, mss.tipe_sales, tsd.productid, mp.nama_invoice
+			GROUP BY tsm.salesmanid, mss.nama_salesman, mss.tipe_sales, tsd.productid, mp.nama_invoice, tsm.customerid, mc.nama_customer, tsm.no_po, tsm.tanggal
 		";
 		$prodSales = $this->db->query($sqlProdSales, [$date])->result_array();
 
+		$salesmanProdSales = [];
 		foreach ($prodSales as $s) {
-			$key = $s['salesmanid'] . '_' . $s['productid'];
-			if (isset($prodMap[$key])) {
-				$prodMap[$key]['actual_qty'] = (int)$s['actual_qty'];
-				if (empty($prodMap[$key]['nama_invoice'])) {
-					$prodMap[$key]['nama_invoice'] = $s['nama_invoice'] ?? '';
+			$smId = $s['salesmanid'];
+			$p_id = $s['product_id'];
+			
+			if (isset($prodTargetsMap[$smId][$p_id])) {
+				$salesmanProdSales[$smId][$p_id][] = $s;
+			}
+		}
+
+		foreach ($prodTargetsMap as $smId => $prods) {
+			foreach ($prods as $pId => $t) {
+				$hasVisits = isset($salesmanProdVisits[$smId][$pId]);
+				$hasSales = isset($salesmanProdSales[$smId][$pId]);
+
+				if (!$hasVisits && !$hasSales) {
+					continue;
 				}
-			} else {
-				$prodMap[$key] = [
+
+				$targetRow = [
 					'tanggal' => $date,
-					'salesmanid' => $s['salesmanid'],
-					'nama_salesman' => $s['nama_salesman'] ?? '',
-					'tipe_sales' => $s['tipe_sales'] ?? '',
-					'product_id' => $s['productid'],
-					'nama_invoice' => $s['nama_invoice'] ?? 'Unknown Product',
-					'target' => 0,
-					'target_qty' => 0,
+					'salesmanid' => $smId,
+					'nama_salesman' => $t['nama_salesman'] ?? '',
+					'tipe_sales' => $t['tipe_sales'] ?? '',
+					'product_id' => $pId,
+					'nama_invoice' => $t['nama_invoice'] ?? '',
+					'customerid' => null,
+					'nama_customer' => null,
+					'professional_id' => null,
+					'nama_professional' => null,
+					'check_in' => null,
+					'check_out' => null,
+					'duration' => null,
+					'keterangan' => null,
+					'target' => $t['target'],
+					'target_qty' => $t['target_qty'],
 					'actual_visit' => 0,
-					'actual_qty' => (int)$s['actual_qty']
+					'actual_qty' => 0
 				];
-			}
-		}
+				$this->db->replace('rekap_produk_visit', $targetRow);
 
-		$missingNamesToFetch = [];
-		foreach ($prodMap as $k => $item) {
-			if (empty($item['nama_invoice'])) {
-				$missingNamesToFetch[$item['product_id']] = true;
-			}
-		}
-		if (!empty($missingNamesToFetch)) {
-			$p_names_res = $this->db->select('productid, nama_invoice')
-								   ->from('m_product')
-								   ->where_in('productid', array_keys($missingNamesToFetch))
-								   ->get()->result_array();
-			$nameMap = [];
-			foreach ($p_names_res as $pn) {
-				$nameMap[$pn['productid']] = $pn['nama_invoice'];
-			}
-			foreach ($prodMap as $k => $item) {
-				if (empty($item['nama_invoice']) && isset($nameMap[$item['product_id']])) {
-					$prodMap[$k]['nama_invoice'] = $nameMap[$item['product_id']];
+				if ($hasVisits) {
+					foreach ($salesmanProdVisits[$smId][$pId] as $v) {
+						$visitRow = [
+							'tanggal' => $date,
+							'salesmanid' => $smId,
+							'nama_salesman' => $v['nama_salesman'] ?? '',
+							'tipe_sales' => $v['tipe_sales'] ?? '',
+							'product_id' => $pId,
+							'nama_invoice' => $t['nama_invoice'] ?? '',
+							'customerid' => $v['customerid'],
+							'nama_customer' => $v['nama_customer'] ?? '',
+							'professional_id' => !empty($v['professional_id']) ? (int)$v['professional_id'] : null,
+							'nama_professional' => $v['nama_professional'] ?? '',
+							'check_in' => $v['check_in'],
+							'check_out' => $v['check_out'],
+							'duration' => $this->calculate_php_duration($v['check_in'], $v['check_out']),
+							'keterangan' => $v['keterangan'],
+							'target' => 0,
+							'target_qty' => 0,
+							'actual_visit' => 1,
+							'actual_qty' => 0
+						];
+						$this->db->replace('rekap_produk_visit', $visitRow);
+					}
+				}
+
+				if ($hasSales) {
+					foreach ($salesmanProdSales[$smId][$pId] as $s) {
+						$salesRow = [
+							'tanggal' => $date,
+							'salesmanid' => $smId,
+							'nama_salesman' => $s['nama_salesman'] ?? '',
+							'tipe_sales' => $s['tipe_sales'] ?? '',
+							'product_id' => $pId,
+							'nama_invoice' => $t['nama_invoice'] ?? '',
+							'customerid' => $s['customerid'],
+							'nama_customer' => $s['nama_customer'] ?? '',
+							'professional_id' => null,
+							'nama_professional' => '',
+							'check_in' => $s['check_in'],
+							'check_out' => null,
+							'duration' => null,
+							'keterangan' => 'Sales PO: ' . ($s['no_po'] ?? ''),
+							'target' => 0,
+							'target_qty' => 0,
+							'actual_visit' => 0,
+							'actual_qty' => (int)$s['actual_qty']
+						];
+						$this->db->replace('rekap_produk_visit', $salesRow);
+					}
 				}
 			}
-		}
-
-		foreach ($prodMap as $dataRow) {
-			$this->db->replace('rekap_produk_visit', $dataRow);
 		}
 
 		return true;
+	}
+
+	private function calculate_php_duration($start, $end) {
+		if (empty($start) || empty($end)) return null;
+		$diff = strtotime($end) - strtotime($start);
+		if ($diff < 0) return null;
+		$h = floor($diff / 3600);
+		$m = floor(($diff % 3600) / 60);
+		$s = $diff % 60;
+		return sprintf('%02d:%02d:%02d', $h, $m, $s);
 	}
 }

@@ -1,0 +1,162 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
+class Rekap_spesialis_target extends BaseController
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('rekap_spesialis_target_model', 'rekap');
+    }
+
+    public function index()
+    {
+        $this->template->show($this, 'content');
+    }
+
+    public function load()
+    {
+        $param = param_input();
+        $start_date = $param['start_date'] ?? date('Y-m-01');
+        $end_date = $param['end_date'] ?? date('Y-m-d');
+        $spesialisasi_ids = $param['spesialisasi_ids'] ?? [];
+
+        $data = $this->rekap->load_summary($start_date, $end_date, $spesialisasi_ids);
+        responseJSON([
+            'status' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function load_detail()
+    {
+        $param = param_input();
+        $spesialisasi_id = $param['spesialisasi_id'] ?? '';
+        $start_date = $param['start_date'] ?? date('Y-m-01');
+        $end_date = $param['end_date'] ?? date('Y-m-d');
+
+        if (empty($spesialisasi_id)) {
+            responseJSON(['status' => false, 'message' => 'Spesialisasi ID tidak valid.']);
+            return;
+        }
+
+        $data = $this->rekap->load_detail($spesialisasi_id, $start_date, $end_date);
+        responseJSON([
+            'status' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function export()
+    {
+        $start_date = $this->input->get('start_date') ?? date('Y-m-01');
+        $end_date = $this->input->get('end_date') ?? date('Y-m-d');
+        $spesialisasi_ids_str = $this->input->get('spesialisasi_ids');
+        $spesialisasi_ids = !empty($spesialisasi_ids_str) ? explode(',', $spesialisasi_ids_str) : [];
+
+        $data = $this->rekap->load_summary($start_date, $end_date, $spesialisasi_ids);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Rekap Spesialis Target');
+
+        $sheet->setCellValue('A1', 'No')
+              ->setCellValue('B1', 'Spesialisasi ID')
+              ->setCellValue('C1', 'Nama Spesialisasi')
+              ->setCellValue('D1', 'Target')
+              ->setCellValue('E1', 'Realisasi')
+              ->setCellValue('F1', 'Pencapaian (%)');
+
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $row = 2;
+        $no = 1;
+        foreach ($data as $r) {
+            $target = (int)$r['target'];
+            $actual = (int)$r['actual'];
+            $pct = $target > 0 ? round(($actual / $target) * 100) : 0;
+
+            $sheet->setCellValue("A{$row}", $no)
+                  ->setCellValue("B{$row}", $r['spesialisasi_id'])
+                  ->setCellValue("C{$row}", $r['nama_spesialisasi'])
+                  ->setCellValue("D{$row}", $target)
+                  ->setCellValue("E{$row}", $actual)
+                  ->setCellValue("F{$row}", $pct);
+
+            $row++;
+            $no++;
+        }
+
+        $sheet->getStyle("A1:F" . ($row - 1))->getBorders()->getAllBorders()
+              ->setBorderStyle(Border::BORDER_THIN);
+
+        foreach (range('A', 'F') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $detailSheet = $spreadsheet->createSheet();
+        $detailSheet->setTitle('Detail Visit');
+
+        $detailSheet->setCellValue('A1', 'No')
+                    ->setCellValue('B1', 'Tanggal')
+                    ->setCellValue('C1', 'Salesman ID')
+                    ->setCellValue('D1', 'Nama Salesman')
+                    ->setCellValue('E1', 'Spesialisasi ID')
+                    ->setCellValue('F1', 'Nama Spesialisasi')
+                    ->setCellValue('G1', 'Customer ID')
+                    ->setCellValue('H1', 'Nama Customer')
+                    ->setCellValue('I1', 'Nama Dokter')
+                    ->setCellValue('J1', 'Check In')
+                    ->setCellValue('K1', 'Check Out')
+                    ->setCellValue('L1', 'Durasi')
+                    ->setCellValue('M1', 'Keterangan');
+
+        $detailSheet->getStyle('A1:M1')->getFont()->setBold(true);
+        $detailSheet->getStyle('A1:M1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $details = $this->rekap->load_all_detail($start_date, $end_date, $spesialisasi_ids);
+        $dRow = 2;
+        $dNo = 1;
+        foreach ($details as $d) {
+            $detailSheet->setCellValue("A{$dRow}", $dNo)
+                        ->setCellValue("B{$dRow}", $d['tanggal'])
+                        ->setCellValue("C{$dRow}", $d['salesmanid'])
+                        ->setCellValue("D{$dRow}", $d['nama_salesman'])
+                        ->setCellValue("E{$dRow}", $d['spesialisasi_id'])
+                        ->setCellValue("F{$dRow}", $d['nama_spesialisasi'])
+                        ->setCellValue("G{$dRow}", $d['customerid'])
+                        ->setCellValue("H{$dRow}", $d['nama_customer'])
+                        ->setCellValue("I{$dRow}", $d['nama_dokter'])
+                        ->setCellValue("J{$dRow}", $d['check_in'])
+                        ->setCellValue("K{$dRow}", $d['check_out'])
+                        ->setCellValue("L{$dRow}", $d['duration'])
+                        ->setCellValue("M{$dRow}", $d['keterangan']);
+            $dRow++;
+            $dNo++;
+        }
+
+        $detailSheet->getStyle("A1:M" . ($dRow - 1))->getBorders()->getAllBorders()
+                    ->setBorderStyle(Border::BORDER_THIN);
+
+        foreach (range('A', 'M') as $col) {
+            $detailSheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $filename = "Rekap_Spesialis_Target_{$start_date}_to_{$end_date}";
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit();
+    }
+}
