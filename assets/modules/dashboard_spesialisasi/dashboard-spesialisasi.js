@@ -12,7 +12,7 @@ $(function () {
     subareaid: "",
   };
 
-  let exportData = { summary: [], area: null, subarea: null };
+  let exportData = { summary: [], area: null, subarea: null, subarea_detail: null, visits: null };
 
   const $periode = $("#periode");
   const $tipeSales = $("#tipe_sales");
@@ -163,6 +163,7 @@ $(function () {
       summary: [],
       area: null,
       subarea: null,
+      subarea_detail: null,
       salesman: null,
       visits: null,
     };
@@ -290,6 +291,8 @@ $(function () {
       if (res.code !== 200) return;
       exportData.area = { label: nama, data: res.result };
       exportData.subarea = null;
+      exportData.subarea_detail = null;
+      exportData.visits = null;
       renderDetail(res.result, regionalid);
     });
   }
@@ -311,6 +314,8 @@ $(function () {
     apiCall({ regionalid, areaid }).done(function (res) {
       if (res.code !== 200) return;
       exportData.subarea = { label: nama, data: res.result };
+      exportData.subarea_detail = null;
+      exportData.visits = null;
       renderAreaDetail(res.result, regionalid, areaid);
     });
   }
@@ -331,6 +336,8 @@ $(function () {
 
     apiCall({ regionalid, areaid, subareaid }).done(function (res) {
       if (res.code !== 200) return;
+      exportData.subarea_detail = { label: nama, data: res.result };
+      exportData.visits = null;
       renderSubareaDetail(res.result);
     });
   }
@@ -418,7 +425,7 @@ $(function () {
       rawDetails: details,
       datasets: [
         {
-          label: "Realisasi",
+          label: "Aktual",
           data: actualData,
           backgroundColor: "#3d85c6",
           stack: "TargetSp",
@@ -833,10 +840,118 @@ $(function () {
         toRows(exportData.subarea.data),
       );
     }
+    if (exportData.subarea_detail) {
+      addSection(
+        "Sub Area: " + (exportData.subarea_detail.label || "Sub Area"),
+        ["Spesialisasi", "Realisasi", "Target", "Pencapaian (%)"],
+        exportData.subarea_detail.data.map(function (r) {
+          let targetVal = parseInt(r.target) || 0;
+          let actualVal = parseInt(r.actual) || 0;
+          let pct =
+            targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+          return [
+            r.nama_spesialisasi || "",
+            actualVal,
+            targetVal,
+            pct + "%",
+          ];
+        }),
+      );
+    }
+
+    if (exportData.visits) {
+      let filteredSalesmanData = exportData.visits.data || [];
+      if (selectedTipeSales) {
+        filteredSalesmanData = filteredSalesmanData.filter(function (r) {
+          return (
+            r.tipe_sales &&
+            selectedTipeSales.toLowerCase() == r.tipe_sales.toLowerCase()
+          );
+        });
+      }
+
+      let hdrSalesman = [
+        "Salesman ID",
+        "Nama Salesman",
+        "Tipe Sales",
+        "Target",
+        "Realisasi",
+        "Pencapaian (%)",
+      ];
+
+      addSection(
+        "List Salesman - " + (exportData.visits.label || "Spesialisasi"),
+        hdrSalesman,
+        filteredSalesmanData.map(function (r) {
+          let targetVal = parseInt(r.target) || 0;
+          let actualVal = parseInt(r.actual) || 0;
+          let pct =
+            targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
+          return [
+            r.salesmanid,
+            r.nama_salesman,
+            r.tipe_sales,
+            targetVal,
+            actualVal,
+            pct + "%",
+          ];
+        }),
+      );
+    }
+
+    let detailVisitRows = [];
+    if (exportData.visits) {
+      let filteredSalesmanData = exportData.visits.data || [];
+      if (selectedTipeSales) {
+        filteredSalesmanData = filteredSalesmanData.filter(function (r) {
+          return (
+            r.tipe_sales &&
+            selectedTipeSales.toLowerCase() == r.tipe_sales.toLowerCase()
+          );
+        });
+      }
+
+      let hdrVisit = [
+        "Nama Salesman",
+        "Salesman ID",
+        "Nama Professional",
+        "Tipe PIC",
+        "Spesialisasi",
+        "Outlet",
+        "Check In",
+        "Check Out",
+        "Duration",
+        "Keterangan",
+      ];
+      detailVisitRows.push(hdrVisit);
+
+      filteredSalesmanData.forEach(function (sm) {
+        let visits = sm.visits || [];
+        visits.forEach(function (v) {
+          detailVisitRows.push([
+            sm.nama_salesman || "",
+            sm.salesmanid || "",
+            v.nama_professional || "",
+            v.tipe_pic || "",
+            v.spesialisasi || "",
+            v.nama_customer || "",
+            formatDateTime(v.check_in, 19, ""),
+            formatDateTime(v.check_out, 19, ""),
+            calculateDuration(v.check_in, v.check_out),
+            v.keterangan || "",
+          ]);
+        });
+      });
+    }
 
     let wb = XLSX.utils.book_new();
     let wsSummary = XLSX.utils.aoa_to_sheet(rows);
     XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
+
+    if (exportData.visits && detailVisitRows.length > 1) {
+      let wsDetail = XLSX.utils.aoa_to_sheet(detailVisitRows);
+      XLSX.utils.book_append_sheet(wb, wsDetail, "Detail Visit");
+    }
 
     XLSX.writeFile(wb, "Dashboard_Spesialisasi_" + periodVal + ".xlsx");
   }

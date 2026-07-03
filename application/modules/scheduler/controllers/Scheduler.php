@@ -9,9 +9,6 @@ class Scheduler extends BaseController
     public function __construct() {
         parent::__construct();
         $this->load->model('Scheduler_model', 'scheduler');
-        $this->load->library('pdf');
-        $this->load->library('excel');
-        $this->load->library('email');
         $this->load->config('email');
         $this->load->helper('email');
 
@@ -20,6 +17,9 @@ class Scheduler extends BaseController
     }
 
     public function send_daily_report() {
+        $this->load->library('pdf');
+        $this->load->library('excel');
+        $this->load->library('email');
 		$email = $this->input->get('email');
 		$attach = $this->input->get('attach');
         $arrAttach = $attach ? explode(',', $attach): [];
@@ -192,6 +192,9 @@ class Scheduler extends BaseController
     }
 
     public function send_pending_order() {
+        $this->load->library('pdf');
+        $this->load->library('excel');
+        $this->load->library('email');
 		$email = $this->input->get('email');
 		$attach = $this->input->get('attach');
         $arrAttach = $attach ? explode(',', $attach): [];
@@ -316,5 +319,89 @@ class Scheduler extends BaseController
             if ($fileExcel) @unlink($fileExcel);
 		}
 		responseJSON($result);
+    }
+
+    public function run_daily_target($cli_date = NULL) {
+        $periode = $this->input->get('periode');
+        if (empty($periode) && !empty($cli_date)) {
+            $periode = $cli_date;
+        }
+
+        if (empty($periode)) {
+            $periode = date('Y-m-d', strtotime('-1 day'));
+        }
+
+        $time = strtotime($periode);
+        if (!$time) {
+            if (strlen($periode) == 7 && strpos($periode, '-') !== false) {
+                $time = strtotime($periode . '-01');
+            }
+        }
+
+        if (!$time) {
+            responseJSON([
+                'status' => false,
+                'message' => "Format tanggal tidak valid. (contoh: 2026-07-02)"
+            ]);
+            return;
+        }
+
+        $formatted_date = date('Y-m-d', $time);
+
+        try {
+            $this->scheduler->run_daily_target($formatted_date);
+            responseJSON([
+                'status' => true,
+                'message' => "Proses rekap cut-off data untuk tanggal {$formatted_date} berhasil dijalankan."
+            ]);
+        } catch (Exception $e) {
+            responseJSON([
+                'status' => false,
+                'message' => "Terjadi kesalahan saat memproses rekap harian: " . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function populate_history() {
+        $start = $this->input->get('start');
+        $end = $this->input->get('end');
+
+        if (empty($start)) {
+            $start = '2025-07-14';
+        }
+        if (empty($end)) {
+            $end = date('Y-m-d');
+        }
+
+        $start_time = strtotime($start);
+        $end_time = strtotime($end);
+
+        if (!$start_time || !$end_time || $start_time > $end_time) {
+            responseJSON([
+                'status' => false,
+                'message' => 'Range tanggal tidak valid.'
+            ]);
+            return;
+        }
+
+        $processed = [];
+        $current = $start_time;
+        while ($current <= $end_time) {
+            $date = date('Y-m-d', $current);
+            try {
+                $this->scheduler->run_daily_target($date);
+                $processed[] = $date;
+            } catch (Exception $e) {
+                // Keep going but record the failure if needed
+            }
+            $current = strtotime('+1 day', $current);
+        }
+
+        responseJSON([
+            'status' => true,
+            'message' => 'Proses rekap histori berhasil diselesaikan.',
+            'count' => count($processed),
+            'range' => $start . ' s/d ' . $end
+        ]);
     }
 }

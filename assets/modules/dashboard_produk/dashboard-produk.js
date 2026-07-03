@@ -13,7 +13,7 @@ $(function () {
     subareaid: "",
   };
 
-  let exportData = { summary: [], area: null, subarea: null };
+  let exportData = { summary: [], area: null, subarea: null, subarea_detail: null, visits: null };
 
   const $periode = $("#periode");
   const $tipeSales = $("#tipe_sales");
@@ -186,6 +186,7 @@ $(function () {
       summary: [],
       area: null,
       subarea: null,
+      subarea_detail: null,
       salesman: null,
       visits: null,
     };
@@ -317,6 +318,8 @@ $(function () {
         regionalid: regionalid,
       };
       exportData.subarea = null;
+      exportData.subarea_detail = null;
+      exportData.visits = null;
       renderDetail(res.result, regionalid);
     });
   }
@@ -343,6 +346,8 @@ $(function () {
         regionalid: regionalid,
         areaid: areaid,
       };
+      exportData.subarea_detail = null;
+      exportData.visits = null;
       renderAreaDetail(res.result, regionalid, areaid);
     });
   }
@@ -363,6 +368,8 @@ $(function () {
 
     apiCall({ regionalid, areaid, subareaid }).done(function (res) {
       if (res.code !== 200) return;
+      exportData.subarea_detail = { label: nama, data: res.result };
+      exportData.visits = null;
       renderSubareaDetail(res.result);
     });
   }
@@ -952,9 +959,151 @@ $(function () {
       );
     }
 
+    if (exportData.subarea_detail) {
+      let hdrSubareaProduct = [
+        "Product ID",
+        "Nama Invoice",
+        "Kunjungan (Realisasi)",
+        "Kunjungan (Target)",
+        "Qty Sales (Realisasi)",
+        "Qty Sales (Target)",
+      ];
+      addSection(
+        "Sub Area: " + (exportData.subarea_detail.label || "Sub Area"),
+        hdrSubareaProduct,
+        exportData.subarea_detail.data.map(function (r) {
+          return [
+            r.product_id || "",
+            r.nama_invoice || "",
+            parseInt(r.actual) || 0,
+            parseInt(r.target) || 0,
+            parseInt(r.actual_qty) || 0,
+            parseInt(r.target_qty) || 0,
+          ];
+        }),
+      );
+    }
+
+    if (exportData.visits) {
+      let filteredSalesmanData = exportData.visits.data || [];
+      if (selectedTipeSales) {
+        filteredSalesmanData = filteredSalesmanData.filter(function (r) {
+          return (
+            r.tipe_sales &&
+            selectedTipeSales.toLowerCase() == r.tipe_sales.toLowerCase()
+          );
+        });
+      }
+
+      let hdrSalesman = [
+        "Salesman ID",
+        "Nama Salesman",
+        "Tipe Sales",
+        "Kunjungan (Realisasi)",
+        "Kunjungan (Target)",
+        "Qty Sales (Realisasi)",
+        "Qty Sales (Target)",
+      ];
+
+      addSection(
+        "List Salesman - " + (exportData.visits.label || "Produk"),
+        hdrSalesman,
+        filteredSalesmanData.map(function (r) {
+          return [
+            r.salesmanid,
+            r.nama_salesman,
+            r.tipe_sales,
+            parseInt(r.actual) || 0,
+            parseInt(r.target) || 0,
+            parseInt(r.actual_qty) || 0,
+            parseInt(r.target_qty) || 0,
+          ];
+        }),
+      );
+    }
+
+    let detailVisitRows = [];
+    let detailSalesRows = [];
+    if (exportData.visits) {
+      let filteredSalesmanData = exportData.visits.data || [];
+      if (selectedTipeSales) {
+        filteredSalesmanData = filteredSalesmanData.filter(function (r) {
+          return (
+            r.tipe_sales &&
+            selectedTipeSales.toLowerCase() == r.tipe_sales.toLowerCase()
+          );
+        });
+      }
+
+      // Populate Detail Visits
+      let hdrVisit = [
+        "Nama Salesman",
+        "Salesman ID",
+        "Nama Customer",
+        "Nama Professional",
+        "Tipe PIC",
+        "Check In",
+        "Check Out",
+        "Duration",
+        "Keterangan",
+      ];
+      detailVisitRows.push(hdrVisit);
+
+      filteredSalesmanData.forEach(function (sm) {
+        let visits = sm.visits || [];
+        visits.forEach(function (v) {
+          detailVisitRows.push([
+            sm.nama_salesman || "",
+            sm.salesmanid || "",
+            v.nama_customer || "",
+            v.nama_professional || "",
+            v.tipe_pic || "",
+            formatDateTime(v.check_in, 19, ""),
+            formatDateTime(v.check_out, 19, ""),
+            calculateDuration(v.check_in, v.check_out),
+            v.keterangan || "",
+          ]);
+        });
+      });
+
+      // Populate Detail Sales
+      let hdrSales = [
+        "Nama Salesman",
+        "Salesman ID",
+        "No PO",
+        "Tanggal",
+        "Qty",
+      ];
+      detailSalesRows.push(hdrSales);
+
+      filteredSalesmanData.forEach(function (sm) {
+        let sales = sm.sales || [];
+        sales.forEach(function (s) {
+          detailSalesRows.push([
+            sm.nama_salesman || "",
+            sm.salesmanid || "",
+            s.no_po || "",
+            s.tanggal || "",
+            parseInt(s.qty_kecil) || 0,
+          ]);
+        });
+      });
+    }
+
     let wb = XLSX.utils.book_new();
     let wsSummary = XLSX.utils.aoa_to_sheet(rows);
     XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
+
+    if (exportData.visits) {
+      if (detailVisitRows.length > 1) {
+        let wsDetail = XLSX.utils.aoa_to_sheet(detailVisitRows);
+        XLSX.utils.book_append_sheet(wb, wsDetail, "Detail Visit");
+      }
+      if (detailSalesRows.length > 1) {
+        let wsSales = XLSX.utils.aoa_to_sheet(detailSalesRows);
+        XLSX.utils.book_append_sheet(wb, wsSales, "Detail Sales");
+      }
+    }
 
     XLSX.writeFile(wb, "Dashboard_Produk_" + periodVal + ".xlsx");
   }
