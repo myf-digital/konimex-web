@@ -134,8 +134,8 @@ class Scheduler_model extends CI_Model
 				'array_product' => null,
 				'target_dub' => (int)$sm['target_dub'],
 				'target_hk' => (int)$sm['target_hk'],
-				'target_call_dub' => (int)$sm['target_call_dub'],
-				'target_call_visit' => (int)$sm['target_call_visit'],
+				'target_call_dub' => (int)$sm['target_call_dub'] * (int)$sm['target_dub'],
+				'target_call_visit' => (int)$sm['target_call_visit'] * (int)$sm['target_hk'],
 				'actual_call_planned' => 0,
 				'actual_call_visit' => 0
 			];

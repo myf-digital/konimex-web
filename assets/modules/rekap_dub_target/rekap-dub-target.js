@@ -15,16 +15,22 @@ $(function () {
     return v == null || v === undefined || v === "null" || v === "" ? "-" : v;
   }
 
+  function formatFloat(v) {
+    let num = parseFloat(v);
+    return isNaN(num) ? 0 : parseFloat(num.toFixed(2));
+  }
+
   function makeProgressBar(actual, target, colorActual, colorTarget) {
-    actual = parseInt(actual) || 0;
-    target = parseInt(target) || 0;
-    let pct = target > 0 ? Math.round((actual / target) * 100) : 0;
-    let barPct = Math.min(100, pct);
+    actual = parseFloat(actual) || 0;
+    target = parseFloat(target) || 0;
+    let pct = target > 0 ? actual / target : 0;
+    let barPct = Math.min(100, pct).toFixed(2);
+    let displayPct = formatFloat(pct);
     return `
       <div class="progress progress-sm" style="margin-bottom: 0; position: relative; background-color: ${colorTarget}; height: 20px; border-radius: 4px;">
         <div class="progress-bar" role="progressbar" style="width: ${barPct}%; height: 100%; background-color: ${colorActual}; transition: none;"></div>
         <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px #000;">
-          ${actual} / ${target} (${pct}%)
+          ${formatFloat(actual)} / ${formatFloat(target)} (${displayPct})
         </div>
       </div>
     `;
@@ -96,10 +102,10 @@ $(function () {
         if (res.status && res.data && res.data.length > 0) {
           let html = "";
           res.data.forEach(function (r, i) {
-            let target_dub = parseInt(r.target_dub) || 0;
-            let act_planned = parseInt(r.actual_call_planned) || 0;
-            let target_visit = parseInt(r.target_call_visit) || 0;
-            let act_visit = parseInt(r.actual_call_visit) || 0;
+            let target_dub = parseFloat(r.target_dub) || 0;
+            let act_planned = parseFloat(r.actual_call_planned) || 0;
+            let target_visit = parseFloat(r.target_call_visit) || 0;
+            let act_visit = parseFloat(r.actual_call_visit) || 0;
 
             html += `
               <tr>
@@ -107,11 +113,11 @@ $(function () {
                   <td>${r.salesmanid}</td>
                   <td>${r.nama_salesman}</td>
                   <td>${r.tipe_sales}</td>
-                  <td>${target_dub}</td>
-                  <td>${act_planned}</td>
+                  <td>${formatFloat(act_planned)}</td>
+                  <td>${formatFloat(target_dub)}</td>
                   <td>${makeProgressBar(act_planned, target_dub, "#3d85c6", "#ff4e00")}</td>
-                  <td>${target_visit}</td>
-                  <td>${act_visit}</td>
+                  <td>${formatFloat(act_visit)}</td>
+                  <td>${formatFloat(target_visit)}</td>
                   <td>${makeProgressBar(act_visit, target_visit, "#3dc65dff", "#fcae06ff")}</td>
                   <td class="text-center">
                     <button class="btn btn-xs btn-primary btn-detail" data-id="${r.salesmanid}" data-name="${r.nama_salesman}">

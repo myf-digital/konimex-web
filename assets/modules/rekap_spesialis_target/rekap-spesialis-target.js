@@ -14,16 +14,22 @@ $(function () {
     return v === null || v === undefined || v === "null" || v === "" ? "-" : v;
   }
 
+  function formatFloat(v) {
+    let num = parseFloat(v);
+    return isNaN(num) ? 0 : parseFloat(num.toFixed(2));
+  }
+
   function makeProgressBar(actual, target, colorActual, colorTarget) {
-    actual = parseInt(actual) || 0;
-    target = parseInt(target) || 0;
-    let pct = target > 0 ? Math.round((actual / target) * 100) : 0;
-    let barPct = Math.min(100, pct);
+    actual = parseFloat(actual) || 0;
+    target = parseFloat(target) || 0;
+    let pct = target > 0 ? (actual / target) * 100 : 0;
+    let barPct = Math.min(100, pct).toFixed(2);
+    let displayPct = formatFloat(pct);
     return `
       <div class="progress progress-sm" style="margin-bottom: 0; position: relative; background-color: ${colorTarget}; height: 20px; border-radius: 4px;">
         <div class="progress-bar" role="progressbar" style="width: ${barPct}%; height: 100%; background-color: ${colorActual}; transition: none;"></div>
         <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px #000;">
-          ${actual} / ${target} (${pct}%)
+          ${formatFloat(actual)} / ${formatFloat(target)} (${displayPct}%)
         </div>
       </div>
     `;
@@ -92,16 +98,16 @@ $(function () {
         if (res.status && res.data && res.data.length > 0) {
           let html = "";
           res.data.forEach(function (r, i) {
-            let target = parseInt(r.target) || 0;
-            let actual = parseInt(r.actual) || 0;
+            let target = parseFloat(r.target) || 0;
+            let actual = parseFloat(r.actual) || 0;
 
             html += `
               <tr>
                   <td>${i + 1}</td>
                   <td>${r.spesialisasi_id}</td>
                   <td>${r.nama_spesialisasi}</td>
-                  <td>${target}</td>
-                  <td>${actual}</td>
+                  <td>${formatFloat(actual)}</td>
+                  <td>${formatFloat(target)}</td>
                   <td>${makeProgressBar(actual, target, "#3d85c6", "#ff4e00")}</td>
                   <td class="text-center">
                     <button class="btn btn-xs btn-primary btn-detail" data-id="${r.spesialisasi_id}" data-name="${r.nama_spesialisasi}">

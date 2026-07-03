@@ -55,11 +55,11 @@
                                 <th style="width: 5%;">#</th>
                                 <th>Product ID</th>
                                 <th>Nama Produk</th>
-                                <th>Target Visit</th>
                                 <th>Realisasi Visit</th>
+                                <th>Target Visit</th>
                                 <th>Pencapaian Visit</th>
-                                <th>Target Qty</th>
                                 <th>Realisasi Qty</th>
+                                <th>Target Qty</th>
                                 <th>Pencapaian Qty</th>
                                 <th style="width: 10%; text-align: center;">Aksi</th>
                             </tr>

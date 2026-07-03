@@ -55,8 +55,8 @@
                                 <th style="width: 5%;">#</th>
                                 <th>Spesialisasi ID</th>
                                 <th>Nama Spesialisasi</th>
-                                <th>Target</th>
                                 <th>Realisasi</th>
+                                <th>Target</th>
                                 <th>Pencapaian</th>
                                 <th style="width: 10%; text-align: center;">Aksi</th>
                             </tr>

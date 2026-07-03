@@ -30,13 +30,15 @@ class Rekap_dub_target_model extends CI_Model
                 rdv.tipe_sales,
                 SUM(rdv.actual_call_planned) AS actual_call_planned,
                 SUM(rdv.actual_call_visit) AS actual_call_visit,
-                IFNULL(t.target_dub, 0) AS target_dub,
-                IFNULL(t.target_call_visit, 0) AS target_call_visit
+                IFNULL(t.target_dub * t.target_call_dub, 0) AS target_dub,
+                IFNULL(t.target_call_visit * t.target_hk, 0) AS target_call_visit
             FROM rekap_dub_visit rdv
             LEFT JOIN (
                 SELECT 
                     ar.role_name,
                     SUM(rmt.target_dub) AS target_dub,
+                    SUM(rmt.target_hk) AS target_hk,
+                    SUM(rmt.target_call_dub) AS target_call_dub,
                     SUM(rmt.target_call_visit) AS target_call_visit
                 FROM role_mapping_target rmt
                 JOIN app_role ar ON ar.role_id = rmt.role_id

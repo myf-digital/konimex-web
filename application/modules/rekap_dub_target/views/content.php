@@ -56,11 +56,11 @@
                                 <th>Salesman ID</th>
                                 <th>Nama Salesman</th>
                                 <th>Tipe Sales</th>
-                                <th>Target DUB</th>
                                 <th>Actual DUB</th>
+                                <th>Target DUB</th>
                                 <th>Pencapaian DUB</th>
-                                <th>Target Visit</th>
                                 <th>Actual Visit</th>
+                                <th>Target Visit</th>
                                 <th>Pencapaian Visit</th>
                                 <th style="width: 10%; text-align: center;">Aksi</th>
                             </tr>

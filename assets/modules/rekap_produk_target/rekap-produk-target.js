@@ -19,16 +19,22 @@ $(function () {
     return Number(v).toLocaleString("id-ID");
   }
 
+  function formatFloat(v) {
+    let num = parseFloat(v);
+    return isNaN(num) ? 0 : parseFloat(num.toFixed(2));
+  }
+
   function makeProgressBar(actual, target, colorActual, colorTarget) {
-    actual = parseInt(actual) || 0;
-    target = parseInt(target) || 0;
-    let pct = target > 0 ? Math.round((actual / target) * 100) : 0;
-    let barPct = Math.min(100, pct);
+    actual = parseFloat(actual) || 0;
+    target = parseFloat(target) || 0;
+    let pct = target > 0 ? (actual / target) * 100 : 0;
+    let barPct = Math.min(100, pct).toFixed(2);
+    let displayPct = formatFloat(pct);
     return `
       <div class="progress progress-sm" style="margin-bottom: 0; position: relative; background-color: ${colorTarget}; height: 20px; border-radius: 4px;">
         <div class="progress-bar" role="progressbar" style="width: ${barPct}%; height: 100%; background-color: ${colorActual}; transition: none;"></div>
         <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px #000;">
-          ${formatNumber(actual)} / ${formatNumber(target)} (${pct}%)
+          ${formatNumber(formatFloat(actual))} / ${formatNumber(formatFloat(target))} (${displayPct}%)
         </div>
       </div>
     `;
@@ -91,21 +97,21 @@ $(function () {
         if (res.status && res.data && res.data.length > 0) {
           let html = "";
           res.data.forEach(function (r, i) {
-            let target_visit = parseInt(r.target) || 0;
-            let actual_visit = parseInt(r.actual_visit) || 0;
-            let target_qty = parseInt(r.target_qty) || 0;
-            let actual_qty = parseInt(r.actual_qty) || 0;
+            let target_visit = parseFloat(r.target) || 0;
+            let actual_visit = parseFloat(r.actual_visit) || 0;
+            let target_qty = parseFloat(r.target_qty) || 0;
+            let actual_qty = parseFloat(r.actual_qty) || 0;
 
             html += `
               <tr>
                 <td>${i + 1}</td>
                 <td>${r.product_id}</td>
                 <td>${r.nama_invoice}</td>
-                <td>${formatNumber(target_visit)}</td>
-                <td>${formatNumber(actual_visit)}</td>
+                <td>${formatNumber(formatFloat(actual_visit))}</td>
+                <td>${formatNumber(formatFloat(target_visit))}</td>
                 <td>${makeProgressBar(actual_visit, target_visit, "#3d85c6", "#ff4e00")}</td>
-                <td>${formatNumber(target_qty)}</td>
-                <td>${formatNumber(actual_qty)}</td>
+                <td>${formatNumber(formatFloat(actual_qty))}</td>
+                <td>${formatNumber(formatFloat(target_qty))}</td>
                 <td>${makeProgressBar(actual_qty, target_qty, "#3dc65dff", "#fcae06ff")}</td>
                 <td class="text-center">
                   <button class="btn btn-xs btn-primary btn-detail" data-id="${r.product_id}" data-name="${r.nama_invoice}">
