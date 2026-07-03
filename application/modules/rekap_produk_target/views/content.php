@@ -12,14 +12,14 @@
         <div class="col-xs-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label>Tanggal Mulai</label>
                         <div class="input-group date">
                             <div class="input-group-addon"><span class="glyphicon glyphicon-th"></span></div>
                             <input id="start_date" type="text" class="form-control datepicker" readonly>
                         </div>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label>Tanggal Selesai</label>
                         <div class="input-group date">
                             <div class="input-group-addon"><span class="glyphicon glyphicon-th"></span></div>
