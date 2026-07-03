@@ -11,7 +11,7 @@ class Rekap_dub_target extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('rekap_dub_target_model', 'rekap');
+        $this->load->model('Rekap_dub_target_model', 'rekap');
     }
 
     public function index()
