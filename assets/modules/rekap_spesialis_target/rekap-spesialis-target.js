@@ -1,5 +1,6 @@
 $(function () {
   const common = new Common();
+  const paramsession = common.getCookie("session");
   const $startDate = $("#start_date");
   const $endDate = $("#end_date");
   const $btnLoad = $("#btn_load");
@@ -92,6 +93,8 @@ $(function () {
         start_date: start,
         end_date: end,
         spesialisasi_ids: spesialisasi_ids,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
       },
       dataType: "json",
       success: function (res) {
@@ -149,6 +152,8 @@ $(function () {
         spesialisasi_id: spesialisasi_id,
         start_date: start,
         end_date: end,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
       },
       dataType: "json",
       success: function (res) {
@@ -197,6 +202,10 @@ $(function () {
       start +
       "&end_date=" +
       end +
+      "&usersession=" +
+      paramsession.username +
+      "&restrict_level=" +
+      paramsession.restrict_level +
       "&spesialisasi_ids=" +
       spesialisasi_ids.join(",");
   });

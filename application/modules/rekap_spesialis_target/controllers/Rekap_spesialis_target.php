@@ -22,44 +22,57 @@ class Rekap_spesialis_target extends BaseController
     public function load()
     {
         $param = param_input();
-        $start_date = $param['start_date'] ?? date('Y-m-01');
-        $end_date = $param['end_date'] ?? date('Y-m-d');
-        $spesialisasi_ids = $param['spesialisasi_ids'] ?? [];
+        $data = [
+            'start_date' => $param['start_date'] ?? date('Y-m-01'),
+            'end_date' => $param['end_date'] ?? date('Y-m-d'),
+            'spesialisasi_ids' => !empty($param['spesialisasi_ids']) ? $param['spesialisasi_ids'] : [],
+            'usersession' => $param['usersession'] ?? "",
+            'restrict_level' => $param['restrict_level'] ?? 0,
+        ];
 
-        $data = $this->rekap->load_summary($start_date, $end_date, $spesialisasi_ids);
+        $result = $this->rekap->load_summary($data);
         responseJSON([
             'status' => true,
-            'data' => $data
+            'data' => $result
         ]);
     }
 
     public function load_detail()
     {
         $param = param_input();
-        $spesialisasi_id = $param['spesialisasi_id'] ?? '';
-        $start_date = $param['start_date'] ?? date('Y-m-01');
-        $end_date = $param['end_date'] ?? date('Y-m-d');
+        $data = [
+            'start_date' => $param['start_date'] ?? date('Y-m-01'),
+            'end_date' => $param['end_date'] ?? date('Y-m-d'),
+            'spesialisasi_ids' => !empty($param['spesialisasi_ids']) ? $param['spesialisasi_ids'] : [],
+            'usersession' => $param['usersession'] ?? "",
+            'restrict_level' => $param['restrict_level'] ?? 0,
+            'spesialisasi_id' => $param['spesialisasi_id'] ?? 0,
+        ];
 
-        if (empty($spesialisasi_id)) {
+        if (empty($param['spesialisasi_id'])) {
             responseJSON(['status' => false, 'message' => 'Spesialisasi ID tidak valid.']);
             return;
         }
 
-        $data = $this->rekap->load_detail($spesialisasi_id, $start_date, $end_date);
+        $result = $this->rekap->load_detail($data);
         responseJSON([
             'status' => true,
-            'data' => $data
+            'data' => $result
         ]);
     }
 
     public function export()
     {
-        $start_date = $this->input->get('start_date') ?? date('Y-m-01');
-        $end_date = $this->input->get('end_date') ?? date('Y-m-d');
-        $spesialisasi_ids_str = $this->input->get('spesialisasi_ids');
-        $spesialisasi_ids = !empty($spesialisasi_ids_str) ? explode(',', $spesialisasi_ids_str) : [];
+        $spesialisasiIds = $this->input->get('spesialisasi_ids') ?? null;
+        $data = [
+            'start_date' => $this->input->get('start_date') ?? date('Y-m-01'),
+            'end_date' => $this->input->get('end_date') ?? date('Y-m-d'),
+            'spesialisasi_ids' => !empty($spesialisasiIds) ? explode(',', $spesialisasiIds) : [],
+            'usersession' => $this->input->get('usersession') ?? "",
+            'restrict_level' => $this->input->get('restrict_level') ?? 0,
+        ];
 
-        $data = $this->rekap->load_summary($start_date, $end_date, $spesialisasi_ids);
+        $result = $this->rekap->load_summary($data);
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -77,7 +90,7 @@ class Rekap_spesialis_target extends BaseController
 
         $row = 2;
         $no = 1;
-        foreach ($data as $r) {
+        foreach ($result as $r) {
             $target = (int)$r['target'];
             $actual = (int)$r['actual'];
             $pct = $target > 0 ? round(($actual / $target) * 100) : 0;
@@ -120,7 +133,7 @@ class Rekap_spesialis_target extends BaseController
         $detailSheet->getStyle('A1:M1')->getFont()->setBold(true);
         $detailSheet->getStyle('A1:M1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $details = $this->rekap->load_all_detail($start_date, $end_date, $spesialisasi_ids);
+        $details = $this->rekap->load_all_detail($data);
         $dRow = 2;
         $dNo = 1;
         foreach ($details as $d) {
@@ -150,7 +163,7 @@ class Rekap_spesialis_target extends BaseController
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        $filename = "Rekap_Spesialis_Target_{$start_date}_to_{$end_date}";
+        $filename = "Rekap_Spesialis_Target_{$data['start_date']}_to_{$data['end_date']}";
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel');

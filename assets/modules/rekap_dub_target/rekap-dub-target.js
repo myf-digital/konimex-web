@@ -61,7 +61,7 @@ $(function () {
       common.baseURL("api_v1/call_salesman"),
       {
         idjabatan: paramsession.idjabatan,
-        usersession: paramsession.usersession,
+        usersession: paramsession.username,
         restrict_level: paramsession.restrict_level,
       },
       function (res) {
@@ -96,7 +96,13 @@ $(function () {
     $.ajax({
       url: BASE_URL + "rekap_dub_target/load",
       type: "POST",
-      data: { start_date: start, end_date: end, salesman_ids: salesman_ids },
+      data: {
+        start_date: start,
+        end_date: end,
+        salesman_ids: salesman_ids,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      },
       dataType: "json",
       success: function (res) {
         if (res.status && res.data && res.data.length > 0) {
@@ -157,7 +163,13 @@ $(function () {
     $.ajax({
       url: BASE_URL + "rekap_dub_target/load_detail",
       type: "POST",
-      data: { salesmanid: salesmanid, start_date: start, end_date: end },
+      data: {
+        salesmanid: salesmanid,
+        start_date: start,
+        end_date: end,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      },
       dataType: "json",
       success: function (res) {
         if (res.status && res.data && res.data.length > 0) {
@@ -208,6 +220,10 @@ $(function () {
       start +
       "&end_date=" +
       end +
+      "&usersession=" +
+      paramsession.username +
+      "&restrict_level=" +
+      paramsession.restrict_level +
       "&salesman_ids=" +
       salesman_ids.join(",");
   });

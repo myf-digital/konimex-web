@@ -3,23 +3,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Rekap_produk_target_model extends CI_Model
 {
-    public function load_summary($start_date, $end_date, $product_ids = [])
+    public function load_summary($data)
     {
-        $start_month = date('Y-m', strtotime($start_date));
-        $end_month = date('Y-m', strtotime($end_date));
+        $start_month = date('Y-m', strtotime($data['start_date']));
+        $end_month = date('Y-m', strtotime($data['end_date']));
 
         $where_prod = "";
-        $params = [$start_month, $end_month, $start_date, $end_date];
+        $where_salesman = "";
+        $params = [$start_month, $end_month, $data['start_date'], $data['end_date']];
 
-        if (!empty($product_ids)) {
+        if (!empty($data['product_ids'])) {
             $ids = [];
-            foreach ($product_ids as $id) {
+            foreach ($data['product_ids'] as $id) {
                 if (!empty($id)) {
                     $ids[] = $this->db->escape($id);
                 }
             }
             if (!empty($ids)) {
                 $where_prod = " AND rpv.product_id IN (" . implode(',', $ids) . ") ";
+            }
+        }
+
+        if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rpv.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
@@ -43,14 +51,33 @@ class Rekap_produk_target_model extends CI_Model
             ) t ON t.product_id COLLATE utf8mb4_general_ci = rpv.product_id COLLATE utf8mb4_general_ci
             WHERE rpv.tanggal BETWEEN ? AND ?
               {$where_prod}
+              {$where_salesman}
             GROUP BY rpv.product_id, rpv.nama_invoice, t.target, t.target_qty
             ORDER BY rpv.nama_invoice ASC
         ";
         return $this->db->query($sql, $params)->result_array();
     }
 
-    public function load_detail_visit($product_id, $start_date, $end_date)
+    public function load_detail_visit($data)
     {
+        $where_salesman = "";
+        if (!empty($data['salesman_ids'])) {
+            $ids = [];
+            foreach ($data['salesman_ids'] as $id) {
+                if (!empty($id)) {
+                    $ids[] = $this->db->escape($id);
+                }
+            }
+            if (!empty($ids)) {
+                $where_salesman = " AND rpv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rpv.salesmanid IN (" . $restrict_query . ") ";
+            }
+        }
+
         $sql = "
             SELECT 
                 rpv.salesmanid,
@@ -66,13 +93,32 @@ class Rekap_produk_target_model extends CI_Model
               AND rpv.tanggal BETWEEN ? AND ?
               AND rpv.actual_visit = 1
               AND rpv.customerid IS NOT NULL
+              {$where_salesman}
             ORDER BY rpv.check_in DESC
         ";
-        return $this->db->query($sql, [$product_id, $start_date, $end_date])->result_array();
+        return $this->db->query($sql, [$data['product_id'], $data['start_date'], $data['end_date']])->result_array();
     }
 
-    public function load_detail_sales($product_id, $start_date, $end_date)
+    public function load_detail_sales($data)
     {
+        $where_salesman = "";
+        if (!empty($data['salesman_ids'])) {
+            $ids = [];
+            foreach ($data['salesman_ids'] as $id) {
+                if (!empty($id)) {
+                    $ids[] = $this->db->escape($id);
+                }
+            }
+            if (!empty($ids)) {
+                $where_salesman = " AND rpv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rpv.salesmanid IN (" . $restrict_query . ") ";
+            }
+        }
+
         $sql = "
             SELECT 
                 rpv.check_in AS tanggal,
@@ -87,25 +133,44 @@ class Rekap_produk_target_model extends CI_Model
             WHERE rpv.product_id = ?
               AND rpv.tanggal BETWEEN ? AND ?
               AND rpv.actual_qty > 0
+              {$where_salesman}
             ORDER BY rpv.check_in DESC
         ";
-        return $this->db->query($sql, [$product_id, $start_date, $end_date])->result_array();
+        return $this->db->query($sql, [$data['product_id'], $data['start_date'], $data['end_date']])->result_array();
     }
 
-    public function load_all_detail_visit($start_date, $end_date, $product_ids = [])
+    public function load_all_detail_visit($data)
     {
         $where_prod = "";
-        $params = [$start_date, $end_date];
+        $where_salesman = "";
+        $params = [$data['start_date'], $data['end_date']];
 
-        if (!empty($product_ids)) {
+        if (!empty($data['product_ids'])) {
             $ids = [];
-            foreach ($product_ids as $id) {
+            foreach ($data['product_ids'] as $id) {
                 if (!empty($id)) {
                     $ids[] = $this->db->escape($id);
                 }
             }
             if (!empty($ids)) {
                 $where_prod = " AND rpv.product_id IN (" . implode(',', $ids) . ") ";
+            }
+        }
+
+        if (!empty($data['salesman_ids'])) {
+            $ids = [];
+            foreach ($data['salesman_ids'] as $id) {
+                if (!empty($id)) {
+                    $ids[] = $this->db->escape($id);
+                }
+            }
+            if (!empty($ids)) {
+                $where_salesman = " AND rpv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rpv.salesmanid IN (" . $restrict_query . ") ";
             }
         }
 
@@ -127,25 +192,44 @@ class Rekap_produk_target_model extends CI_Model
               AND rpv.actual_visit = 1
               AND rpv.customerid IS NOT NULL
               {$where_prod}
+              {$where_salesman}
             ORDER BY rpv.check_in DESC
         ";
         return $this->db->query($sql, $params)->result_array();
     }
 
-    public function load_all_detail_sales($start_date, $end_date, $product_ids = [])
+    public function load_all_detail_sales($data)
     {
         $where_prod = "";
-        $params = [$start_date, $end_date];
+        $where_salesman = "";
+        $params = [$data['start_date'], $data['end_date']];
 
-        if (!empty($product_ids)) {
+        if (!empty($data['product_ids'])) {
             $ids = [];
-            foreach ($product_ids as $id) {
+            foreach ($data['product_ids'] as $id) {
                 if (!empty($id)) {
                     $ids[] = $this->db->escape($id);
                 }
             }
             if (!empty($ids)) {
                 $where_prod = " AND rpv.product_id IN (" . implode(',', $ids) . ") ";
+            }
+        }
+
+        if (!empty($data['salesman_ids'])) {
+            $ids = [];
+            foreach ($data['salesman_ids'] as $id) {
+                if (!empty($id)) {
+                    $ids[] = $this->db->escape($id);
+                }
+            }
+            if (!empty($ids)) {
+                $where_salesman = " AND rpv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rpv.salesmanid IN (" . $restrict_query . ") ";
             }
         }
 
@@ -165,6 +249,7 @@ class Rekap_produk_target_model extends CI_Model
             WHERE rpv.tanggal BETWEEN ? AND ?
               AND rpv.actual_qty > 0
               {$where_prod}
+              {$where_salesman}
             ORDER BY rpv.check_in DESC
         ";
         return $this->db->query($sql, $params)->result_array();

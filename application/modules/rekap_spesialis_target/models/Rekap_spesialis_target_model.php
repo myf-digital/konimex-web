@@ -3,23 +3,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Rekap_spesialis_target_model extends CI_Model
 {
-    public function load_summary($start_date, $end_date, $spesialisasi_ids = [])
+    public function load_summary($data)
     {
-        $start_month = date('Y-m', strtotime($start_date));
-        $end_month = date('Y-m', strtotime($end_date));
+        $start_month = date('Y-m', strtotime($data['start_date']));
+        $end_month = date('Y-m', strtotime($data['end_date']));
 
         $where_spec = "";
-        $params = [$start_month, $end_month, $start_date, $end_date];
+        $where_salesman = "";
+        $params = [$start_month, $end_month, $data['start_date'], $data['end_date']];
 
-        if (!empty($spesialisasi_ids)) {
+        if (!empty($data['spesialisasi_ids'])) {
             $ids = [];
-            foreach ($spesialisasi_ids as $id) {
+            foreach ($data['spesialisasi_ids'] as $id) {
                 if (!is_null($id) && $id !== '') {
                     $ids[] = (int)$id;
                 }
             }
             if (!empty($ids)) {
                 $where_spec = " AND rsv.spesialisasi_id IN (" . implode(',', $ids) . ") ";
+            }
+        }
+
+        if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rsv.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
@@ -40,14 +48,33 @@ class Rekap_spesialis_target_model extends CI_Model
             ) t ON t.spesialisasi_id = rsv.spesialisasi_id
             WHERE rsv.tanggal BETWEEN ? AND ?
               {$where_spec}
+              {$where_salesman}
             GROUP BY rsv.spesialisasi_id, rsv.nama_spesialisasi, t.target
             ORDER BY rsv.nama_spesialisasi ASC
         ";
         return $this->db->query($sql, $params)->result_array();
     }
 
-    public function load_detail($spesialisasi_id, $start_date, $end_date)
+    public function load_detail($data)
     {
+        $where_salesman = "";
+        if (!empty($data['salesman_ids'])) {
+            $ids = [];
+            foreach ($data['salesman_ids'] as $id) {
+                if (!empty($id)) {
+                    $ids[] = $this->db->escape($id);
+                }
+            }
+            if (!empty($ids)) {
+                $where_salesman = " AND rsv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rsv.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
+
         $sql = "
             SELECT 
                 rsv.salesmanid,
@@ -64,25 +91,44 @@ class Rekap_spesialis_target_model extends CI_Model
             WHERE rsv.spesialisasi_id = ?
               AND rsv.tanggal BETWEEN ? AND ?
               AND rsv.customerid IS NOT NULL
+              {$where_salesman}
             ORDER BY rsv.check_in DESC
         ";
-        return $this->db->query($sql, [$spesialisasi_id, $start_date, $end_date])->result_array();
+        return $this->db->query($sql, [$data['spesialisasi_id'], $data['start_date'], $data['end_date']])->result_array();
     }
 
-    public function load_all_detail($start_date, $end_date, $spesialisasi_ids = [])
+    public function load_all_detail($data)
     {
         $where_spec = "";
-        $params = [$start_date, $end_date];
+        $where_salesman = "";
+        $params = [$data['start_date'], $data['end_date']];
 
-        if (!empty($spesialisasi_ids)) {
+        if (!empty($data['spesialisasi_ids'])) {
             $ids = [];
-            foreach ($spesialisasi_ids as $id) {
+            foreach ($data['spesialisasi_ids'] as $id) {
                 if (!is_null($id) && $id !== '') {
                     $ids[] = (int)$id;
                 }
             }
             if (!empty($ids)) {
                 $where_spec = " AND rsv.spesialisasi_id IN (" . implode(',', $ids) . ") ";
+            }
+        }
+
+        if (!empty($data['salesman_ids'])) {
+            $ids = [];
+            foreach ($data['salesman_ids'] as $id) {
+                if (!empty($id)) {
+                    $ids[] = $this->db->escape($id);
+                }
+            }
+            if (!empty($ids)) {
+                $where_salesman = " AND rsv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rsv.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
@@ -104,6 +150,7 @@ class Rekap_spesialis_target_model extends CI_Model
             WHERE rsv.tanggal BETWEEN ? AND ?
               AND rsv.customerid IS NOT NULL
               {$where_spec}
+              {$where_salesman}
             ORDER BY rsv.check_in DESC
         ";
         return $this->db->query($sql, $params)->result_array();

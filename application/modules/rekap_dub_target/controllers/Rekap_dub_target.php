@@ -22,30 +22,37 @@ class Rekap_dub_target extends BaseController
     public function load()
     {
         $param = param_input();
-        $start_date = $param['start_date'] ?? date('Y-m-01');
-        $end_date = $param['end_date'] ?? date('Y-m-d');
-        $salesman_ids = $param['salesman_ids'] ?? [];
-        
-        $data = $this->rekap->load_summary($start_date, $end_date, $salesman_ids);
+        $data = [
+            'start_date' => $param['start_date'] ?? date('Y-m-01'),
+            'end_date' => $param['end_date'] ?? date('Y-m-d'),
+            'salesman_ids' => !empty($param['salesman_ids']) ? $param['salesman_ids'] : [],
+            'usersession' => $param['usersession'],
+            'restrict_level' => $param['restrict_level'],
+        ];
+        $result = $this->rekap->load_summary($data);
         responseJSON([
             'status' => true,
-            'data' => $data
+            'data' => $result
         ]);
     }
 
     public function load_detail()
     {
         $param = param_input();
-        $salesmanid = $param['salesmanid'] ?? '';
-        $start_date = $param['start_date'] ?? date('Y-m-01');
-        $end_date = $param['end_date'] ?? date('Y-m-d');
+        $data = [
+            'salesmanid' => $param['salesmanid'] ?? '',
+            'start_date' => $param['start_date'] ?? date('Y-m-01'),
+            'end_date' => $param['end_date'] ?? date('Y-m-d'),
+            'usersession' => $param['usersession'] ?? "",
+            'restrict_level' => $param['restrict_level'] ?? 0
+        ];
 
-        if (empty($salesmanid)) {
+        if (empty($data['salesmanid'])) {
             responseJSON(['status' => false, 'message' => 'Salesman ID tidak valid.']);
             return;
         }
 
-        $data = $this->rekap->load_detail($salesmanid, $start_date, $end_date);
+        $data = $this->rekap->load_detail($data);
         responseJSON([
             'status' => true,
             'data' => $data
@@ -54,12 +61,26 @@ class Rekap_dub_target extends BaseController
 
     public function export()
     {
-        $start_date = $this->input->get('start_date') ?? date('Y-m-01');
-        $end_date = $this->input->get('end_date') ?? date('Y-m-d');
-        $salesman_ids_str = $this->input->get('salesman_ids');
-        $salesman_ids = !empty($salesman_ids_str) ? explode(',', $salesman_ids_str) : [];
+        $salesmanIds = $this->input->get('salesman_ids') ?? null;
+        $data = [
+            'start_date' => $this->input->get('start_date') ?? date('Y-m-01'),
+            'end_date' => $this->input->get('end_date') ?? date('Y-m-d'),
+            'usersession' => $this->input->get('usersession') ?? "",
+            'restrict_level' => $this->input->get('restrict_level') ?? 0,
+            'salesman_ids' => !empty($salesmanIds) ? explode(',', $salesmanIds) : [],
+        ];
 
-        $data = $this->rekap->load_summary($start_date, $end_date, $salesman_ids);
+        $result = $this->rekap->load_summary($data);
+
+        if (empty($data['salesman_ids']) && !empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $query = $this->db->query($restrict_query);
+                if ($query) {
+                    $data['salesman_ids'] = array_column($query->result_array(), 'salesmanid');
+                }
+            }
+        }
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -81,7 +102,7 @@ class Rekap_dub_target extends BaseController
 
         $row = 2;
         $no = 1;
-        foreach ($data as $r) {
+        foreach ($result as $r) {
             $target_dub = (int)$r['target_dub'];
             $act_planned = (int)$r['actual_call_planned'];
             $pct_dub = $target_dub > 0 ? round(($act_planned / $target_dub) * 100) : 0;
@@ -134,7 +155,7 @@ class Rekap_dub_target extends BaseController
         $detailSheet->getStyle('A1:O1')->getFont()->setBold(true);
         $detailSheet->getStyle('A1:O1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $details = $this->rekap->load_all_detail($start_date, $end_date, $salesman_ids);
+        $details = $this->rekap->load_all_detail($data);
         $dRow = 2;
         $dNo = 1;
         foreach ($details as $d) {
@@ -167,7 +188,7 @@ class Rekap_dub_target extends BaseController
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        $filename = "Rekap_DUB_Target_{$start_date}_to_{$end_date}";
+        $filename = "Rekap_DUB_Target_{$data['start_date']}_to_{$data['end_date']}";
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel');

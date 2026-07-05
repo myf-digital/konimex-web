@@ -1,5 +1,6 @@
 $(function () {
   const common = new Common();
+  const paramsession = common.getCookie("session");
   const $startDate = $("#start_date");
   const $endDate = $("#end_date");
   const $btnLoad = $("#btn_load");
@@ -91,7 +92,13 @@ $(function () {
     $.ajax({
       url: BASE_URL + "rekap_produk_target/load",
       type: "POST",
-      data: { start_date: start, end_date: end, product_ids: product_ids },
+      data: {
+        start_date: start,
+        end_date: end,
+        product_ids: product_ids,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      },
       dataType: "json",
       success: function (res) {
         if (res.status && res.data && res.data.length > 0) {
@@ -156,7 +163,13 @@ $(function () {
     $.ajax({
       url: BASE_URL + "rekap_produk_target/load_detail",
       type: "POST",
-      data: { product_id: product_id, start_date: start, end_date: end },
+      data: {
+        product_id: product_id,
+        start_date: start,
+        end_date: end,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      },
       dataType: "json",
       success: function (res) {
         if (res.status) {
@@ -238,6 +251,10 @@ $(function () {
       start +
       "&end_date=" +
       end +
+      "&usersession=" +
+      paramsession.username +
+      "&restrict_level=" +
+      paramsession.restrict_level +
       "&product_ids=" +
       product_ids.join(",");
   });

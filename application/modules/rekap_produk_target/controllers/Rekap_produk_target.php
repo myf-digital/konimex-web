@@ -22,31 +22,40 @@ class Rekap_produk_target extends BaseController
     public function load()
     {
         $param = param_input();
-        $start_date = $param['start_date'] ?? date('Y-m-01');
-        $end_date = $param['end_date'] ?? date('Y-m-d');
-        $product_ids = $param['product_ids'] ?? [];
+        $data = [
+            'start_date' => $param['start_date'] ?? date('Y-m-01'),
+            'end_date' => $param['end_date'] ?? date('Y-m-d'),
+            'product_ids' => !empty($param['product_ids']) ? explode(',', $param['product_ids']) : [],
+            'usersession' => $param['usersession'] ?? "",
+            'restrict_level' => $param['restrict_level'] ?? 0
+        ];
 
-        $data = $this->rekap->load_summary($start_date, $end_date, $product_ids);
+        $result = $this->rekap->load_summary($data);
         responseJSON([
             'status' => true,
-            'data' => $data
+            'data' => $result
         ]);
     }
 
     public function load_detail()
     {
         $param = param_input();
-        $product_id = $param['product_id'] ?? '';
-        $start_date = $param['start_date'] ?? date('Y-m-01');
-        $end_date = $param['end_date'] ?? date('Y-m-d');
+        $data = [
+            'product_id' => $param['product_id'] ?? '',
+            'start_date' => $param['start_date'] ?? date('Y-m-01'),
+            'end_date' => $param['end_date'] ?? date('Y-m-d'),
+            'product_ids' => !empty($param['product_ids']) ? explode(',', $param['product_ids']) : [],
+            'usersession' => $param['usersession'] ?? "",
+            'restrict_level' => $param['restrict_level'] ?? 0,
+        ];
 
-        if (empty($product_id)) {
+        if (empty($data['product_id'])) {
             responseJSON(['status' => false, 'message' => 'Product ID tidak valid.']);
             return;
         }
 
-        $visits = $this->rekap->load_detail_visit($product_id, $start_date, $end_date);
-        $sales = $this->rekap->load_detail_sales($product_id, $start_date, $end_date);
+        $visits = $this->rekap->load_detail_visit($data);
+        $sales = $this->rekap->load_detail_sales($data);
 
         responseJSON([
             'status' => true,
@@ -57,12 +66,16 @@ class Rekap_produk_target extends BaseController
 
     public function export()
     {
-        $start_date = $this->input->get('start_date') ?? date('Y-m-01');
-        $end_date = $this->input->get('end_date') ?? date('Y-m-d');
-        $product_ids_str = $this->input->get('product_ids');
-        $product_ids = !empty($product_ids_str) ? explode(',', $product_ids_str) : [];
+        $productIds = $this->input->get('product_ids') ?? null;
+        $data = [
+            'start_date' => $this->input->get('start_date') ?? date('Y-m-01'),
+            'end_date' => $this->input->get('end_date') ?? date('Y-m-d'),
+            'product_ids' => !empty($productIds) ? explode(',', $productIds) : [],
+            'usersession' => $this->input->get('usersession') ?? "",
+            'restrict_level' => $this->input->get('restrict_level') ?? 0,
+        ];
 
-        $data = $this->rekap->load_summary($start_date, $end_date, $product_ids);
+        $result = $this->rekap->load_summary($data);
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -83,7 +96,7 @@ class Rekap_produk_target extends BaseController
 
         $row = 2;
         $no = 1;
-        foreach ($data as $r) {
+        foreach ($result as $r) {
             $target_visit = (int)$r['target'];
             $act_visit = (int)$r['actual_visit'];
             $pct_visit = $target_visit > 0 ? round(($act_visit / $target_visit) * 100) : 0;
@@ -132,7 +145,7 @@ class Rekap_produk_target extends BaseController
         $detailVisitSheet->getStyle('A1:L1')->getFont()->setBold(true);
         $detailVisitSheet->getStyle('A1:L1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $visits = $this->rekap->load_all_detail_visit($start_date, $end_date, $product_ids);
+        $visits = $this->rekap->load_all_detail_visit($data);
         $vRow = 2;
         $vNo = 1;
         foreach ($visits as $v) {
@@ -176,7 +189,7 @@ class Rekap_produk_target extends BaseController
         $detailSalesSheet->getStyle('A1:J1')->getFont()->setBold(true);
         $detailSalesSheet->getStyle('A1:J1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $sales = $this->rekap->load_all_detail_sales($start_date, $end_date, $product_ids);
+        $sales = $this->rekap->load_all_detail_sales($data);
         $sRow = 2;
         $sNo = 1;
         foreach ($sales as $s) {
@@ -203,7 +216,7 @@ class Rekap_produk_target extends BaseController
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        $filename = "Rekap_Produk_Target_{$start_date}_to_{$end_date}";
+        $filename = "Rekap_Produk_Target_{$data['start_date']}_to_{$data['end_date']}";
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel');

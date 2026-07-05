@@ -3,23 +3,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Rekap_dub_target_model extends CI_Model
 {
-    public function load_summary($start_date, $end_date, $salesman_ids = [])
+    public function load_summary($data)
     {
-        $start_month = date('Y-m', strtotime($start_date));
-        $end_month = date('Y-m', strtotime($end_date));
+        $start_month = date('Y-m', strtotime($data['start_date']));
+        $end_month = date('Y-m', strtotime($data['end_date']));
 
         $where_salesman = "";
-        $params = [$start_month, $end_month, $start_date, $end_date];
+        $params = [
+            $start_month,
+            $end_month,
+            $data['start_date'],
+            $data['end_date']
+        ];
 
-        if (!empty($salesman_ids)) {
+        if (!empty($data['salesman_ids'])) {
             $ids = [];
-            foreach ($salesman_ids as $id) {
+            foreach ($data['salesman_ids'] as $id) {
                 if (!empty($id)) {
                     $ids[] = $this->db->escape($id);
                 }
             }
             if (!empty($ids)) {
                 $where_salesman = " AND rdv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rdv.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
@@ -53,7 +63,7 @@ class Rekap_dub_target_model extends CI_Model
         return $this->db->query($sql, $params)->result_array();
     }
 
-    public function load_detail($salesmanid, $start_date, $end_date)
+    public function load_detail($data)
     {
         $sql = "
             SELECT 
@@ -74,23 +84,28 @@ class Rekap_dub_target_model extends CI_Model
               AND rdv.customerid IS NOT NULL
             ORDER BY rdv.check_in DESC
         ";
-        return $this->db->query($sql, [$salesmanid, $start_date, $end_date])->result_array();
+        return $this->db->query($sql, [$data['salesmanid'], $data['start_date'], $data['end_date']])->result_array();
     }
 
-    public function load_all_detail($start_date, $end_date, $salesman_ids = [])
+    public function load_all_detail($data)
     {
         $where_salesman = "";
-        $params = [$start_date, $end_date];
+        $params = [$data['start_date'], $data['end_date']];
 
-        if (!empty($salesman_ids)) {
+        if (!empty($data['salesman_ids'])) {
             $ids = [];
-            foreach ($salesman_ids as $id) {
+            foreach ($data['salesman_ids'] as $id) {
                 if (!empty($id)) {
                     $ids[] = $this->db->escape($id);
                 }
             }
             if (!empty($ids)) {
                 $where_salesman = " AND rdv.salesmanid IN (" . implode(',', $ids) . ") ";
+            }
+        } else if (!empty($data['restrict_level'])) {
+            $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+            if ($restrict_query) {
+                $where_salesman = " AND rdv.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
