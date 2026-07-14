@@ -173,14 +173,17 @@ class Customer_model extends CI_Model
             )";
         }
 
-        $field = "a.*,
+        $field = "a.* ";
+
+        $table = " (
+            select
+                a.*,
                 b.nama_regional,
                 c.nama_area,
                 d.nama_area as nama_subarea,
                 ifnull(f.tipe_sales,'') position,
-                ifnull(pro.list_professional, '') as list_professional";
-
-        $table = "m_customer a
+                ifnull(pro.list_professional, '') as list_professional
+            from m_customer a
             left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
             left join m_area_areasite c on a.areaid = c.areaid
             left join m_area_subarea d on a.subareaid = d.subareaid
@@ -208,10 +211,11 @@ class Customer_model extends CI_Model
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
-            where a.customerid <> '' ".$strquery;
+            where a.customerid <> '' ".$strquery."
+        ) a";
 
         if ($type == 'export') {
-            $result = $this->db->query("select * from ".$table." order by ifnull(a.modified_date, a.created_date) desc");
+            $result = $this->db->query("select * from ".$table." order by ifnull(modified_date, created_date) desc");
             return $result->result_array();
         }
         

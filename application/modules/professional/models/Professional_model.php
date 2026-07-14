@@ -323,21 +323,25 @@ class Professional_model extends CI_Model
 
     public function load_target($data)
     {
-        $field = "a.*,
-                COALESCE(s.total_actual, 0) as total_actual";
+        $field = "a.* ";
                 
-        $table = "target_professional a
-                LEFT JOIN (
-                    SELECT 
-                        tsm.customerid,
-                        tsm.userid,
-                        tsd.productid,
-                        SUM(tsd.qty_kecil) as total_actual
-                    FROM t_sales_detail tsd
-                    JOIN t_sales_master tsm ON tsm.no_po = tsd.no_po
-                    GROUP BY tsd.productid
-                ) s ON s.userid = a.id_professional AND s.customerid = a.customerid AND s.productid = a.productid
-                WHERE a.id_professional IS NOT NULL";
+        $table = " (
+                    SELECT
+                        a.*,
+                        COALESCE(s.total_actual, 0) as total_actual
+                    FROM target_professional a
+                    LEFT JOIN (
+                        SELECT 
+                            tsm.customerid,
+                            tsm.userid,
+                            tsd.productid,
+                            SUM(tsd.qty_kecil) as total_actual
+                        FROM t_sales_detail tsd
+                        JOIN t_sales_master tsm ON tsm.no_po = tsd.no_po
+                        GROUP BY tsd.productid
+                    ) s ON s.userid = a.id_professional AND s.customerid = a.customerid AND s.productid = a.productid
+                    WHERE a.id_professional IS NOT NULL
+                ) a ";
 
         // COUNT DATA
         $has_heavy_filter = false;
