@@ -224,4 +224,10 @@ class Ref_customer extends BaseController
 		echo $html;
 
 	}
+
+    public function mapping_customer_area()
+    {
+        response($this->customer->mapping_customer_area());
+    }
 }
+

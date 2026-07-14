@@ -1,6 +1,6 @@
 (function () {
   const common = new Common();
-  common.setTitle("Resource");
+  common.setTitle("User Access");
   // declare dom
   let uiForm = $("#fm-resource");
   let uiBtnCancel = $("#btn-cancel-form");
@@ -62,7 +62,7 @@
           required: true,
         },
         password: {
-          required: true,
+          required: !isUpdate,
         },
       },
       messages: {
@@ -85,7 +85,7 @@
     uiSelectArea.on("select2:select select2:unselect", function (e) {
       let sraval = {
         regionalid: uiSelectRegional.val(),
-        areaid: uiSelectArea.val()
+        areaid: uiSelectArea.val(),
       };
       loadSubArea(sraval);
     });
@@ -155,7 +155,7 @@
       uiSelectRole.val(param.role_id).trigger("change");
       uiSelectJabatan.val(param.idjabatan).trigger("change");
       $("input[name='username']").attr("disabled", true);
-      $("input[name='password']").attr("disabled", true);
+      $("input[name='password']").val("");
     } else {
       uiSelectRole.val(null).trigger("change");
       uiSelectJabatan.val(null).trigger("change");

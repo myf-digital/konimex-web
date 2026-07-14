@@ -216,4 +216,36 @@ class Customer_model extends CI_Model
         
         return easy_pagging($data, $field, $table);
     }
+
+    public function mapping_customer_area()
+    {
+        $sql = "
+            UPDATE m_customer c
+            JOIN (
+                SELECT msa.salesmanid, msa.regionalid, msa.areaid, msa.subareaid
+                FROM m_salesman_area msa
+                INNER JOIN (
+                    SELECT salesmanid, MAX(id) AS max_id
+                    FROM m_salesman_area
+                    GROUP BY salesmanid
+                ) msa_max ON msa.salesmanid = msa_max.salesmanid AND msa.id = msa_max.max_id
+            ) sub ON c.salesmanid = sub.salesmanid
+            SET c.regionalid = sub.regionalid,
+                c.areaid = sub.areaid,
+                c.subareaid = sub.subareaid
+            WHERE (c.regionalid IS NULL OR c.regionalid = '' OR c.regionalid = 'null' OR c.regionalid = '0')
+              AND (c.areaid IS NULL OR c.areaid = '' OR c.areaid = 'null' OR c.areaid = '0')
+              AND (c.subareaid IS NULL OR c.subareaid = '' OR c.subareaid = 'null' OR c.subareaid = '0')
+              AND c.salesmanid IS NOT NULL AND c.salesmanid != '' AND c.salesmanid != 'null'
+        ";
+        
+        $this->db->query($sql);
+        $affected_rows = $this->db->affected_rows();
+        
+        return [
+            'status' => true,
+            'message' => "Successfully updated " . $affected_rows . " customer area mapping(s)."
+        ];
+    }
 }
+

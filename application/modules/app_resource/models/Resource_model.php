@@ -60,13 +60,18 @@ class Resource_model extends CI_Model
 
     public function update($data)
     {
-
         $data_subarea = array();
         $data_area = array();
         $data_regionalid = array();
         if(isset($data['subareaid'])){ $data_subarea = $data['subareaid']; unset($data['subareaid']); }
         if(isset($data['areaid'])){ $data_area = $data['areaid']; unset($data['areaid']); }
         if(isset($data['regionalid'])){ $data_regionalid = $data['regionalid']; unset($data['regionalid']); }
+
+        if (isset($data['password']) && strlen(trim($data['password'])) > 0) {
+            $data['password'] = md5($data['password']);
+        } else {
+            unset($data['password']);
+        }
 
         $this->db->where('resource_id', $data['resource_id']);
         $this->db->update('app_resource', $data);

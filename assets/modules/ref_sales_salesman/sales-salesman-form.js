@@ -71,9 +71,6 @@
         "regionalid[]": {
           required: true,
         },
-        "areaid[]": {
-          required: true,
-        },
         join_date: {
           required: true,
         },
@@ -293,7 +290,9 @@
         });
 
         if (isUpdate) {
-          let vals = param.regionalid ? String(param.regionalid).split(",") : [];
+          let vals = param.regionalid
+            ? String(param.regionalid).split(",")
+            : [];
           uiSelectRegional.val(vals).trigger("change");
         } else {
           uiSelectRegional.val(null).trigger("change");
