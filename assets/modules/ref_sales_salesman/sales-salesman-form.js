@@ -44,7 +44,7 @@
           form.push({ name: "siteid", value: param.siteid });
         }
         form.push({ name: "usersession", value: paramsession.username });
-        
+
         let hasSupervisor = false;
         for (let i = 0; i < form.length; i++) {
           if (form[i].name === "total_target") {
@@ -60,7 +60,7 @@
         if (!hasSupervisor) {
           form.push({ name: "supervisorid", value: "" });
         }
-        
+
         return true; // MANDATORY!
       },
       rules: {
@@ -397,7 +397,7 @@
           allowClear: true,
           data: $.map(res, function (o) {
             o.id = o.salesmanid; // replace name with the property used for the text
-            o.text = o.nama_salesman;
+            o.text = o.salesmanid + " - " + o.nama_salesman;
             return o;
           }),
         });
