@@ -44,11 +44,23 @@
           form.push({ name: "siteid", value: param.siteid });
         }
         form.push({ name: "usersession", value: paramsession.username });
+        
+        let hasSupervisor = false;
         for (let i = 0; i < form.length; i++) {
           if (form[i].name === "total_target") {
             form[i].value = form[i].value.replace(/\./g, "");
           }
+          if (form[i].name === "supervisorid") {
+            hasSupervisor = true;
+            if (form[i].value === null || form[i].value === undefined) {
+              form[i].value = "";
+            }
+          }
         }
+        if (!hasSupervisor) {
+          form.push({ name: "supervisorid", value: "" });
+        }
+        
         return true; // MANDATORY!
       },
       rules: {
