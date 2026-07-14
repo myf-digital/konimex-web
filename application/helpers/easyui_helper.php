@@ -26,7 +26,7 @@ function easy_filter($data, $current = array(), $replace = array())
     return $data;
 }
 
-function easy_pagging($data, $fields, $table, $alias = array())
+function easy_pagging($data, $fields, $table, $alias = array(), $count_table = '')
 {
     $ci =& get_instance();
 
@@ -100,7 +100,8 @@ function easy_pagging($data, $fields, $table, $alias = array())
     $order_by = $sort ? "ORDER BY $sort $order" : "";
 
     // ================= COUNT =================
-    $sql_count = "SELECT COUNT(1) as total FROM $table $cond";
+    $final_count_table = !empty($count_table) ? $count_table : $table;
+    $sql_count = "SELECT COUNT(1) as total FROM $final_count_table $cond";
 
     $count_values = $values;
 

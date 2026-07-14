@@ -5,24 +5,58 @@ class Stock_product_model extends CI_Model
 {
     public function load($data)
     {
-        $field = "a.* ";
-        $table = " (
-                    SELECT
-                        a.*,
-                        b.cabang,
-                        COALESCE(s.qty_terjual, 0) as qty_terjual,
-                        (a.qty_total - COALESCE(s.qty_terjual, 0)) as stock_sisa
-                    FROM stock_product a
-                    LEFT JOIN m_cabang b ON b.cab = a.nama_cabang
-                    LEFT JOIN (
+        $field = "a.*,
+                b.cabang,
+                COALESCE(s.qty_terjual, 0) as qty_terjual,
+                (a.qty_total - COALESCE(s.qty_terjual, 0)) as stock_sisa";
+                
+        $table = "stock_product a
+                LEFT JOIN m_cabang b ON b.cab = a.nama_cabang
+                LEFT JOIN (
+                    SELECT 
+                        productid,
+                        SUM(qty_kecil) as qty_terjual
+                    FROM t_sales_detail
+                    GROUP BY productid
+                ) s ON s.productid = a.kode_product_principal";
+
+        // COUNT DATA
+        $has_heavy_filter = false;
+        if (!empty($data['filterRules'])) {
+            $filters = json_decode($data['filterRules'], true);
+            if (is_array($filters)) {
+                foreach ($filters as $f) {
+                    if (isset($f['field']) && in_array($f['field'], ['qty_terjual', 'stock_sisa'])) {
+                        $has_heavy_filter = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $s_join = "";
+        if ($has_heavy_filter) {
+            $s_join = " LEFT JOIN (
                         SELECT 
                             productid,
                             SUM(qty_kecil) as qty_terjual
                         FROM t_sales_detail
                         GROUP BY productid
-                    ) s ON s.productid = a.kode_product_principal
+                    ) s ON s.productid = a.kode_product_principal ";
+        }
+
+        $count_table = " (
+                    SELECT
+                        a.*,
+                        b.cabang
+                        " . ($has_heavy_filter ? ", COALESCE(s.qty_terjual, 0) as qty_terjual, (a.qty_total - COALESCE(s.qty_terjual, 0)) as stock_sisa" : "") . "
+                    FROM stock_product a
+                    LEFT JOIN m_cabang b ON b.cab = a.nama_cabang
+                    " . $s_join . "
                 ) a ";
-        return easy_pagging($data, $field, $table);
+        // COUNT DATA
+
+        return easy_pagging($data, $field, $table, array(), $count_table);
     }
 
     public function load_history($data)

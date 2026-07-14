@@ -323,13 +323,39 @@ class Professional_model extends CI_Model
 
     public function load_target($data)
     {
-        $field = "a.* ";
-        $table = " (
-                    SELECT
-                        a.*,
-                        COALESCE(s.total_actual, 0) as total_actual
-                    FROM target_professional a
-                    LEFT JOIN (
+        $field = "a.*,
+                COALESCE(s.total_actual, 0) as total_actual";
+                
+        $table = "target_professional a
+                LEFT JOIN (
+                    SELECT 
+                        tsm.customerid,
+                        tsm.userid,
+                        tsd.productid,
+                        SUM(tsd.qty_kecil) as total_actual
+                    FROM t_sales_detail tsd
+                    JOIN t_sales_master tsm ON tsm.no_po = tsd.no_po
+                    GROUP BY tsd.productid
+                ) s ON s.userid = a.id_professional AND s.customerid = a.customerid AND s.productid = a.productid
+                WHERE a.id_professional IS NOT NULL";
+
+        // COUNT DATA
+        $has_heavy_filter = false;
+        if (!empty($data['filterRules'])) {
+            $filters = json_decode($data['filterRules'], true);
+            if (is_array($filters)) {
+                foreach ($filters as $f) {
+                    if (isset($f['field']) && $f['field'] === 'total_actual') {
+                        $has_heavy_filter = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $s_join = "";
+        if ($has_heavy_filter) {
+            $s_join = " LEFT JOIN (
                         SELECT 
                             tsm.customerid,
                             tsm.userid,
@@ -338,10 +364,20 @@ class Professional_model extends CI_Model
                         FROM t_sales_detail tsd
                         JOIN t_sales_master tsm ON tsm.no_po = tsd.no_po
                         GROUP BY tsd.productid
-                    ) s ON s.userid = a.id_professional AND s.customerid = a.customerid AND s.productid = a.productid
+                    ) s ON s.userid = a.id_professional AND s.customerid = a.customerid AND s.productid = a.productid ";
+        }
+
+        $count_table = " (
+                    SELECT
+                        a.*
+                        " . ($has_heavy_filter ? ", COALESCE(s.total_actual, 0) as total_actual" : "") . "
+                    FROM target_professional a
+                    " . $s_join . "
                     WHERE a.id_professional IS NOT NULL
                 ) a ";
-        return easy_pagging($data, $field, $table);
+        // COUNT DATA
+
+        return easy_pagging($data, $field, $table, array(), $count_table);
     }
 
     public function load_history($data)

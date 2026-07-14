@@ -138,6 +138,11 @@ class Customer_model extends CI_Model
 
     public function load($data, $type = 'load')
     {
+        if (empty($data['sort'])) {
+            $data['sort'] = "ifnull(a.modified_date, a.created_date)";
+            $data['order'] = "desc";
+        }
+
 		if (empty($data['account']) || $data['account'] == 'All') {
 			$strsubquery = "";
 		} else {
@@ -168,16 +173,14 @@ class Customer_model extends CI_Model
             )";
         }
 
-        $field = "a.* ";
-        $table = " (
-            select
-                a.*,
+        $field = "a.*,
                 b.nama_regional,
                 c.nama_area,
                 d.nama_area as nama_subarea,
                 ifnull(f.tipe_sales,'') position,
-                ifnull(pro.list_professional, '') as list_professional
-            from m_customer a
+                ifnull(pro.list_professional, '') as list_professional";
+
+        $table = "m_customer a
             left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
             left join m_area_areasite c on a.areaid = c.areaid
             left join m_area_subarea d on a.subareaid = d.subareaid
@@ -205,16 +208,73 @@ class Customer_model extends CI_Model
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
-            where a.customerid <> '' ".$strquery."
-            order by ifnull(a.modified_date, a.created_date) desc
-        ) a";
+            where a.customerid <> '' ".$strquery;
 
         if ($type == 'export') {
-            $result = $this->db->query("select * from ".$table);
+            $result = $this->db->query("select * from ".$table." order by ifnull(a.modified_date, a.created_date) desc");
             return $result->result_array();
         }
         
-        return easy_pagging($data, $field, $table);
+        // COUNT DATA
+        $has_pro_filter = false;
+        if (!empty($data['filterRules'])) {
+            $filters = json_decode($data['filterRules'], true);
+            if (is_array($filters)) {
+                foreach ($filters as $f) {
+                    if (isset($f['field']) && $f['field'] === 'list_professional') {
+                        $has_pro_filter = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $pro_join = "";
+        if ($has_pro_filter) {
+            $pro_join = " left join (
+                select 
+                    rpm.customerid, 
+                    group_concat(
+                        concat(
+                            rp.id,' - ',
+                            rp.nama_professional,
+                            case 
+                                when (rs.name is not null and rs.name <> '') and (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rs.name, ' - ', rp.type, ')')
+                                when (rs.name is not null and rs.name <> '') 
+                                    then concat(' (', rs.name, ')')
+                                when (rp.type is not null and rp.type <> '') 
+                                    then concat(' (', rp.type, ')')
+                                else ''
+                            end
+                        ) separator '||'
+                    ) as list_professional
+                from ref_professional_mapping rpm
+                left join ref_professional rp on rp.id = rpm.id_professional
+                left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
+                group by rpm.customerid
+            ) AS pro ON a.customerid = pro.customerid ";
+        }
+
+        $count_table = " (
+            select
+                a.*,
+                b.nama_regional,
+                c.nama_area,
+                d.nama_area as nama_subarea,
+                ifnull(f.tipe_sales,'') position
+                " . ($has_pro_filter ? ", ifnull(pro.list_professional, '') as list_professional" : "") . "
+            from m_customer a
+            left join m_area_regional b on a.regionalid=b.regionalid and a.customerid <>''
+            left join m_area_areasite c on a.areaid = c.areaid
+            left join m_area_subarea d on a.subareaid = d.subareaid
+            left join m_sales_salesman f on a.salesmanid = f.salesmanid
+            " . $pro_join . "
+            where a.customerid <> '' ".$strquery."
+        ) a";
+        // COUNT DATA
+
+        return easy_pagging($data, $field, $table, array(), $count_table);
     }
 
     public function mapping_customer_area()
