@@ -56,10 +56,10 @@
 								<label for="areaid">Area</label>
 								<select id="areaid-id" name="areaid" class="form-control" placeholder="Area"></select>
 							</div>
-							<div class="form-group col-md-4">
+							<!-- <div class="form-group col-md-4">
 								<label for="subareaid">Sub Area</label>
 								<select id="subareaid-id" name="subareaid" class="form-control" placeholder="Sub Area"></select>
-							</div>
+							</div> -->
 						</div>
 						<div class="row" style="display: flex; flex-wrap: wrap;">
 							<div class="form-group col-md-6">

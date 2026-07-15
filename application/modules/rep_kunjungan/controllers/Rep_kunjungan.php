@@ -51,53 +51,47 @@ class Rep_kunjungan extends BaseController
 
         if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
         $q = $this->db->query(" 
-                                select
-                                    a.periode,
-                                    a.salesmanid,
-                                    c.nama_salesman,
-                                    c.nama_area,
-                                    concat(a.salesmanid, '-', c.nama_salesman) as parma_user,
-                                    coalesce(nullif(c.nama_subarea, ''), nullif(c.nama_area, ''), nullif(c.nama_regional, ''), '') as parma_area,
-                                    a.customerid,b.nama_customer,b.typeid as cluster, b.alamat,
-                                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
-                                    CASE
-                                        WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
-                                            OR b.latitude IS NULL OR b.longitude IS NULL
-                                            OR a.latitude_cell = 0 OR a.longitude_cell = 0
-                                            OR b.latitude = 0 OR b.longitude = 0
-                                        THEN NULL
-                                        ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
-                                    END AS jarak_meter,
-                                    a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
-                                    t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
-                                    left join (
-                                        select 
-                                            s.salesmanid,
-                                            s.nama_salesman,
-                                            (
-                                                select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                                                from m_salesman_area msa
-                                                join m_area_subarea sa on msa.subareaid = sa.subareaid
-                                                where msa.salesmanid = s.salesmanid
-                                            ) as nama_subarea,
-                                            (
-                                                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                                                from m_salesman_area msa
-                                                join m_area_areasite ar on msa.areaid = ar.areaid
-                                                where msa.salesmanid = s.salesmanid
-                                            ) as nama_area,
-                                            (
-                                                select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                                                from m_salesman_area msa
-                                                join m_area_regional r on r.regionalid = msa.regionalid
-                                                where msa.salesmanid = s.salesmanid
-                                            ) as nama_regional
-                                        from m_sales_salesman s
-                                    ) c on a.salesmanid = c.salesmanid 
-                                    left join m_customer_image d on a.periode =d.periode and a.salesmanid =d.salesmanid and a.customerid =d.customerid and d.image_type ='IMG_CHECKIN'
-                                    where a.periode between '$start' and '$end' $addquery $strquery
-                                order by a.periode desc;
-                            ");
+                select
+                    a.periode,
+                    a.salesmanid,
+                    c.nama_salesman,
+                    c.nama_area,
+                    concat(a.salesmanid, '-', c.nama_salesman) as parma_user,
+                    coalesce(nullif(c.nama_area, ''), nullif(c.nama_regional, ''), '') as parma_area,
+                    a.customerid,b.nama_customer,b.typeid as cluster, b.alamat,
+                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
+                    CASE
+                        WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
+                            OR b.latitude IS NULL OR b.longitude IS NULL
+                            OR a.latitude_cell = 0 OR a.longitude_cell = 0
+                            OR b.latitude = 0 OR b.longitude = 0
+                        THEN NULL
+                        ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
+                    END AS jarak_meter,
+                    a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
+                    t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
+                    left join (
+                        select 
+                            s.salesmanid,
+                            s.nama_salesman,
+                            (
+                                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                from m_salesman_area msa
+                                join m_area_areasite ar on msa.areaid = ar.areaid
+                                where msa.salesmanid = s.salesmanid
+                            ) as nama_area,
+                            (
+                                select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                from m_salesman_area msa
+                                join m_area_regional r on r.regionalid = msa.regionalid
+                                where msa.salesmanid = s.salesmanid
+                            ) as nama_regional
+                        from m_sales_salesman s
+                    ) c on a.salesmanid = c.salesmanid 
+                    left join m_customer_image d on a.periode =d.periode and a.salesmanid =d.salesmanid and a.customerid =d.customerid and d.image_type ='IMG_CHECKIN'
+                    where a.periode between '$start' and '$end' $addquery $strquery
+                order by a.periode desc;
+            ");
 
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
@@ -111,8 +105,8 @@ class Rep_kunjungan extends BaseController
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
 		$html .= '<th style="width: 150px">User Medrep</th>';
-		$html .= '<th style="width: 150px">Medrep Outlet ID</th>';
-		$html .= '<th style="width: 150px">Customer ID Map</th>';
+		$html .= '<th style="width: 150px">Outlet ID</th>';
+		$html .= '<th style="width: 200px">Outlet Name</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';
 		$html .= '<th style="width: 200px">Area</th>';
 		$html .= '<th style="width: 100px">Cluster</th>';
@@ -208,53 +202,47 @@ class Rep_kunjungan extends BaseController
 
         if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
         $q = $this->db->query(" 
-                                select 
-                                    a.periode, 
-                                    a.salesmanid, 
-                                    c.nama_salesman, 
-                                    c.nama_area, 
-                                    concat(a.salesmanid, '-', c.nama_salesman) as parma_user,
-                                    coalesce(nullif(c.nama_subarea, ''), nullif(c.nama_area, ''), nullif(c.nama_regional, ''), '') as parma_area,
-                                    a.customerid, b.nama_customer,b.typeid as cluster, b.alamat,
-                                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
-                                    CASE
-                                        WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
-                                            OR b.latitude IS NULL OR b.longitude IS NULL
-                                            OR a.latitude_cell = 0 OR a.longitude_cell = 0
-                                            OR b.latitude = 0 OR b.longitude = 0
-                                        THEN NULL
-                                        ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
-                                    END AS jarak_meter,
-                                    a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
-                                    t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
-                                    left join (
-                                        select 
-                                            s.salesmanid,
-                                            s.nama_salesman,
-                                            (
-                                                select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                                                from m_salesman_area msa
-                                                join m_area_subarea sa on msa.subareaid = sa.subareaid
-                                                where msa.salesmanid = s.salesmanid
-                                            ) as nama_subarea,
-                                            (
-                                                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                                                from m_salesman_area msa
-                                                join m_area_areasite ar on msa.areaid = ar.areaid
-                                                where msa.salesmanid = s.salesmanid
-                                            ) as nama_area,
-                                            (
-                                                select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                                                from m_salesman_area msa
-                                                join m_area_regional r on r.regionalid = msa.regionalid
-                                                where msa.salesmanid = s.salesmanid
-                                            ) as nama_regional
-                                        from m_sales_salesman s
-                                    ) c on a.salesmanid = c.salesmanid 
-                                    left join m_customer_image d on a.periode =d.periode and a.salesmanid =d.salesmanid and a.customerid =d.customerid and d.image_type ='IMG_CHECKIN'
-                                    where a.periode between '$start' and '$end' $addquery $strquery
-                                order by a.periode desc;
-                            ");
+                select 
+                    a.periode, 
+                    a.salesmanid, 
+                    c.nama_salesman, 
+                    c.nama_area, 
+                    concat(a.salesmanid, '-', c.nama_salesman) as parma_user,
+                    coalesce(nullif(c.nama_area, ''), nullif(c.nama_regional, ''), '') as parma_area,
+                    a.customerid, b.nama_customer,b.typeid as cluster, b.alamat,
+                    b.nama_area as city, b.longitude, b.latitude,a.longitude_cell,a.latitude_cell,
+                    CASE
+                        WHEN a.latitude_cell IS NULL OR a.longitude_cell IS NULL
+                            OR b.latitude IS NULL OR b.longitude IS NULL
+                            OR a.latitude_cell = 0 OR a.longitude_cell = 0
+                            OR b.latitude = 0 OR b.longitude = 0
+                        THEN NULL
+                        ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
+                    END AS jarak_meter,
+                    a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image from 
+                    t_sales_rrk_trans a left join v_outlet_all b on a.customerid =b.customerid 
+                    left join (
+                        select 
+                            s.salesmanid,
+                            s.nama_salesman,
+                            (
+                                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                from m_salesman_area msa
+                                join m_area_areasite ar on msa.areaid = ar.areaid
+                                where msa.salesmanid = s.salesmanid
+                            ) as nama_area,
+                            (
+                                select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                from m_salesman_area msa
+                                join m_area_regional r on r.regionalid = msa.regionalid
+                                where msa.salesmanid = s.salesmanid
+                            ) as nama_regional
+                        from m_sales_salesman s
+                    ) c on a.salesmanid = c.salesmanid 
+                    left join m_customer_image d on a.periode =d.periode and a.salesmanid =d.salesmanid and a.customerid =d.customerid and d.image_type ='IMG_CHECKIN'
+                    where a.periode between '$start' and '$end' $addquery $strquery
+                order by a.periode desc;
+            ");
 
         $lovkunjungan = $q->result_array();
         
@@ -265,8 +253,8 @@ class Rep_kunjungan extends BaseController
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
             ->setCellValue('C2', 'User Medrep')
-            ->setCellValue('D2', 'Medrep Outlet ID')
-            ->setCellValue('E2', 'Latest Customer Name')
+            ->setCellValue('D2', 'Outlet ID')
+            ->setCellValue('E2', 'Outlet Name')
             ->setCellValue('F2', 'Alamat')
             ->setCellValue('G2', 'Area')
             ->setCellValue('H2', 'Cluster')

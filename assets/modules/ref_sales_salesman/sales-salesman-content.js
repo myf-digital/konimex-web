@@ -95,15 +95,15 @@
             width: 120,
             formatter: common.formatListArea,
           },
-          {
-            field: "nama_subarea",
-            title: "Sub Area",
-            halign: "left",
-            align: "left",
-            sortable: "true",
-            width: 120,
-            formatter: common.formatListArea,
-          },
+          // {
+          //   field: "nama_subarea",
+          //   title: "Sub Area",
+          //   halign: "left",
+          //   align: "left",
+          //   sortable: "true",
+          //   width: 120,
+          //   formatter: common.formatListArea,
+          // },
           {
             field: "aktifstatus",
             title: "STATUS",
@@ -131,8 +131,8 @@
       "success",
       "../assets/images/ic_edit.png",
     );
-    const btnOrg = commonGrid.btnBuilder("btn-org", "danger", "fa fa-users");
-    return '<div class="action-grid-toolbar">' + btnCreate + btnOrg + "</div>";
+    // const btnOrg = commonGrid.btnBuilder("btn-org", "primary", "fa fa-users");
+    return '<div class="action-grid-toolbar">' + btnCreate + "</div>";
   }
 
   function optionButton(data) {

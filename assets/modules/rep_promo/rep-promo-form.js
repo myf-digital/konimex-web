@@ -14,7 +14,7 @@
   let uiEndPeriode = $("#end_periode");
   let uiSelectRegional = $("#regional-id");
   let uiSelectArea = $("#area-id");
-  let uiSelectCity = $("#city-id");
+  // let uiSelectCity = $("#city-id");
   //let uiTblReport = $("#tbl-content");
 
   // define from *-content.js
@@ -121,13 +121,13 @@
       //alert(uiSelectTipepromo.val());
       paramdata = { regionalid: uiSelectRegional.val() };
       loadArea(paramdata);
-      loadCity(paramdata);
+      // loadCity(paramdata);
     });
 
     uiSelectArea.on("select2:select", function (e) {
       areaSelected = e.params.data;
       paramdata = { areaid: uiSelectArea.val() };
-      loadCity(paramdata);
+      // loadCity(paramdata);
     });
 
     uiStartPeriode.on("changeDate", function (selected) {
@@ -176,10 +176,10 @@
       allowClear: true,
     });
 
-    uiSelectCity.select2({
-      placeholder: "Select Sub Area",
-      allowClear: true,
-    });
+    // uiSelectCity.select2({
+    //   placeholder: "Select Sub Area",
+    //   allowClear: true,
+    // });
   }
 
   function open_preview() {
@@ -188,7 +188,7 @@
     var end = uiEndPeriode.val();
     var regional = uiSelectRegional.val();
     var area = uiSelectArea.val();
-    var subarea = uiSelectCity.val();
+    // var subarea = uiSelectCity.val();
     var tipepromo = uiSelectTypePromo.val();
     var idjabatan = paramsession.idjabatan;
     var usersession = paramsession.username;
@@ -336,24 +336,20 @@
     } else {
       postData.regionalid = data.regionalid;
     }
-    $.post(
-      common.baseURL("rep_promo/load_city"),
-      postData,
-      function (res) {
-        uiSelectCity.empty();
-        uiSelectCity.select2({
-          placeholder: "Select Sub Area",
-          allowClear: true,
-          data: $.map(res.rows, function (o) {
-            o.id = o.subareaid; // replace name with the property used for the text
-            o.text = o.nama_area;
-            return o;
-          }),
-        });
-        uiSelectCity.val(null).trigger("change");
-        common.loadingClose();
-      },
-    );
+    $.post(common.baseURL("rep_promo/load_city"), postData, function (res) {
+      uiSelectCity.empty();
+      uiSelectCity.select2({
+        placeholder: "Select Sub Area",
+        allowClear: true,
+        data: $.map(res.rows, function (o) {
+          o.id = o.subareaid; // replace name with the property used for the text
+          o.text = o.nama_area;
+          return o;
+        }),
+      });
+      uiSelectCity.val(null).trigger("change");
+      common.loadingClose();
+    });
   }
 
   function save_xls() {
@@ -362,10 +358,10 @@
     var end = uiEndPeriode.val();
     var regional = uiSelectRegional.val();
     var area = uiSelectArea.val();
-    var subarea = uiSelectCity.val();
-    if (!subarea) {
-      subarea = "null";
-    }
+    // var subarea = uiSelectCity.val();
+    // if (!subarea) {
+    //   subarea = "null";
+    // }
     var tipepromo = uiSelectTypePromo.val();
     var idjabatan = paramsession.idjabatan;
     var usersession = paramsession.username;
@@ -395,9 +391,9 @@
           "/" +
           regional +
           "/" +
-          area +
-          "/" +
-          subarea,
+          area,
+        // "/" +
+        // subarea,
       );
     } else {
       common.direct(
@@ -416,29 +412,11 @@
           "/" +
           regional +
           "/" +
-          area +
-          "/" +
-          subarea,
+          area,
+        // "/" +
+        // subarea,
       );
     }
-    /*
-        $.ajax({
-            type:"POST",
-            dataType: "html",
-            beforeSend : function() {
-                //$("#map-content").html('Populating data, please wait..');
-            },
-            url: common.baseURL("rep_promo/savetoxls"),
-            data : "idpromo="+idpromo+"&start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession,
-            success:function(res){
-                response = res;
-                $('#tbl-content').html(response);
-            },
-            error:function(){
-                alert("Load failed");
-            }
-        });
-        */
   }
 
   function save_xls_text_only() {
@@ -447,10 +425,10 @@
     var end = uiEndPeriode.val();
     var area = uiSelectArea.val();
     var regional = uiSelectRegional.val();
-    var subarea = uiSelectCity.val();
-    if (!subarea) {
-      subarea = "null";
-    }
+    // var subarea = uiSelectCity.val();
+    // if (!subarea) {
+    //   subarea = "null";
+    // }
     var tipepromo = uiSelectTypePromo.val();
     var idjabatan = paramsession.idjabatan;
     var usersession = paramsession.username;
@@ -478,9 +456,9 @@
           "/" +
           regional +
           "/" +
-          area +
-          "/" +
-          subarea,
+          area,
+        // "/" +
+        // subarea,
       );
     } else {
       common.direct(
@@ -499,9 +477,9 @@
           "/" +
           regional +
           "/" +
-          area +
-          "/" +
-          subarea,
+          area,
+        // "/" +
+        // subarea,
       );
     }
   }

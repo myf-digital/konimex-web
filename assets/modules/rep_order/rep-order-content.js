@@ -7,7 +7,7 @@
   let uiEndPeriode = $("#end_periode");
   let uiSelectRegional = $("#regional-id");
   let uiSelectArea = $("#area-id");
-  let uiSelectSubArea = $("#subarea-id");
+  // let uiSelectSubArea = $("#subarea-id");
   let uiSelectSalesman = $("#salesmanid-id");
   let uiBtnPreview = $("#btn-preview-form");
 
@@ -57,10 +57,10 @@
         allowClear: true,
       });
 
-      uiSelectSubArea.select2({
-        placeholder: "Select Sub Area",
-        allowClear: true,
-      });
+      // uiSelectSubArea.select2({
+      //   placeholder: "Select Sub Area",
+      //   allowClear: true,
+      // });
 
       uiSelectSalesman.select2({
         placeholder: "Select Salesman",
@@ -74,7 +74,8 @@
               if (term.length === 1) {
                 filtered = $.grep(localSalesmen, function (o) {
                   return (
-                    o.nama_salesman.toLowerCase().indexOf(term.toLowerCase()) > -1 ||
+                    o.nama_salesman.toLowerCase().indexOf(term.toLowerCase()) >
+                      -1 ||
                     o.salesmanid.toLowerCase().indexOf(term.toLowerCase()) > -1
                   );
                 });
@@ -118,7 +119,6 @@
       });
 
       uiSelectRegional.val(null).trigger("change");
-      loadInitialSalesmen();
       common.loadingClose();
     });
 
@@ -131,26 +131,26 @@
     uiSelectRegional.on("change", function () {
       if (!uiSelectRegional.val()) {
         uiSelectArea.empty().trigger("change");
-        uiSelectSubArea.empty().trigger("change");
+        // uiSelectSubArea.empty().trigger("change");
       }
       loadInitialSalesmen();
     });
 
     uiSelectArea.on("select2:select", function (e) {
       let area = e.params.data;
-      loadSubArea(area);
+      // loadSubArea(area);
     });
 
     uiSelectArea.on("change", function () {
       if (!uiSelectArea.val()) {
-        uiSelectSubArea.empty().trigger("change");
+        // uiSelectSubArea.empty().trigger("change");
       }
       loadInitialSalesmen();
     });
 
-    uiSelectSubArea.on("change", function () {
-      loadInitialSalesmen();
-    });
+    // uiSelectSubArea.on("change", function () {
+    //   loadInitialSalesmen();
+    // });
 
     // Action button
     uiBtnPreview.click(function () {
@@ -188,7 +188,7 @@
       rows: 30,
       regionalid: uiSelectRegional.val(),
       areaid: uiSelectArea.val(),
-      subareaid: uiSelectSubArea.val(),
+      // subareaid: uiSelectSubArea.val(),
       usersession: paramsession.username,
       idjabatan: paramsession.idjabatan,
       restrict_level: paramsession.restrict_level,
@@ -207,12 +207,12 @@
             o.salesmanid + " - " + o.nama_salesman,
             o.salesmanid,
             false,
-            false
+            false,
           );
           uiSelectSalesman.append(newOption);
         });
         uiSelectSalesman.val(null).trigger("change");
-      }
+      },
     );
   }
 
@@ -233,7 +233,7 @@
           }),
         });
         uiSelectArea.val(null).trigger("change");
-        uiSelectSubArea.empty().trigger("change");
+        // uiSelectSubArea.empty().trigger("change");
         common.loadingClose();
       },
     );

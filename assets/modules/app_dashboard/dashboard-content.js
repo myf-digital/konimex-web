@@ -88,7 +88,7 @@
             formatter: formatterFileEnd,
           },
           {
-            field: "subarea",
+            field: "area",
             title: "Area",
             width: 100,
             sortable: "true",

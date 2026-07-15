@@ -146,17 +146,24 @@ class Request_new_outlet_model extends CI_Model
         }
 
         $field = "a.* ";
-        $table = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.aktif_week, 
-                                g.nama_salesman gff_name, g.tipe_sales position
-                                    from m_customer a left join m_area_regional b on a.regionalid=b.regionalid
-                                    left join m_area_areasite c on a.areaid = c.areaid
-                                    left join m_area_subarea d on a.subareaid = d.subareaid
-                                    left join m_customer_class e on a.classid = e.classid
-                                    left join m_setup_site f on a.siteid=f.siteid
-                                    left join m_sales_salesman g on a.salesmanid=g.salesmanid
-                                    where a.customerid = ''
-                                    ".$strquery."
-                    ) a";
+        $table = " (
+            select 
+                a.*, 
+                b.nama_regional, 
+                c.nama_area, 
+                e.nama_class as nama_account, 
+                f.aktif_week, 
+                g.nama_salesman gff_name, 
+                g.tipe_sales position
+            from m_customer a 
+            left join m_area_regional b on a.regionalid=b.regionalid
+            left join m_area_areasite c on a.areaid = c.areaid
+            left join m_customer_class e on a.classid = e.classid
+            left join m_setup_site f on a.siteid=f.siteid
+            left join m_sales_salesman g on a.salesmanid=g.salesmanid
+            where a.customerid = ''
+            ".$strquery."
+            ) a";
         return easy_pagging($data, $field, $table);
     }
 

@@ -11,7 +11,7 @@
   let uiSelectTipesales = $("#tipe_sales-id");
   let uiSelectRegional = $("#regionalid-id");
   let uiSelectArea = $("#areaid-id");
-  let uiSelectSubarea = $("#subareaid-id");
+  // let uiSelectSubarea = $("#subareaid-id");
   let uiSupervisor = $("#supervisorid");
   let uiJoinDate = $("#join_date");
   let uiResignDate = $("#resign_date");
@@ -122,10 +122,10 @@
       allowClear: true,
     });
 
-    uiSelectSubarea.select2({
-      placeholder: "Select SubArea",
-      allowClear: true,
-    });
+    // uiSelectSubarea.select2({
+    //   placeholder: "Select SubArea",
+    //   allowClear: true,
+    // });
 
     uiSupervisor.select2({
       placeholder: "Select Leader",
@@ -179,7 +179,7 @@
         });
       } else {
         uiSelectArea.empty().trigger("change");
-        uiSelectSubarea.empty().trigger("change");
+        // uiSelectSubarea.empty().trigger("change");
       }
     });
 
@@ -187,21 +187,21 @@
       if (isInitializing) return;
       let regionalids = uiSelectRegional.val();
       let areaids = $(this).val();
-      if (
-        regionalids &&
-        regionalids.length > 0 &&
-        areaids &&
-        areaids.length > 0
-      ) {
-        loadSubArea({
-          regionalid: regionalids,
-          areaid: areaids,
-          usersession: paramsession.username,
-          restrict_level: paramsession.restrict_level,
-        });
-      } else {
-        uiSelectSubarea.empty().trigger("change");
-      }
+      // if (
+      //   regionalids &&
+      //   regionalids.length > 0 &&
+      //   areaids &&
+      //   areaids.length > 0
+      // ) {
+      //   loadSubArea({
+      //     regionalid: regionalids,
+      //     areaid: areaids,
+      //     usersession: paramsession.username,
+      //     restrict_level: paramsession.restrict_level,
+      //   });
+      // } else {
+      //   uiSelectSubarea.empty().trigger("change");
+      // }
     });
 
     uiSelectTipesales.on("select2:select", function (e) {
@@ -238,19 +238,19 @@
               idjabatan: paramsession.idjabatan,
               restrict_level: paramsession.restrict_level,
             },
-            function () {
-              loadSubArea(
-                {
-                  regionalid: param.regionalid,
-                  areaid: param.areaid,
-                  usersession: paramsession.username,
-                  restrict_level: paramsession.restrict_level,
-                },
-                function () {
-                  isInitializing = false;
-                },
-              );
-            },
+            // function () {
+            //   loadSubArea(
+            //     {
+            //       regionalid: param.regionalid,
+            //       areaid: param.areaid,
+            //       usersession: paramsession.username,
+            //       restrict_level: paramsession.restrict_level,
+            //     },
+            //     function () {
+            //       isInitializing = false;
+            //     },
+            //   );
+            // },
           );
         },
       );

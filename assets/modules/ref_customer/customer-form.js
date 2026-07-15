@@ -7,7 +7,7 @@
   let uiSelectType = $("#typeid-id");
   let uiSelectRegional = $("#regionalid-id");
   let uiSelectArea = $("#areaid-id");
-  let uiSelectSubarea = $("#subareaid-id");
+  // let uiSelectSubarea = $("#subareaid-id");
 
   let param = common.getCookie("module.customer.update");
   let paramsession = common.getCookie("session");
@@ -110,7 +110,7 @@
         usersession: paramsession.username,
         restrict_level: paramsession.restrict_level,
       };
-      loadSubArea(srval);
+      // loadSubArea(srval);
     });
 
     uiSelectRegional.select2({
@@ -123,10 +123,10 @@
       allowClear: true,
     });
 
-    uiSelectSubarea.select2({
-      placeholder: "Select SubArea",
-      allowClear: true,
-    });
+    // uiSelectSubarea.select2({
+    //   placeholder: "Select SubArea",
+    //   allowClear: true,
+    // });
 
     uiSearchProfessional.multiselect({
       search: {
@@ -157,12 +157,12 @@
         idjabatan: paramsession.idjabatan,
         restrict_level: paramsession.restrict_level,
       });
-      loadSubArea({
-        regionalid: param.regionalid,
-        areaid: param.areaid,
-        usersession: paramsession.username,
-        restrict_level: paramsession.restrict_level,
-      });
+      // loadSubArea({
+      //   regionalid: param.regionalid,
+      //   areaid: param.areaid,
+      //   usersession: paramsession.username,
+      //   restrict_level: paramsession.restrict_level,
+      // });
     }
 
     $("#modal-tanggal_lahir, #modal-tanggal_aniv_pernikahan").datepicker({

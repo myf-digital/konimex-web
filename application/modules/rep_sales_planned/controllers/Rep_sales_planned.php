@@ -70,10 +70,6 @@ class Rep_sales_planned extends BaseController
 					<td style="white-space: nowrap;">'.($salesSales->nama_area ?? '-').'</td>
 				</tr>
 				<tr>
-					<td style="white-space: nowrap;">Sub Area</td>
-					<td style="white-space: nowrap;">'.($salesSales->nama_subarea ?? '-').'</td>
-				</tr>
-				<tr>
 					<td style="white-space: nowrap;">Aktif</td>
 					<td style="white-space: nowrap;">'.$salesActive.'</td>
 				</tr>
@@ -133,10 +129,6 @@ class Rep_sales_planned extends BaseController
 		$html .= '<tr>';
 		$html .= '<td style="white-space: nowrap;">Area</td>';
 		$html .= '<td style="white-space: nowrap;">'.$salesSales->nama_area.'</td>';
-		$html .= '</tr>';
-		$html .= '<tr>';
-		$html .= '<td style="white-space: nowrap;">Sub Area</td>';
-		$html .= '<td style="white-space: nowrap;">'.$salesSales->nama_subarea.'</td>';
 		$html .= '</tr>';
 		$html .= '<tr>';
 		$html .= '<td style="white-space: nowrap;">Aktif</td>';
@@ -213,10 +205,9 @@ class Rep_sales_planned extends BaseController
 		$row4 = ['Supervisor', $supervisor];
 		$row5 = ['Regional', $salesSales->nama_regional];
 		$row6 = ['Area', $salesSales->nama_area];
-		$row7 = ['Sub Area', $salesSales->nama_subarea];
-		$row8 = ['Aktif', $salesActive];
+		$row7 = ['Aktif', $salesActive];
 
-		$row10 = ['No', 'Tanggal', 'ID Outlet', 'Nama Outlet', 'Nama Professional'];
+		$row8 = ['No', 'Tanggal', 'ID Outlet', 'Nama Outlet', 'Nama Professional'];
 
 		$spreadsheet->getActiveSheet()
 		    ->fromArray($row1,NULL,'A1');
@@ -231,11 +222,9 @@ class Rep_sales_planned extends BaseController
 		$spreadsheet->getActiveSheet()
 		    ->fromArray($row6,NULL,'A6');
 		$spreadsheet->getActiveSheet()
-		    ->fromArray($row7,NULL,'A7');
+		    ->fromArray($row7,NULL,'A8');
 		$spreadsheet->getActiveSheet()
-		    ->fromArray($row8,NULL,'A8');
-		$spreadsheet->getActiveSheet()
-		    ->fromArray($row10,NULL,'A10');
+		    ->fromArray($row8,NULL,'A10');
 
 		$rowNum = 11;
 		$no = 1;

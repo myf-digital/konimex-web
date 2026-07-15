@@ -10,7 +10,7 @@
   let uiSelectPosition = $("#tipe_sales-id");
   let uiSelectRegional = $("#regional-id");
   let uiSelectArea = $("#area-id");
-  let uiSelectCity = $("#city-id");
+  // let uiSelectCity = $("#city-id");
 
   let paramsession = common.getCookie("session");
 
@@ -57,13 +57,13 @@
       regional = e.params.data;
 
       loadArea(regional);
-      loadCity(regional);
+      // loadCity(regional);
     });
 
     uiSelectArea.on("select2:select", function (e) {
       area = e.params.data;
 
-      loadCity(area);
+      // loadCity(area);
     });
 
     uiStartPeriode.on("changeDate", function (selected) {
@@ -96,10 +96,10 @@
       allowClear: true,
     });
 
-    uiSelectCity.select2({
-      placeholder: "Select Sub Area",
-      allowClear: true,
-    });
+    // uiSelectCity.select2({
+    //   placeholder: "Select Sub Area",
+    //   allowClear: true,
+    // });
 
     uiSelectRegional.val(null).trigger("change");
   }
@@ -160,7 +160,7 @@
 
     var regionalid = uiSelectRegional.val();
     var areaid = uiSelectArea.val();
-    var subareaid = uiSelectCity.val();
+    // var subareaid = uiSelectCity.val();
     $.ajax({
       type: "GET",
       dataType: "html",
@@ -195,9 +195,9 @@
         "&regionalid=" +
         regionalid +
         "&areaid=" +
-        areaid +
-        "&subareaid=" +
-        subareaid,
+        areaid,
+      // "&subareaid=" +
+      // subareaid,
       success: function (res) {
         $("#tbl-content").html(res);
       },
@@ -245,10 +245,10 @@
 
     var regionalid = uiSelectRegional.val();
     var areaid = uiSelectArea.val();
-    var subareaid = uiSelectCity.val();
-    if (!subareaid) {
-      subareaid = "null";
-    }
+    // var subareaid = uiSelectCity.val();
+    // if (!subareaid) {
+    //   subareaid = "null";
+    // }
     common.direct(
       "rep_gffaktif/savetoxlsx/" +
         start +
@@ -265,27 +265,9 @@
         "/" +
         regionalid +
         "/" +
-        areaid +
-        "/" +
-        subareaid,
+        areaid,
+      // "/" +
+      // subareaid,
     );
-    /*
-        $.ajax({
-            type:"POST",
-            dataType: "html",
-            beforeSend : function() {
-                //$("#map-content").html('Populating data, please wait..');
-            },
-            url: common.baseURL("rep_promo/savetoxls"),
-            data : "idpromo="+idpromo+"&start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession,
-            success:function(res){
-                response = res;
-                $('#tbl-content').html(response);
-            },
-            error:function(){
-                alert("Load failed");
-            }
-        });
-        */
   }
 })();

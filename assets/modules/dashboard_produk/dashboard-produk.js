@@ -13,7 +13,13 @@ $(function () {
     subareaid: "",
   };
 
-  let exportData = { summary: [], area: null, subarea: null, subarea_detail: null, visits: null };
+  let exportData = {
+    summary: [],
+    area: null,
+    subarea: null,
+    subarea_detail: null,
+    visits: null,
+  };
 
   const $periode = $("#periode");
   const $tipeSales = $("#tipe_sales");
@@ -128,28 +134,29 @@ $(function () {
 
       let regionalIds = "";
       let areaIds = "";
-      let subareaIds = "";
+      // let subareaIds = "";
       let namaRegional = "";
       let namaArea = "";
-      let namaSubarea = "";
+      // let namaSubarea = "";
       if (rLoc && rLoc.length > 0) {
         regionalIds = rLoc.map((v) => v.regionalid).join(",");
         areaIds = rLoc.map((v) => v.areaid).join(",");
-        subareaIds = rLoc.map((v) => v.subareaid).join(",");
+        // subareaIds = rLoc.map((v) => v.subareaid).join(",");
 
         namaRegional = rLoc.map((v) => v.nama_regional).join(", ");
         namaArea = rLoc.map((v) => v.nama_area).join(", ");
-        namaSubarea = rLoc.map((v) => v.nama_subarea).join(", ");
+        // namaSubarea = rLoc.map((v) => v.nama_subarea).join(", ");
       }
 
       let restrictLevel = parseInt(paramsession.restrict_level);
 
-      if (restrictLevel == 4 && subareaIds) {
-        activeFilters.regionalid = regionalIds;
-        activeFilters.areaid = areaIds;
-        activeFilters.subareaid = subareaIds;
-        loadSubareaDetail(regionalIds, areaIds, subareaIds, namaSubarea);
-      } else if (restrictLevel == 3 && areaIds) {
+      // if (restrictLevel == 4 && subareaIds) {
+      //   activeFilters.regionalid = regionalIds;
+      //   activeFilters.areaid = areaIds;
+      //   activeFilters.subareaid = subareaIds;
+      //   loadSubareaDetail(regionalIds, areaIds, subareaIds, namaSubarea);
+      // }
+      if (restrictLevel == 3 && areaIds) {
         activeFilters.regionalid = regionalIds;
         activeFilters.areaid = areaIds;
         loadAreaDetail(regionalIds, areaIds, namaArea);
@@ -348,31 +355,31 @@ $(function () {
       };
       exportData.subarea_detail = null;
       exportData.visits = null;
-      renderAreaDetail(res.result, regionalid, areaid);
-    });
-  }
-
-  function loadSubareaDetail(regionalid, areaid, subareaid, nama) {
-    activeFilters.regionalid = regionalid;
-    activeFilters.areaid = areaid;
-    activeFilters.subareaid = subareaid;
-
-    $titleDetailSubarea.text(nama);
-    $colDetailSubarea.html(
-      `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
-    );
-    $rowDetailSubarea.show();
-    $rowDetailSalesman.hide();
-
-    scrollTo($rowDetailSubarea);
-
-    apiCall({ regionalid, areaid, subareaid }).done(function (res) {
-      if (res.code !== 200) return;
-      exportData.subarea_detail = { label: nama, data: res.result };
-      exportData.visits = null;
       renderSubareaDetail(res.result);
     });
   }
+
+  // function loadSubareaDetail(regionalid, areaid, subareaid, nama) {
+  //   activeFilters.regionalid = regionalid;
+  //   activeFilters.areaid = areaid;
+  //   activeFilters.subareaid = subareaid;
+
+  //   $titleDetailSubarea.text(nama);
+  //   $colDetailSubarea.html(
+  //     `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
+  //   );
+  //   $rowDetailSubarea.show();
+  //   $rowDetailSalesman.hide();
+
+  //   scrollTo($rowDetailSubarea);
+
+  //   apiCall({ regionalid, areaid, subareaid }).done(function (res) {
+  //     if (res.code !== 200) return;
+  //     exportData.subarea_detail = { label: nama, data: res.result };
+  //     exportData.visits = null;
+  //     renderSubareaDetail(res.result);
+  //   });
+  // }
 
   function loadProductDetail(productId, nama) {
     activeProduct = { id: productId, nama: nama };
@@ -632,22 +639,22 @@ $(function () {
     });
   }
 
-  function renderAreaDetail(data, regionalid, areaid) {
-    $colDetailArea.empty();
-    data.forEach(function (row) {
-      let canvasId = "chart_area_" + row.id;
-      $colDetailArea.append(makeCard(canvasId, row.nama, "col-md-4", true));
-      renderChart(canvasId, row.nama, makeDatasets(row));
-      $(document)
-        .off("click", '[data-canvas="' + canvasId + '"]')
-        .on("click", '[data-canvas="' + canvasId + '"]', function () {
-          loadSubareaDetail(regionalid, areaid, row.id, row.nama);
-        });
-    });
-  }
+  // function renderAreaDetail(data, regionalid, areaid) {
+  //   $colDetailArea.empty();
+  //   data.forEach(function (row) {
+  //     let canvasId = "chart_area_" + row.id;
+  //     $colDetailArea.append(makeCard(canvasId, row.nama, "col-md-4", true));
+  //     renderChart(canvasId, row.nama, makeDatasets(row));
+  //     $(document)
+  //       .off("click", '[data-canvas="' + canvasId + '"]')
+  //       .on("click", '[data-canvas="' + canvasId + '"]', function () {
+  //         loadSubareaDetail(regionalid, areaid, row.id, row.nama);
+  //       });
+  //   });
+  // }
 
   function renderSubareaDetail(data) {
-    $colDetailSubarea.empty();
+    $colDetailArea.empty();
 
     let rows = data
       .map(function (r, i) {
@@ -671,7 +678,7 @@ $(function () {
       })
       .join("");
 
-    $colDetailSubarea.append(`
+    $colDetailArea.append(`
       <div class="dashboard-col-padding">
         <div class="dashboard-card">
           <div class="table-responsive">
@@ -693,7 +700,7 @@ $(function () {
       </div>
     `);
 
-    $colDetailSubarea
+    $colDetailArea
       .find("#tbl-produk tbody tr[data-product-id]")
       .on("click", function () {
         let productId = $(this).data("product-id");

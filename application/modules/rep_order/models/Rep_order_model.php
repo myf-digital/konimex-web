@@ -46,7 +46,7 @@ class Rep_order_model extends CI_Model
 
     public function get_regional($data)
     {
-
+        $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
         $table = " ( select regionalid, nama_regional from m_area_regional 
                         order by regionalid asc
@@ -56,6 +56,7 @@ class Rep_order_model extends CI_Model
 
     public function get_area($data)
     {
+        $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
         $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
                         order by areaid asc
@@ -65,6 +66,7 @@ class Rep_order_model extends CI_Model
 
     public function get_city($data)
     {
+        $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
         $table = " ( select subareaid, nama_area from m_area_subarea where areaid = '".$data['areaid']."' 
                         order by subareaid asc
@@ -501,6 +503,7 @@ class Rep_order_model extends CI_Model
             $search = " and (b.nama_salesman like '%" . $this->db->escape_like_str($data['q']) . "%' or b.salesmanid like '%" . $this->db->escape_like_str($data['q']) . "%') ";
         }
 
+        $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
         $table = " ( select b.salesmanid, b.nama_salesman from m_sales_salesman b
                      where b.aktif = 1 

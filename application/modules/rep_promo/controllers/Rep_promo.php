@@ -85,18 +85,18 @@ class Rep_promo extends BaseController
         if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
 
         $q = $this->db->query(" 
-                                select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                       f.nama_regional, g.nama_area, h.nama_area as city 
-                                from t_activity_promo_gsk_gimmick a
-                                join mapping_promo_active b on a.idpromo=b.idpromo 
-                                left join m_customer c on a.customerid=c.customerid
-                                left join m_customer_class d on c.classid=d.classid
-                                left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                                left join m_area_regional f on c.regionalid=f.regionalid
-                                left join m_area_areasite g on c.areaid = g.areaid
-                                left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$addquery.$strquery.";
-                            ");
+            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
+                    f.nama_regional, g.nama_area, h.nama_area as city 
+            from t_activity_promo_gsk_gimmick a
+            join mapping_promo_active b on a.idpromo=b.idpromo 
+            left join m_customer c on a.customerid=c.customerid
+            left join m_customer_class d on c.classid=d.classid
+            left join m_sales_salesman e on a.salesmanid=e.salesmanid
+            left join m_area_regional f on c.regionalid=f.regionalid
+            left join m_area_areasite g on c.areaid = g.areaid
+            left join m_area_subarea h on c.subareaid = h.subareaid
+            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$addquery.$strquery.";
+        ");
 		//echo $this->db->last_query();
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
@@ -197,18 +197,18 @@ class Rep_promo extends BaseController
         if ($idpromo!='null'){$addquery=" and a.idpromo in (".$idpromo.") ";} else { $addquery="";}
 
         $q = $this->db->query(" 
-                                select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                       f.nama_regional, g.nama_area, h.nama_area as ciry 
-                                from t_activity_promo_gsk a
-                                join mapping_promo_active b on a.idpromo=b.idpromo 
-                                left join m_customer c on a.customerid=c.customerid
-                                left join m_customer_class d on c.classid=d.classid
-                                left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                                left join m_area_regional f on c.regionalid=f.regionalid
-                                left join m_area_areasite g on c.areaid = g.areaid
-                                left join m_area_subarea h on c.subareaid = h.subareaid
-                                where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$addquery.$strquery.";
-                            ");
+                select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
+                        f.nama_regional, g.nama_area, h.nama_area as ciry 
+                from t_activity_promo_gsk a
+                join mapping_promo_active b on a.idpromo=b.idpromo 
+                left join m_customer c on a.customerid=c.customerid
+                left join m_customer_class d on c.classid=d.classid
+                left join m_sales_salesman e on a.salesmanid=e.salesmanid
+                left join m_area_regional f on c.regionalid=f.regionalid
+                left join m_area_areasite g on c.areaid = g.areaid
+                left join m_area_subarea h on c.subareaid = h.subareaid
+                where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$addquery.$strquery.";
+            ");
 		//echo $this->db->last_query();
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
@@ -320,18 +320,18 @@ class Rep_promo extends BaseController
         $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
         
         $q = $this->db->query(" 
-                            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                   f.nama_regional, g.nama_area, h.nama_area as city 
-                            from t_activity_promo_gsk a
-                            join mapping_promo_active b on a.idpromo=b.idpromo 
-                            left join m_customer c on a.customerid=c.customerid
-                            left join m_customer_class d on c.classid=d.classid
-                            left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                            left join m_area_regional f on c.regionalid=f.regionalid
-                            left join m_area_areasite g on c.areaid = g.areaid
-                            left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
-                        ");
+            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
+                    f.nama_regional, g.nama_area, h.nama_area as city 
+            from t_activity_promo_gsk a
+            join mapping_promo_active b on a.idpromo=b.idpromo 
+            left join m_customer c on a.customerid=c.customerid
+            left join m_customer_class d on c.classid=d.classid
+            left join m_sales_salesman e on a.salesmanid=e.salesmanid
+            left join m_area_regional f on c.regionalid=f.regionalid
+            left join m_area_areasite g on c.areaid = g.areaid
+            left join m_area_subarea h on c.subareaid = h.subareaid
+            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
+        ");
         $lovpjp = $q->result_array();
         //echo $this->db->last_query();
         
@@ -464,18 +464,18 @@ class Rep_promo extends BaseController
         $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
 
         $q = $this->db->query(" 
-                            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                   f.nama_regional, g.nama_area, h.nama_area as city 
-                            from t_activity_promo_gsk_gimmick a
-                            join mapping_promo_active b on a.idpromo=b.idpromo 
-                            left join m_customer c on a.customerid=c.customerid
-                            left join m_customer_class d on c.classid=d.classid
-                            left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                            left join m_area_regional f on c.regionalid=f.regionalid
-                            left join m_area_areasite g on c.areaid = g.areaid
-                            left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
-                        ");
+            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
+                    f.nama_regional, g.nama_area, h.nama_area as city 
+            from t_activity_promo_gsk_gimmick a
+            join mapping_promo_active b on a.idpromo=b.idpromo 
+            left join m_customer c on a.customerid=c.customerid
+            left join m_customer_class d on c.classid=d.classid
+            left join m_sales_salesman e on a.salesmanid=e.salesmanid
+            left join m_area_regional f on c.regionalid=f.regionalid
+            left join m_area_areasite g on c.areaid = g.areaid
+            left join m_area_subarea h on c.subareaid = h.subareaid
+            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
+        ");
         ini_set('memory_limit', '512M');
 
         //echo $this->db->last_query(); die();
@@ -625,18 +625,18 @@ class Rep_promo extends BaseController
         $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
 
         $q = $this->db->query(" 
-                            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                   f.nama_regional, g.nama_area, h.nama_area as city 
-                            from t_activity_promo_gsk a
-                            join mapping_promo_active b on a.idpromo=b.idpromo 
-                            left join m_customer c on a.customerid=c.customerid
-                            left join m_customer_class d on c.classid=d.classid
-                            left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                            left join m_area_regional f on c.regionalid=f.regionalid
-                            left join m_area_areasite g on c.areaid = g.areaid
-                            left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
-                        ");
+            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
+                    f.nama_regional, g.nama_area, h.nama_area as city 
+            from t_activity_promo_gsk a
+            join mapping_promo_active b on a.idpromo=b.idpromo 
+            left join m_customer c on a.customerid=c.customerid
+            left join m_customer_class d on c.classid=d.classid
+            left join m_sales_salesman e on a.salesmanid=e.salesmanid
+            left join m_area_regional f on c.regionalid=f.regionalid
+            left join m_area_areasite g on c.areaid = g.areaid
+            left join m_area_subarea h on c.subareaid = h.subareaid
+            where a.tipepromo=url_decode('$tipepromo') and a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
+        ");
         $lovpjp = $q->result_array();
         //echo $this->db->last_query();
         
@@ -740,18 +740,18 @@ class Rep_promo extends BaseController
         $subareaquery = ($subarea && $subarea != 'null') ? ' and c.subareaid="'.$subarea.'" ' : '';
 
         $q = $this->db->query(" 
-                            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
-                                   f.nama_regional, g.nama_area, h.nama_area as city 
-                            from t_activity_promo_gsk_gimmick a
-                            join mapping_promo_active b on a.idpromo=b.idpromo 
-                            left join m_customer c on a.customerid=c.customerid
-                            left join m_customer_class d on c.classid=d.classid
-                            left join m_sales_salesman e on a.salesmanid=e.salesmanid
-                            left join m_area_regional f on c.regionalid=f.regionalid
-                            left join m_area_areasite g on c.areaid = g.areaid
-                            left join m_area_subarea h on c.subareaid = h.subareaid
-                            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
-                        ");
+            select b.promo,d.nama_class,a.*,e.nama_salesman,e.tipe_sales, c.kode_outlet, c.nama_customer,c.alamat,
+                    f.nama_regional, g.nama_area, h.nama_area as city 
+            from t_activity_promo_gsk_gimmick a
+            join mapping_promo_active b on a.idpromo=b.idpromo 
+            left join m_customer c on a.customerid=c.customerid
+            left join m_customer_class d on c.classid=d.classid
+            left join m_sales_salesman e on a.salesmanid=e.salesmanid
+            left join m_area_regional f on c.regionalid=f.regionalid
+            left join m_area_areasite g on c.areaid = g.areaid
+            left join m_area_subarea h on c.subareaid = h.subareaid
+            where a.periode between '".$start."' and '".$end."' ".$regionalquery.$areaquery.$subareaquery.$strquery.$addquery.";
+        ");
         ini_set('memory_limit', '512M');
 
         //echo $this->db->last_query(); die();

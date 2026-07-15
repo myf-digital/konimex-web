@@ -98,7 +98,7 @@ class Rep_productivity extends BaseController
 		foreach ($data as $value) {
 			$html .= '<tr>';
 			$html .= '<td style="width: 50px;">'.$i.'</td>';
-			$html .= '<td style="width:150px;">'.($value['nama_subarea'] ?? $value['nama_area']).'</td>';
+			$html .= '<td style="width:150px;">'.$value['nama_area'].'</td>';
 			$html .= '<td style="width:150px;">'.$value['salesmanid'].'</td>';
 			$html .= '<td style="width:300px;">'.$value['nama_salesman'].'</td>';
 			$html .= '<td style="width:150px;">'.$value['tipe_sales'].'</td>';
@@ -179,7 +179,7 @@ class Rep_productivity extends BaseController
 
             $content = [
                 $i, 
-				$value['nama_subarea'] ?? $value['nama_area'],
+				$value['nama_area'],
 				$value['salesmanid'],
 				$value['nama_salesman'],
 				$value['tipe_sales'],
@@ -279,7 +279,7 @@ class Rep_productivity extends BaseController
         $row = 2;
         foreach ($data as $value) {
 			$sheetProductivity->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $value['nama_subarea'] ?? $value['nama_area'] ?? '')
+                ->setCellValue('B'.$row, $value['nama_area'] ?? '')
                 ->setCellValue('C'.$row, $value['salesmanid'] ?? '')
                 ->setCellValue('D'.$row, $value['nama_salesman'] ?? '')
                 ->setCellValue('E'.$row, $value['tipe_sales'] ?? '')
@@ -317,13 +317,12 @@ class Rep_productivity extends BaseController
             ->setCellValue('G1', 'Channel')
             ->setCellValue('H1', 'Regional')
             ->setCellValue('I1', 'Area')
-            ->setCellValue('J1', 'Sub Area')
-            ->setCellValue('K1', 'CheckIn')
-            ->setCellValue('L1', 'CheckOut')
-            ->setCellValue('M1', 'Time Visit')
-            ->setCellValue('N1', 'Reason')
-            ->setCellValue('O1', 'Description')
-            ->setCellValue('P1', 'Flag');
+            ->setCellValue('J1', 'CheckIn')
+            ->setCellValue('K1', 'CheckOut')
+            ->setCellValue('L1', 'Time Visit')
+            ->setCellValue('M1', 'Reason')
+            ->setCellValue('N1', 'Description')
+            ->setCellValue('O1', 'Flag');
 
         $datavisit = $this->report_productivity->getVisit_salesman($params);
         $i = 1;
@@ -338,13 +337,12 @@ class Rep_productivity extends BaseController
                 ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
                 ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
                 ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
-                ->setCellValue('K'.$row, $valuevisit['check_in'] ?? '')
-                ->setCellValue('L'.$row, $valuevisit['check_out'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['alasan'] ?? '')
-                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '')
-                ->setCellValue('P'.$row, $valuevisit['flag'] ?? '');
+                ->setCellValue('J'.$row, $valuevisit['check_in'] ?? '')
+                ->setCellValue('K'.$row, $valuevisit['check_out'] ?? '')
+                ->setCellValue('L'.$row, $valuevisit['lama_kunjungan'] ?? '')
+                ->setCellValue('M'.$row, $valuevisit['alasan'] ?? '')
+                ->setCellValue('N'.$row, $valuevisit['keterangan'] ?? '')
+                ->setCellValue('O'.$row, $valuevisit['flag'] ?? '');
 			$i++;
             $row++;
         }
@@ -415,12 +413,11 @@ class Rep_productivity extends BaseController
             ->setCellValue('G1', 'Channel')
             ->setCellValue('H1', 'Regional')
             ->setCellValue('I1', 'Area')
-            ->setCellValue('J1', 'Sub Area')
-            ->setCellValue('K1', 'Specialist')
-            ->setCellValue('L1', 'Spesialisasi')
-            ->setCellValue('M1', 'Product Detailing')
-            ->setCellValue('N1', 'Reason')
-            ->setCellValue('O1', 'Description');
+            ->setCellValue('J1', 'Specialist')
+            ->setCellValue('K1', 'Spesialisasi')
+            ->setCellValue('L1', 'Product Detailing')
+            ->setCellValue('M1', 'Reason')
+            ->setCellValue('N1', 'Description');
 
         $datavisit = $this->report_productivity->get_detailing_parma($params);
         $i = 1;
@@ -435,12 +432,11 @@ class Rep_productivity extends BaseController
                 ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
                 ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
                 ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
-                ->setCellValue('K'.$row, $valuevisit['professional_name'] ?? '')
-                ->setCellValue('L'.$row, $valuevisit['spesialisasi'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['products'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['reason'] ?? '')
-                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '');
+                ->setCellValue('J'.$row, $valuevisit['professional_name'] ?? '')
+                ->setCellValue('K'.$row, $valuevisit['spesialisasi'] ?? '')
+                ->setCellValue('L'.$row, $valuevisit['products'] ?? '')
+                ->setCellValue('M'.$row, $valuevisit['reason'] ?? '')
+                ->setCellValue('N'.$row, $valuevisit['keterangan'] ?? '');
 			$i++;
             $row++;
         }
@@ -641,7 +637,7 @@ class Rep_productivity extends BaseController
                 $parmalist[$parmaKey] = [
                     'parma' => $ap['parma'],
                     'parma_name' => $ap['nama_parma'],
-                    'area' => $ap['nama_subarea'] ?? $ap['nama_area'],
+                    'area' => $ap['nama_area'],
                     'daily' => [] // simpan per tanggal
                 ];
             }

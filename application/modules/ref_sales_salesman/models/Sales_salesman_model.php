@@ -33,9 +33,9 @@ class Sales_salesman_model extends CI_Model
         if (isset($data['areaid'])) {
             $data['areaid'] = is_array($data['areaid']) ? implode(',', $data['areaid']) : $data['areaid'];
         }
-        if (isset($data['subareaid'])) {
-            $data['subareaid'] = is_array($data['subareaid']) ? implode(',', $data['subareaid']) : $data['subareaid'];
-        }
+        // if (isset($data['subareaid'])) {
+        //     $data['subareaid'] = is_array($data['subareaid']) ? implode(',', $data['subareaid']) : $data['subareaid'];
+        // }
 
         unset($data['periode_sales']);
         unset($data['total_target']);
@@ -69,9 +69,9 @@ class Sales_salesman_model extends CI_Model
         if (isset($data['areaid'])) {
             $data['areaid'] = is_array($data['areaid']) ? implode(',', $data['areaid']) : $data['areaid'];
         }
-        if (isset($data['subareaid'])) {
-            $data['subareaid'] = is_array($data['subareaid']) ? implode(',', $data['subareaid']) : $data['subareaid'];
-        }
+        // if (isset($data['subareaid'])) {
+        //     $data['subareaid'] = is_array($data['subareaid']) ? implode(',', $data['subareaid']) : $data['subareaid'];
+        // }
 
         unset($data['periode_sales']);
         unset($data['total_target']);
@@ -130,12 +130,6 @@ class Sales_salesman_model extends CI_Model
                     join m_area_areasite c on msa.areaid = c.areaid
                     where msa.salesmanid = a.salesmanid
                 ) as nama_area,
-                (
-                    select group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_subarea d on msa.subareaid = d.subareaid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_subarea,
                 case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
                 mss.nama_salesman as supervisor
             from m_sales_salesman a 
@@ -176,12 +170,6 @@ class Sales_salesman_model extends CI_Model
                     join m_area_areasite c on msa.areaid = c.areaid
                     where msa.salesmanid = a.salesmanid
                 ) as nama_area,
-                (
-                    select group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_subarea d on msa.subareaid = d.subareaid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_subarea,
                 'https://cdn-icons-png.flaticon.com/512/149/149071.png' as img
             FROM m_sales_salesman a
             WHERE a.salesmanid NOT IN (00332,09174,09159,09173)
@@ -305,8 +293,8 @@ class Sales_salesman_model extends CI_Model
         $this->db->delete('m_salesman_area');
 
         // Filter out '0' or empty string values
-        $subareaids = isset($data['subareaid']) ? (is_array($data['subareaid']) ? $data['subareaid'] : [$data['subareaid']]) : [];
-        $subareaids = array_filter($subareaids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
+        // $subareaids = isset($data['subareaid']) ? (is_array($data['subareaid']) ? $data['subareaid'] : [$data['subareaid']]) : [];
+        // $subareaids = array_filter($subareaids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
 
         $areaids = isset($data['areaid']) ? (is_array($data['areaid']) ? $data['areaid'] : [$data['areaid']]) : [];
         $areaids = array_filter($areaids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
@@ -315,21 +303,21 @@ class Sales_salesman_model extends CI_Model
         $regionalids = array_filter($regionalids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
 
         $insertData = [];
-        if (!empty($subareaids)) {
-            $this->db->select('regionalid, areaid, subareaid');
-            $this->db->where_in('subareaid', $subareaids);
-            $subareas = $this->db->get('m_area_subarea')->result_array();
+        // if (!empty($subareaids)) {
+        //     $this->db->select('regionalid, areaid, subareaid');
+        //     $this->db->where_in('subareaid', $subareaids);
+        //     $subareas = $this->db->get('m_area_subarea')->result_array();
             
-            foreach ($subareas as $sa) {
-                $insertData[] = [
-                    'salesmanid' => $salesmanid,
-                    'regionalid' => $sa['regionalid'],
-                    'areaid'     => $sa['areaid'],
-                    'subareaid'  => $sa['subareaid'],
-                ];
-            }
-        } 
-        else if (!empty($areaids)) {
+        //     foreach ($subareas as $sa) {
+        //         $insertData[] = [
+        //             'salesmanid' => $salesmanid,
+        //             'regionalid' => $sa['regionalid'],
+        //             'areaid'     => $sa['areaid'],
+        //             'subareaid'  => $sa['subareaid'],
+        //         ];
+        //     }
+        // } 
+        if (!empty($areaids)) {
             $this->db->select('regionalid, areaid');
             $this->db->where_in('areaid', $areaids);
             $areas = $this->db->get('m_area_areasite')->result_array();
@@ -362,7 +350,7 @@ class Sales_salesman_model extends CI_Model
     public function sync_all_salesman_area() {
         $this->db->trans_start();
         
-        $this->db->select('salesmanid, regionalid, areaid, subareaid');
+        $this->db->select('salesmanid, regionalid, areaid');
         $salesmen = $this->db->get('m_sales_salesman')->result_array();
         
         $count = 0;
@@ -371,7 +359,7 @@ class Sales_salesman_model extends CI_Model
                 'salesmanid' => $s['salesmanid'],
                 'regionalid' => !empty($s['regionalid']) ? explode(',', $s['regionalid']) : [],
                 'areaid'     => !empty($s['areaid']) ? explode(',', $s['areaid']) : [],
-                'subareaid'  => !empty($s['subareaid']) ? explode(',', $s['subareaid']) : [],
+                // 'subareaid'  => !empty($s['subareaid']) ? explode(',', $s['subareaid']) : [],
             ];
             
             $this->save_salesman_area($data);

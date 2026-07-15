@@ -98,25 +98,23 @@ $(function () {
 
       let regionalIds = "";
       let areaIds = "";
-      let subareaIds = "";
+      // let subareaIds = "";
       let namaRegional = "";
       let namaArea = "";
-      let namaSubarea = "";
+      // let namaSubarea = "";
       if (rLoc && rLoc.length > 0) {
         regionalIds = rLoc.map((v) => v.regionalid).join(",");
         areaIds = rLoc.map((v) => v.areaid).join(",");
-        subareaIds = rLoc.map((v) => v.subareaid).join(",");
+        // subareaIds = rLoc.map((v) => v.subareaid).join(",");
 
         namaRegional = rLoc.map((v) => v.nama_regional).join(", ");
         namaArea = rLoc.map((v) => v.nama_area).join(", ");
-        namaSubarea = rLoc.map((v) => v.nama_subarea).join(", ");
+        // namaSubarea = rLoc.map((v) => v.nama_subarea).join(", ");
       }
 
       let restrictLevel = parseInt(paramsession.restrict_level);
 
-      if (restrictLevel == 4 && subareaIds) {
-        loadSubareaDetail(regionalIds, areaIds, subareaIds, namaSubarea);
-      } else if (restrictLevel == 3 && areaIds) {
+      if (restrictLevel == 3 && areaIds) {
         loadAreaDetail(regionalIds, areaIds, namaArea);
       } else if (restrictLevel == 2 && regionalIds) {
         loadRegionDetail(regionalIds, namaRegional);
@@ -283,26 +281,26 @@ $(function () {
     apiCall({ regionalid, areaid }).done(function (res) {
       if (res.code !== 200) return;
       exportData.subarea = { label: nama, data: res.result };
-      renderAreaDetail(res.result, regionalid, areaid);
-    });
-  }
-
-  function loadSubareaDetail(regionalid, areaid, subareaid, nama) {
-    $titleDetailSubarea.text(nama);
-    $colDetailSubarea.html(
-      `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
-    );
-    $rowDetailSubarea.show();
-    $rowDetailSalesman.hide();
-
-    scrollTo($rowDetailSubarea);
-
-    apiCall({ regionalid, areaid, subareaid }).done(function (res) {
-      if (res.code !== 200) return;
-      exportData.salesman = { label: nama, data: res.result };
       renderSubareaDetail(res.result);
     });
   }
+
+  // function loadSubareaDetail(regionalid, areaid, subareaid, nama) {
+  //   $titleDetailSubarea.text(nama);
+  //   $colDetailSubarea.html(
+  //     `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
+  //   );
+  //   $rowDetailSubarea.show();
+  //   $rowDetailSalesman.hide();
+
+  //   scrollTo($rowDetailSubarea);
+
+  //   apiCall({ regionalid, areaid, subareaid }).done(function (res) {
+  //     if (res.code !== 200) return;
+  //     exportData.salesman = { label: nama, data: res.result };
+  //     renderSubareaDetail(res.result);
+  //   });
+  // }
 
   function loadSalesmanDetail(salesmanid, nama) {
     $titleDetailSalesman.text(nama + " (" + salesmanid + ")");
@@ -574,19 +572,19 @@ $(function () {
     });
   }
 
-  function renderAreaDetail(data, regionalid, areaid) {
-    $colDetailArea.empty();
-    data.forEach(function (row) {
-      let canvasId = "chart_area_" + row.id;
-      $colDetailArea.append(makeCard(canvasId, row.nama, "col-md-4", true));
-      renderChart(canvasId, row.nama, makeDatasets(row));
-      $(document)
-        .off("click", '[data-canvas="' + canvasId + '"]')
-        .on("click", '[data-canvas="' + canvasId + '"]', function () {
-          loadSubareaDetail(regionalid, areaid, row.id, row.nama);
-        });
-    });
-  }
+  // function renderAreaDetail(data, regionalid, areaid) {
+  //   $colDetailArea.empty();
+  //   data.forEach(function (row) {
+  //     let canvasId = "chart_area_" + row.id;
+  //     $colDetailArea.append(makeCard(canvasId, row.nama, "col-md-4", true));
+  //     renderChart(canvasId, row.nama, makeDatasets(row));
+  //     $(document)
+  //       .off("click", '[data-canvas="' + canvasId + '"]')
+  //       .on("click", '[data-canvas="' + canvasId + '"]', function () {
+  //         loadSubareaDetail(regionalid, areaid, row.id, row.nama);
+  //       });
+  //   });
+  // }
 
   function exportExcel() {
     let selectedTipeSales = $tipeSales.val();
@@ -711,11 +709,10 @@ $(function () {
         });
       }
       addSection(
-        "Sub Area: " + (exportData.salesman.label || "Sub Area"),
+        "Area: " + (exportData.salesman.label || "Area"),
         hdrSalesman,
         filteredSalesmanData.map(function (r) {
-          let area = r.nama_subarea || "";
-          if (r.nama_area) area += ", " + r.nama_area;
+          let area = r.nama_area || "";
           if (r.nama_regional) area += ", " + r.nama_regional;
           return [
             r.salesmanid,
@@ -958,12 +955,11 @@ $(function () {
   }
 
   function renderSubareaDetail(data) {
-    $colDetailSubarea.empty();
+    $colDetailArea.empty();
 
     let rows = data
       .map(function (r, i) {
-        let area = r.nama_subarea || "";
-        if (r.nama_area) area += ", " + r.nama_area;
+        let area = r.nama_area || "";
         if (r.nama_regional) area += ", " + r.nama_regional;
         return `
           <tr class="clickable-row" data-salesmanid="${r.salesmanid}" data-nama="${r.nama_salesman || ""}">
@@ -983,7 +979,7 @@ $(function () {
       })
       .join("");
 
-    $colDetailSubarea.append(`
+    $colDetailArea.append(`
       <div class="dashboard-col-padding">
         <div class="dashboard-card">
           <div class="table-responsive">
@@ -1008,7 +1004,7 @@ $(function () {
       </div>
     `);
 
-    $colDetailSubarea
+    $colDetailArea
       .find("#tbl-salesman tbody tr[data-salesmanid]")
       .on("click", function () {
         let salesmanid = $(this).data("salesmanid");
