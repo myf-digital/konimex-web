@@ -75,7 +75,7 @@ class Rep_sales_planned_model extends CI_Model
                     b.nama_salesman
                 from req_pjp_daily a
                 left join m_sales_salesman b on a.salesmanid = b.salesmanid
-                where a.siteid = 'KNX01' $strquery
+                where a.siteid = 'HIMALAYA' $strquery
                 order by
                 case a.status
                     when 1 then 1

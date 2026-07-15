@@ -273,23 +273,6 @@ class Rep_productivity_model extends CI_Model
                     join m_area_areasite ar on msa.areaid = ar.areaid
                     where msa.salesmanid = b.salesmanid
                 ) as nama_area,
-                (
-                    select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                    from m_salesman_area msa
-                    join m_area_areasite ar on msa.areaid = ar.areaid
-                    where msa.salesmanid = b.salesmanid
-                ) as city,
-                (
-                    select group_concat(distinct msa.subareaid separator ', ')
-                    from m_salesman_area msa
-                    where msa.salesmanid = b.salesmanid
-                ) as subareaid,
-                (
-                    select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                    from m_salesman_area msa
-                    join m_area_subarea sa on msa.subareaid = sa.subareaid
-                    where msa.salesmanid = b.salesmanid
-                ) as nama_subarea,
                 b.salesmanid,
                 b.nama_salesman,
                 b.tipe_sales, 
@@ -476,47 +459,47 @@ class Rep_productivity_model extends CI_Model
         $start=$data['start_period'];
         $end=$data['end_period'];
 		$query = $this->db->query(" 
-									select 
-									   sls.tanggal as period,
-									   sls.siteid, 
-									   sls.salesmanid,
-									   salesamn.nama_salesman,
-									   sls.customerid,
-									   cst.nama_customer,
-									   e.nama_class as account,
-									   cst.alamat,
-                                       cst.typeid,
-                                       dtl.no_po,
-                                       dtl.no_sales,
-									   dtl.productid,
-									   product.nama_invoice,
-									   sum(dtl.qty_kecil) as qty_jual_in_pcs,
-									   dtl.h_jual,
-									   sum(dtl.qty_kecil*dtl.h_jual) as total_netto,
-                                       case when dtl.status_send='3' then 'Delivered'
-                                            when dtl.status_send='2' then 'Sales Order'
-                                            Else 'Purchase Order'
-                                        end as status
-									from 
-									t_sales_master sls left join
-									t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
-									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
-									m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
-									m_product product on dtl.productid = product.productid 
-                                    left join m_customer_class e on e.classid=cst.classid
-									where sls.tanggal between '".$start."' and '".$end."' 
-                                         and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
-									$area $regional $subarea
-									group by sls.siteid, 
-										   sls.salesmanid,
-										   salesamn.nama_salesman,
-										   sls.customerid,
-										   cst.nama_customer,
-										   cst.alamat,
-										   dtl.productid,
-										   product.nama_invoice,dtl.h_jual;
-									");
+                select 
+                    sls.tanggal as period,
+                    sls.siteid, 
+                    sls.salesmanid,
+                    salesamn.nama_salesman,
+                    sls.customerid,
+                    cst.nama_customer,
+                    e.nama_class as account,
+                    cst.alamat,
+                    cst.typeid,
+                    dtl.no_po,
+                    dtl.no_sales,
+                    dtl.productid,
+                    product.nama_invoice,
+                    sum(dtl.qty_kecil) as qty_jual_in_pcs,
+                    dtl.h_jual,
+                    sum(dtl.qty_kecil*dtl.h_jual) as total_netto,
+                    case when dtl.status_send='3' then 'Delivered'
+                        when dtl.status_send='2' then 'Sales Order'
+                        Else 'Purchase Order'
+                    end as status
+                from 
+                t_sales_master sls left join
+                t_sales_detail dtl on sls.siteid = dtl.siteid and sls.no_po = dtl.no_po left JOIN
+                m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
+                m_customer cst on sls.siteid = cst.siteid and sls.customerid = cst.customerid left JOIN
+                m_sales_salesman salesamn on sls.siteid = salesamn.siteid and sls.salesmanid = salesamn.salesmanid left JOIN  
+                m_product product on dtl.productid = product.productid 
+                left join m_customer_class e on e.classid=cst.classid
+                where sls.tanggal between '".$start."' and '".$end."' 
+                        and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
+                $area $regional $subarea
+                group by sls.siteid, 
+                        sls.salesmanid,
+                        salesamn.nama_salesman,
+                        sls.customerid,
+                        cst.nama_customer,
+                        cst.alamat,
+                        dtl.productid,
+                        product.nama_invoice,dtl.h_jual;
+                ");
         return $query->result_array();
     }
 
@@ -545,37 +528,37 @@ class Rep_productivity_model extends CI_Model
         $start=$data['start_period'];
         $end=$data['end_period'];
 		$query = $this->db->query(" 
-									select 
-									   sls.periode,
-									   sls.siteid, 
-									   sls.salesmanid,
-									   salesamn.nama_salesman,
-									   sls.customerid,
-									   cst.nama_customer,
-									   e.nama_class as account,
-									   sls.productid,
-									   product.nama_invoice,
-                                       product.nama_brand,
-									   case when sls.qty_akhir = 0 then sls.stock_buffer else sls.qty_akhir end qty_akhir
-									from 
-									t_sales_crc sls left join
-									m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
-									m_customer cst on sls.customerid = cst.customerid left JOIN
-									m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid left JOIN  
-									m_product product on sls.productid = product.productid 
-                                    left join m_customer_class e on e.classid=cst.classid
-									where sls.periode between '".$start."' and '".$end."' 
-                                    and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
-									$area $regional $subarea
-									group by sls.siteid, 
-										   sls.salesmanid,
-										   salesamn.nama_salesman,
-										   sls.customerid,
-										   cst.nama_customer,
-										   cst.alamat,
-										   sls.productid,
-										   product.nama_invoice;
-									");
+                select 
+                    sls.periode,
+                    sls.siteid, 
+                    sls.salesmanid,
+                    salesamn.nama_salesman,
+                    sls.customerid,
+                    cst.nama_customer,
+                    e.nama_class as account,
+                    sls.productid,
+                    product.nama_invoice,
+                    product.nama_brand,
+                    case when sls.qty_akhir = 0 then sls.stock_buffer else sls.qty_akhir end qty_akhir
+                from 
+                t_sales_crc sls left join
+                m_customer_ob cstob on sls.customerid = cstob.customerid and sls.salesmanid = cstob.salesmanid left JOIN
+                m_customer cst on sls.customerid = cst.customerid left JOIN
+                m_sales_salesman salesamn on sls.salesmanid = salesamn.salesmanid left JOIN  
+                m_product product on sls.productid = product.productid 
+                left join m_customer_class e on e.classid=cst.classid
+                where sls.periode between '".$start."' and '".$end."' 
+                and salesamn.tipe_sales not in ('ADMIN','SPV','FC') $strquery
+                $area $regional $subarea
+                group by sls.siteid, 
+                        sls.salesmanid,
+                        salesamn.nama_salesman,
+                        sls.customerid,
+                        cst.nama_customer,
+                        cst.alamat,
+                        sls.productid,
+                        product.nama_invoice;
+                ");
         return $query->result_array();
     }
 
@@ -604,60 +587,120 @@ class Rep_productivity_model extends CI_Model
         $start=$data['start_period'];
         $end=$data['end_period'];
 		$query = $this->db->query(" 
-                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
-                                            c.typeid as channel, e.nama_class as account,
-                                            DATE_FORMAT(a.check_in, '%H:%i:%s') check_in, DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
-                                            timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan, 
-                                            (select reason from t_sales_rrk_reason where call_reasonid=a.call_reasonid) alasan, REGEXP_REPLACE(a.keterangan, '\n', ' ') keterangan,
-                                            case when 
-                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
-                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
-                                                then 'Effective Call' 
-                                                when 
-                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
-                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
-                                                then 'Extra Call' 
-                                                when 
-                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
-                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
-                                                then 'Extra Call' 
-                                                when 
-                                                (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
-                                                (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
-                                                then 'Call' 
-                                            end as flag
-                                    from t_sales_rrk_trans a
-                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
-                                    left join m_customer c on a.customerid= c.customerid 
-                                    left join m_customer_class e on e.classid=c.classid
-                                    left join m_area_areasite d on c.areaid = d.areaid
-                                    left join m_area_subarea mas on mas.subareaid = c.subareaid
-                                    left join m_area_regional mar on mar.regionalid = c.regionalid
-                                    where a.periode between '".$start."' and '".$end."' 
-									and b.tipe_sales not in ('ADMIN','SPV','FC') 
-                                    and b.aktif = 1 $strquery
-									$area $regional $subarea
-                                    union all
-                                    select a.periode, a.salesmanid, b.nama_salesman, a.customerid, c.nama_customer, c.alamat, c.typeid, d.nama_area, mas.nama_area as nama_subarea, mar.nama_regional, 
-                                            c.typeid as channel, e.nama_class as account,
-                                            0 check_in, 0 check_out,
-                                            0 lama_kunjungan, 
-                                            '' alasan, '' keterangan,
-                                            'FJP Tidak Terkunjungi' as flag
-                                    from t_sales_rrk a
-                                    left join m_sales_salesman b on a.salesmanid = b.salesmanid
-                                    left join m_customer c on a.customerid= c.customerid 
-                                    left join m_customer_class e on e.classid=c.classid
-                                    left join m_area_areasite d on c.areaid = d.areaid
-                                    left join m_area_subarea mas on mas.subareaid = c.subareaid
-                                    left join m_area_regional mar on mar.regionalid = c.regionalid
-									where a.periode between '".$start."' and '".$end."' 
-                                    and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$start."' and '".$end."')
-                                    and b.tipe_sales not in ('ADMIN','SPV','FC') 
-                                    and b.aktif = 1 $strquery
-									$area $regional $subarea
-                                    ;
-									");
+                select
+                    a.periode,
+                    a.salesmanid,
+                    b.nama_salesman,
+                    a.customerid,
+                    c.nama_customer,
+                    c.alamat,
+                    c.typeid,
+                    (
+                        select group_concat(distinct msa.regionalid separator ', ')
+                        from m_salesman_area msa
+                        where msa.salesmanid = b.salesmanid
+                    ) as regionalid,
+                    (
+                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_regional r on r.regionalid = msa.regionalid
+                        where msa.salesmanid = b.salesmanid
+                    ) as nama_regional,
+                    (
+                        select group_concat(distinct msa.areaid separator ', ')
+                        from m_salesman_area msa
+                        where msa.salesmanid = b.salesmanid
+                    ) as areaid,
+                    (
+                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_areasite ar on msa.areaid = ar.areaid
+                        where msa.salesmanid = b.salesmanid
+                    ) as nama_area,
+                    c.typeid as channel,
+                    e.nama_class as account,
+                    DATE_FORMAT(a.check_in, '%H:%i:%s') check_in,
+                    DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
+                    timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan,
+                    (select reason from t_sales_rrk_reason where call_reasonid=a.call_reasonid) alasan,
+                    REGEXP_REPLACE(a.keterangan, '\n', ' ') keterangan,
+                    case when 
+                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
+                            then 'Effective Call' 
+                            when 
+                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
+                            then 'Extra Call' 
+                            when 
+                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
+                            then 'Extra Call' 
+                            when 
+                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
+                            then 'Call' 
+                        end as flag
+                from t_sales_rrk_trans a
+                left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                left join m_customer c on a.customerid= c.customerid 
+                left join m_customer_class e on e.classid=c.classid
+                where a.periode between '".$start."' and '".$end."' 
+                and b.tipe_sales not in ('ADMIN','SPV','FC') 
+                and b.aktif = 1 $strquery
+                $area $regional $subarea
+
+                union all
+
+                select
+                    a.periode,
+                    a.salesmanid,
+                    b.nama_salesman,
+                    a.customerid,
+                    c.nama_customer,
+                    c.alamat,
+                    c.typeid,
+                    (
+                        select group_concat(distinct msa.regionalid separator ', ')
+                        from m_salesman_area msa
+                        where msa.salesmanid = b.salesmanid
+                    ) as regionalid,
+                    (
+                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_regional r on r.regionalid = msa.regionalid
+                        where msa.salesmanid = b.salesmanid
+                    ) as nama_regional,
+                    (
+                        select group_concat(distinct msa.areaid separator ', ')
+                        from m_salesman_area msa
+                        where msa.salesmanid = b.salesmanid
+                    ) as areaid,
+                    (
+                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_areasite ar on msa.areaid = ar.areaid
+                        where msa.salesmanid = b.salesmanid
+                    ) as nama_area,
+                    c.typeid as channel,
+                    e.nama_class as account,
+                    0 check_in,
+                    0 check_out,
+                    0 lama_kunjungan,
+                    '' alasan,
+                    '' keterangan,
+                    'FJP Tidak Terkunjungi' as flag
+                from t_sales_rrk a
+                left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                left join m_customer c on a.customerid= c.customerid 
+                left join m_customer_class e on e.classid=c.classid
+                where a.periode between '".$start."' and '".$end."' 
+                and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$start."' and '".$end."')
+                and b.tipe_sales not in ('ADMIN','SPV','FC') 
+                and b.aktif = 1 $strquery
+                $area $regional $subarea
+                ;
+            ");
         return $query->result_array();
     }
 
@@ -685,60 +728,62 @@ class Rep_productivity_model extends CI_Model
         }
         $start=$data['start_period'];
         $end=$data['end_period'];
-		$query = $this->db->query(" select
-                                         a.periode,
-                                         a.siteid,
-                                         a.salesmanid,
-                                         a.salesman_name,
-                                         a.customerid,
-                                         a.professional_name,
-                                         rp.spesialisasi,
-                                         a.array_product,
-                                         a.keterangan,
-                                         a.start_detailing,
-                                         a.end_detailing,
-                                         a.status,
-                                         a.reason,
-                                         a.latitude_cell,
-                                         a.longitude_cell,
-                                         concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
-                                         concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
-                                         b.nama_salesman,
-                                         c.nama_customer,c.typeid as channel,c.nama_account as account,
-                                         (
-                                             select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                                             from m_salesman_area msa
-                                             join m_area_areasite ar on msa.areaid = ar.areaid
-                                             where msa.salesmanid = a.salesmanid
-                                         ) as city,
-                                         CASE
-                                             WHEN a.status = 5 THEN 'Tidak Valid'
-                                             WHEN a.status = 3 THEN 'Valid'
-                                             WHEN a.status = 2 THEN 'Belum Valid'
-                                             ELSE 'Butuh Verifikasi'
-                                         END as status_label,
-                                         COALESCE(
-                                             (
-                                                 SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ', ')
-                                                 FROM m_product mp
-                                                 WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
-                                             ),
-                                             a.array_product
-                                         ) as products
-                                      from trx_visit_detailing a
-                                      left join m_sales_salesman b on a.salesmanid=b.salesmanid
-                                     left join v_outlet_all c on a.customerid=c.customerid
-                                        left join (
-                                            select 
-                                                a.id,
-                                                a.nama_professional,
-                                                b.name as spesialisasi
-                                            from ref_professional a
-                                            left join ref_spesialisasi b on b.id = a.spesialisasi_id
-                                        ) as rp on rp.id = a.user_id
-                                     where a.periode between '".$start."' and '".$end."'
-                                             $strquery
-                                             $area $regional $subarea;");
+		$query = $this->db->query("
+            select
+                a.periode,
+                a.siteid,
+                a.salesmanid,
+                a.salesman_name,
+                a.customerid,
+                a.professional_name,
+                rp.spesialisasi,
+                a.array_product,
+                a.keterangan,
+                a.start_detailing,
+                a.end_detailing,
+                a.status,
+                a.reason,
+                a.latitude_cell,
+                a.longitude_cell,
+                concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
+                concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
+                b.nama_salesman,
+                c.nama_customer,c.typeid as channel,c.nama_account as account,
+                (
+                    select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                    from m_salesman_area msa
+                    join m_area_areasite ar on msa.areaid = ar.areaid
+                    where msa.salesmanid = a.salesmanid
+                ) as city,
+                CASE
+                    WHEN a.status = 5 THEN 'Tidak Valid'
+                    WHEN a.status = 3 THEN 'Valid'
+                    WHEN a.status = 2 THEN 'Belum Valid'
+                    ELSE 'Butuh Verifikasi'
+                END as status_label,
+                COALESCE(
+                    (
+                        SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR ', ')
+                        FROM m_product mp
+                        WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
+                    ),
+                    a.array_product
+                ) as products
+            from trx_visit_detailing a
+            left join m_sales_salesman b on a.salesmanid=b.salesmanid
+            left join v_outlet_all c on a.customerid=c.customerid
+            left join (
+                select 
+                    a.id,
+                    a.nama_professional,
+                    b.name as spesialisasi
+                from ref_professional a
+                left join ref_spesialisasi b on b.id = a.spesialisasi_id
+            ) as rp on rp.id = a.user_id
+            where a.periode between '".$start."' and '".$end."'
+            $strquery
+            $area $regional $subarea
+            ");
         return $query->result_array();
     }
 
@@ -819,12 +864,6 @@ class Rep_productivity_model extends CI_Model
                 join m_area_areasite ar on msa.areaid = ar.areaid
                 where msa.salesmanid = tsa.salesmanid
             ) as nama_area,
-            (
-                select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                from m_salesman_area msa
-                join m_area_subarea sa on msa.subareaid = sa.subareaid
-                where msa.salesmanid = tsa.salesmanid
-            ) as city, 
             tsa.status, 
             tsa.periode, 
             ap.start_time, 
@@ -870,7 +909,6 @@ class Rep_productivity_model extends CI_Model
                 z.salesmanid AS parma,
                 z.nama_salesman AS nama_parma,
                 z.nama_area AS nama_area,
-                z.nama_subarea AS nama_subarea,
                 z.send_to AS send_to,
                 z.target_call AS target_call,
                 z.Call AS `Call`,
@@ -883,7 +921,6 @@ class Rep_productivity_model extends CI_Model
                     x.salesmanid AS salesmanid,
                     x.nama_salesman AS nama_salesman,
                     x.nama_area AS nama_area,
-                    x.nama_subarea AS nama_subarea,
                     x.email AS send_to,
                     (
                     select
@@ -902,7 +939,6 @@ class Rep_productivity_model extends CI_Model
                     a.salesmanid AS salesmanid,
                     c.nama_salesman AS nama_salesman,
                     c.nama_area AS nama_area,
-                    c.city AS nama_subarea,
                     e.email AS email,
                     a.customerid AS customerid,
                     b.nama_customer AS nama_customer,
@@ -927,12 +963,6 @@ class Rep_productivity_model extends CI_Model
                             join m_area_areasite ar on msa.areaid = ar.areaid
                             where msa.salesmanid = s.salesmanid
                         ) as nama_area,
-                        (
-                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                            from m_salesman_area msa
-                            join m_area_subarea sa on msa.subareaid = sa.subareaid
-                            where msa.salesmanid = s.salesmanid
-                        ) as city,
                         (
                             select group_concat(distinct msa.areaid separator ', ')
                             from m_salesman_area msa
@@ -966,7 +996,6 @@ class Rep_productivity_model extends CI_Model
                 x.salesmanid,
                 x.nama_salesman,
                 x.nama_area,
-                x.nama_subarea,
                 x.email) z
         ");
         return $query->result_array();

@@ -226,7 +226,7 @@ class Setup_planned_model extends CI_Model
                     b.nama_salesman
                 from req_pjp_daily a
                 left join m_sales_salesman b on a.salesmanid = b.salesmanid
-                where a.siteid = 'KNX01' $strquery
+                where a.siteid = 'HIMALAYA' $strquery
                 order by
                 case a.status
                     when 1 then 1
@@ -395,7 +395,7 @@ class Setup_planned_model extends CI_Model
         }
 
         $salesmanid = $req['salesmanid'];
-        $siteid = !empty($req['siteid']) ? $req['siteid'] : 'KNX01';
+        $siteid = !empty($req['siteid']) ? $req['siteid'] : 'HIMALAYA';
 
         $sales = $this->db->get_where('m_sales_salesman', ['salesmanid' => $salesmanid])->row_array();
         $nama_salesman = $sales ? $sales['nama_salesman'] : '';

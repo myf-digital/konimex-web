@@ -369,8 +369,8 @@ class Rep_productivity extends BaseController
             ->setCellValue('N1', 'Total GTS (MEDREP Apps)')
             ->setCellValue('O1', 'Status')
             ->setCellValue('P1', 'JJID + Product Name')
-            ->setCellValue('Q1', 'Qty Actual (Tableau Konimex)')
-            ->setCellValue('R1', 'Total GTS (Tableau Konimex)')
+            ->setCellValue('Q1', 'Qty Actual (Tableau Himalaya)')
+            ->setCellValue('R1', 'Total GTS (Tableau Himalaya)')
             ->setCellValue('S1', 'Gap Qty')
             ->setCellValue('T1', 'Gap Total GTS');
 

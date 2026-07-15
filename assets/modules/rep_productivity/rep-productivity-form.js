@@ -11,7 +11,7 @@
   let uiEndPeriode = $("#end_periode");
   let uiSelectRegional = $("#regional-id");
   let uiSelectArea = $("#area-id");
-  let uiSelectSubArea = $("#subarea-id");
+  // let uiSelectSubArea = $("#subarea-id");
 
   let paramsession = common.getCookie("session");
 
@@ -101,7 +101,7 @@
     uiSelectArea.on("select2:select", function (e) {
       area = e.params.data;
 
-      loadSubArea(area);
+      // loadSubArea(area);
     });
 
     uiStartPeriode.on("changeDate", function (selected) {
@@ -134,10 +134,10 @@
       allowClear: true,
     });
 
-    uiSelectSubArea.select2({
-      placeholder: "Select Sub Area",
-      allowClear: true,
-    });
+    // uiSelectSubArea.select2({
+    //   placeholder: "Select Sub Area",
+    //   allowClear: true,
+    // });
 
     uiSelectRegional.val(null).trigger("change");
   }
@@ -147,7 +147,7 @@
     let end = uiEndPeriode.val();
     let regionalid = uiSelectRegional.val();
     let areaid = uiSelectArea.val();
-    let subareaid = uiSelectSubArea.val();
+    // let subareaid = uiSelectSubArea.val();
 
     let idjabatan = paramsession.idjabatan;
     let usersession = paramsession.username;
@@ -172,9 +172,9 @@
         "&usersession=" +
         usersession +
         "&restrict_level=" +
-        restrict_level +
-        "&subareaid=" +
-        subareaid,
+        restrict_level,
+      // "&subareaid=" +
+      // subareaid,
       success: function (res) {
         response = res;
         $("#tbl-content").html(response);
@@ -234,7 +234,7 @@
     let end = uiEndPeriode.val();
     let regionalid = uiSelectRegional.val();
     let areaid = uiSelectArea.val();
-    let subareaid = uiSelectSubArea.val();
+    // let subareaid = uiSelectSubArea.val();
 
     let idjabatan = paramsession.idjabatan;
     let usersession = paramsession.username;
@@ -249,8 +249,8 @@
         regionalid +
         "/" +
         areaid +
-        "/" +
-        subareaid +
+        // "/" +
+        // subareaid +
         "/" +
         usersession +
         "/" +
@@ -265,7 +265,7 @@
     let end = uiEndPeriode.val();
     let regionalid = uiSelectRegional.val();
     let areaid = uiSelectArea.val();
-    let subareaid = uiSelectSubArea.val();
+    // let subareaid = uiSelectSubArea.val();
 
     let idjabatan = paramsession.idjabatan;
     let usersession = paramsession.username;
@@ -280,8 +280,8 @@
         regionalid +
         "/" +
         areaid +
-        "/" +
-        subareaid +
+        // "/" +
+        // subareaid +
         "/" +
         usersession +
         "/" +

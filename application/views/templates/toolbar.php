@@ -2,11 +2,11 @@
     <a href="#" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span href="#" data-toggle="offcanvas" role="button" class="logo-mini">
-            <img src="<?php echo base_url() ?>assets/images/konimex-icon.png" alt="Konimex" width="65%">
+            <img class="img" src="<?php echo base_url() ?>assets/images/himalaya-w.png" alt="HIMALAYA" width="65%">
         </span>
         <!-- logo for regular state and mobile devices -->
         <span href="#" data-toggle="offcanvas" role="button" class="logo-lg">
-            <img class="img" src="<?php echo base_url() ?>assets/images/konimex.png" alt="Konimex">
+            <img class="img" src="<?php echo base_url() ?>assets/images/himalaya_white.png" alt="HIMALAYA" width="85%">
         </span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->

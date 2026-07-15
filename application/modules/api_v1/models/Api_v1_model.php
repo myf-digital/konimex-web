@@ -117,7 +117,7 @@ class Api_v1_model extends CI_Model
 		$sql = "select a.*, b.name as spesialisasi
 				from ref_professional a
 				left join ref_spesialisasi b on b.id = a.spesialisasi_id
-				where a.siteid = 'KNX01' and a.status = 3 $where
+				where a.siteid = 'HIMALAYA' and a.status = 3 $where
 				order by a.id desc
 				limit 25
 			";
@@ -779,7 +779,7 @@ class Api_v1_model extends CI_Model
 		$q = $this->db->query(" select ifnull(latitude_cell,0) latitude_cell, ifnull(longitude_cell,0) longitude_cell,
 										DATE_FORMAT(createdate,'%H:%i') waktu
 								from t_tracker_salesman
-								where siteid = '".($site->siteid ?? 'KNX01')."' AND salesmanid = ? AND periode = ?
+								where siteid = '".($site->siteid ?? 'HIMALAYA')."' AND salesmanid = ? AND periode = ?
 								order by DATE_FORMAT(createdate,'%H:%i') asc
 								", array($data["sid"],$data["periode"]));
 								

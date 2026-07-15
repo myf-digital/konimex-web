@@ -9,7 +9,7 @@
   let uiSelectRegional = $("#regionalid-id");
   let uiSelectArea = $("#areaid-id");
   let uiSelectSubArea = $("#subareaid-id");
-  let siteid = "KNX01";
+  let siteid = "HIMALAYA";
 
   // define from *-content.js
   let param = common.getCookie("module.resource.update");

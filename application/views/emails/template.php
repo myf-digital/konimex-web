@@ -75,7 +75,7 @@
 
     <p>
         Salam hangat,<br>
-        <b>MEDREP</b>
+        <b>HIMALAYA</b>
     </p>
 </div>
 </body>

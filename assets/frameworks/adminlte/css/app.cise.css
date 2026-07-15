@@ -55,7 +55,7 @@ div.form-group textarea {
 }
 
 .skin-blue .main-header .logo {
-    background: transparent;
+    background: linear-gradient(90deg,rgba(0, 57, 61, 1) 0%, rgba(0, 93, 99, 1) 50%, rgba(0, 129, 138, 1) 100%);
 }
 
 .skin-blue .main-header .navbar{
@@ -83,7 +83,7 @@ div.form-group textarea {
 }
 
 .login-banner {
-    content: url(../../../../assets/images/konimex.png);
+    content: url(../../../../assets/images/himalaya-logo.png);
 }
 
 div.form-group-login {
