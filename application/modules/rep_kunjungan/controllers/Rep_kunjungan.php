@@ -111,8 +111,8 @@ class Rep_kunjungan extends BaseController
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
 		$html .= '<th style="width: 150px">User Medrep</th>';
-		$html .= '<th style="width: 150px">Medrep Outlet ID</th>';
-		$html .= '<th style="width: 150px">Customer ID Map</th>';
+		$html .= '<th style="width: 150px">Outlet ID</th>';
+		$html .= '<th style="width: 200px">Outlet Name</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';
 		$html .= '<th style="width: 200px">Area</th>';
 		$html .= '<th style="width: 100px">Cluster</th>';
@@ -265,8 +265,8 @@ class Rep_kunjungan extends BaseController
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
             ->setCellValue('C2', 'User Medrep')
-            ->setCellValue('D2', 'Medrep Outlet ID')
-            ->setCellValue('E2', 'Latest Customer Name')
+            ->setCellValue('D2', 'Outlet ID')
+            ->setCellValue('E2', 'Outlet Name')
             ->setCellValue('F2', 'Alamat')
             ->setCellValue('G2', 'Area')
             ->setCellValue('H2', 'Cluster')
