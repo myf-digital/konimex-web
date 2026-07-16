@@ -59,11 +59,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " where c.subareaid in (select distinct b.subareaid from  
@@ -210,8 +211,8 @@ class Drc_dashboard extends BaseController
 									(select 
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid $strquery) md,
 										(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid $strquery) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
-										(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
+										(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -229,8 +230,8 @@ class Drc_dashboard extends BaseController
 									(select 
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid $strquery) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid $strquery) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -626,11 +627,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " where c.subareaid in (select distinct b.subareaid from  
@@ -983,11 +985,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 		
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and c.subareaid in (select distinct b.subareaid from  
@@ -1083,8 +1086,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid$strquery) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid$strquery) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid$strquery) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid$strquery) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -1116,8 +1119,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid$strquery) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid$strquery) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid$strquery) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid$strquery) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -1395,11 +1398,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 		
 		if ($restrict_level=='4'){
 			if ($tanggal=='All'){
@@ -1936,11 +1940,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		$regionalid=$this->input->post("regionalid");
 		$nama_regional=$this->input->post("nama_regional");
@@ -1974,8 +1979,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -1998,8 +2003,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -2299,11 +2304,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		$regionalid=$this->input->post("regionalid");
 		$nama_regional=$this->input->post("nama_regional");
@@ -2367,8 +2373,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -2399,8 +2405,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -2705,11 +2711,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
 			if ($tanggal=='All'){
@@ -3274,8 +3281,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -3298,8 +3305,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -3639,8 +3646,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, 
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and areaid=c.areaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and areaid=c.areaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and areaid=c.areaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and areaid=c.areaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and areaid=c.areaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and areaid=c.areaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -3671,8 +3678,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -4515,11 +4522,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " b.tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " b.tipe_sales not in ('MEDREP','FC','ADMIN') and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " b.tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " b.tipe_sales not in ('MEDREP','FC','ADMIN') and";
+		// }
 		
 		if ($restrict_level=='4'){
 			if ($tanggal=='All'){
@@ -4887,11 +4895,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " b.tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " b.tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " b.tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " b.tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($tanggal=='All'){
 			$strqueryarea1 = " where $querybu a.periode between '".$tahun."-".$bulan."-01' and LAST_DAY('".$tahun."-".$bulan."-01') and c.subareaid=$subareaid 
@@ -4907,8 +4916,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -5166,8 +5175,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -5450,11 +5459,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -5656,11 +5666,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -6007,11 +6018,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -6203,11 +6215,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -6466,13 +6479,14 @@ class Drc_dashboard extends BaseController
 	
 			if($classid=='null'){$classid='%';}
 	
-			if ($restrict_bu=='GT'){
-				$querybu = " tipe_sales='MEDREP' and";
-			}elseif ($restrict_bu=='MT'){
-				$querybu = " tipe_sales<>'MEDREP' and";
-			}else{
-				$querybu = "";
-			}
+			$querybu = "";
+			// if ($restrict_bu=='GT'){
+			// 	$querybu = " tipe_sales='MEDREP' and";
+			// }elseif ($restrict_bu=='MT'){
+			// 	$querybu = " tipe_sales<>'MEDREP' and";
+			// }else{
+			// 	$querybu = "";
+			// }
 	
 			if ($restrict_level=='4'){
 				$strqueryarea = " and g.subareaid in (select distinct b.subareaid from  
@@ -6600,13 +6614,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -6879,13 +6894,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = "and b.classid in ($classid)";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7081,11 +7097,12 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7285,13 +7302,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7472,13 +7490,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7666,11 +7685,12 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7847,13 +7867,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7999,13 +8020,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -8156,11 +8178,12 @@ class Drc_dashboard extends BaseController
 		$this->load->library('excel');
 		$filename = "Data_Stock_".$tahun.$bulan.".xlsx";
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 
 		$qhcreg_old = $this->db->query(" 
@@ -8289,13 +8312,14 @@ class Drc_dashboard extends BaseController
 		if($brandid=='null'){$brandid='%';}
 		if($productid=='null'){$productid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -8606,13 +8630,14 @@ class Drc_dashboard extends BaseController
 		if($brandid=='null'){$brandid='%';}
 		if($productid=='null'){$productid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -8997,13 +9022,14 @@ class Drc_dashboard extends BaseController
 		if($brandid=='null'){$brandid='%';}
 		if($productid=='null'){$productid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -9412,11 +9438,12 @@ class Drc_dashboard extends BaseController
 		if($productid=='null'){$productid='%';}
 		if($brandid=='null'){$brandid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -10171,7 +10198,7 @@ class Drc_dashboard extends BaseController
 											left join m_area_regional r on cst.regionalid=r.regionalid
 											left join m_area_areasite ar on cst.areaid = ar.areaid
 											left join m_area_subarea sa on cst.subareaid=sa.subareaid
-											where rrk_trans.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('MEDREP','FC','ADMIN') AND
+											where rrk_trans.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('FC','ADMIN') AND
 												rrk_trans.periode $tempsql
 											group by 
 												rrk_trans.periode,
@@ -10203,7 +10230,7 @@ class Drc_dashboard extends BaseController
 											left join m_area_subarea sa on cst.subareaid=sa.subareaid
 											left JOIN m_sales_salesman salesamn on rrk.siteid = salesamn.siteid and rrk.salesmanid = salesamn.salesmanid
 											left join t_sales_absensi att on att.salesmanid=rrk.salesmanid and att.periode=rrk.periode
-											where att.status in ('H','C') and att.flag_adjust=0 and rrk.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('MEDREP','FC','ADMIN') AND 
+											where att.status in ('H','C') and att.flag_adjust=0 and rrk.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('FC','ADMIN') AND 
 												rrk.periode in (select periode from t_sales_absensi where salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) and status in ('H','C') and flag_adjust=0 and periode $tempsql ) AND rrk_trans.check_in is null
 											group by
 												rrk.periode,
@@ -10307,13 +10334,14 @@ class Drc_dashboard extends BaseController
 			$tempsql="= '$tahun-$bulan-$tanggal'";
 		}
 		
-		if ($restrict_bu=='GT'){
-			$querybu = " and tipe_sales='MEDREP'";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " and tipe_sales<>'MEDREP'";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " and tipe_sales='MEDREP'";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " and tipe_sales<>'MEDREP'";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and subareaid in (select distinct b.subareaid from  
