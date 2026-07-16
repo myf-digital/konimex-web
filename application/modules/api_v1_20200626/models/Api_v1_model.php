@@ -532,9 +532,9 @@ class Api_v1_model extends CI_Model
 				union
 				select 'SPG' as idtipesales, 'SPG' as tipesales
 				union
-				select 'MEDREP MT' as idtipesales, 'MEDREP MT' as tipesales
+				select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
 				union
-				select 'MEDREP GT' as idtipesales, 'MEDREP GT' as tipesales
+				select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
 				";
 		$res_ss = $this->db->query($sql);
 		if (count($res_ss->result_array()) > 0) {

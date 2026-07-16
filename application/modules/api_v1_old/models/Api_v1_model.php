@@ -399,13 +399,13 @@ class Api_v1_model extends CI_Model
     {
 		$sql = " select 'MERCHANDISER' as idtipesales, 'MERCHANDISER' as tipesales
 				union
-				select 'MEDREP MT' as idtipesales, 'MEDREP MT' as tipesales
+				select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
 				union
 				select 'SPG MOBILE' as idtipesales, 'SPG MOBILE' as tipesales
 				union
 				select 'SPG STAY' as idtipesales, 'SPG STAY' as tipesales
 				union
-				select 'MEDREP GT' as idtipesales, 'MEDREP GT' as tipesales
+				select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
 				";
 		$res_ss = $this->db->query($sql);
 		if (count($res_ss->result_array()) > 0) {

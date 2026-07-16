@@ -28,7 +28,7 @@ class Rep_absensi_model extends CI_Model
                             join m_area_subarea mas on mas.subareaid = msa.subareaid
                             where msa.salesmanid = a.salesmanid
                         ) as nama_subarea
-                      from m_sales_salesman a where a.tipe_sales='MEDREP'
+                      from m_sales_salesman a
                       order by a.salesmanid asc ) as a";
         return easy_pagging($data, $field, $table);
     }
@@ -60,7 +60,7 @@ class Rep_absensi_model extends CI_Model
                     join m_area_subarea mas on mas.subareaid = msa.subareaid
                     where msa.salesmanid = a.salesmanid
                 ) as nama_subarea
-                from m_sales_salesman a where a.tipe_sales='MEDREP'
+                from m_sales_salesman a
                 order by a.salesmanid asc
             ) as a";
         return easy_pagging($data, $field, $table);

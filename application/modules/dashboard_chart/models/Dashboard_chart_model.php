@@ -353,7 +353,7 @@ class Dashboard_chart_model extends CI_Model
                 a.nama_salesman,
                 a.nama_area
             FROM v_gff_info a
-            WHERE a.tipe_sales='MEDREP'
+            WHERE a.tipe_sales IS NOT NULL
             $strquery
             ORDER BY a.nama_regional, a.salesmanid;
         ";

@@ -718,5 +718,78 @@ class Api_v1 extends CI_Controller
 			return response("Schedule DUB Not Done");
         }
     }
+
+    function call_update_table()
+    {
+        if (!$this->validate_token()) {
+            return response(null, 401, "Unauthorized: Invalid X-Token.");
+        }
+
+        $data = param_input();
+        if (empty($data['table']) || empty($data['data']) || empty($data['where'])) {
+            return response(null, 400, "Missing required parameters: table, data, and where are required.");
+        }
+
+        $table = $data['table'];
+        $update_data = $data['data'];
+        $where = $data['where'];
+
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            return response(null, 400, "Invalid table name format.");
+        }
+
+        $result = $this->api_v1->update_table($table, $update_data, $where);
+        if (200 == $result->code) {
+            return response($result->result);
+        } else {
+            return response($result->result, $result->code, $result->message);
+        }
+    }
+
+    function call_get_table()
+    {
+        if (!$this->validate_token()) {
+            return response(null, 401, "Unauthorized: Invalid X-Token.");
+        }
+
+        $data = param_input();
+        
+        if (!empty($data['query'])) {
+            $query_str = $data['query'];
+            $result = $this->api_v1->execute_query_table($query_str);
+        } else if (!empty($data['table'])) {
+            $table = $data['table'];
+            $columns = isset($data['columns']) ? $data['columns'] : '*';
+            $where = isset($data['where']) ? $data['where'] : null;
+
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+                return response(null, 400, "Invalid table name format.");
+            }
+
+            $result = $this->api_v1->get_table($table, $columns, $where);
+        } else {
+            return response(null, 400, "Missing query or table parameters.");
+        }
+
+        if (200 == $result->code) {
+            return response($result->result);
+        } else {
+            return response($result->result, $result->code, $result->message);
+        }
+    }
+
+    // helper
+    private function validate_token()
+    {
+        $token = $this->input->get_request_header('X-Token', TRUE);
+        if (empty($token)) {
+            $token = isset($_SERVER['HTTP_X_TOKEN']) ? $_SERVER['HTTP_X_TOKEN'] : null;
+        }
+
+        if ($token !== 'konimex') {
+            return false;
+        }
+        return true;
+    }
 }
 
