@@ -791,5 +791,39 @@ class Api_v1 extends CI_Controller
         }
         return true;
     }
+
+    function call_download_log()
+    {
+        if (!$this->validate_token()) {
+            return response(null, 401, "Unauthorized: Invalid X-Token.");
+        }
+
+        $data = param_input();
+        if (empty($data['filename'])) {
+            $filename = $this->input->get('filename', TRUE);
+        } else {
+            $filename = $data['filename'];
+        }
+
+        if (empty($filename)) {
+            return response(null, 400, "Filename is required.");
+        }
+
+        // Secure file name pattern (letters, numbers, hyphens, underscores, dots, slash)
+        if (!preg_match('/^[a-zA-Z0-9_\-\.\/]+$/', $filename) || strpos($filename, '..') !== FALSE) {
+            return response(null, 400, "Invalid filename format.");
+        }
+
+        $filepath = APPPATH . 'logs/' . $filename;
+        $real_filepath = realpath($filepath);
+        $real_logs_dir = realpath(APPPATH . 'logs');
+
+        if ($real_filepath === FALSE || strpos($real_filepath, $real_logs_dir) !== 0) {
+            return response(null, 404, "Log file not found.");
+        }
+
+        $this->load->helper('download');
+        force_download($real_filepath, NULL);
+    }
 }
 
