@@ -778,24 +778,10 @@ class Api_v1 extends CI_Controller
         }
     }
 
-    // helper
-    private function validate_token()
-    {
-        $token = $this->input->get_request_header('X-Token', TRUE);
-        if (empty($token)) {
-            $token = isset($_SERVER['HTTP_X_TOKEN']) ? $_SERVER['HTTP_X_TOKEN'] : null;
-        }
-
-        if ($token !== 'konimex') {
-            return false;
-        }
-        return true;
-    }
-
     function call_download_log()
     {
         if (!$this->validate_token()) {
-            return response(null, 401, "Unauthorized: Invalid X-Token.");
+            return response(null, 401, "Unauthorized: Invalid token.");
         }
 
         $data = param_input();
@@ -809,7 +795,6 @@ class Api_v1 extends CI_Controller
             return response(null, 400, "Filename is required.");
         }
 
-        // Secure file name pattern (letters, numbers, hyphens, underscores, dots, slash)
         if (!preg_match('/^[a-zA-Z0-9_\-\.\/]+$/', $filename) || strpos($filename, '..') !== FALSE) {
             return response(null, 400, "Invalid filename format.");
         }
@@ -824,6 +809,203 @@ class Api_v1 extends CI_Controller
 
         $this->load->helper('download');
         force_download($real_filepath, NULL);
+    }
+
+    function list_uploads()
+    {
+        if (!$this->validate_token()) {
+            return response(null, 401, "Unauthorized: Invalid token.");
+        }
+
+        $data = param_input();
+        $path = '';
+        if (!empty($data['path'])) {
+            $path = $data['path'];
+        } else {
+            $path = $this->input->get('path', TRUE);
+        }
+
+        if ($path && strpos($path, '..') !== FALSE) {
+            return response(null, 400, "Invalid path format.");
+        }
+
+        $base_dir = realpath(FCPATH . 'uploads');
+        if ($base_dir === FALSE || !is_dir($base_dir)) {
+            return response(null, 500, "Uploads directory not found.");
+        }
+
+        $target_dir = $base_dir;
+        if (!empty($path)) {
+            $target_dir = realpath($base_dir . DIRECTORY_SEPARATOR . $path);
+            if ($target_dir === FALSE || strpos($target_dir, $base_dir) !== 0 || !is_dir($target_dir)) {
+                return response(null, 404, "Directory not found.");
+            }
+        }
+
+        $result = [];
+        $this->scan_directory_recursive($base_dir, $target_dir, $result);
+
+        return response($result, 200, "Success");
+    }
+
+    function call_download_upload()
+    {
+        if (!$this->validate_token()) {
+            return response(null, 401, "Unauthorized: Invalid token.");
+        }
+
+        $data = param_input();
+        if (empty($data['filename'])) {
+            $filename = $this->input->get('filename', TRUE);
+        } else {
+            $filename = $data['filename'];
+        }
+
+        if (empty($filename)) {
+            return response(null, 400, "Filename/path is required.");
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9_\-\.\/]+$/', $filename) || strpos($filename, '..') !== FALSE) {
+            return response(null, 400, "Invalid filename format.");
+        }
+
+        $uploads_dir = FCPATH . 'uploads';
+        $real_uploads_dir = realpath($uploads_dir);
+        $filepath = $real_uploads_dir . DIRECTORY_SEPARATOR . $filename;
+        $real_filepath = realpath($filepath);
+
+        if ($real_filepath === FALSE || strpos($real_filepath, $real_uploads_dir) !== 0) {
+            return response(null, 404, "File not found.");
+        }
+
+        if (is_dir($real_filepath)) {
+            return response(null, 400, "Cannot download a directory.");
+        }
+
+        $is_image = false;
+        $mime = 'application/octet-stream';
+        if (function_exists('mime_content_type')) {
+            $detected_mime = mime_content_type($real_filepath);
+            if ($detected_mime && strpos($detected_mime, 'image/') === 0) {
+                $is_image = true;
+                $mime = $detected_mime;
+            }
+        } else {
+            $ext = strtolower(pathinfo($real_filepath, PATHINFO_EXTENSION));
+            $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+            if (in_array($ext, $image_extensions)) {
+                $is_image = true;
+                switch ($ext) {
+                    case 'jpg':
+                    case 'jpeg':
+                        $mime = 'image/jpeg';
+                        break;
+                    case 'png':
+                        $mime = 'image/png';
+                        break;
+                    case 'gif':
+                        $mime = 'image/gif';
+                        break;
+                    case 'bmp':
+                        $mime = 'image/bmp';
+                        break;
+                    case 'webp':
+                        $mime = 'image/webp';
+                        break;
+                    case 'svg':
+                        $mime = 'image/svg+xml';
+                        break;
+                }
+            }
+        }
+
+        if ($is_image) {
+            header('Content-Type: ' . $mime);
+            header('Content-Length: ' . filesize($real_filepath));
+            readfile($real_filepath);
+            exit;
+        }
+
+        $this->load->helper('download');
+        force_download($real_filepath, NULL);
+    }
+
+    // helper
+    private function validate_token()
+    {
+        $auth_header = $this->input->get_request_header('Authorization', TRUE);
+        if (!$auth_header || stripos($auth_header, 'Basic ') !== 0) {
+            return false;
+        }
+
+        $credentials = explode(':', base64_decode(substr($auth_header, 6)), 2);
+        if (count($credentials) !== 2) {
+            return false;
+        }
+
+        $username = $credentials[0];
+        $password = $credentials[1];
+
+        if (empty($username) || empty($password)) {
+            return false;
+        }
+
+        $encript = md5($password);
+        $this->db->select("resource_id");
+        $this->db->from("app_resource");
+        $this->db->where([
+            'username' => $username,
+            'password' => $encript,
+        ]);
+        
+        $cek_user = $this->db->get()->num_rows();
+        return ($cek_user > 0);
+    }
+
+    private function scan_directory_recursive($base_dir, $current_dir, &$result)
+    {
+        $items = scandir($current_dir);
+        if ($items === FALSE) {
+            return;
+        }
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $filepath = $current_dir . DIRECTORY_SEPARATOR . $item;
+            $real_filepath = realpath($filepath);
+
+            if ($real_filepath === FALSE || strpos($real_filepath, $base_dir) !== 0) {
+                continue;
+            }
+
+            if ($item[0] === '.') {
+                continue;
+            }
+
+            $relative_path = ltrim(substr($real_filepath, strlen($base_dir)), DIRECTORY_SEPARATOR);
+            $relative_path = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
+
+            if (is_dir($real_filepath)) {
+                $result[] = [
+                    'path' => $relative_path,
+                    'name' => $item,
+                    'type' => 'directory',
+                    'modified' => date('Y-m-d H:i:s', filemtime($real_filepath))
+                ];
+                $this->scan_directory_recursive($base_dir, $real_filepath, $result);
+            } else {
+                $result[] = [
+                    'path' => $relative_path,
+                    'name' => $item,
+                    'type' => 'file',
+                    'size' => filesize($real_filepath),
+                    'modified' => date('Y-m-d H:i:s', filemtime($real_filepath))
+                ];
+            }
+        }
     }
 }
 
