@@ -24,6 +24,10 @@
       common.removeCookie("module.setup.pjp.update");
       common.direct("ref_customer/form_download");
     });
+
+    $("#btn-upload").click(function () {
+      common.direct("ref_customer/form_upload");
+    });
   }
 
   function toolbar() {
@@ -39,11 +43,19 @@
       "fa fa-pencil",
       " Create New",
     );
+    const btnUpload = commonGrid.btnBuilderText(
+      "btn-upload",
+      "warning",
+      "fa fa-upload",
+      " Upload Outlet",
+    );
     return (
       '<div class="action-grid-toolbar">' +
       btnCreate +
       "&nbsp;" +
       btnDownload +
+      "&nbsp;" +
+      btnUpload +
       "</div>"
     );
   }

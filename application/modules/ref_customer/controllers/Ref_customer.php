@@ -49,6 +49,11 @@ class Ref_customer extends BaseController
         response($this->customer->update_location($data));
     }
 
+    public function form_upload()
+    {
+        $this->template->show($this, 'form_upload');
+    }
+
     public function delete()
     {
         $data = param_input();
@@ -228,6 +233,204 @@ class Ref_customer extends BaseController
     public function mapping_customer_area()
     {
         response($this->customer->mapping_customer_area());
+    }
+
+    public function download_template()
+    {
+        $regionalid = $this->input->get('regionalid');
+        $areaid = $this->input->get('areaid');
+        $subareaid = $this->input->get('subareaid');
+        $usersession = $this->input->get('usersession');
+        $restrict_level = $this->input->get('restrict_level');
+
+        $templateData = $this->customer->get_template_data($regionalid, $areaid, $subareaid, $usersession, $restrict_level);
+        $channels = $templateData['channels'];
+        $locations = $templateData['locations'];
+
+        $spreadsheet = new Spreadsheet();
+
+        $sheet1 = $spreadsheet->getActiveSheet();
+        $sheet1->setTitle('Template Outlet');
+        $headers1 = [
+            'NO',
+            'KODE_OUTLET',
+            'NAMA_OUTLET',
+            'CHANNEL',
+            'TELPON',
+            'EMAIL',
+            'REGIONAL',
+            'AREA',
+            'SUB_AREA',
+            'ALAMAT',
+            'NAMA_PROFESSIONAL'
+        ];
+        $sheet1->fromArray($headers1, NULL, 'A1');
+        $sheet1->getRowDimension(1)->setRowHeight(25);
+        $headerRange1 = 'A1:K1';
+        $sheet1->getStyle($headerRange1)->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1F4E78'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+        foreach (range('A', 'K') as $col) {
+            $sheet1->getColumnDimension($col)->setAutoSize(true);
+        }
+        
+        $sampleRow = [
+            'Contoh Data',
+            'OTL001',
+            'Klinik Sehat',
+            'Klinik',
+            '08123456789',
+            'klinik.sehat@konimex.com',
+            'Barat',
+            'Jawa Barat I',
+            'Bandung Selatan',
+            'Jl. Sudirman No. 12',
+            'dr. Budi Utomo'
+        ];
+        $sheet1->fromArray($sampleRow, NULL, 'A2');
+
+        $sheet1->getStyle('A2:K2')->applyFromArray([
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'FFFF00'],
+            ]
+        ]);
+
+        $sheet1->getStyle('A1:K2')->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        $sheet2 = $spreadsheet->createSheet();
+        $sheet2->setTitle('Referensi Data');
+        
+        $sheet2->setCellValue('A1', 'CHANNEL_ID');
+        $sheet2->setCellValue('B1', 'NAMA_CHANNEL');
+        $rowChan = 2;
+        foreach ($channels as $chan) {
+            $sheet2->setCellValue('A' . $rowChan, $chan['typeid']);
+            $sheet2->setCellValue('B' . $rowChan, $chan['nama_type']);
+            $rowChan++;
+        }
+        
+        $sheet2->setCellValue('D1', 'REGIONAL_ID');
+        $sheet2->setCellValue('E1', 'NAMA_REGIONAL');
+        $sheet2->setCellValue('F1', 'AREA_ID');
+        $sheet2->setCellValue('G1', 'NAMA_AREA');
+        $sheet2->setCellValue('H1', 'SUB_AREA_ID');
+        $sheet2->setCellValue('I1', 'NAMA_SUB_AREA');
+        
+        $rowLoc = 2;
+        foreach ($locations as $loc) {
+            $sheet2->setCellValue('D' . $rowLoc, $loc['regionalid']);
+            $sheet2->setCellValue('E' . $rowLoc, $loc['nama_regional']);
+            $sheet2->setCellValue('F' . $rowLoc, $loc['areaid']);
+            $sheet2->setCellValue('G' . $rowLoc, $loc['nama_area']);
+            $sheet2->setCellValue('H' . $rowLoc, $loc['subareaid']);
+            $sheet2->setCellValue('I' . $rowLoc, $loc['nama_subarea']);
+            $rowLoc++;
+        }
+        
+        $sheet2->getStyle('A1:B1')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $sheet2->getStyle('D1:I1')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+
+        $highestRowChan = $rowChan - 1;
+        $highestRowLoc = $rowLoc - 1;
+        $borderStyle = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ];
+        $sheet2->getStyle('A1:B' . $highestRowChan)->applyFromArray($borderStyle);
+        $sheet2->getStyle('D1:I' . $highestRowLoc)->applyFromArray($borderStyle);
+
+        foreach (range('A', 'I') as $col) {
+            $sheet2->getColumnDimension($col)->setAutoSize(true);
+        }
+        
+        $spreadsheet->setActiveSheetIndex(0);
+        $writer = new Xlsx($spreadsheet);
+        $filename = "Template_Upload_Outlet_User_" . date('Ymd_His') . ".xlsx";
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function upload()
+    {
+        ini_set('memory_limit', '512M');
+        set_time_limit(0);
+        $this->db->save_queries = FALSE;
+
+        $fileName = $_FILES['fileupload']['name'];
+        $fileTmp  = $_FILES['fileupload']['tmp_name'];
+        $fileSize = $_FILES['fileupload']['size'];
+        $usersession = $this->input->post('usersession') ? $this->input->post('usersession') : 'Admin';
+
+        if (!isset($fileTmp) || empty($fileTmp)) {
+            responseJson(['status' => false, 'message' => "File tidak ditemukan"]);
+            return;
+        }
+
+        $allowedExt = ['xls', 'xlsx'];
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        if (!in_array($ext, $allowedExt)) {
+            responseJson(['status' => false, 'message' => "File harus Excel (.xls atau .xlsx)"]);
+            return;
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime  = finfo_file($finfo, $fileTmp);
+        finfo_close($finfo);
+
+        $allowedMime = [
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
+
+        if (!in_array($mime, $allowedMime)) {
+            responseJson(['status' => false, 'message' => "Format file tidak valid"]);
+            return;
+        }
+
+        if ($fileSize > 10 * 1024 * 1024) {
+            responseJson(['status' => false, 'message' => "File terlalu besar (max 10MB)"]);
+            return;
+        }
+        
+        $restrict_level = $this->input->post('restrict_level');
+        $result = $this->customer->import_excel($fileTmp, $usersession, $restrict_level);
+        responseJson($result);
     }
 }
 

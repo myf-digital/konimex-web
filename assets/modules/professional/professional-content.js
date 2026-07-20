@@ -23,6 +23,9 @@
       common.removeCookie("module.professional.update");
       common.direct("professional/form");
     });
+    $("#btn-upload").click(function () {
+      common.direct("ref_customer/form_upload?ref=professional");
+    });
   }
 
   function initializeGrid() {
@@ -144,8 +147,14 @@
       "fa fa-download",
       " Download",
     );
+    const btnUpload = commonGrid.btnBuilderText(
+      "btn-upload",
+      "warning",
+      "fa fa-upload",
+      " Upload",
+    );
     return (
-      '<div class="action-grid-toolbar">' + btnCreate + btnDownload + "</div>"
+      '<div class="action-grid-toolbar">' + btnCreate + btnDownload + btnUpload + "</div>"
     );
   }
 
