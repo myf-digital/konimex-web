@@ -246,6 +246,8 @@ class Ref_customer extends BaseController
         $templateData = $this->customer->get_template_data($regionalid, $areaid, $subareaid, $usersession, $restrict_level);
         $channels = $templateData['channels'];
         $locations = $templateData['locations'];
+        $specializations = $templateData['specializations'];
+        $prof_types = $templateData['prof_types'];
 
         $spreadsheet = new Spreadsheet();
 
@@ -262,11 +264,13 @@ class Ref_customer extends BaseController
             'AREA',
             'SUB_AREA',
             'ALAMAT',
-            'NAMA_PROFESSIONAL'
+            'NAMA_USER',
+            'SPESIALISASI',
+            'TIPE_USER',
         ];
         $sheet1->fromArray($headers1, NULL, 'A1');
         $sheet1->getRowDimension(1)->setRowHeight(25);
-        $headerRange1 = 'A1:K1';
+        $headerRange1 = 'A1:M1';
         $sheet1->getStyle($headerRange1)->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -281,7 +285,7 @@ class Ref_customer extends BaseController
                 'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
-        foreach (range('A', 'K') as $col) {
+        foreach (range('A', 'M') as $col) {
             $sheet1->getColumnDimension($col)->setAutoSize(true);
         }
         
@@ -296,18 +300,20 @@ class Ref_customer extends BaseController
             'Jawa Barat I',
             'Bandung Selatan',
             'Jl. Sudirman No. 12',
-            'dr. Budi Utomo'
+            'dr. Budi Utomo',
+            'Spesialisasi Anak',
+            'Dokter',
         ];
         $sheet1->fromArray($sampleRow, NULL, 'A2');
 
-        $sheet1->getStyle('A2:K2')->applyFromArray([
+        $sheet1->getStyle('A2:M2')->applyFromArray([
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => 'FFFF00'],
             ]
         ]);
 
-        $sheet1->getStyle('A1:K2')->applyFromArray([
+        $sheet1->getStyle('A1:M2')->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -345,6 +351,22 @@ class Ref_customer extends BaseController
             $sheet2->setCellValue('I' . $rowLoc, $loc['nama_subarea']);
             $rowLoc++;
         }
+
+        $sheet2->setCellValue('K1', 'SPESIALISASI_ID');
+        $sheet2->setCellValue('L1', 'NAMA_SPESIALISASI');
+        $rowSpec = 2;
+        foreach ($specializations as $spec) {
+            $sheet2->setCellValue('K' . $rowSpec, $spec['id']);
+            $sheet2->setCellValue('L' . $rowSpec, $spec['name']);
+            $rowSpec++;
+        }
+
+        $sheet2->setCellValue('N1', 'TIPE_USER');
+        $rowType = 2;
+        foreach ($prof_types as $type) {
+            $sheet2->setCellValue('N' . $rowType, $type);
+            $rowType++;
+        }
         
         $sheet2->getStyle('A1:B1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
@@ -356,9 +378,22 @@ class Ref_customer extends BaseController
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ]);
+        $sheet2->getStyle('K1:L1')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $sheet2->getStyle('N1')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
 
         $highestRowChan = $rowChan - 1;
         $highestRowLoc = $rowLoc - 1;
+        $highestRowSpec = $rowSpec - 1;
+        $highestRowType = $rowType - 1;
+
         $borderStyle = [
             'borders' => [
                 'allBorders' => [
@@ -369,8 +404,10 @@ class Ref_customer extends BaseController
         ];
         $sheet2->getStyle('A1:B' . $highestRowChan)->applyFromArray($borderStyle);
         $sheet2->getStyle('D1:I' . $highestRowLoc)->applyFromArray($borderStyle);
+        $sheet2->getStyle('K1:L' . $highestRowSpec)->applyFromArray($borderStyle);
+        $sheet2->getStyle('N1:N' . $highestRowType)->applyFromArray($borderStyle);
 
-        foreach (range('A', 'I') as $col) {
+        foreach (range('A', 'N') as $col) {
             $sheet2->getColumnDimension($col)->setAutoSize(true);
         }
         

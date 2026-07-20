@@ -358,9 +358,21 @@ class Customer_model extends CI_Model
         $this->db->order_by('r.nama_regional, a.nama_area, s.nama_area', 'ASC');
         $locations = $this->db->get()->result_array();
 
+        // Get Specializations
+        $specializations = $this->db->select('id, name')->from('ref_spesialisasi')->order_by('name', 'ASC')->get()->result_array();
+
+        // Get Professional Types from ref_param_global
+        $prof_types = [];
+        $param_row = $this->db->get_where('ref_param_global', ['key_param' => 'professional_type'])->row_array();
+        if ($param_row && !empty($param_row['value'])) {
+            $prof_types = explode('|', $param_row['value']);
+        }
+
         return [
             'channels' => $channels,
-            'locations' => $locations
+            'locations' => $locations,
+            'specializations' => $specializations,
+            'prof_types' => $prof_types
         ];
     }
 
@@ -387,7 +399,9 @@ class Customer_model extends CI_Model
                 'AREA',
                 'SUB_AREA',
                 'ALAMAT',
-                'NAMA_PROFESSIONAL'
+                'NAMA_USER',
+                'SPESIALISASI',
+                'TIPE_USER',
             ];
 
             if (array_map('strtoupper', $header) !== $expected) {
@@ -395,6 +409,7 @@ class Customer_model extends CI_Model
             }
 
             $successCount = 0;
+            $cleared_customer_ids = [];
             foreach ($sheet as $index => $row) {
                 if ($index == 0) continue;
                 
@@ -503,8 +518,11 @@ class Customer_model extends CI_Model
                     $this->db->insert('m_customer', $insertData);
                 }
 
-                $this->db->where('customerid', $customerid);
-                $this->db->delete('ref_professional_mapping');
+                if (!in_array($customerid, $cleared_customer_ids)) {
+                    $this->db->where('customerid', $customerid);
+                    $this->db->delete('ref_professional_mapping');
+                    $cleared_customer_ids[] = $customerid;
+                }
 
                 if (!empty($nama_professional)) {
                     $prof_str = str_replace('|', ',', $nama_professional);
@@ -515,17 +533,42 @@ class Customer_model extends CI_Model
                         $prof_name = trim($prof_name);
                         if (empty($prof_name)) continue;
 
+                        $spesialisasi_name_input = isset($row[11]) ? trim($row[11]) : '';
+                        $spesialisasi_id = null;
+                        $spesialisasi_name = null;
+                        if (!empty($spesialisasi_name_input)) {
+                            $spec_db = $this->db->select('id, name')->from('ref_spesialisasi')->where('LOWER(name)', strtolower($spesialisasi_name_input))->get()->row_array();
+                            if ($spec_db) {
+                                $spesialisasi_id = $spec_db['id'];
+                                $spesialisasi_name = $spec_db['name'];
+                            }
+                        }
+
+                        $type_input = isset($row[12]) ? trim($row[12]) : null;
+
                         $existing_prof = $this->db->get_where('ref_professional', ['nama_professional' => $prof_name])->row_array();
 
                         if ($existing_prof) {
                             $prof_id = $existing_prof['id'];
+                            $updateProf = [];
+                            if ($spesialisasi_id) {
+                                $updateProf['spesialisasi_id'] = $spesialisasi_id;
+                                $updateProf['spesialisasi_name'] = $spesialisasi_name;
+                            }
+                            if ($type_input) {
+                                $updateProf['type'] = $type_input;
+                            }
+                            if (!empty($updateProf)) {
+                                $this->db->where('id', $prof_id);
+                                $this->db->update('ref_professional', $updateProf);
+                            }
                         } else {
                             $profData = [
                                 'siteid' => 'KNX01',
                                 'nama_professional' => $prof_name,
-                                'spesialisasi_id' => null,
-                                'spesialisasi_name' => null,
-                                'type' => null,
+                                'spesialisasi_id' => $spesialisasi_id,
+                                'spesialisasi_name' => $spesialisasi_name,
+                                'type' => $type_input,
                                 'status' => 3,
                                 'created_by' => $usersession,
                                 'created_date' => date('Y-m-d H:i:s')

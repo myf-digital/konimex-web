@@ -126,9 +126,8 @@ function validasiFile() {
 
     let urlParams = new URLSearchParams(window.location.search);
     let ref = urlParams.get("ref");
-    let redirectUrl = ref.includes("professional")
-      ? "professional"
-      : "ref_customer";
+    let redirectUrl =
+      ref && ref.includes("professional") ? "professional" : "ref_customer";
 
     uiBtnCancel.click(function () {
       common.direct(redirectUrl);
