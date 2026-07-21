@@ -6,6 +6,9 @@ class Customer_model extends CI_Model
 
     public function create($data)
     {
+        if (empty($data["siteid"])) {
+            $data["siteid"] = "KNX01";
+        }
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
         $data["created_date"] = $datetime->datetime;
@@ -43,6 +46,9 @@ class Customer_model extends CI_Model
 
     public function update($data)
     {
+        if (empty($data["siteid"])) {
+            $data["siteid"] = "KNX01";
+        }
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
         $data["modified_date"] = $datetime->datetime;
@@ -219,7 +225,7 @@ class Customer_model extends CI_Model
                         ) separator '||'
                     ) as list_professional
                 from ref_professional_mapping rpm
-                left join ref_professional rp on rp.id = rpm.id_professional
+                join ref_professional rp on rp.id = rpm.id_professional and status = '3'
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
@@ -266,7 +272,7 @@ class Customer_model extends CI_Model
                         ) separator '||'
                     ) as list_professional
                 from ref_professional_mapping rpm
-                left join ref_professional rp on rp.id = rpm.id_professional
+                join ref_professional rp on rp.id = rpm.id_professional and status = '3'
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid ";
