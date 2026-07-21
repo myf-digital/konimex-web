@@ -133,44 +133,45 @@ if (!function_exists('payload')) {
 
 if (!function_exists('get_salesman_restrict')) {
     function get_salesman_restrict($usersession, $restrict_level) {
-        /** Hide Sub Area */
-        // if ($restrict_level == '4') {
-        //     return "
-        //         select distinct msa.salesmanid 
-        //         from m_salesman_area msa
-        //         where msa.subareaid in (
-        //             select distinct b.subareaid 
-        //             from app_resource a 
-        //             join app_restrict_location b on a.resource_id=b.resource_id 
-        //             where a.username='" . $usersession . "'
-        //         )
-        //     ";
-        // }
-        
-        if ($restrict_level == '3') {
-            return "
-                select distinct msa.salesmanid 
-                from m_salesman_area msa
-                where msa.areaid in (
-                    select distinct b.areaid 
-                    from app_resource a 
-                    join app_restrict_location b on a.resource_id=b.resource_id 
-                    where a.username='" . $usersession . "'
-                )
-            ";
-        } else if ($restrict_level == '2') {
-            return "
-                select distinct msa.salesmanid 
-                from m_salesman_area msa
-                where msa.regionalid in (
-                    select distinct b.regionalid 
-                    from app_resource a 
-                    join app_restrict_location b on a.resource_id=b.resource_id 
-                    where a.username='" . $usersession . "'
-                )
-            ";
+        $CI =& get_instance();
+        $CI->load->database();
+
+        $restrictions = $CI->db->query("
+            select b.regionalid, b.areaid
+            from app_resource a 
+            join app_restrict_location b on a.resource_id=b.resource_id 
+            where a.username=?
+        ", [$usersession])->result_array();
+
+        if (empty($restrictions)) {
+            return null;
         }
-        return null;
+
+        $where = [];
+        foreach ($restrictions as $r) {
+            $rowCond = [];
+            // if (!empty($r['subareaid'])) {
+            //    $rowCond[] = "msa.subareaid = '" . $CI->db->escape_str($r['subareaid']) . "'";
+            // }
+            if (!empty($r['areaid'])) {
+                $rowCond[] = "msa.areaid = '" . $CI->db->escape_str($r['areaid']) . "'";
+            } else if (!empty($r['regionalid'])) {
+                $rowCond[] = "msa.regionalid = '" . $CI->db->escape_str($r['regionalid']) . "'";
+            }
+            if (!empty($rowCond)) {
+                $where[] = "(" . implode(" AND ", $rowCond) . ")";
+            }
+        }
+
+        if (empty($where)) {
+            return null;
+        }
+
+        return "
+            select distinct msa.salesmanid 
+            from m_salesman_area msa
+            where " . implode(" OR ", $where) . "
+        ";
     }
 }
 ?>

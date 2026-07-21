@@ -2021,4 +2021,48 @@ class Api_v1_model extends CI_Model
 			return [];
 		}
 	}
+
+    public function update_table($table, $data, $where)
+    {
+        $this->db->trans_begin();
+        $this->db->where($where);
+        $this->db->update($table, $data);
+
+        $affected_rows = $this->db->affected_rows();
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return result(null, 500, "Database error: " . $this->db->error()['message']);
+        } else {
+            $this->db->trans_commit();
+            return result(array("affected_rows" => $affected_rows), 200, "Update successful.");
+        }
+    }
+
+    public function execute_query_table($query_string)
+    {
+        $query = $this->db->query($query_string);
+        if ($query === TRUE) {
+            return result(array("affected_rows" => $this->db->affected_rows()), 200, "Query executed successfully.");
+        } else if ($query === FALSE) {
+            return result(null, 500, "Database error: " . $this->db->error()['message']);
+        } else {
+            return result($query->result_array(), 200, "Query executed successfully.");
+        }
+    }
+
+    public function get_table($table, $columns = '*', $where = null)
+    {
+        $this->db->select($columns);
+        if (!empty($where)) {
+            $this->db->where($where);
+        }
+        $query = $this->db->get($table);
+
+        if ($query === FALSE) {
+            return result(null, 500, "Database error: " . $this->db->error()['message']);
+        } else {
+            return result($query->result_array(), 200, "Query executed successfully.");
+        }
+    }
 }

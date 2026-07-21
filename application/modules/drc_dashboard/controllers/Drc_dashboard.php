@@ -59,11 +59,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " where c.subareaid in (select distinct b.subareaid from  
@@ -210,8 +211,8 @@ class Drc_dashboard extends BaseController
 									(select 
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid $strquery) md,
 										(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid $strquery) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
-										(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
+										(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -229,8 +230,8 @@ class Drc_dashboard extends BaseController
 									(select 
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid $strquery) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid $strquery) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid $strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -242,8 +243,8 @@ class Drc_dashboard extends BaseController
 									(select 
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -260,8 +261,8 @@ class Drc_dashboard extends BaseController
 										select '_PJP' header, 
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) MD,
 											sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -271,8 +272,8 @@ class Drc_dashboard extends BaseController
 										select '_CALL' header, 
 												sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 											sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -282,8 +283,8 @@ class Drc_dashboard extends BaseController
 										select '_EXT_CALL' header, 
 												sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 											sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -626,11 +627,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " where c.subareaid in (select distinct b.subareaid from  
@@ -683,8 +685,8 @@ class Drc_dashboard extends BaseController
 										(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 										(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid $strquery) md,
 										(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid $strquery) spg,
-										(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
-										(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
+										(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
+										(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
 										from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 										left join m_area_subarea c on c.areaid=b.areaid
 										left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -708,8 +710,8 @@ class Drc_dashboard extends BaseController
 										(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 										(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid $strquery) md,
 										(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid $strquery) spg,
-										(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
-										(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
+										(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfmt,  
+										(select count(1) from m_sales_salesman where tipe_sales='MEDREP' and aktif=1 and subareaid=c.subareaid $strquery) sfgt
 										from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 										left join m_area_subarea c on c.areaid=b.areaid
 										left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -983,11 +985,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 		
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and c.subareaid in (select distinct b.subareaid from  
@@ -1083,8 +1086,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid$strquery) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid$strquery) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid$strquery) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid$strquery) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -1096,8 +1099,8 @@ class Drc_dashboard extends BaseController
 									(select e.regionalid, e.nama_regional,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -1116,8 +1119,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid$strquery) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid$strquery) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid$strquery) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid$strquery) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid$strquery) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -1129,8 +1132,8 @@ class Drc_dashboard extends BaseController
 									(select e.regionalid, e.nama_regional,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -1395,11 +1398,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 		
 		if ($restrict_level=='4'){
 			if ($tanggal=='All'){
@@ -1449,8 +1453,8 @@ class Drc_dashboard extends BaseController
 			select 'PJP' header, '1' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
 				sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) spg,
-				sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) sls_mt,
-				sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) sls_gt
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_mt,
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_gt
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -1460,8 +1464,8 @@ class Drc_dashboard extends BaseController
 			select 'Call On PJP' header, '2' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 				sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -1471,8 +1475,8 @@ class Drc_dashboard extends BaseController
 			select 'EXT_CALL' header, '3' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 				sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -1489,8 +1493,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,'Call On PJP' header,
 						sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 						sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -1501,8 +1505,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,'EXT_CALL' header,
 							sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 						sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -1521,8 +1525,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,'PJP' header, '1' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
 											sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) spg,
-											sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) sls_mt,
-											sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) sls_gt
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_mt,
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_gt
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -1533,8 +1537,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,'Call On PJP' header, '2' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 											sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -1545,8 +1549,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,'EXT_CALL' header, '3' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 											sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -1564,8 +1568,8 @@ class Drc_dashboard extends BaseController
 												select e.regionalid,e.nama_regional,'Call On PJP' header,
 													sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 													sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-													sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-													sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+													sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+													sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 												from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 												left join m_area_subarea c on b.subareaid=c.subareaid
 												left join m_area_areasite d on b.areaid=d.areaid
@@ -1576,8 +1580,8 @@ class Drc_dashboard extends BaseController
 												select e.regionalid,e.nama_regional,'EXT_CALL' header,
 														sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 													sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-													sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-													sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+													sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+													sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 												from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 												left join m_area_subarea c on b.subareaid=c.subareaid
 												left join m_area_areasite d on b.areaid=d.areaid
@@ -1936,11 +1940,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		$regionalid=$this->input->post("regionalid");
 		$nama_regional=$this->input->post("nama_regional");
@@ -1974,8 +1979,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -1998,8 +2003,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -2299,11 +2304,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		$regionalid=$this->input->post("regionalid");
 		$nama_regional=$this->input->post("nama_regional");
@@ -2367,8 +2373,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -2380,8 +2386,8 @@ class Drc_dashboard extends BaseController
 									(select e.regionalid, e.nama_regional, d.areaid, d.nama_area,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -2399,8 +2405,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -2412,8 +2418,8 @@ class Drc_dashboard extends BaseController
 									(select e.regionalid, e.nama_regional, d.areaid, d.nama_area,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -2705,11 +2711,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
 			if ($tanggal=='All'){
@@ -2747,8 +2754,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,'PJP' header, '1' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
 				sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) spg,
-				sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) sls_mt,
-				sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) sls_gt
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_mt,
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_gt
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -2759,8 +2766,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,'Call On PJP' header, '2' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 				sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -2771,8 +2778,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,'EXT_CALL' header, '3' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 				sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -2790,8 +2797,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,'Call On PJP' header,
 						sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 						sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -2802,8 +2809,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,'EXT_CALL' header,
 							sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 						sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -2821,8 +2828,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'PJP' header, '1' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
 											sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) spg,
-											sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) sls_mt,
-											sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) sls_gt
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_mt,
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_gt
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -2833,8 +2840,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'Call On PJP' header, '2' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 											sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -2845,8 +2852,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'EXT_CALL' header, '3' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 											sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -2864,8 +2871,8 @@ class Drc_dashboard extends BaseController
 												select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'Call On PJP' header,
 													sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 													sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-													sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-													sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+													sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+													sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 												from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 												left join m_area_subarea c on b.subareaid=c.subareaid
 												left join m_area_areasite d on b.areaid=d.areaid
@@ -2876,8 +2883,8 @@ class Drc_dashboard extends BaseController
 												select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'EXT_CALL' header,
 														sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 													sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-													sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-													sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+													sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+													sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 												from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 												left join m_area_subarea c on b.subareaid=c.subareaid
 												left join m_area_areasite d on b.areaid=d.areaid
@@ -3274,8 +3281,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -3298,8 +3305,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -3639,8 +3646,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, 
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and areaid=c.areaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and areaid=c.areaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and areaid=c.areaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and areaid=c.areaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and areaid=c.areaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and areaid=c.areaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -3652,8 +3659,8 @@ class Drc_dashboard extends BaseController
 									(select e.regionalid, e.nama_regional, d.areaid, d.nama_area,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -3671,8 +3678,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -3684,8 +3691,8 @@ class Drc_dashboard extends BaseController
 									(select e.regionalid, e.nama_regional, d.areaid, d.nama_area, c.subareaid, c.nama_area city,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -4005,8 +4012,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,d.areaid,d.nama_area, 'PJP' header, '1' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
 				sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) spg,
-				sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) sls_mt,
-				sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) sls_gt
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_mt,
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_gt
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -4017,8 +4024,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'Call On PJP' header, '2' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 				sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -4029,8 +4036,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'EXT_CALL' header, '3' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 				sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -4048,8 +4055,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'Call On PJP' header,
 						sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 						sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -4060,8 +4067,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'EXT_CALL' header,
 							sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 						sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -4080,8 +4087,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city, 'PJP' header, '1' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
 											sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) spg,
-											sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) sls_mt,
-											sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) sls_gt
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_mt,
+											sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_gt
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -4092,8 +4099,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'Call On PJP' header, '2' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 											sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -4104,8 +4111,8 @@ class Drc_dashboard extends BaseController
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'EXT_CALL' header, '3' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 											sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-											sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-											sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+											sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 										from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 										left join m_area_subarea c on b.subareaid=c.subareaid
 										left join m_area_areasite d on b.areaid=d.areaid
@@ -4123,8 +4130,8 @@ class Drc_dashboard extends BaseController
 												select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'Call On PJP' header,
 													sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 													sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-													sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-													sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+													sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+													sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 												from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 												left join m_area_subarea c on b.subareaid=c.subareaid
 												left join m_area_areasite d on b.areaid=d.areaid
@@ -4135,8 +4142,8 @@ class Drc_dashboard extends BaseController
 												select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'EXT_CALL' header,
 														sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 													sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-													sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-													sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+													sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+													sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 												from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 												left join m_area_subarea c on b.subareaid=c.subareaid
 												left join m_area_areasite d on b.areaid=d.areaid
@@ -4515,11 +4522,12 @@ class Drc_dashboard extends BaseController
 			$periodedate=date_create($periode);
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " b.tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " b.tipe_sales not in ('MEDREP GT','FC','ADMIN') and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " b.tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " b.tipe_sales not in ('MEDREP','FC','ADMIN') and";
+		// }
 		
 		if ($restrict_level=='4'){
 			if ($tanggal=='All'){
@@ -4545,8 +4553,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city, 'PJP' header, '1' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
 				sum(case when b.tipe_sales='SPG' then a.pjp else 0 end) spg,
-				sum(case when b.tipe_sales='MEDREP MT' then a.pjp else 0 end) sls_mt,
-				sum(case when b.tipe_sales='MEDREP GT' then a.pjp else 0 end) sls_gt
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_mt,
+				sum(case when b.tipe_sales='MEDREP' then a.pjp else 0 end) sls_gt
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and a.flag_adjust=0
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -4557,8 +4565,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'Call On PJP' header, '2' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 				sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -4569,8 +4577,8 @@ class Drc_dashboard extends BaseController
 			select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'EXT_CALL' header, '3' as _order,
 					sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 				sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-				sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-				sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+				sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 			from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 			left join m_area_subarea c on b.subareaid=c.subareaid
 			left join m_area_areasite d on b.areaid=d.areaid
@@ -4588,8 +4596,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'Call On PJP' header,
 						sum(case when b.tipe_sales='MERCHANDISER' then a.call else 0 end) _call_MD,
 						sum(case when b.tipe_sales='SPG' then a.call else 0 end) _call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.call else 0 end) _call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.call else 0 end) _call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.call else 0 end) _call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -4600,8 +4608,8 @@ class Drc_dashboard extends BaseController
 					select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city,'EXT_CALL' header,
 							sum(case when b.tipe_sales='MERCHANDISER' then a.extra_call else 0 end) _ext_call_MD,
 						sum(case when b.tipe_sales='SPG' then a.extra_call else 0 end)  _ext_call_SPG,
-						sum(case when b.tipe_sales='MEDREP MT' then a.extra_call else 0 end)  _ext_call_SLS_MT,
-						sum(case when b.tipe_sales='MEDREP GT' then a.extra_call else 0 end)  _ext_call_SLS_GT
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_MT,
+						sum(case when b.tipe_sales='MEDREP' then a.extra_call else 0 end)  _ext_call_SLS_GT
 					from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid
 					left join m_area_subarea c on b.subareaid=c.subareaid
 					left join m_area_areasite d on b.areaid=d.areaid
@@ -4887,11 +4895,12 @@ class Drc_dashboard extends BaseController
 			}
 		}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " b.tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " b.tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " b.tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " b.tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($tanggal=='All'){
 			$strqueryarea1 = " where $querybu a.periode between '".$tahun."-".$bulan."-01' and LAST_DAY('".$tahun."-".$bulan."-01') and c.subareaid=$subareaid 
@@ -4907,8 +4916,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,
-									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,
+									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -4920,8 +4929,8 @@ class Drc_dashboard extends BaseController
 									(select e.regionalid, e.nama_regional, d.areaid, d.nama_area, c.subareaid, c.nama_area city,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
-									case when b.tipe_sales='MEDREP MT' then 1 else 0 end sfmt,
-									case when b.tipe_sales='MEDREP GT' then 1 else 0 end sfgt
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfmt,
+									case when b.tipe_sales='MEDREP' then 1 else 0 end sfgt
 									from 
 									t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1
 									left join m_area_subarea c on b.subareaid=c.subareaid
@@ -5149,9 +5158,9 @@ class Drc_dashboard extends BaseController
 		}
 
 		if ($restrict_bu=='GT'){
-			$querybu = " d.tipe_sales='MEDREP GT' and";
+			$querybu = " d.tipe_sales='MEDREP' and";
 		}else{
-			$querybu = " d.tipe_sales<>'MEDREP GT' and";
+			$querybu = " d.tipe_sales<>'MEDREP' and";
 		}
 
 		$qheader = $this->db->query(" 
@@ -5166,8 +5175,8 @@ class Drc_dashboard extends BaseController
 									(select a.regionalid, a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area subarea,
 									(select count(1) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select count(1) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP MT' and aktif=1 and subareaid=c.subareaid) sfmt,  
-									(select count(1) from m_sales_salesman where tipe_sales='MEDREP GT' and aktif=1 and subareaid=c.subareaid) sfgt
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfmt,  
+									(select count(1) from m_sales_salesman where aktif=1 and subareaid=c.subareaid) sfgt
 									from m_area_regional a left join m_area_areasite b on a.regionalid=b.regionalid
 									left join m_area_subarea c on c.areaid=b.areaid
 									left join m_sales_salesman d on d.subareaid = c.subareaid
@@ -5402,8 +5411,8 @@ class Drc_dashboard extends BaseController
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">City</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">SPG</th>';
         $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MERCHANDISER</th>';
-        $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP MT</th>';
-		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP GT</th>';
+        $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP</th>';
+		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">FC</th>';
 
 		$start = date_create($periode);
@@ -5450,11 +5459,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -5656,11 +5666,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -5820,9 +5831,9 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$classid='%';}
 
 		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
+			$querybu = " tipe_sales='MEDREP' and";
 		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
+			$querybu = " tipe_sales<>'MEDREP' and";
 		}
 
 		if ($restrict_level=='4'){
@@ -6007,11 +6018,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -6203,11 +6215,12 @@ class Drc_dashboard extends BaseController
 		//$periode = $tahun.'-'.$bulan.'-'.$tanggal;
 		if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and d.subareaid in (select distinct b.subareaid from  
@@ -6466,13 +6479,14 @@ class Drc_dashboard extends BaseController
 	
 			if($classid=='null'){$classid='%';}
 	
-			if ($restrict_bu=='GT'){
-				$querybu = " tipe_sales='MEDREP GT' and";
-			}elseif ($restrict_bu=='MT'){
-				$querybu = " tipe_sales<>'MEDREP GT' and";
-			}else{
-				$querybu = "";
-			}
+			$querybu = "";
+			// if ($restrict_bu=='GT'){
+			// 	$querybu = " tipe_sales='MEDREP' and";
+			// }elseif ($restrict_bu=='MT'){
+			// 	$querybu = " tipe_sales<>'MEDREP' and";
+			// }else{
+			// 	$querybu = "";
+			// }
 	
 			if ($restrict_level=='4'){
 				$strqueryarea = " and g.subareaid in (select distinct b.subareaid from  
@@ -6600,13 +6614,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -6879,13 +6894,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = "and b.classid in ($classid)";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7081,11 +7097,12 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7285,13 +7302,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7472,13 +7490,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7666,11 +7685,12 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7847,13 +7867,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -7999,13 +8020,14 @@ class Drc_dashboard extends BaseController
 		if($classid=='null'){$substrclass = "";}else{$substrclass = " and b.classid in ($classid) ";}
 		//if($classid=='null'){$classid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -8156,11 +8178,12 @@ class Drc_dashboard extends BaseController
 		$this->load->library('excel');
 		$filename = "Data_Stock_".$tahun.$bulan.".xlsx";
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 
 		$qhcreg_old = $this->db->query(" 
@@ -8289,13 +8312,14 @@ class Drc_dashboard extends BaseController
 		if($brandid=='null'){$brandid='%';}
 		if($productid=='null'){$productid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -8606,13 +8630,14 @@ class Drc_dashboard extends BaseController
 		if($brandid=='null'){$brandid='%';}
 		if($productid=='null'){$productid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -8997,13 +9022,14 @@ class Drc_dashboard extends BaseController
 		if($brandid=='null'){$brandid='%';}
 		if($productid=='null'){$productid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -9412,11 +9438,12 @@ class Drc_dashboard extends BaseController
 		if($productid=='null'){$productid='%';}
 		if($brandid=='null'){$brandid='%';}
 
-		if ($restrict_bu=='GT'){
-			$querybu = " tipe_sales='MEDREP GT' and";
-		}else{
-			$querybu = " tipe_sales<>'MEDREP GT' and";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " tipe_sales='MEDREP' and";
+		// }else{
+		// 	$querybu = " tipe_sales<>'MEDREP' and";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and b.subareaid in (select distinct b.subareaid from  
@@ -10171,7 +10198,7 @@ class Drc_dashboard extends BaseController
 											left join m_area_regional r on cst.regionalid=r.regionalid
 											left join m_area_areasite ar on cst.areaid = ar.areaid
 											left join m_area_subarea sa on cst.subareaid=sa.subareaid
-											where rrk_trans.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('MEDREP GT','FC','ADMIN') AND
+											where rrk_trans.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('FC','ADMIN') AND
 												rrk_trans.periode $tempsql
 											group by 
 												rrk_trans.periode,
@@ -10203,7 +10230,7 @@ class Drc_dashboard extends BaseController
 											left join m_area_subarea sa on cst.subareaid=sa.subareaid
 											left JOIN m_sales_salesman salesamn on rrk.siteid = salesamn.siteid and rrk.salesmanid = salesamn.salesmanid
 											left join t_sales_absensi att on att.salesmanid=rrk.salesmanid and att.periode=rrk.periode
-											where att.status in ('H','C') and att.flag_adjust=0 and rrk.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('MEDREP GT','FC','ADMIN') AND 
+											where att.status in ('H','C') and att.flag_adjust=0 and rrk.salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) AND salesamn.tipe_sales not in ('FC','ADMIN') AND 
 												rrk.periode in (select periode from t_sales_absensi where salesmanid in (select salesmanid from m_sales_salesman where aktif=1 and subareaid=$subareaid) and status in ('H','C') and flag_adjust=0 and periode $tempsql ) AND rrk_trans.check_in is null
 											group by
 												rrk.periode,
@@ -10307,13 +10334,14 @@ class Drc_dashboard extends BaseController
 			$tempsql="= '$tahun-$bulan-$tanggal'";
 		}
 		
-		if ($restrict_bu=='GT'){
-			$querybu = " and tipe_sales='MEDREP GT'";
-		}elseif ($restrict_bu=='MT'){
-			$querybu = " and tipe_sales<>'MEDREP GT'";
-		}else{
-			$querybu = "";
-		}
+		$querybu = "";
+		// if ($restrict_bu=='GT'){
+		// 	$querybu = " and tipe_sales='MEDREP'";
+		// }elseif ($restrict_bu=='MT'){
+		// 	$querybu = " and tipe_sales<>'MEDREP'";
+		// }else{
+		// 	$querybu = "";
+		// }
 
 		if ($restrict_level=='4'){
             $strqueryarea = " and subareaid in (select distinct b.subareaid from  

@@ -40,12 +40,11 @@ class App_dashboard_model extends CI_Model
 								select distinct mss.salesmanid
 								from m_sales_salesman mss
 								where mss.salesmanid in (" . $restrict_query . ")
-								  and mss.tipe_sales='MEDREP'
 								  and mss.aktif=1
 							)";
 		}
 		else {
-			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where tipe_sales='MEDREP' and aktif=1)";
+			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where aktif=1)";
 		}
 
 		$field = " a.* ";

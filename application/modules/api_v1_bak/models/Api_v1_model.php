@@ -558,9 +558,9 @@ class Api_v1_model extends CI_Model
 				union
 				select 'SPG' as idtipesales, 'SPG' as tipesales
 				union
-				select 'MEDREP MT' as idtipesales, 'MEDREP MT' as tipesales
+				select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
 				union
-				select 'MEDREP GT' as idtipesales, 'MEDREP GT' as tipesales
+				select 'MEDREP' as idtipesales, 'MEDREP' as tipesales
 				union
 				select 'FC' as idtipesales, 'FC' as tipesales
 				union

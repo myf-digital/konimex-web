@@ -317,8 +317,8 @@ class Set_quota_budget extends BaseController
 		// $html .='<th style="text-align:left;white-space:nowrap;width:100px;">City</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">SPG</th>';
         $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MERCHANDISER</th>';
-        $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP MT</th>';
-		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP GT</th>';
+        $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP</th>';
+		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">FC</th>';
 
 		$start = date_create($periode);

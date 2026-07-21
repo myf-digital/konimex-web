@@ -39,11 +39,10 @@ class Dashboard_chart_model extends CI_Model
                     SELECT distinct mss.salesmanid
                     FROM m_sales_salesman mss
                     WHERE mss.salesmanid IN (" . $restrict_query . ")
-                      AND mss.tipe_sales='MEDREP'
                       AND mss.aktif=1
                 )";
             } else {
-                $strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE tipe_sales='MEDREP' AND aktif=1)";
+                $strquery = " AND b.salesmanid IN (SELECT salesmanid FROM m_sales_salesman WHERE aktif=1)";
             }
         }
 
@@ -118,7 +117,7 @@ class Dashboard_chart_model extends CI_Model
                 GROUP BY tr.salesmanid
             ) ord ON ord.salesmanid = b.salesmanid
             LEFT JOIN m_area_areasite c ON b.areaid = c.areaid
-            WHERE b.tipe_sales='MEDREP' AND b.aktif = 1 $strquery
+            WHERE b.aktif = 1 $strquery
             ORDER BY b.salesmanid
         ";
 		$data = $this->db->query($query)->result_array();
@@ -353,7 +352,7 @@ class Dashboard_chart_model extends CI_Model
                 a.nama_salesman,
                 a.nama_area
             FROM v_gff_info a
-            WHERE a.tipe_sales='MEDREP'
+            WHERE a.tipe_sales IS NOT NULL
             $strquery
             ORDER BY a.nama_regional, a.salesmanid;
         ";
