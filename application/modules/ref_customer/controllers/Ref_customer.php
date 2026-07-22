@@ -237,6 +237,10 @@ class Ref_customer extends BaseController
 
     public function download_template()
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(0);
+        $this->db->save_queries = FALSE;
+
         $regionalid = $this->input->get('regionalid');
         $areaid = $this->input->get('areaid');
         $subareaid = $this->input->get('subareaid');
@@ -290,7 +294,7 @@ class Ref_customer extends BaseController
         }
         
         $sampleRow = [
-            'Contoh Data',
+            'Contoh',
             'OTL001',
             'Klinik Sehat',
             'Klinik',
