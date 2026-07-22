@@ -12,7 +12,13 @@ $(function () {
     subareaid: "",
   };
 
-  let exportData = { summary: [], area: null, subarea: null, subarea_detail: null, visits: null };
+  let exportData = {
+    summary: [],
+    area: null,
+    subarea: null,
+    subarea_detail: null,
+    visits: null,
+  };
 
   const $periode = $("#periode");
   const $tipeSales = $("#tipe_sales");
@@ -343,7 +349,7 @@ $(function () {
   }
 
   function loadSpecializationDetail(spesialisasiId, nama) {
-    $titleDetailSalesman.text("List Salesman - Spesialisasi: " + nama);
+    $titleDetailSalesman.text("List TPE - Spesialisasi: " + nama);
     $colDetailSalesman.html(
       `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
     );
@@ -677,7 +683,7 @@ $(function () {
             <thead>
               <tr>
                 <th class="th-w-50">#</th>
-                <th>Nama Salesman</th>
+                <th>Nama TPE</th>
                 <th>Tipe</th>
                 <th>Target</th>
                 <th>Realisasi</th>
@@ -739,7 +745,7 @@ $(function () {
     }
 
     $modalVisitTitle.html(
-      `Kunjungan Salesman: ${sm.nama_salesman} (${sm.salesmanid})`,
+      `Kunjungan TPE: ${sm.nama_salesman} (${sm.salesmanid})`,
     );
     $modalVisitBody.html(`
       <div class="table-responsive">
@@ -849,12 +855,7 @@ $(function () {
           let actualVal = parseInt(r.actual) || 0;
           let pct =
             targetVal > 0 ? ((actualVal / targetVal) * 100).toFixed(2) : "0.00";
-          return [
-            r.nama_spesialisasi || "",
-            actualVal,
-            targetVal,
-            pct + "%",
-          ];
+          return [r.nama_spesialisasi || "", actualVal, targetVal, pct + "%"];
         }),
       );
     }
@@ -871,8 +872,8 @@ $(function () {
       }
 
       let hdrSalesman = [
-        "Salesman ID",
-        "Nama Salesman",
+        "TPE ID",
+        "Nama TPE",
         "Tipe Sales",
         "Target",
         "Realisasi",
@@ -880,7 +881,7 @@ $(function () {
       ];
 
       addSection(
-        "List Salesman - " + (exportData.visits.label || "Spesialisasi"),
+        "List TPE - " + (exportData.visits.label || "Spesialisasi"),
         hdrSalesman,
         filteredSalesmanData.map(function (r) {
           let targetVal = parseInt(r.target) || 0;
@@ -912,8 +913,8 @@ $(function () {
       }
 
       let hdrVisit = [
-        "Nama Salesman",
-        "Salesman ID",
+        "Nama TPE",
+        "TPE ID",
         "Nama Professional",
         "Tipe PIC",
         "Spesialisasi",

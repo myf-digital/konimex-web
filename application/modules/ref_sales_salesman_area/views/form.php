@@ -25,8 +25,8 @@
                                 <select id="siteid-id" name="siteid" class="form-control" placeholder="SiteID"></select>
 							</div>
 							<div class="form-group">
-								<label for="salesmanid">Salesmanid</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Salesman"></select>
+								<label for="salesmanid">TPE ID</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
 							</div>
 							<div class="form-group">
 								<label for="areaid">Areaid</label>

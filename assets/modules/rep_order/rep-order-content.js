@@ -63,7 +63,7 @@
       });
 
       uiSelectSalesman.select2({
-        placeholder: "Select Salesman",
+        placeholder: "Select TPE",
         allowClear: true,
         ajax: {
           transport: function (params, success, failure) {
@@ -74,7 +74,8 @@
               if (term.length === 1) {
                 filtered = $.grep(localSalesmen, function (o) {
                   return (
-                    o.nama_salesman.toLowerCase().indexOf(term.toLowerCase()) > -1 ||
+                    o.nama_salesman.toLowerCase().indexOf(term.toLowerCase()) >
+                      -1 ||
                     o.salesmanid.toLowerCase().indexOf(term.toLowerCase()) > -1
                   );
                 });
@@ -172,7 +173,7 @@
       ) {
         $.alert({
           title: "Error ",
-          content: "Salesman harus di isi...!",
+          content: "TPE harus di isi...!",
           containerFluid: true,
         });
       } else {
@@ -207,12 +208,12 @@
             o.salesmanid + " - " + o.nama_salesman,
             o.salesmanid,
             false,
-            false
+            false,
           );
           uiSelectSalesman.append(newOption);
         });
         uiSelectSalesman.val(null).trigger("change");
-      }
+      },
     );
   }
 

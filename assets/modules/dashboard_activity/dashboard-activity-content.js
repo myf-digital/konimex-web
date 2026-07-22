@@ -599,8 +599,8 @@ $(function () {
       "Visit (Target)",
     ];
     let hdrSalesman = [
-      "Salesman ID",
-      "Nama Salesman",
+      "TPE ID",
+      "Nama TPE",
       "Tipe Sales",
       "Jabatan",
       "Area",
@@ -734,8 +734,8 @@ $(function () {
 
     let hdrVisit = [
       "Periode",
-      "Nama Salesman",
-      "Salesman ID",
+      "Nama TPE",
+      "TPE ID",
       "Customer ID",
       "Nama Customer",
       "Check In",
@@ -834,8 +834,8 @@ $(function () {
 
     let hdrSpesialisasi = [
       "Periode",
-      "Salesman ID",
-      "Nama Salesman",
+      "TPE ID",
+      "Nama TPE",
       "Spesialisasi",
       "Target",
       "Realisasi",
@@ -846,8 +846,8 @@ $(function () {
 
     let hdrProduk = [
       "Periode",
-      "Salesman ID",
-      "Nama Salesman",
+      "TPE ID",
+      "Nama TPE",
       "Product ID",
       "Nama Invoice",
       "Target",
@@ -905,8 +905,8 @@ $(function () {
 
     let hdrSales = [
       "Periode",
-      "Salesman ID",
-      "Nama Salesman",
+      "TPE ID",
+      "Nama TPE",
       "Target Nominal",
       "Realisasi",
       "Kekurangan",
@@ -991,7 +991,7 @@ $(function () {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Nama Salesman</th>
+                  <th>Nama TPE</th>
                   <th>Tipe</th>
                   <th>Jabatan</th>
                   <th>Area</th>
@@ -1334,7 +1334,7 @@ $(function () {
       ],
       ["Periode", val(r.periode)],
       [
-        "Salesman",
+        "TPE",
         `${val(r.nama_salesman)} <small class="text-muted">(${val(r.salesmanid)})</small>`,
       ],
       ["Check In", formatDateTime(r.check_in, 16, "-")],

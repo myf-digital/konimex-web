@@ -119,8 +119,8 @@
                         </div>
                     </div>
                     <div class="form-group col-md-2">
-                        <label for="salesman">Salesman</label>
-                        <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select Salesman"></select>
+                        <label for="salesman">TPE</label>
+                        <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select TPE"></select>
                     </div>
                     <div class="form-group col-md-2">
                         <label for="regional">Regional</label>

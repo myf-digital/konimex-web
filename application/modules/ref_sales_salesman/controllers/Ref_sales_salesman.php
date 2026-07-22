@@ -38,6 +38,12 @@ class Ref_sales_salesman extends BaseController
         response($this->sales_salesman->delete($data));
     }
 
+    public function clear_token()
+    {
+        $data = param_input();
+        response($this->sales_salesman->clear_token($data));
+    }
+
     public function load()
     {
         $data = param_input();
@@ -119,7 +125,7 @@ class Ref_sales_salesman extends BaseController
 
     public function download_template()
     {
-        $filePath = FCPATH . 'assets/templates/Template-Mapping-Karyawan.xlsx';
+        $filePath = FCPATH . 'assets/templates/Template-Mapping-TPE.xlsx';
         if (file_exists($filePath)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

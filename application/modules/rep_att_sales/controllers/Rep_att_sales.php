@@ -173,7 +173,7 @@ class Rep_att_sales extends CI_Controller {
 		$periode 	= $this->uri->segment(3);
 		$until 	= $this->uri->segment(4);
 		
-		$filename = "Report_Salesman_Aktif.xls";
+		$filename = "Report_TPE_Aktif.xls";
 		$html ='<style>
 				#table-wrapper {
 					position:relative;
@@ -201,8 +201,8 @@ class Rep_att_sales extends CI_Controller {
 		$html .= '<table id="activity_table" border="1" class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead>';
 		$html .= '<tr>';
-		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">Salesman ID</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama Medrep</th>';
+		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">TPE ID</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama TPE</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -363,8 +363,8 @@ class Rep_att_sales extends CI_Controller {
 		$html .= '<div id="table-wrapper"><div id="table-scroll"><table id="activity_table" border="1" class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead>';
 		$html .= '<tr>';
-		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">Salesman ID</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama Medrep</th>';
+		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">TPE ID</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama TPE</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);

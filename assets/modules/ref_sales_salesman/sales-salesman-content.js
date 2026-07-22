@@ -3,7 +3,7 @@
   const common = new Common();
   const commonGrid = new CommonGrid();
   // update title
-  common.setTitle("Karyawan");
+  common.setTitle("TPE");
   // ui components
   let uiTbl = $("#tbl-sales-salesman");
 
@@ -25,7 +25,7 @@
 
   function initializeGrid() {
     let option = {
-      title: "Karyawan",
+      title: "TPE",
       toolbar: toolbar(),
       url: common.baseURL("ref_sales_salesman/load"),
       pageNumber: 1,
@@ -36,7 +36,7 @@
           {
             field: "options",
             title: "ACTION",
-            width: 130,
+            width: 175,
             halign: "center",
             align: "center",
             formatter: formatterButton,
@@ -143,6 +143,7 @@
       const btnEdit = $(btns).find("a.btn-success");
       const btnDetail = $(btns).find("a.btn-info");
       const btnDelete = $(btns).find("a.btn-danger");
+      const btnClearToken = $(btns).find("a.btn-warning");
       btnEdit.click(function () {
         updateRow(param);
       });
@@ -151,6 +152,9 @@
       });
       btnDelete.click(function () {
         deleteRow(param);
+      });
+      btnClearToken.click(function () {
+        clearTokenRow(param);
       });
       index++;
     }
@@ -175,13 +179,25 @@
       "danger",
       "../assets/images/ic_trash.png",
     );
+    const hasToken = parseInt(row.has_token || 0) > 0;
+    let btnClearToken = "";
+    if (hasToken) {
+      btnClearToken = commonGrid.btnBuilder(
+        "btn-clear-token",
+        "warning",
+        "fa fa-key",
+      );
+      btnClearToken = btnClearToken.replace(
+        'style="',
+        'style="margin-top: 5px; margin-left: 5px; ',
+      );
+    }
     return (
-      '<div class="action-grid">' +
+      '<div class="action-grid" style="display: flex; gap: 4px; align-items: center; justify-content: center;">' +
       btnUpdate +
-      " " +
       btnDetail +
-      " " +
       btnDelete +
+      (hasToken ? " " + btnClearToken : "") +
       "</div>"
     );
   }
@@ -201,6 +217,33 @@
           $.alert(status);
         }
       });
+    });
+  }
+
+  function clearTokenRow(val) {
+    $.confirm({
+      title: "Confirmation!",
+      content: `Apakah anda yakin ingin menghapus/clear token <b>${val.nama_salesman}</b> ini?`,
+      buttons: {
+        confirm: {
+          btnClass: "btn-warning",
+          action: function () {
+            $.post(
+              "ref_sales_salesman/clear_token",
+              val,
+              function (data, status) {
+                if (200 == data.code) {
+                  $.alert("Clear token success!");
+                  uiTbl.datagrid("reload");
+                } else {
+                  $.alert("Clear token failed!");
+                }
+              },
+            );
+          },
+        },
+        cancel: function () {},
+      },
     });
   }
 

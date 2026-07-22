@@ -63,7 +63,7 @@
         <div id="col-detail-subarea" class="col-xs-12"></div>
     </div>
 
-    <!-- Salesman visit detail -->
+    <!-- TPE visit detail -->
     <div id="row-detail-salesman" class="row" style="margin-top: 16px; display:none;">
         <div class="col-xs-12">
             <div class="section-title"><i class="fa fa-user"></i> <span id="title-detail-salesman"></span></div>

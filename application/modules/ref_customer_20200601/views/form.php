@@ -93,7 +93,7 @@
 							</div>-->
 							<div class="form-group col-md-6">
 								<label for="salesmanid">Kode MEDREP</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Salesman"></select>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
 							</div>
 							<div class="form-group col-md-4">
 								<label for="mcc">DC</label>

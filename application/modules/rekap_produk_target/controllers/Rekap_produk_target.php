@@ -131,8 +131,8 @@ class Rekap_produk_target extends BaseController
 
         $detailVisitSheet->setCellValue('A1', 'No')
                          ->setCellValue('B1', 'Tanggal')
-                         ->setCellValue('C1', 'Salesman ID')
-                         ->setCellValue('D1', 'Nama Salesman')
+                         ->setCellValue('C1', 'TPE ID')
+                         ->setCellValue('D1', 'Nama TPE')
                          ->setCellValue('E1', 'Product ID')
                          ->setCellValue('F1', 'Nama Produk')
                          ->setCellValue('G1', 'Customer ID')
@@ -177,8 +177,8 @@ class Rekap_produk_target extends BaseController
 
         $detailSalesSheet->setCellValue('A1', 'No')
                          ->setCellValue('B1', 'Tanggal Transaksi')
-                         ->setCellValue('C1', 'Salesman ID')
-                         ->setCellValue('D1', 'Nama Salesman')
+                         ->setCellValue('C1', 'TPE ID')
+                         ->setCellValue('D1', 'Nama TPE')
                          ->setCellValue('E1', 'Product ID')
                          ->setCellValue('F1', 'Nama Produk')
                          ->setCellValue('G1', 'No PO')

@@ -70,8 +70,8 @@
                 <form id="fm-download-req-pjp-daily" role="form" method="post">
                   <div class="box-body">
                     <div class="form-group col-xs-12 col-sm-12 col-md-6">
-                      <label for="salesmanid">Salesman</label>
-                      <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Salesman"></select>
+                      <label for="salesmanid">TPE</label>
+                      <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
                     </div>
                   </div>
                   <div class="box-footer">

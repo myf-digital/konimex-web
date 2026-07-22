@@ -48,7 +48,7 @@ class Rekap_dub_target extends BaseController
         ];
 
         if (empty($data['salesmanid'])) {
-            responseJSON(['status' => false, 'message' => 'Salesman ID tidak valid.']);
+            responseJSON(['status' => false, 'message' => 'TPE ID tidak valid.']);
             return;
         }
 
@@ -87,8 +87,8 @@ class Rekap_dub_target extends BaseController
         $sheet->setTitle('Rekap DUB Target');
 
         $sheet->setCellValue('A1', 'No')
-              ->setCellValue('B1', 'Salesman ID')
-              ->setCellValue('C1', 'Nama Salesman')
+              ->setCellValue('B1', 'TPE ID')
+              ->setCellValue('C1', 'Nama TPE')
               ->setCellValue('D1', 'Tipe Sales')
               ->setCellValue('E1', 'Target DUB')
               ->setCellValue('F1', 'Actual DUB (Planned)')
@@ -138,8 +138,8 @@ class Rekap_dub_target extends BaseController
 
         $detailSheet->setCellValue('A1', 'No')
                     ->setCellValue('B1', 'Tanggal')
-                    ->setCellValue('C1', 'Salesman ID')
-                    ->setCellValue('D1', 'Nama Salesman')
+                    ->setCellValue('C1', 'TPE ID')
+                    ->setCellValue('D1', 'Nama TPE')
                     ->setCellValue('E1', 'Tipe Sales')
                     ->setCellValue('F1', 'Customer ID')
                     ->setCellValue('G1', 'Nama Customer')

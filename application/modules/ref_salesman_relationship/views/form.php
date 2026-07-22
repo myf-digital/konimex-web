@@ -22,8 +22,8 @@
 						<input type="hidden" id="siteid" name="siteid">
 						<input type="hidden" id="nama_salesman" name="nama_salesman">
 						<div class="form-group col-md-4">
-							<label for="salesmanid">Salesman</label>
-							<select id="salesmanid" name="salesmanid" class="form-control" placeholder="Salesman"></select>
+							<label for="salesmanid">TPE</label>
+							<select id="salesmanid" name="salesmanid" class="form-control" placeholder="TPE"></select>
 						</div>
 						<div class="form-group col-md-4">
 							<label for="relationship">Relationship</label>
