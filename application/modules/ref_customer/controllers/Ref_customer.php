@@ -322,6 +322,38 @@ class Ref_customer extends BaseController
             ],
         ]);
 
+        $outlets = $this->customer->get_all_outlets_and_users($regionalid, $areaid, $subareaid, $usersession, $restrict_level);
+        if (!empty($outlets)) {
+            $rowNum = 3;
+            $no = 1;
+            foreach ($outlets as $row) {
+                $sheet1->setCellValue('A' . $rowNum, $no);
+                $sheet1->setCellValue('B' . $rowNum, $row['kode_outlet']);
+                $sheet1->setCellValue('C' . $rowNum, $row['nama_customer']);
+                $sheet1->setCellValue('D' . $rowNum, $row['channel']);
+                $sheet1->setCellValue('E' . $rowNum, $row['telp']);
+                $sheet1->setCellValue('F' . $rowNum, $row['email']);
+                $sheet1->setCellValue('G' . $rowNum, $row['regional']);
+                $sheet1->setCellValue('H' . $rowNum, $row['area']);
+                $sheet1->setCellValue('I' . $rowNum, $row['sub_area']);
+                $sheet1->setCellValue('J' . $rowNum, $row['alamat']);
+                $sheet1->setCellValue('K' . $rowNum, $row['nama_professional']);
+                $sheet1->setCellValue('L' . $rowNum, $row['spesialisasi_name']);
+                $sheet1->setCellValue('M' . $rowNum, $row['tipe_user']);
+                $rowNum++;
+                $no++;
+            }
+
+            $sheet1->getStyle('A3:M' . ($rowNum - 1))->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ],
+            ]);
+        }
+
         $sheet2 = $spreadsheet->createSheet();
         $sheet2->setTitle('Referensi Data');
         

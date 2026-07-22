@@ -36,6 +36,7 @@ class App_auth extends CI_Controller
             if (isset($data['player_id']) && !empty($data['player_id'])) {
                 $resOnesignal = send_onesignal([
                     'player_ids' => $data['player_id'],
+                    'external_ids' => $data['username'],
                     'title' => 'Berhasil Login',
                     'message' => $message,
                     'data' => array_merge(['type' => 'Login'], [
@@ -46,13 +47,13 @@ class App_auth extends CI_Controller
                     ]),
                     'url' => '/app_dashboard',
                 ]);
-                $result->res_onesignal = $resOnesignal ? $resOnesignal['data'] : false;
+                $result->res_onesignal = $resOnesignal['data'] ?? false;
             }
             if (isset($result->session) && isset($result->session['telepon'])) {
                 $nomor = format_phone($result->session['telepon']);
                 if ($nomor) {
                     $resWA = send_wa(['phone' => $nomor, 'type' => 'text', 'text' => $message]);
-                    $result->res_wa = $resWA ? $resWA['data'] : false;
+                    $result->res_wa = $resWA['data'] ?? false;
                 } else {
                     log_message('error', "Nomor telepon tidak valid: " . $result->session['telepon']);
                 }

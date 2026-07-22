@@ -607,5 +607,57 @@ class Customer_model extends CI_Model
             return ['status' => false, 'message' => "Error: " . $e->getMessage()];
         }
     }
+
+    public function get_all_outlets_and_users($regionalid = null, $areaid = null, $subareaid = null, $usersession = null, $restrict_level = null)
+    {
+        $this->db->select('
+            c.customerid,
+            c.kode_outlet,
+            c.nama_customer,
+            ct.nama_type as channel,
+            c.telp,
+            c.email,
+            r.nama_regional as regional,
+            a.nama_area as area,
+            s.nama_area as sub_area,
+            c.alamat,
+            p.nama_professional,
+            p.spesialisasi_name,
+            p.type as tipe_user
+        ');
+        $this->db->from('m_customer c');
+        $this->db->join('m_customer_type ct', 'c.typeid = ct.typeid', 'left');
+        $this->db->join('m_area_regional r', 'c.regionalid = r.regionalid', 'left');
+        $this->db->join('m_area_areasite a', 'c.areaid = a.areaid', 'left');
+        $this->db->join('m_area_subarea s', 'c.subareaid = s.subareaid', 'left');
+        $this->db->join('ref_professional_mapping pm', 'c.customerid = pm.customerid', 'left');
+        $this->db->join('ref_professional p', 'pm.id_professional = p.id', 'left');
+
+        if (!empty($regionalid)) {
+            $reg_arr = explode(',', $regionalid);
+            $this->db->where_in('c.regionalid', $reg_arr);
+        }
+        if (!empty($areaid)) {
+            $area_arr = explode(',', $areaid);
+            $this->db->where_in('c.areaid', $area_arr);
+        }
+        if (!empty($subareaid)) {
+            $subarea_arr = explode(',', $subareaid);
+            $this->db->where_in('c.subareaid', $subarea_arr);
+        }
+
+        $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+        if ($restrict_query) {
+            $this->db->where("c.subareaid IN (
+                SELECT DISTINCT subareaid 
+                FROM m_salesman_area 
+                WHERE salesmanid IN (" . $restrict_query . ")
+            )", NULL, FALSE);
+        }
+
+        $this->db->order_by('c.customerid', 'DESC');
+        $this->db->order_by('p.id', 'ASC');
+        return $this->db->get()->result_array();
+    }
 }
 
