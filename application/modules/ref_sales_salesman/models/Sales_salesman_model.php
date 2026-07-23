@@ -136,12 +136,7 @@ class Sales_salesman_model extends CI_Model
                     join m_area_subarea d on msa.subareaid = d.subareaid
                     where msa.salesmanid = a.salesmanid
                 ) as nama_subarea,
-                (
-                    select count(1) 
-                    from tokens t 
-                    where t.account_id = a.salesmanid 
-                      and t.expires_at > now()
-                ) as has_token,
+                0 as has_token,
                 case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
                 mss.nama_salesman as supervisor
             from m_sales_salesman a 
@@ -310,7 +305,6 @@ class Sales_salesman_model extends CI_Model
         $this->db->where('salesmanid', $salesmanid);
         $this->db->delete('m_salesman_area');
 
-        // Filter out '0' or empty string values
         $subareaids = isset($data['subareaid']) ? (is_array($data['subareaid']) ? $data['subareaid'] : [$data['subareaid']]) : [];
         $subareaids = array_filter($subareaids, function($v) { return $v !== '0' && $v !== 0 && !empty($v); });
 
