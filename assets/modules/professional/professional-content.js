@@ -41,7 +41,7 @@
           {
             field: "options",
             title: "Action",
-            width: 120,
+            width: 150,
             halign: "center",
             align: "center",
             formatter: formatterButton,
@@ -139,7 +139,7 @@
       "btn-create",
       "success",
       "fa fa-plus",
-      "Tambah",
+      " Tambah",
     );
     const btnDownload = commonGrid.btnBuilderText(
       "btn-download",
@@ -154,19 +154,17 @@
       " Upload",
     );
     return (
-      '<div class="action-grid-toolbar">' + btnCreate + btnDownload + btnUpload + "</div>"
+      '<div class="action-grid-toolbar">' +
+      btnCreate +
+      btnDownload +
+      btnUpload +
+      "</div>"
     );
   }
 
   function formatterButton(val, row, index) {
     let btnImage = "";
     let btnApproval = "";
-    if (
-      (row.url_foto && row.url_foto != undefined) ||
-      (row.url_img_signature && row.url_img_signature != undefined)
-    ) {
-      btnImage = commonGrid.btnBuilder("btn-viem-image", "info", "fa fa-image");
-    }
 
     if (row.status == 1) {
       btnApproval += commonGrid.btnBuilder(
@@ -181,11 +179,26 @@
         "fa fa-times",
         "Reject",
       );
+    } else if (
+      (row.url_foto && row.url_foto != undefined) ||
+      (row.url_img_signature && row.url_img_signature != undefined)
+    ) {
+      btnImage = commonGrid.btnBuilder("btn-viem-image", "info", "fa fa-image");
     }
 
     const btnEdit = commonGrid.btnBuilder("btn-viem", "warning", "fa fa-edit");
+    const btnDelete = commonGrid.btnBuilder(
+      "btn-delete",
+      "danger",
+      "fa fa-trash",
+    );
     return (
-      '<div class="action-grid">' + btnEdit + btnApproval + btnImage + "</div>"
+      '<div class="action-grid" style="display: flex; gap: 4px; align-items: center; justify-content: center;">' +
+      btnEdit +
+      btnDelete +
+      btnApproval +
+      btnImage +
+      "</div>"
     );
   }
 
@@ -237,18 +250,32 @@
     let index = 0;
     for (const btns of btnContent) {
       const param = data.rows[index];
-      const btnEdit = $(btns).find("a.btn-warning");
+
+      const btnEdit = $(btns).find("#btn-viem");
       btnEdit.click(function () {
         open_edit(param);
       });
-      const btnApproval = $(btns).find("a.btn-success");
+
+      const btnDelete = $(btns).find("#btn-delete");
+      btnDelete.click(function () {
+        deleteRow(param);
+      });
+
+      const btnApproval = $(btns).find("#btn-approval");
       btnApproval.click(function () {
         handleApproveReject(param.id, 3);
       });
-      const btnReject = $(btns).find("a.btn-danger");
+
+      const btnReject = $(btns).find("#btn-reject");
       btnReject.click(function () {
         handleApproveReject(param.id, 5);
       });
+
+      const btnImage = $(btns).find("#btn-viem-image");
+      btnImage.click(function () {
+        open_image(param);
+      });
+
       index++;
     }
   }
@@ -256,6 +283,19 @@
   function open_edit(data) {
     common.setCookie("module.professional.update", data);
     common.direct("professional/form");
+  }
+
+  function deleteRow(val) {
+    common.dialogDelete(function () {
+      $.post("professional/delete", { id: val.id }, function (data, status) {
+        if (200 === data.code) {
+          $.alert("Delete success!");
+          uiTbl.datagrid("reload");
+        } else {
+          $.alert("Delete failed!");
+        }
+      });
+    });
   }
 
   function open_image(data) {

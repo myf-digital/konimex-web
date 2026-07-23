@@ -73,6 +73,12 @@ class Professional extends BaseController
         }
     }
 
+    public function delete()
+    {
+        $data = param_input();
+        responseJSON($this->professional->delete($data));
+    }
+
     public function target()
     {
         $this->template->show($this, 'content_target');
