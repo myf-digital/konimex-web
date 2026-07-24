@@ -425,7 +425,7 @@ class Customer_model extends CI_Model
                     continue;
                 }
 
-                if (!isset($row[2]) || empty(trim($row[2]))) {
+                if (!isset($row[3]) || empty(trim($row[3]))) {
                     continue;
                 }
 
