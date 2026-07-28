@@ -302,7 +302,7 @@ class Ref_customer extends BaseController
             'Klinik Sehat',
             'Klinik',
             '08123456789',
-            'klinik.sehat@konimex.com',
+            'klinik.sehat@axion.id',
             'Barat',
             'Jawa Barat I',
             'Bandung Selatan',

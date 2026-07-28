@@ -1,16 +1,16 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<title>Konimex</title>
+<title>Axion</title>
 <meta charset="utf-8">
 <meta name="region" content="ID">
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content="Ikut Menyehatkan Bangsa">
-<meta name="keywords" content="Konimex, Ikut Menyehatkan Bangsa">
+<meta name="keywords" content="Axion, Ikut Menyehatkan Bangsa">
 <meta property="og:url" content="<?php echo base_url(); ?>">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Konimex">
+<meta property="og:title" content="Axion">
 <meta property="og:description" content="Ikut Menyehatkan Bangsa">
 <meta property="og:image" content="<?php echo base_url('assets/images/favicon.ico'); ?>">
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">

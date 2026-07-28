@@ -83,7 +83,8 @@ div.form-group textarea {
 }
 
 .login-banner {
-    content: url(../../../../assets/images/konimex.png);
+    width: 350px;
+    content: url(../../../../assets/images/axion.png);
 }
 
 div.form-group-login {

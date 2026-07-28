@@ -1,15 +1,15 @@
 <div class="container-fluid">
   <div class="row login">
     <div class="col-lg-2 col-sm-2 sidenav text-center">
-      <img class="img img-left" src="<?php echo base_url() ?>assets/images/konimex-white.png" alt="Konimex" width="65%">
-      <p class="slogan">Ikut Menyehatkan Bangsa</p>
+      <img class="img img-left" src="<?php echo base_url() ?>assets/images/axion-white.png" alt="Axion" width="65%">
+      <p class="slogan">One -Stop Solution for Medical Devices</p>
     </div>
     <div class="col-lg-8 col-sm-8">
       <div class="login-box-body">
         <div class="row">
           <div class="col-xs-6"></div>
           <div class="col-xs-4">
-            <img class="img login-banner" src="<?php echo base_url() ?>assets/images/konimex.png" alt="Konimex">
+            <img class="img login-banner" src="<?php echo base_url() ?>assets/images/axion.png" alt="Axion">
           </div>
         </div>
         <div class="row">

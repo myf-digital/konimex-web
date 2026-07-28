@@ -98,7 +98,7 @@ class Professional_model extends CI_Model
         }
 
         $this->db->insert('ref_professional', [
-            'siteid' => "KNX01",
+            'siteid' => "AXION",
             'nama_professional' => $data['professional'] ?? null,
             'spesialisasi_id' => $data['spesialisasi'] ?? null,
             'spesialisasi_name' => $data['spesialisasi_name'] ?? null,
@@ -152,7 +152,7 @@ class Professional_model extends CI_Model
         $namaProfessional = $data['professional'] ?? null;
         if (empty($professionalId)) {
             $this->db->insert('ref_professional', [
-                'siteid' => "KNX01",
+                'siteid' => "AXION",
                 'nama_professional' => $namaProfessional,
                 'spesialisasi_id' => $data['spesialisasi'] ?? null,
                 'spesialisasi_name' => $data['spesialisasi_name'] ?? null,
