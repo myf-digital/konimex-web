@@ -721,7 +721,7 @@ function get_order($siteid,$customerid,$salesmanid,$get_date) {
 											),
 											a.array_product
 										) as brands,
-										a.keterangan, a.start_detailing, a.url_img_detailing, 
+										a.keterangan, a.start_detailing, a.url_img_detailing, a.url_file_signature, 
 										a.latitude_cell, a.longitude_cell, a.end_detailing, a.status, a.reason
 								FROM trx_visit_detailing a left join v_outlet_all v on a.customerid =v.customerid
 								where a.periode='".$periode."' and a.salesmanid='".$salesmanid."' and a.customerid='".$customerid."';");
