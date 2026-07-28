@@ -67,7 +67,7 @@ $(function () {
       function (res) {
         $salesmanId.empty();
         $salesmanId.select2({
-          placeholder: "Salesman (Semua)",
+          placeholder: "TPE (Semua)",
           allowClear: true,
           multiple: true,
           data: $.map(res.result, function (o) {

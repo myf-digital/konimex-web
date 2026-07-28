@@ -46,7 +46,7 @@
           },
           {
             field: "nama_salesman",
-            title: "Salesman",
+            title: "TPE",
             halign: "left",
             align: "left",
             sortable: "true",

@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Karyawan <small>Control panel</small>
+        TPE <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Karyawan</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> TPE</a></li>
         <li class="active">Content</li>
     </ol>
 </section>
@@ -33,16 +33,16 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<!-- Salesman Details Table -->
+				<!-- TPE Details Table -->
 				<table class="table table-striped table-striped" style="margin-bottom: 20px;">
 					<tr>
-						<th width="15%">Salesman ID</th>
+						<th width="15%">TPE ID</th>
 						<td width="35%" id="detail-salesman-id">-</td>
-						<th>Tipe Sales</th>
+						<th>Tipe TPE</th>
 						<td id="detail-salesman-tipe">-</td>
 					</tr>
 					<tr>
-						<th width="15%">Nama Salesman</th>
+						<th width="15%">Nama TPE</th>
 						<td width="35%" id="detail-salesman-name">-</td>
 						<th>Leader</th>
 						<td id="detail-salesman-supervisor">-</td>

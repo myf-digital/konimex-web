@@ -94,7 +94,7 @@
 		$rowcount4=mysqli_num_rows($result4);
 		if ($rowcount4==0)
 		{
-			print ('{"respon":[{"status":"2","msg":"Salesman belum terdaftar"}]}');
+			print ('{"respon":[{"status":"2","msg":"TPE belum terdaftar"}]}');
 		}
 		else 
 		if ($rowcount==0)
@@ -109,7 +109,7 @@
 		else 
 		if ($rowcount2==0)
 		{
-			print ('{"respon":[{"status":"2","msg":"Salesman '.$salesmanid.' sudah terinstal aplikasi sphere"}]}');
+			print ('{"respon":[{"status":"2","msg":"TPE '.$salesmanid.' sudah terinstal aplikasi sphere"}]}');
 		}
 		else 
 		if ($rowcount3==0)

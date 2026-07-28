@@ -383,7 +383,7 @@ $(function () {
 
   function loadProductDetail(productId, nama) {
     activeProduct = { id: productId, nama: nama };
-    $titleDetailSalesman.text("List Salesman - Produk: " + nama);
+    $titleDetailSalesman.text("List TPE - Produk: " + nama);
     $colDetailSalesman.html(
       `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
     );
@@ -756,7 +756,7 @@ $(function () {
             <thead>
               <tr>
                 <th class="th-w-50">#</th>
-                <th>Nama Salesman</th>
+                <th>Nama TPE</th>
                 <th>Tipe</th>
                 <th>Kunjungan (Realisasi/Target)</th>
                 <th>Qty Sales (Realisasi/Target)</th>
@@ -868,7 +868,7 @@ $(function () {
     `;
 
     $modalVisitTitle.html(
-      `Kunjungan & Penjualan [${activeProduct.id} - ${activeProduct.nama}] - Salesman: ${sm.nama_salesman} (${sm.salesmanid})`,
+      `Kunjungan & Penjualan [${activeProduct.id} - ${activeProduct.nama}] - TPE: ${sm.nama_salesman} (${sm.salesmanid})`,
     );
     $("#tab-detail-visits").html(visitTableHtml);
     $("#tab-detail-sales").html(salesTableHtml);
@@ -1003,8 +1003,8 @@ $(function () {
       }
 
       let hdrSalesman = [
-        "Salesman ID",
-        "Nama Salesman",
+        "TPE ID",
+        "Nama TPE",
         "Tipe Sales",
         "Kunjungan (Realisasi)",
         "Kunjungan (Target)",
@@ -1013,7 +1013,7 @@ $(function () {
       ];
 
       addSection(
-        "List Salesman - " + (exportData.visits.label || "Produk"),
+        "List TPE - " + (exportData.visits.label || "Produk"),
         hdrSalesman,
         filteredSalesmanData.map(function (r) {
           return [
@@ -1044,8 +1044,8 @@ $(function () {
 
       // Populate Detail Visits
       let hdrVisit = [
-        "Nama Salesman",
-        "Salesman ID",
+        "Nama TPE",
+        "TPE ID",
         "Nama Customer",
         "Nama Professional",
         "Tipe PIC",
@@ -1074,13 +1074,7 @@ $(function () {
       });
 
       // Populate Detail Sales
-      let hdrSales = [
-        "Nama Salesman",
-        "Salesman ID",
-        "No PO",
-        "Tanggal",
-        "Qty",
-      ];
+      let hdrSales = ["Nama TPE", "TPE ID", "No PO", "Tanggal", "Qty"];
       detailSalesRows.push(hdrSales);
 
       filteredSalesmanData.forEach(function (sm) {

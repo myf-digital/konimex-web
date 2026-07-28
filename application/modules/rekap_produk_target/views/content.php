@@ -99,8 +99,8 @@
                                     <thead>
                                         <tr>
                                             <th style="width: 5%;">#</th>
-                                            <th>Salesman ID</th>
-                                            <th>Nama Salesman</th>
+                                            <th>TPE ID</th>
+                                            <th>Nama TPE</th>
                                             <th>Customer ID</th>
                                             <th>Nama Customer</th>
                                             <th>Check In</th>
@@ -127,8 +127,8 @@
                                         <tr>
                                             <th style="width: 5%;">#</th>
                                             <th>Tanggal</th>
-                                            <th>Salesman ID</th>
-                                            <th>Nama Salesman</th>
+                                            <th>TPE ID</th>
+                                            <th>Nama TPE</th>
                                             <th>No PO</th>
                                             <th>Qty Jual (pcs)</th>
                                             <th>Harga Jual</th>

@@ -63,7 +63,7 @@
       // });
 
       uiSelectSalesman.select2({
-        placeholder: "Select Salesman",
+        placeholder: "Select TPE",
         allowClear: true,
         ajax: {
           transport: function (params, success, failure) {
@@ -172,7 +172,7 @@
       ) {
         $.alert({
           title: "Error ",
-          content: "Salesman harus di isi...!",
+          content: "TPE harus di isi...!",
           containerFluid: true,
         });
       } else {

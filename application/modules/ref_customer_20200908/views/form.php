@@ -97,7 +97,7 @@
 							</div>
 							<div class="form-group col-md-6">
 								<label for="salesmanid">Kode MEDREP - Double Cover <input id="doublecover-id" type = "checkbox" name="doublecover"></label>  
-                                <select id="salesmanid-id" name="salesmanid[]" class="form-control" placeholder="Salesman"></select>
+                                <select id="salesmanid-id" name="salesmanid[]" class="form-control" placeholder="TPE"></select>
 							</div>
 							<!--<div class="form-group">
 								<label for="tanggal">Tanggal</label>

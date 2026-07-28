@@ -235,6 +235,10 @@ class Ref_customer extends BaseController
 
     public function download_template()
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(0);
+        $this->db->save_queries = FALSE;
+
         $regionalid = $this->input->get('regionalid');
         $areaid = $this->input->get('areaid');
         $subareaid = $this->input->get('subareaid');
@@ -253,6 +257,7 @@ class Ref_customer extends BaseController
         $sheet1->setTitle('Template Outlet');
         $headers1 = [
             'NO',
+            'ID_OUTLET',
             'KODE_OUTLET',
             'NAMA_OUTLET',
             'CHANNEL',
@@ -261,6 +266,7 @@ class Ref_customer extends BaseController
             'REGIONAL',
             'AREA',
             'ALAMAT',
+            'ID_USER',
             'NAMA_USER',
             'SPESIALISASI',
             'TIPE_USER',
@@ -287,7 +293,8 @@ class Ref_customer extends BaseController
         }
         
         $sampleRow = [
-            'Contoh Data',
+            'Contoh',
+            '9999',
             'OTL001',
             'Klinik Sehat',
             'Klinik',
@@ -296,6 +303,7 @@ class Ref_customer extends BaseController
             'Barat',
             'Jawa Barat I',
             'Jl. Sudirman No. 12',
+            '5555',
             'dr. Budi Utomo',
             'Spesialisasi Anak',
             'Dokter',
@@ -317,6 +325,40 @@ class Ref_customer extends BaseController
                 ],
             ],
         ]);
+
+        $outlets = $this->customer->get_all_outlets_and_users($regionalid, $areaid, $subareaid, $usersession, $restrict_level);
+        if (!empty($outlets)) {
+            $rowNum = 3;
+            $no = 1;
+            foreach ($outlets as $row) {
+                $sheet1->setCellValue('A' . $rowNum, $no);
+                $sheet1->setCellValue('B' . $rowNum, $row['customerid']);
+                $sheet1->setCellValue('C' . $rowNum, $row['kode_outlet']);
+                $sheet1->setCellValue('D' . $rowNum, $row['nama_customer']);
+                $sheet1->setCellValue('E' . $rowNum, $row['channel']);
+                $sheet1->setCellValue('F' . $rowNum, $row['telp']);
+                $sheet1->setCellValue('G' . $rowNum, $row['email']);
+                $sheet1->setCellValue('H' . $rowNum, $row['regional']);
+                $sheet1->setCellValue('I' . $rowNum, $row['area']);
+                $sheet1->setCellValue('J' . $rowNum, $row['sub_area']);
+                $sheet1->setCellValue('K' . $rowNum, $row['alamat']);
+                $sheet1->setCellValue('L' . $rowNum, $row['id_professional']);
+                $sheet1->setCellValue('M' . $rowNum, $row['nama_professional']);
+                $sheet1->setCellValue('N' . $rowNum, $row['spesialisasi_name']);
+                $sheet1->setCellValue('O' . $rowNum, $row['tipe_user']);
+                $rowNum++;
+                $no++;
+            }
+
+            $sheet1->getStyle('A3:O' . ($rowNum - 1))->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ],
+            ]);
+        }
 
         $sheet2 = $spreadsheet->createSheet();
         $sheet2->setTitle('Referensi Data');

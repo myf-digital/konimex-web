@@ -48,11 +48,11 @@ for (i = 0; i < close.length; i++) {
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Upload Karyawan <small>Control panel</small>
+        Upload TPE <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Upload Karyawan</a></li>
-        <li class="active">Form Upload Karyawan</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Upload TPE</a></li>
+        <li class="active">Form Upload TPE</li>
     </ol>
 </section>
 
@@ -62,12 +62,12 @@ for (i = 0; i < close.length; i++) {
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Upload Karyawan</h3>
+                    <h3 class="box-title">Form Upload TPE</h3>
                 </div>
                 <form id="fm-upload-sales-salesman" role="form" method="post" enctype="multipart/form-data">
                     <div class="box-body">
                         <div class="form-group col-xs-12 col-sm-12 col-md-6">
-                            <label for="salesmanid">File Upload Karyawan</label>
+                            <label for="salesmanid">File Upload TPE</label>
                             <input type="file" name="fileupload" id="fileupload" class="form-control"  onchange="return validasiFile()">
                             <small>*Max Size File Upload 10 MB</small>
                         </div>
@@ -108,7 +108,7 @@ for (i = 0; i < close.length; i++) {
     }
 
     const common = new Common();
-    common.setTitle("Upload Karyawan");
+    common.setTitle("Upload TPE");
     let uiForm = $("#fm-upload-sales-salesman");
     let uiBtnCancel = $("#btn-cancel-form");
     let uiBtnUpload = $("#btn-upload-form");

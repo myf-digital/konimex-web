@@ -138,7 +138,7 @@ class Set_quota_budget extends BaseController
 		$periode 	= $this->uri->segment(3);
 		$until 	= $this->uri->segment(4);
 		
-		$filename = "Report_Salesman_Aktif.xls";
+		$filename = "Report_TPE_Aktif.xls";
 		$html ='<style>
 				#table-wrapper {
 					position:relative;
@@ -166,8 +166,8 @@ class Set_quota_budget extends BaseController
 		$html .= '<table id="activity_table" border="1" class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead>';
 		$html .= '<tr>';
-		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">Salesman ID</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama Medrep</th>';
+		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">TPE ID</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama TPE</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);

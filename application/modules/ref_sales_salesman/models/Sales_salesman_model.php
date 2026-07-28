@@ -532,5 +532,12 @@ class Sales_salesman_model extends CI_Model
             ]
         ];
     }
+
+    public function clear_token($data)
+    {
+        $salesmanid = $data['salesmanid'];
+        $this->db->where('account_id', $salesmanid);
+        return $this->db->delete('tokens');
+    }
 }
 

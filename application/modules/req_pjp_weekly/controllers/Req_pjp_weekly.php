@@ -55,7 +55,7 @@ class Req_pjp_weekly extends BaseController
         ini_set('max_execution_time', '0');
         
         if ($salesmanid=='' or empty($salesmanid) or $salesmanid=='null'){
-            $filename='All_Salesman';
+            $filename='All_TPE';
             if ($restrict_level=='4') {
                 $strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
                             app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 

@@ -27,8 +27,8 @@
                         </div>
                     </div>
                     <div class="form-group col-md-3">
-                        <label>Salesman</label>
-                        <select id="salesman_ids" class="form-control select2" multiple="multiple" data-placeholder="Salesman (Semua)">
+                        <label>TPE</label>
+                        <select id="salesman_ids" class="form-control select2" multiple="multiple" data-placeholder="TPE (Semua)">
                         </select>
                     </div>
                     <div class="form-group col-md-3" style="white-space: nowrap;">
@@ -53,8 +53,8 @@
                         <thead>
                             <tr>
                                 <th style="width: 5%;">#</th>
-                                <th>Salesman ID</th>
-                                <th>Nama Salesman</th>
+                                <th>TPE ID</th>
+                                <th>Nama TPE</th>
                                 <th>Tipe Sales</th>
                                 <th>Actual DUB</th>
                                 <th>Target DUB</th>

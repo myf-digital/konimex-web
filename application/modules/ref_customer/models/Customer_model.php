@@ -6,6 +6,9 @@ class Customer_model extends CI_Model
 
     public function create($data)
     {
+        if (empty($data["siteid"])) {
+            $data["siteid"] = "KNX01";
+        }
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
         $data["created_date"] = $datetime->datetime;
@@ -43,6 +46,9 @@ class Customer_model extends CI_Model
 
     public function update($data)
     {
+        if (empty($data["siteid"])) {
+            $data["siteid"] = "KNX01";
+        }
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
         $data["modified_date"] = $datetime->datetime;
@@ -219,7 +225,7 @@ class Customer_model extends CI_Model
                         ) separator '||'
                     ) as list_professional
                 from ref_professional_mapping rpm
-                left join ref_professional rp on rp.id = rpm.id_professional
+                join ref_professional rp on rp.id = rpm.id_professional and status = '3'
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
@@ -266,7 +272,7 @@ class Customer_model extends CI_Model
                         ) separator '||'
                     ) as list_professional
                 from ref_professional_mapping rpm
-                left join ref_professional rp on rp.id = rpm.id_professional
+                join ref_professional rp on rp.id = rpm.id_professional and status = '3'
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid ";
@@ -387,6 +393,7 @@ class Customer_model extends CI_Model
 
             $expected = [
                 'NO',
+                'ID_OUTLET',
                 'KODE_OUTLET',
                 'NAMA_OUTLET',
                 'CHANNEL',
@@ -395,6 +402,7 @@ class Customer_model extends CI_Model
                 'REGIONAL',
                 'AREA',
                 'ALAMAT',
+                'ID_USER',
                 'NAMA_USER',
                 'SPESIALISASI',
                 'TIPE_USER',
@@ -409,14 +417,15 @@ class Customer_model extends CI_Model
             foreach ($sheet as $index => $row) {
                 if ($index == 0) continue;
                 
-                if (isset($row[0], $row[1]) && $row[0] == 'Contoh Data' && $row[1] == 'OTL001') {
+                if (isset($row[0]) && trim($row[0]) == 'Contoh') {
                     continue;
                 }
 
-                if (!isset($row[2]) || empty(trim($row[2]))) {
+                if (!isset($row[3]) || empty(trim($row[3]))) {
                     continue;
                 }
 
+                $id_customer = trim($row[1]);
                 $nama_customer = trim($row[2]);
                 $channel_name = isset($row[3]) ? trim($row[3]) : '';
                 $regional_name = isset($row[6]) ? trim($row[6]) : '';
@@ -450,19 +459,33 @@ class Customer_model extends CI_Model
                     continue;
                 }
 
+                if (empty($nama_customer)) {
+                    continue;
+                }
+
                 $kode_outlet = isset($row[1]) ? trim($row[1]) : '';
                 $telp = isset($row[4]) ? trim($row[4]) : '';
                 $email = isset($row[5]) ? trim($row[5]) : '';
                 $alamat = isset($row[8]) ? trim($row[8]) : '';
-                $nama_professional = isset($row[9]) ? trim($row[9]) : '';
+                $id_professional = isset($row[9]) ? trim($row[9]) : '';
+                $nama_professional = isset($row[10]) ? trim($row[10]) : '';
+                $spesialisasi = isset($row[11]) ? trim($row[11]) : '';
+                $professional_type = isset($row[12]) ? trim($row[12]) : '';
 
-                $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.nama_customer = ? ", [trim($row[2])])->row_array();
+                $existing = null;
+                if (!empty($id_customer)) {
+                    $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.customerid = ? ", [trim($id_customer)])->row_array();
+                }
+                if (empty($existing)) {
+                    $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.nama_customer = ? ", [trim($nama_customer)])->row_array();
+                }
 
                 $salesmanid = $usersession ?? 'admin';
                 if ($existing) {
                     $customerid = $existing['customerid'];
                     $updateData = [
                         'kode_outlet' => $kode_outlet ? $kode_outlet : $existing['kode_outlet'],
+                        'nama_customer' => $nama_customer ? $nama_customer : $existing['nama_customer'],
                         'typeid' => $channel_id,
                         'telp' => $telp,
                         'email' => $email,
@@ -510,68 +533,68 @@ class Customer_model extends CI_Model
                 }
 
                 if (!empty($nama_professional)) {
-                    $prof_str = str_replace('|', ',', $nama_professional);
-                    $prof_names = explode(',', $prof_str);
-                    
-                    $mapping_batch = [];
-                    foreach ($prof_names as $prof_name) {
-                        $prof_name = trim($prof_name);
-                        if (empty($prof_name)) continue;
+                    $prof_name = trim($nama_professional);
 
-                        $spesialisasi_name_input = isset($row[10]) ? trim($row[10]) : '';
-                        $spesialisasi_id = null;
-                        $spesialisasi_name = null;
-                        if (!empty($spesialisasi_name_input)) {
-                            $spec_db = $this->db->select('id, name')->from('ref_spesialisasi')->where('LOWER(name)', strtolower($spesialisasi_name_input))->get()->row_array();
-                            if ($spec_db) {
-                                $spesialisasi_id = $spec_db['id'];
-                                $spesialisasi_name = $spec_db['name'];
-                            }
+                    $spesialisasi_name_input = isset($spesialisasi) ? trim($spesialisasi) : '';
+                    $spesialisasi_id = null;
+                    $spesialisasi_name = null;
+                    if (!empty($spesialisasi_name_input)) {
+                        $spec_db = $this->db->select('id, name')->from('ref_spesialisasi')->where('LOWER(name)', strtolower($spesialisasi_name_input))->get()->row_array();
+                        if ($spec_db) {
+                            $spesialisasi_id = $spec_db['id'];
+                            $spesialisasi_name = $spec_db['name'];
                         }
+                    }
 
-                        $type_input = isset($row[11]) ? trim($row[11]) : null;
+                    $type_input = isset($professional_type) ? trim($professional_type) : null;
 
+                    $existing_prof = null;
+                    if (!empty($id_professional)) {
+                        $existing_prof = $this->db->get_where('ref_professional', ['id' => $id_professional])->row_array();
+                    }
+                    if (empty($existing_prof)) {
                         $existing_prof = $this->db->get_where('ref_professional', ['nama_professional' => $prof_name])->row_array();
+                    }
 
-                        if ($existing_prof) {
-                            $prof_id = $existing_prof['id'];
-                            $updateProf = [];
-                            if ($spesialisasi_id) {
-                                $updateProf['spesialisasi_id'] = $spesialisasi_id;
-                                $updateProf['spesialisasi_name'] = $spesialisasi_name;
-                            }
-                            if ($type_input) {
-                                $updateProf['type'] = $type_input;
-                            }
-                            if (!empty($updateProf)) {
-                                $this->db->where('id', $prof_id);
-                                $this->db->update('ref_professional', $updateProf);
-                            }
-                        } else {
-                            $profData = [
-                                'siteid' => 'KNX01',
-                                'nama_professional' => $prof_name,
-                                'spesialisasi_id' => $spesialisasi_id,
-                                'spesialisasi_name' => $spesialisasi_name,
-                                'type' => $type_input,
-                                'status' => 3,
-                                'created_by' => $usersession,
-                                'created_date' => date('Y-m-d H:i:s')
-                            ];
-                            $this->db->insert('ref_professional', $profData);
-                            $prof_id = $this->db->insert_id();
+                    if ($existing_prof) {
+                        $prof_id = $existing_prof['id'];
+                        $updateProf = [];
+                        if ($prof_name && $prof_name !== $existing_prof['nama_professional']) {
+                            $updateProf['nama_professional'] = $prof_name;
                         }
-
-                        $mapping_batch[] = [
-                            'id_professional' => $prof_id,
+                        if ($spesialisasi_id) {
+                            $updateProf['spesialisasi_id'] = $spesialisasi_id;
+                            $updateProf['spesialisasi_name'] = $spesialisasi_name;
+                        }
+                        if ($type_input) {
+                            $updateProf['type'] = $type_input;
+                        }
+                        if (!empty($updateProf)) {
+                            $this->db->where('id', $prof_id);
+                            $this->db->update('ref_professional', $updateProf);
+                        }
+                    } else {
+                        $profData = [
+                            'siteid' => 'KNX01',
                             'nama_professional' => $prof_name,
-                            'customerid' => $customerid,
-                            'nama_customer' => $nama_customer
+                            'spesialisasi_id' => $spesialisasi_id,
+                            'spesialisasi_name' => $spesialisasi_name,
+                            'type' => $type_input,
+                            'status' => 3,
+                            'created_by' => $usersession,
+                            'created_date' => date('Y-m-d H:i:s')
                         ];
+                        $this->db->insert('ref_professional', $profData);
+                        $prof_id = $this->db->insert_id();
                     }
-                    if (!empty($mapping_batch)) {
-                        $this->db->insert_batch('ref_professional_mapping', $mapping_batch);
-                    }
+
+                    $mapping_data = [
+                        'id_professional' => $prof_id,
+                        'nama_professional' => $prof_name,
+                        'customerid' => $customerid,
+                        'nama_customer' => $nama_customer
+                    ];
+                    $this->db->insert('ref_professional_mapping', $mapping_data);
                 }
 
                 $successCount++;
@@ -585,6 +608,59 @@ class Customer_model extends CI_Model
             $this->db->trans_rollback();
             return ['status' => false, 'message' => "Error: " . $e->getMessage()];
         }
+    }
+
+    public function get_all_outlets_and_users($regionalid = null, $areaid = null, $subareaid = null, $usersession = null, $restrict_level = null)
+    {
+        $this->db->select('
+            c.customerid,
+            c.kode_outlet,
+            c.nama_customer,
+            ct.nama_type as channel,
+            c.telp,
+            c.email,
+            r.nama_regional as regional,
+            a.nama_area as area,
+            s.nama_area as sub_area,
+            c.alamat,
+            p.id as id_professional,
+            p.nama_professional,
+            p.spesialisasi_name,
+            p.type as tipe_user
+        ');
+        $this->db->from('m_customer c');
+        $this->db->join('m_customer_type ct', 'c.typeid = ct.typeid', 'left');
+        $this->db->join('m_area_regional r', 'c.regionalid = r.regionalid', 'left');
+        $this->db->join('m_area_areasite a', 'c.areaid = a.areaid', 'left');
+        $this->db->join('m_area_subarea s', 'c.subareaid = s.subareaid', 'left');
+        $this->db->join('ref_professional_mapping pm', 'c.customerid = pm.customerid', 'left');
+        $this->db->join('ref_professional p', 'pm.id_professional = p.id', 'left');
+
+        if (!empty($regionalid)) {
+            $reg_arr = explode(',', $regionalid);
+            $this->db->where_in('c.regionalid', $reg_arr);
+        }
+        if (!empty($areaid)) {
+            $area_arr = explode(',', $areaid);
+            $this->db->where_in('c.areaid', $area_arr);
+        }
+        if (!empty($subareaid)) {
+            $subarea_arr = explode(',', $subareaid);
+            $this->db->where_in('c.subareaid', $subarea_arr);
+        }
+
+        $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+        if ($restrict_query) {
+            $this->db->where("c.subareaid IN (
+                SELECT DISTINCT subareaid 
+                FROM m_salesman_area 
+                WHERE salesmanid IN (" . $restrict_query . ")
+            )", NULL, FALSE);
+        }
+
+        $this->db->order_by('c.customerid', 'DESC');
+        $this->db->order_by('p.id', 'ASC');
+        return $this->db->get()->result_array();
     }
 }
 

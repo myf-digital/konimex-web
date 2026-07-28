@@ -50,9 +50,7 @@
           btnClass: "btn-red",
           action: callback,
         },
-        cancel: function () {
-          $.alert("Delete cancel!");
-        },
+        cancel: function () {},
       },
     });
   };

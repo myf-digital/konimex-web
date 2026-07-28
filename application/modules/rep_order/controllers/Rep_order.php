@@ -362,7 +362,7 @@ class Rep_order extends BaseController
         $orders = $this->order->get_order_all_salesman_xls($data);
         $dataOrders = group_order_by_no_po($orders);
 
-		$filename = "Order_All_Salesman_".$start."_".$end;
+		$filename = "Order_All_TPE_".$start."_".$end;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -474,7 +474,7 @@ class Rep_order extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Customer ID', 'Customer Name', 'No Invoice', 'No Faktur / Bill Doc', 'Salesman Name', 'Sales Type', 'Bill Value', 'Pay', 'Total'];
+        $header = ['No', 'Customer ID', 'Customer Name', 'No Invoice', 'No Faktur / Bill Doc', 'TPE Name', 'TPE Type', 'Bill Value', 'Pay', 'Total'];
 
         $sheet = $spreadsheet->getActiveSheet();
 

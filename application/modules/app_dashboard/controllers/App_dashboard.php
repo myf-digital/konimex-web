@@ -184,7 +184,11 @@ class App_dashboard extends BaseController
 								foreach ($d_detailing as $rowsdetailing) {
 									$img_detailing = '';
 									if (isset($rowsdetailing['url_img_detailing']) && $rowsdetailing['url_img_detailing']) {
-										$img_detailing = '<img class="img-rounded" onclick="preview_image_detailing('.$param_link.'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'">';
+										$img_detailing = '<p>Foto</p><img class="img-rounded" onclick="preview_image_detailing('.$param_link.'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_img_detailing'].'">';
+									}
+									if (isset($rowsdetailing['url_file_signature']) && $rowsdetailing['url_file_signature']) {
+										if (!empty($img_detailing)) $img_detailing .= '<br/><br/>';
+										$img_detailing .= '<p>Tanda Tangan</p><img class="img-rounded" onclick="preview_image_detailing('.$param_link.'); " alt="Image Detailing" style="width:100px; height:100px;" src="'.$urlimage.@$rowsdetailing['url_file_signature'].'">';
 									}
 									$html .=' <tr>
 										<td valign="top" style="text-align:center;">'.$img_detailing.'</td>

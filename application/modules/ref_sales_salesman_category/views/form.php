@@ -25,8 +25,8 @@
 								<input name="siteid" class="form-control" placeholder="Siteid">
 							</div>
 							<div class="form-group">
-								<label for="salesmanid">Salesmanid</label>
-								<input name="salesmanid" class="form-control" placeholder="Salesmanid">
+								<label for="salesmanid">TPE ID</label>
+								<input name="salesmanid" class="form-control" placeholder="TPE ID">
 							</div>
 							<div class="form-group">
 								<label for="categoryid">Categoryid</label>

@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Karyawan <small>Control panel</small>
+        TPE <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Karyawan</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> TPE</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Karyawan</h3>
+                    <h3 class="box-title">Form TPE</h3>
                 </div>
 
                 <form id="fm-sales-salesman" role="form" method="post">
@@ -25,16 +25,16 @@
 							<input name="salesmanid" id="salesmanid-id" class="form-control" value="" placeholder="NIK">
 						</div>
 						<div class="form-group col-md-5">
-							<label for="nama_salesman">Nama Karyawan</label>
-							<input name="nama_salesman" class="form-control" placeholder="Nama Karyawan">
+							<label for="nama_salesman">Nama TPE</label>
+							<input name="nama_salesman" class="form-control" placeholder="Nama TPE">
 						</div>
 						<div class="form-group col-md-3">
 							<label for="password">Password</label>
 							<input name="password" id="password-id" type="password" class="form-control" value="" placeholder="Password">
 						</div>
 						<div class="form-group  col-md-3">
-							<label for="tipe_sales">Tipe Karyawan</label>
-							<select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Tipe Karyawan"></select>
+							<label for="tipe_sales">Tipe TPE</label>
+							<select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="Tipe TPE"></select>
 						</div>
 						<div class="form-group col-md-3">
 							<label for="supervisorid">Leader</label>

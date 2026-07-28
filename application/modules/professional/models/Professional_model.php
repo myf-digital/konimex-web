@@ -454,4 +454,27 @@ class Professional_model extends CI_Model
 
         return $CI->db->query($sql);
     }
+
+    public function delete($data)
+    {
+        if (empty($data['id'])) {
+            return [
+                'code' => 400,
+                'message' => 'ID wajib diisi.',
+                'result' => false
+            ];
+        }
+
+        $id = $data['id'];
+        $this->db->trans_start();
+        $this->db->where('id_professional', $id)->delete('ref_professional_mapping');
+        $this->db->where('id', $id)->delete('ref_professional');
+        $this->db->trans_complete();
+
+        return [
+            'code' => 200,
+            'message' => 'Delete success!',
+            'result' => $this->db->trans_status()
+        ];
+    }
 }
