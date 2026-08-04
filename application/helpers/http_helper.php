@@ -622,9 +622,59 @@ if (!function_exists('get_x_player')) {
     function get_x_player($ids)
     {
         $CI =& get_instance();
-		$CI->db->select('*');
-		$CI->db->from('x_player');
-        $CI->db->where_in('account_id', $ids);
+        $CI->db->select('xp.*, mss.telegram_chat_id');
+        $CI->db->from('x_player xp');
+        $CI->db->join('m_sales_salesman mss', 'mss.salesmanid = xp.account_id', 'left');
+        $CI->db->where_in('xp.account_id', $ids);
         return $CI->db->get()->result();
+    }
+}
+
+if (!function_exists('send_telegram_notif')) {
+    function send_telegram_notif($chat_id, $title, $message) {
+        $url = env('TELEGRAM_BOT_URL');
+        $token = env('TELEGRAM_BOT_TOKEN_NOTIF');
+        $titleNotif = env('TELEGRAM_BOT_TITLE_NOTIF') ?? 'KONIMEX-TPE NOTIF';
+
+        if (empty($chat_id) || empty($url) || empty($token) || $token == 'telegram_bot_token' || $chat_id == 'telegram_chat_id') {
+            return false;
+        }
+
+        $full_message = "<b>[{$titleNotif}]</b>\n{$title}\n{$message}";
+        
+        $url = "{$url}{$token}/sendMessage";
+        $data = [
+            'chat_id'    => $chat_id,
+            'text'       => $full_message,
+            'parse_mode' => 'HTML'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $result = curl_exec($ch);
+        if ($result === false) {
+            $err = curl_error($ch);
+            log_message('error', "http_helper send_telegram_notif curl error: " . $err);
+        }
+        curl_close($ch);
+
+        $parsed = json_decode($result, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($parsed)) {
+            return [
+                'status' => isset($parsed['ok']) ? (bool)$parsed['ok'] : true,
+                'data' => $parsed,
+                'raw' => $result
+            ];
+        }
+
+        return [
+            'status' => false,
+            'data' => null,
+            'raw' => $result
+        ];
     }
 }

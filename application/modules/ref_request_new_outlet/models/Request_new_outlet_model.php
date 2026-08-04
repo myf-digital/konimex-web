@@ -106,14 +106,19 @@ class Request_new_outlet_model extends CI_Model
         if (count($data_custob) > 0) {
             $x_players = get_x_player([$data_custob['salesmanid']]);
             if (count($x_players) > 0) {
+                $title = "Approve Outlet";
+                $message = "Outlet " . ($data['kode_outlet'] ? '('.$data['kode_outlet'].') ' : '') . ($data['nama_customer'] ? $data['nama_customer'] : '') . ") berhasil di Approve" . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : '');
                 foreach ($x_players as $xp) {
                     if (isset($xp->account_id)) {
+                        if (!empty($xp->telegram_chat_id)) {
+                            send_telegram_notif($xp->telegram_chat_id, $title, $message);
+                        }
                         send_onesignal_api([
                             'player_ids' => $xp->player_id,
                             'external_ids' => $xp->account_id,
-                            'title' => 'Approve Outlet',
-                            'message' => 'Outlet ' . ($data['kode_outlet'] ? '(' . $data['kode_outlet'] : '') . ($data['nama_customer'] ? ' ' . $data['nama_customer'] : '') . ') berhasil di Approve' . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : ''),
-                            'data' => array_merge(['type' => 'Approve Outlet'], [
+                            'title' => $title,
+                            'message' => $message,
+                            'data' => array_merge(['type' => $title], [
                                 'siteid' => $data['siteid'] ?? '',
                                 'kode_outlet' => $data['kode_outlet'] ?? '',
                                 'nama_customer' => $data['nama_customer'] ?? '',
