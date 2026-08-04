@@ -107,7 +107,7 @@ class Request_new_outlet_model extends CI_Model
             $x_players = get_x_player([$data_custob['salesmanid']]);
             if (count($x_players) > 0) {
                 $title = "Approve Outlet";
-                $message = "Outlet " . ($data['kode_outlet'] ? '('.$data['kode_outlet'].' - ' : '') . ($data['nama_customer'] ? $data['nama_customer'] : '') . ") berhasil di Approve" . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : '');
+                $message = "Outlet (" . ($data['kode_outlet'] ? $data['kode_outlet'].' - ' : '') . ($data['nama_customer'] ? $data['nama_customer'] : '') . ") berhasil di Approve" . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : '');
                 foreach ($x_players as $xp) {
                     if (isset($xp->account_id)) {
                         if (!empty($xp->telegram_chat_id)) {
@@ -145,7 +145,7 @@ class Request_new_outlet_model extends CI_Model
             $x_players = get_x_player([$data['salesmanid']]);
             if (count($x_players) > 0) {
                 $title = "Reject Outlet";
-                $message = "Outlet " . ($data['kode_outlet'] ? '('.$data['kode_outlet'].' - ' : '') . ($data['nama_customer'] ? $data['nama_customer'] : '') . ") berhasil di Reject" . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : '');
+                $message = "Outlet (" . ($data['kode_outlet'] ? $data['kode_outlet'].' - ' : '') . ($data['nama_customer'] ? $data['nama_customer'] : '') . ") berhasil di Reject" . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : '');
                 foreach ($x_players as $xp) {
                     if (isset($xp->account_id)) {
                         if (!empty($xp->telegram_chat_id)) {

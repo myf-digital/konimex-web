@@ -262,7 +262,7 @@ class Professional_model extends CI_Model
             $x_players = get_x_player([$req_data['created_by']]);
             if (count($x_players) > 0) {
                 $title = $status == 3 ? 'Approve Professional' : 'Reject Professional';
-                $message = $status == 3 ? 'Professional ' . ($req_data['nama_professional'] ? '(' . $req_data['nama_professional'] : '') . ') berhasil di Approve' . ($user ? ' (' . $user . ')' : '') : 'Professional ' . ($req_data['nama_professional'] ? '(' . $req_data['nama_professional'] : '') . ') berhasil di Reject' . ($user ? ' (' . $user . ')' : '');
+                $message = $status == 3 ? 'Professional (' . ($req_data['nama_professional'] ? $req_data['nama_professional'] : '') . ') berhasil di Approve' . ($user ? ' (' . $user . ')' : '') : 'Professional (' . ($req_data['nama_professional'] ? $req_data['nama_professional'] : '') . ') berhasil di Reject' . ($user ? ' (' . $user . ')' : '');
                 foreach ($x_players as $xp) {
                     if (isset($xp->account_id)) {
                         if (!empty($xp->telegram_chat_id)) {
