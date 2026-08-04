@@ -273,17 +273,16 @@ class Professional_model extends CI_Model
                             'external_ids' => $xp->account_id,
                             'title' => $title,
                             'message' => $message,
-                            'data' => array_merge(
-                                ['type' => $title], [
-                                    'id' => $req_data['id'] ?? '',
-                                    'nama_professional' => $req_data['nama_professional'] ?? '',
-                                    'type' => $req_data['type'] ?? '',
-                                    'tanggal_lahir' => $req_data['tanggal_lahir'] ?? '',
-                                    'tanggal_aniv_pernikahan' => $req_data['tanggal_aniv_pernikahan'] ?? '',
-                                    'spesialisasi_id' => $req_data['spesialisasi_id'] ?? '',
-                                    'salesmanid' => $req_data['salesmanid'] ?? '',
-                                ]),
-                            'url' => '/professional',
+                            'data' => [
+                                'type' => $title,
+                                'id' => $req_data['id'] ?? '',
+                                'nama_professional' => $req_data['nama_professional'] ?? '',
+                                'type' => $req_data['type'] ?? '',
+                                'tanggal_lahir' => $req_data['tanggal_lahir'] ?? '',
+                                'tanggal_aniv_pernikahan' => $req_data['tanggal_aniv_pernikahan'] ?? '',
+                                'spesialisasi_id' => $req_data['spesialisasi_id'] ?? '',
+                                'salesmanid' => $req_data['salesmanid'] ?? '',
+                            ],
                         ]);
                     }
                 }

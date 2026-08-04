@@ -380,13 +380,12 @@ class Setup_dub_model extends CI_Model
                             'external_ids' => $xp->account_id,
                             'title' => $title,
                             'message' => $message,
-                            'data' => array_merge(
-                                ['type' => $title], [
-                                    'req_no' => $req_data['req_no'] ?? '',
-                                    'periode' => $req_data['periode'] ?? '',
-                                    'salesmanid' => $req_data['salesmanid'] ?? '',
-                                ]),
-                            'url' => '/setup_dub',
+                            'data' => [
+                                'type' => $title,
+                                'req_no' => $req_data['req_no'] ?? '',
+                                'periode' => $req_data['periode'] ?? '',
+                                'salesmanid' => $req_data['salesmanid'] ?? '',
+                            ],
                         ]);
                     }
                 }

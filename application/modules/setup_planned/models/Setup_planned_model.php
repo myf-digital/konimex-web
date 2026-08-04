@@ -371,14 +371,13 @@ class Setup_planned_model extends CI_Model
                             'external_ids' => $xp->account_id,
                             'title' => $title,
                             'message' => $message,
-                            'data' => array_merge(
-                                ['type' => $status == 3 ? 'Approve Planned' : 'Reject Planned'], [
-                                    'req_no' => $req_data['req_no'] ?? '',
-                                    'periode' => $req_data['periode'] ?? '',
-                                    'salesmanid' => $req_data['salesmanid'] ?? '',
-                                    'salesman_name' => $req_data['salesman_name'] ?? '',
-                                ]),
-                            'url' => '/setup_dub',
+                            'data' => [
+                                'type' => $status == 3 ? 'Approve Planned' : 'Reject Planned',
+                                'req_no' => $req_data['req_no'] ?? '',
+                                'periode' => $req_data['periode'] ?? '',
+                                'salesmanid' => $req_data['salesmanid'] ?? '',
+                                'salesman_name' => $req_data['salesman_name'] ?? '',
+                            ],
                         ]);
                     }
                 }

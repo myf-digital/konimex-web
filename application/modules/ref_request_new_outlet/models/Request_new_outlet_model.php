@@ -118,13 +118,13 @@ class Request_new_outlet_model extends CI_Model
                             'external_ids' => $xp->account_id,
                             'title' => $title,
                             'message' => $message,
-                            'data' => array_merge(['type' => $title], [
+                            'data' => [
+                                'type' => $title,
                                 'siteid' => $data['siteid'] ?? '',
                                 'kode_outlet' => $data['kode_outlet'] ?? '',
                                 'nama_customer' => $data['nama_customer'] ?? '',
                                 'salesmanid' => $data['salesmanid'] ?? '',
-                            ]),
-                            'url' => '/ref_customer',
+                            ],
                         ]);
                     }
                 }
@@ -156,13 +156,13 @@ class Request_new_outlet_model extends CI_Model
                             'external_ids' => $xp->account_id,
                             'title' => $title,
                             'message' => $message,
-                            'data' => array_merge(['type' => $title], [
+                            'data' => [
+                                'type' => $title,
                                 'siteid' => $data['siteid'] ?? '',
                                 'kode_outlet' => $data['kode_outlet'] ?? '',
                                 'nama_customer' => $data['nama_customer'] ?? '',
                                 'salesmanid' => $data['salesmanid'] ?? '',
-                            ]),
-                            'url' => '/ref_request_new_outlet',
+                            ],
                         ]);
                     }
                 }
