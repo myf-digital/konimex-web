@@ -1,0 +1,178 @@
+name: Deploy Himalaya Web
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy Web to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install OpenVPN
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openvpn rsync
+
+      - name: Connect to VPN
+        env:
+          OVPN_CONFIG: ${{ secrets.OVPN_CONFIG }}
+          OVPN_USERNAME: ${{ secrets.OVPN_USERNAME }}
+          OVPN_PASSWORD: ${{ secrets.OVPN_PASSWORD }}
+        run: |
+          echo "Creating VPN configuration file..."
+          printf '%s\n' "$OVPN_CONFIG" > /tmp/vpn-config.ovpn
+
+          # If VPN requires username/password, create auth file
+          if [ -n "$OVPN_USERNAME" ] && [ -n "$OVPN_PASSWORD" ]; then
+            echo "Setting up VPN credentials..."
+            printf '%s\n%s\n' "$OVPN_USERNAME" "$OVPN_PASSWORD" > /tmp/vpn-auth.txt
+            chmod 600 /tmp/vpn-auth.txt
+
+            # Ensure config points to our auth file
+            if grep -qE '^auth-user-pass' /tmp/vpn-config.ovpn; then
+              sed -i 's|^auth-user-pass.*|auth-user-pass /tmp/vpn-auth.txt|g' /tmp/vpn-config.ovpn
+            else
+              echo "auth-user-pass /tmp/vpn-auth.txt" >> /tmp/vpn-config.ovpn
+            fi
+          fi
+
+          echo "Starting OpenVPN connection..."
+          sudo openvpn --config /tmp/vpn-config.ovpn --daemon --log /tmp/openvpn.log
+
+          echo "Waiting for VPN connection to establish..."
+          for i in $(seq 1 30); do
+            if ip link show | grep -qE "tun[0-9]|tap[0-9]"; then
+              echo "✅ VPN connected successfully!"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "❌ VPN connection timed out after 30 seconds"
+              cat /tmp/openvpn.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Prepare SSH key
+        env:
+          VM_KEY: ${{ secrets.VM_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$VM_KEY" ]; then
+            echo "❌ VM_KEY secret is required."
+            exit 1
+          fi
+
+          printf '%s\n' "$VM_KEY" | tr -d '\r' > "$RUNNER_TEMP/deploy-key"
+          chmod 600 "$RUNNER_TEMP/deploy-key"
+
+      - name: Transfer artifact to VM (Tmp Directory)
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+          VM_PORT: ${{ secrets.VM_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          SSH_OPTS=(
+            -i "$RUNNER_TEMP/deploy-key"
+            -p "$VM_PORT"
+            -o BatchMode=yes
+            -o ConnectTimeout=10
+            -o StrictHostKeyChecking=accept-new
+          )
+
+          echo "Checking SSH authentication before transfer..."
+          set +e
+          ssh -vvv "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "whoami" 2> "$RUNNER_TEMP/ssh-debug.log"
+          SSH_EXIT_CODE=$?
+          set -e
+
+          if [ "$SSH_EXIT_CODE" -ne 0 ]; then
+            echo "❌ SSH authentication failed."
+            exit "$SSH_EXIT_CODE"
+          fi
+
+          echo "Preparing remote temporary directory..."
+          ssh "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "rm -rf /tmp/himalaya-web-artifact && mkdir -p /tmp/himalaya-web-artifact"
+
+          echo "Transferring files to VM..."
+          # Compress and send over SSH instead of direct rsync
+          tar --exclude='.git' --exclude='.github' -czf - . | ssh "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "tar -xzf - -C /tmp/himalaya-web-artifact"
+
+      - name: Setup application on VM
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+          VM_PORT: ${{ secrets.VM_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          SSH_OPTS=(
+            -i "$RUNNER_TEMP/deploy-key"
+            -p "$VM_PORT"
+            -o BatchMode=yes
+            -o ConnectTimeout=10
+            -o StrictHostKeyChecking=accept-new
+          )
+
+          ssh "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" \
+            "VM_USER='$VM_USER' bash -s" << 'REMOTE_SCRIPT'
+            set -e
+            echo "=== Starting Deployment for Himalaya Web ==="
+
+            # 1. Ensure application directory exists
+            cd /apps
+            if [ ! -d "himalaya-web" ]; then
+              echo "Directory /apps/himalaya-web does not exist. Creating..."
+              sudo mkdir -p himalaya-web
+              sudo chown www-data:www-data himalaya-web
+              sudo chmod 755 himalaya-web
+            fi
+
+            # 2. Deploy artifact to application directory
+            echo "Copying artifact to /apps/himalaya-web..."
+            # Using sudo rsync to ensure files can be overwritten even if owned by www-data
+            sudo rsync -av --delete --exclude='writable/' --exclude='application/cache/' /tmp/himalaya-web-artifact/ himalaya-web/
+
+            # 3. Clean up temporary artifact
+            rm -rf /tmp/himalaya-web-artifact
+
+            # 4. Set appropriate permissions for PHP/Web Server
+            echo "Setting permissions (www-data)..."
+            sudo chown -R www-data:www-data himalaya-web
+            sudo find himalaya-web -type d -exec chmod 755 {} \;
+            sudo find himalaya-web -type f -exec chmod 644 {} \;
+            
+            # Optional: Jika codeigniter 4, pastikan folder writable ada dan writeable
+            if [ -d "himalaya-web/writable" ]; then
+               sudo chmod -R 777 himalaya-web/writable
+            fi
+            
+            # Optional: Jika codeigniter 3, folder cache dsb writeable
+            if [ -d "himalaya-web/application/cache" ]; then
+               sudo chmod -R 777 himalaya-web/application/cache
+            fi
+
+            echo "=== Deployment Completed Successfully ==="
+          REMOTE_SCRIPT
+
+      - name: Disconnect VPN
+        if: always()
+        run: |
+          echo "Disconnecting VPN..."
+          sudo pkill -f "openvpn --config /tmp/vpn-config.ovpn" || true
+          sudo rm -f /tmp/vpn-config.ovpn /tmp/vpn-auth.txt
+          rm -f "$RUNNER_TEMP/deploy-key"
+          echo "VPN disconnected and cleaned up."
