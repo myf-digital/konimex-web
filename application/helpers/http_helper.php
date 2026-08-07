@@ -10,7 +10,7 @@ if (!function_exists('send_onesignal')) {
                 'message' => 'External Ids OneSignal is incomplete.'
             ];
         }
-        if ($payload['title'] != 'Berhasil Login') send_onesignal_api($payload);
+        if (isset($payload['title']) && $payload['title'] != 'Berhasil Login') send_onesignal_api($payload);
 
         $CI =& get_instance();
         $CI->load->config('onesignal');
@@ -36,10 +36,10 @@ if (!function_exists('send_onesignal')) {
         $fields = [
             'app_id' => $app_id,
             'include_external_user_ids' => is_array($payload['external_ids']) ? $payload['external_ids'] : [$payload['external_ids']],
-            'headings' => ['en' => $payload['title']],
-            'contents' => ['en' => $payload['message']],
-            'url' => $url_to . $payload['url'],
-            'data' => $payload['data'],
+            'headings' => ['en' => $payload['title'] ?? ''],
+            'contents' => ['en' => $payload['message'] ?? ''],
+            'url' => isset($payload['url']) && !empty($payload['url']) ? $url_to . $payload['url'] : '',
+            'data' => $payload['data'] ?? [],
         ];
         $response = $CI->http_client->request('POST', $url, ['headers' => $headers, 'json' => $fields]);
 
@@ -90,10 +90,10 @@ if (!function_exists('send_onesignal_api')) {
         $fields = [
             'app_id' => $app_id,
             'include_external_user_ids' => is_array($payload['external_ids']) ? $payload['external_ids'] : [$payload['external_ids']],
-            'headings' => ['en' => $payload['title']],
-            'contents' => ['en' => $payload['message']],
-            'url' => $url_to . $payload['url'],
-            'data' => $payload['data'],
+            'headings' => ['en' => $payload['title'] ?? ''],
+            'contents' => ['en' => $payload['message'] ?? ''],
+            'url' => isset($payload['url']) && !empty($payload['url']) ? $url_to . $payload['url'] : '',
+            'data' => $payload['data'] ?? [],
         ];
         $response = $CI->http_client->request('POST', $url, ['headers' => $headers, 'json' => $fields]);
 
