@@ -28,18 +28,56 @@ jobs:
       - name: Install OpenVPN
         run: |
           sudo apt update
-          sudo apt install -y openvpn openvpn-systemd-resolved
+          sudo apt install -y openvpn openvpn-systemd-resolved netcat-openbsd
 
       - name: Create VPN config file
-        run: |
-          echo "${{ secrets.OVPN_CONFIG }}" > /tmp/client.ovpn
         env:
           OVPN_CONFIG: ${{ secrets.OVPN_CONFIG }}
+          VM_HOST: ${{ secrets.VM_HOST }}
+        run: |
+          printf '%s\n' "$OVPN_CONFIG" > /tmp/client.ovpn
+
+          # GitHub runner has no IPv6, strip IPv6 remote so we connect via IPv4 immediately
+          sed -i '/^remote .* udp6$/d' /tmp/client.ovpn
+          sed -i 's/^remote-random$/#remote-random (disabled: use IPv4 remote)/' /tmp/client.ovpn
+
+          # VM is a public IP whitelisted to only accept connections from the VPN IP,
+          # so force traffic to the VM through the VPN tunnel (source IP = VPN IP).
+          if [ -n "$VM_HOST" ] && ! grep -qE "^route[[:space:]]+${VM_HOST}\b" /tmp/client.ovpn; then
+            echo "route $VM_HOST 255.255.255.255" >> /tmp/client.ovpn
+            echo "Forcing VM_HOST ($VM_HOST) to route through VPN tunnel."
+          fi
 
       - name: Connect to VPN
         uses: "kota65535/github-openvpn-connect-action@v2"
         with:
           config_file: /tmp/client.ovpn
+
+      - name: Verify VPN connectivity to VM
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_PORT: ${{ secrets.VM_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          echo "=== Tunnel interface ==="
+          ip -br addr show | grep -E 'tun[0-9]|tap[0-9]' || echo "(no tun/tap interface found)"
+
+          echo "=== Route to VM (should say dev tun0) ==="
+          ip route get "$VM_HOST" || true
+
+          echo "=== TCP reachability to $VM_HOST:$VM_PORT (nc, 15 tries) ==="
+          for i in $(seq 1 15); do
+            if nc -zv -w 3 "$VM_HOST" "$VM_PORT" 2>&1; then
+              echo "OK: $VM_HOST:$VM_PORT reachable through VPN."
+              exit 0
+            fi
+            echo "not reachable yet (attempt $i/15)"
+            sleep 2
+          done
+
+          echo "VM is NOT reachable through VPN. Check the route output above."
+          exit 1
 
       - name: Transfer files to target server
         run: |
