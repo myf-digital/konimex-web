@@ -53,9 +53,9 @@ class App_dashboard_model extends CI_Model
 					(
 						select group_concat(distinct c.nama_area order by c.nama_area asc separator ', ')
 						from m_salesman_area msa
-						join m_area_areasite c on msa.areaid = c.areaid
+						join m_area_subarea c on msa.subareaid = c.subareaid
 						where msa.salesmanid = b.salesmanid
-					) area,
+					) subarea,
 					(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) _jadwal, 
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
 					(select count(1) from t_sales_rrk_trans where periode=z.periode and salesmanid=z.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,

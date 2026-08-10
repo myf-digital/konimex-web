@@ -97,26 +97,32 @@ class Rep_gffaktif_model extends CI_Model
         }
 
 		$q = $this->db->query("
-                select 
-                    a.salesmanid, 
-                    a.nama_salesman, 
-                    a.tipe_sales,
-                    (
-                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                        from m_salesman_area msa
-                        join m_area_regional r on r.regionalid = msa.regionalid
-                        where msa.salesmanid = a.salesmanid
-                    ) as nama_regional,
-                    (
-                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                        from m_salesman_area msa
-                        join m_area_areasite ar on msa.areaid = ar.areaid
-                        where msa.salesmanid = a.salesmanid
-                    ) as nama_area
-                from m_sales_salesman a
-                where a.salesmanid in (select distinct salesmanid from t_sales_absensi
-                                        where a.tipe_sales like '$val' and periode>=DATE_FORMAT('".$periode."','%Y-%m-%d') and periode<=DATE_FORMAT('".$until."','%Y-%m-%d')) ".$regional.$area.$subarea.$strquery."
-                order by a.tipe_sales;            
+                                select 
+                                    a.salesmanid, 
+                                    a.nama_salesman, 
+                                    a.tipe_sales,
+                                    (
+                                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                        from m_salesman_area msa
+                                        join m_area_regional r on r.regionalid = msa.regionalid
+                                        where msa.salesmanid = a.salesmanid
+                                    ) as nama_regional,
+                                    (
+                                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                        from m_salesman_area msa
+                                        join m_area_areasite ar on msa.areaid = ar.areaid
+                                        where msa.salesmanid = a.salesmanid
+                                    ) as nama_area,
+                                    (
+                                        select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                                        from m_salesman_area msa
+                                        join m_area_subarea sa on msa.subareaid = sa.subareaid
+                                        where msa.salesmanid = a.salesmanid
+                                    ) as nama_subarea 
+                                from m_sales_salesman a
+                                where a.salesmanid in (select distinct salesmanid from t_sales_absensi
+                                                     where a.tipe_sales like '$val' and periode>=DATE_FORMAT('".$periode."','%Y-%m-%d') and periode<=DATE_FORMAT('".$until."','%Y-%m-%d')) ".$regional.$area.$subarea.$strquery."
+                                order by a.tipe_sales;            
                             ");
 		return $q->result_array();
 	}

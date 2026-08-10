@@ -218,12 +218,12 @@ class Ref_sales_salesman extends BaseController
                 left join m_area_regional mar on mar.regionalid = maa.regionalid
             ", [])->result_array();
 
-            // $areasubarea = $this->db->query("
-            //     select mas.*, maa.nama_area as areasite, mar.nama_regional
-            //     from m_area_subarea mas
-            //     left join m_area_areasite maa on maa.areaid = mas.areaid
-            //     left join m_area_regional mar on mar.regionalid = mas.regionalid
-            // ", [])->result_array();
+            $areasubarea = $this->db->query("
+                select mas.*, maa.nama_area as areasite, mar.nama_regional
+                from m_area_subarea mas
+                left join m_area_areasite maa on maa.areaid = mas.areaid
+                left join m_area_regional mar on mar.regionalid = mas.regionalid
+            ", [])->result_array();
 
             $this->db->from('m_area_regional');
             $this->db->where('nama_regional', 'Pusat');
@@ -240,7 +240,7 @@ class Ref_sales_salesman extends BaseController
 
                 $regional = null;
                 $areasite = null;
-                // $subarea = null;
+                $subarea = null;
 
                 $area     = trim($row[0] ?? '');
                 $nik      = '0'.str_replace(',','',trim($row[1] ?? ''));
@@ -262,26 +262,26 @@ class Ref_sales_salesman extends BaseController
                 if ($currentArea == 'Pusat') {
                     $regional = $arearegional->regionalid ?? null;
                     $areasite = null;
-                    // $subarea = null;
+                    $subarea = null;
                 }
 
                 foreach ($areaareasite as $as) {
                     if (strtolower($as['nama_area']) == strtolower($currentArea)) {
                         $regional = $as['regionalid'] ?? null;
                         $areasite = $as['areaid'] ?? null;
-                        // $subarea = null;
+                        $subarea = null;
                         break;
                     }
                 }
 
-                // foreach ($areasubarea as $a) {
-                //     if (strpos(strtolower($kppArea), strtolower($a['nama_area'])) !== false && strtolower($a['areasite']) == strtolower($currentArea)) {
-                //         $regional = $a['regionalid'] ?? null;
-                //         $areasite = $a['areaid'] ?? null;
-                //         $subarea = $a['subareaid'] ?? null;
-                //         break;
-                //     }
-                // }
+                foreach ($areasubarea as $a) {
+                    if (strpos(strtolower($kppArea), strtolower($a['nama_area'])) !== false && strtolower($a['areasite']) == strtolower($currentArea)) {
+                        $regional = $a['regionalid'] ?? null;
+                        $areasite = $a['areaid'] ?? null;
+                        $subarea = $a['subareaid'] ?? null;
+                        break;
+                    }
+                }
 
                 $isUpdate = false;
                 foreach ($salesmans as $sales) {
@@ -302,7 +302,7 @@ class Ref_sales_salesman extends BaseController
                             'kpp_area' => $kppArea,
                             'regionalid' => $regional,
                             'areaid' => $areasite,
-                            // 'subareaid' => $subarea,
+                            'subareaid' => $subarea,
                             'aktif' => 1,
                             'modified_date' => $now,
                         ];
@@ -319,7 +319,7 @@ class Ref_sales_salesman extends BaseController
                             'kpp_area' => $kppArea,
                             'regionalid' => $regional,
                             'areaid' => $areasite,
-                            // 'subareaid' => $subarea,
+                            'subareaid' => $subarea,
                             'aktif' => 1,
                             'password' => md5('123456'),
                             'created_date' => $now,

@@ -81,14 +81,14 @@
             sortable: "true",
             width: 120,
           },
-          // {
-          //   field: "nama_subarea",
-          //   title: "Sub Area",
-          //   halign: "center",
-          //   align: "left",
-          //   sortable: "true",
-          //   width: 120,
-          // },
+          {
+            field: "nama_subarea",
+            title: "Sub Area",
+            halign: "center",
+            align: "left",
+            sortable: "true",
+            width: 120,
+          },
           {
             field: "typeid",
             title: "Channel",

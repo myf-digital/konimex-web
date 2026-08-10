@@ -111,10 +111,10 @@
                         </div>
  					</div>
                     <div class="box-body col-md-12">
-                        <!-- <div class="form-group col-md-2">
+                        <div class="form-group col-md-2">
                             <label for="city">Sub Area</label>
                             <select id="city-id" name="city" class="form-control" placeholder="Select Sub Area"></select>
-                        </div> -->
+                        </div>
                         <div class="form-group col-md-6">
                             <label for="idpromo">Promo</label>
                             <select id="idpromo-id" name="idpromo" class="form-control" placeholder="Select Promo"></select>

@@ -71,10 +71,10 @@
 							<label for="areaid">Area</label>
 							<select id="areaid-id" name="areaid[]" class="form-control" multiple="multiple" style="width: 100%;" placeholder="Area"></select>
 						</div>
-						<!-- <div class="form-group col-md-4">
+						<div class="form-group col-md-4">
 							<label for="subareaid">Sub Area</label>
 							<select id="subareaid-id" name="subareaid[]" class="form-control" multiple="multiple" style="width: 100%;" placeholder="Sub Area"></select>
-						</div> -->
+						</div>
 						<div class="clearfix"></div>
 						<hr style="border-top: 2px solid #eee; margin-top: 2rem; margin-bottom: 2rem;">
 						

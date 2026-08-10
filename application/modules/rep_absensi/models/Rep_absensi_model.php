@@ -53,7 +53,13 @@ class Rep_absensi_model extends CI_Model
                     from m_salesman_area msa
                     join m_area_areasite ar on msa.areaid = ar.areaid
                     where msa.salesmanid = a.salesmanid
-                ) as nama_area
+                ) as nama_area,
+                (
+                    select group_concat(distinct mas.nama_area order by mas.nama_area asc separator ', ')
+                    from m_salesman_area msa
+                    join m_area_subarea mas on mas.subareaid = msa.subareaid
+                    where msa.salesmanid = a.salesmanid
+                ) as nama_subarea
                 from m_sales_salesman a
                 order by a.salesmanid asc
             ) as a";

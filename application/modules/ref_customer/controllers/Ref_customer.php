@@ -97,6 +97,7 @@ class Ref_customer extends BaseController
             'Nama Outlet',
             'Regional',
             'Area',
+            'Sub Area',
             'Channel',
             'Alamat',
             'User',
@@ -104,7 +105,7 @@ class Ref_customer extends BaseController
 
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Data Outlet');
-        $sheet->setCellValue('A1', 'DATA OUTLET '.strtoupper(str_replace(' ', '_', $filtername)))->mergeCells('A1:H1');
+        $sheet->setCellValue('A1', 'DATA OUTLET '.strtoupper(str_replace(' ', '_', $filtername)))->mergeCells('A1:I1');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -138,6 +139,7 @@ class Ref_customer extends BaseController
                 $outlet['nama_customer'],
                 $outlet['nama_regional'],
                 $outlet['nama_area'],
+                $outlet['nama_subarea'],
                 $outlet['typeid'],
                 $outlet['alamat'],
                 $listUser
@@ -153,7 +155,7 @@ class Ref_customer extends BaseController
 		$highestColumn = $sheet->getHighestColumn();
 		$fullRange = 'A1:' . $highestColumn . $highestRow;
 		$sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
-		$sheet->getStyle('H3:H' . $highestRow)->getAlignment()->setWrapText(true);
+		$sheet->getStyle('H3:I' . $highestRow)->getAlignment()->setWrapText(true);
         $sheet->freezePane('A3');
 
         foreach (range('A', $highestColumn) as $col) {
