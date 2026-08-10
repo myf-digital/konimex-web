@@ -61,6 +61,44 @@ jobs:
         with:
           config_file: /tmp/client.ovpn
 
+      - name: Diagnose VPN tunnel
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_PORT: ${{ secrets.VM_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          echo "=== 1. OpenVPN process alive? ==="
+          pgrep -a openvpn && echo "=> openvpn running" || echo "!!! openvpn NOT running"
+
+          echo "=== 2. Tunnel interface & routes ==="
+          ip -br addr show | grep -E 'tun[0-9]|tap[0-9]' || echo "(no tun/tap interface)"
+          ip route | grep -E 'tun[0-9]' || echo "(no routes via tun)"
+          echo "route to VM:"
+          ip route get "$VM_HOST" || true
+
+          echo "=== 3. Tunnel data path: ping VPN gateway (192.168.219.1) ==="
+          ping -c 3 -W 2 192.168.219.1 2>&1 || echo "!!! gateway unreachable -> tunnel NOT carrying data"
+
+          echo "=== 4. Internet via tunnel (raw IP, no DNS needed) ==="
+          curl -s --max-time 8 http://1.1.1.1 -o /dev/null -w 'HTTP:%{http_code}\n' \
+            && echo "=> tunnel reaches the internet" \
+            || echo "!!! no internet through tunnel"
+
+          echo "=== 5. TCP to VM:$VM_PORT (nc) ==="
+          nc -zv -w 5 "$VM_HOST" "$VM_PORT" 2>&1 || echo "!!! VM:$VM_PORT unreachable"
+
+          echo "=== 6. OpenVPN log (last 40 lines) ==="
+          LOGFILE=$(find /tmp /home/runner/work -maxdepth 6 -name 'openvpn.log' -mmin -15 2>/dev/null | head -1)
+          if [ -n "$LOGFILE" ]; then
+            echo "log at: $LOGFILE"
+            tail -40 "$LOGFILE" || true
+          else
+            echo "(openvpn.log not found)"
+          fi
+          echo "=== End diagnostics ==="
+          exit 0
+
       - name: Verify VPN connectivity to VM
         env:
           VM_HOST: ${{ secrets.VM_HOST }}
@@ -68,17 +106,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "=== Tunnel interface ==="
-          ip -br addr show | grep -E 'tun[0-9]|tap[0-9]' || echo "(no tun/tap interface found)"
-
-          echo "=== Route to VM (should say dev tun0) ==="
-          ip route get "$VM_HOST" || true
-
-          echo "=== Public egress IP via VPN tunnel ==="
-          curl -s --max-time 10 https://api.ipify.org || echo "(no internet through tunnel)"
-          echo
-
-          echo "=== TCP reachability to $VM_HOST:$VM_PORT (nc, 15 tries) ==="
+          echo "=== Testing TCP reachability to $VM_HOST:$VM_PORT (nc, 15 tries) ==="
           for i in $(seq 1 15); do
             if nc -zv -w 3 "$VM_HOST" "$VM_PORT" 2>&1; then
               echo "OK: $VM_HOST:$VM_PORT reachable through VPN."
@@ -88,7 +116,7 @@ jobs:
             sleep 2
           done
 
-          echo "VM is NOT reachable through VPN. Check the route output above."
+          echo "VM is NOT reachable through VPN."
           exit 1
 
       - name: Transfer files to target server
