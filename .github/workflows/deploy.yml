@@ -48,6 +48,14 @@ jobs:
             echo "Forcing VM_HOST ($VM_HOST) to route through VPN tunnel."
           fi
 
+          # Full-tunnel: route all traffic through the VPN so outbound packets are
+          # NAT'd by the VPN server to its whitelisted egress IP (same behavior as the
+          # working act-dap-v2 workflow).
+          if ! grep -qE '^redirect-gateway' /tmp/client.ovpn; then
+            echo "redirect-gateway def1 bypass-dhcp" >> /tmp/client.ovpn
+            echo "Enabled redirect-gateway (full tunnel through VPN)."
+          fi
+
       - name: Connect to VPN
         uses: "kota65535/github-openvpn-connect-action@v2"
         with:
@@ -65,6 +73,10 @@ jobs:
 
           echo "=== Route to VM (should say dev tun0) ==="
           ip route get "$VM_HOST" || true
+
+          echo "=== Public egress IP via VPN tunnel ==="
+          curl -s --max-time 10 https://api.ipify.org || echo "(no internet through tunnel)"
+          echo
 
           echo "=== TCP reachability to $VM_HOST:$VM_PORT (nc, 15 tries) ==="
           for i in $(seq 1 15); do
