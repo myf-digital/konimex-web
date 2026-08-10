@@ -5,112 +5,54 @@ on:
     branches: [main]
   workflow_dispatch:
 
-concurrency:
-  group: deploy-web-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  SSH_HOST: ${{ secrets.VM_HOST }}
+  SSH_USERNAME: ${{ secrets.VM_USER }}
+  VM_PORT: ${{ secrets.VM_PORT || '22' }}
+  SSH_PRIVATE_KEY: ${{ secrets.VM_KEY }}
+  OVPN_CONFIG: ${{ secrets.OVPN_CONFIG }}
 
 jobs:
   deploy:
-    name: Deploy Web to Server
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Install OpenVPN
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openvpn openvpn-systemd-resolved
-
-      - name: Create VPN config file
-        env:
-          OVPN_CONFIG: ${{ secrets.OVPN_CONFIG }}
-          OVPN_USERNAME: ${{ secrets.OVPN_USERNAME }}
-          OVPN_PASSWORD: ${{ secrets.OVPN_PASSWORD }}
-        run: |
-          printf '%s\n' "$OVPN_CONFIG" > /tmp/client.ovpn
-
-          # If VPN requires username/password, create auth file
-          if [ -n "$OVPN_USERNAME" ] && [ -n "$OVPN_PASSWORD" ]; then
-            printf '%s\n%s\n' "$OVPN_USERNAME" "$OVPN_PASSWORD" > /tmp/vpn-auth.txt
-            chmod 600 /tmp/vpn-auth.txt
-
-            # Ensure config points to our auth file
-            if grep -qE '^auth-user-pass' /tmp/client.ovpn; then
-              sed -i 's|^auth-user-pass.*|auth-user-pass /tmp/vpn-auth.txt|g' /tmp/client.ovpn
-            else
-              echo "auth-user-pass /tmp/vpn-auth.txt" >> /tmp/client.ovpn
-            fi
-          fi
-
-      - name: Connect to VPN
-        uses: kota65535/github-openvpn-connect-action@v2
-        with:
-          config_file: /tmp/client.ovpn
 
       - name: Prepare SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.VM_KEY }}
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
 
-      - name: Transfer artifact to VM (Tmp Directory)
-        env:
-          VM_HOST: ${{ secrets.VM_HOST }}
-          VM_USER: ${{ secrets.VM_USER }}
-          VM_PORT: ${{ secrets.VM_PORT || '22' }}
+      - name: Install OpenVPN
         run: |
-          set -euo pipefail
+          sudo apt update
+          sudo apt install -y openvpn openvpn-systemd-resolved
 
-          SSH_OPTS=(
-            -p "$VM_PORT"
-            -o BatchMode=yes
-            -o ConnectTimeout=15
-            -o StrictHostKeyChecking=accept-new
-          )
-
-          echo "Adding VM host to known_hosts..."
-          ssh-keyscan -H -p "$VM_PORT" "$VM_HOST" >> "$HOME/.ssh/known_hosts" 2>/dev/null || true
-
-          echo "Checking SSH authentication before transfer..."
-          for attempt in 1 2 3; do
-            if ssh -vvv "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "whoami" 2> "$RUNNER_TEMP/ssh-debug.log"; then
-              echo "SSH authentication succeeded (attempt $attempt)."
-              SSH_OK=1
-              break
-            fi
-            echo "SSH authentication failed (attempt $attempt/3). Debug log:"
-            cat "$RUNNER_TEMP/ssh-debug.log"
-            [ "$attempt" -eq 3 ] && exit 255
-            sleep 5
-          done
-          test -n "${SSH_OK:-}"
-
-          echo "Preparing remote temporary directory..."
-          ssh "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "rm -rf /tmp/himalaya-web-artifact && mkdir -p /tmp/himalaya-web-artifact"
-
-          echo "Transferring files to VM..."
-          # Compress and send over SSH instead of direct rsync
-          tar --exclude='.git' --exclude='.github' -czf - . | ssh "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "tar -xzf - -C /tmp/himalaya-web-artifact"
-
-      - name: Setup application on VM
-        env:
-          VM_HOST: ${{ secrets.VM_HOST }}
-          VM_USER: ${{ secrets.VM_USER }}
-          VM_PORT: ${{ secrets.VM_PORT || '22' }}
+      - name: Create VPN config file
         run: |
-          set -euo pipefail
+          echo "${{ secrets.OVPN_CONFIG }}" > /tmp/client.ovpn
+        env:
+          OVPN_CONFIG: ${{ secrets.OVPN_CONFIG }}
 
-          SSH_OPTS=(
-            -p "$VM_PORT"
-            -o BatchMode=yes
-            -o ConnectTimeout=15
-            -o StrictHostKeyChecking=accept-new
-          )
+      - name: Connect to VPN
+        uses: "kota65535/github-openvpn-connect-action@v2"
+        with:
+          config_file: /tmp/client.ovpn
 
-          ssh "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" \
-            "VM_USER='$VM_USER' bash -s" << 'REMOTE_SCRIPT'
-            set -e
+      - name: Transfer files to target server
+        run: |
+          ssh-keyscan -H -p "$VM_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts || true
+          tar --exclude='.git' --exclude='.github' -czf - . \
+            | ssh -o StrictHostKeyChecking=no -p "$VM_PORT" "$SSH_USERNAME@$SSH_HOST" \
+              "rm -rf /tmp/himalaya-web-artifact && mkdir -p /tmp/himalaya-web-artifact && tar -xzf - -C /tmp/himalaya-web-artifact"
+
+      - name: Setup application on target server
+        run: |
+          ssh -o StrictHostKeyChecking=no -p "$VM_PORT" "$SSH_USERNAME@$SSH_HOST" bash -s << 'REMOTE'
+            set -euo pipefail
+
             echo "=== Starting Deployment for Himalaya Web ==="
 
             # 1. Ensure application directory exists
@@ -124,7 +66,6 @@ jobs:
 
             # 2. Deploy artifact to application directory
             echo "Copying artifact to /apps/himalaya-web..."
-            # Using sudo rsync to ensure files can be overwritten even if owned by www-data
             sudo rsync -av --delete --exclude='writable/' --exclude='application/cache/' /tmp/himalaya-web-artifact/ himalaya-web/
 
             # 3. Clean up temporary artifact
@@ -147,11 +88,4 @@ jobs:
             fi
 
             echo "=== Deployment Completed Successfully ==="
-          REMOTE_SCRIPT
-
-      - name: Cleanup
-        if: always()
-        run: |
-          rm -f /tmp/client.ovpn /tmp/vpn-auth.txt
-          rm -f "$RUNNER_TEMP/ssh-debug.log"
-          echo "Cleanup done."
+          REMOTE
