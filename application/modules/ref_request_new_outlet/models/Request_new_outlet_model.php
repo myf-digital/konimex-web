@@ -106,20 +106,25 @@ class Request_new_outlet_model extends CI_Model
         if (count($data_custob) > 0) {
             $x_players = get_x_player([$data_custob['salesmanid']]);
             if (count($x_players) > 0) {
+                $title = "Approve Outlet";
+                $message = "Outlet (" . ($data['kode_outlet'] ? $data['kode_outlet'].' - ' : '') . ($data['nama_customer'] ? $data['nama_customer'] : '') . ") berhasil di Approve" . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : '');
                 foreach ($x_players as $xp) {
                     if (isset($xp->account_id)) {
+                        if (!empty($xp->telegram_chat_id)) {
+                            send_telegram_notif($xp->telegram_chat_id, $title, $message);
+                        }
                         send_onesignal_api([
                             'player_ids' => $xp->player_id,
                             'external_ids' => $xp->account_id,
-                            'title' => 'Approve Outlet',
-                            'message' => 'Outlet ' . ($data['kode_outlet'] ? '(' . $data['kode_outlet'] : '') . ($data['nama_customer'] ? ' ' . $data['nama_customer'] : '') . ') berhasil di Approve' . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : ''),
-                            'data' => array_merge(['type' => 'Approve Outlet'], [
+                            'title' => $title,
+                            'message' => $message,
+                            'data' => [
+                                'type' => $title,
                                 'siteid' => $data['siteid'] ?? '',
                                 'kode_outlet' => $data['kode_outlet'] ?? '',
                                 'nama_customer' => $data['nama_customer'] ?? '',
                                 'salesmanid' => $data['salesmanid'] ?? '',
-                            ]),
-                            'url' => '/ref_customer',
+                            ],
                         ]);
                     }
                 }
@@ -132,7 +137,38 @@ class Request_new_outlet_model extends CI_Model
         $this->db->where('customerid_m', $data['customerid_m']);
         $this->db->where('customerid', $data['customerid']);
         $this->db->where('salesmanid', $data['salesmanid']);
-        return $this->db->delete('m_customer');
+        $result = $this->db->delete('m_customer');
+
+        
+        // notif onesignal
+        if (count($data) > 0) {
+            $x_players = get_x_player([$data['salesmanid']]);
+            if (count($x_players) > 0) {
+                $title = "Reject Outlet";
+                $message = "Outlet (" . ($data['kode_outlet'] ? $data['kode_outlet'].' - ' : '') . ($data['nama_customer'] ? $data['nama_customer'] : '') . ") berhasil di Reject" . ($data['modified_by'] ? ' (' . $data['modified_by'] . ')' : '');
+                foreach ($x_players as $xp) {
+                    if (isset($xp->account_id)) {
+                        if (!empty($xp->telegram_chat_id)) {
+                            send_telegram_notif($xp->telegram_chat_id, $title, $message);
+                        }
+                        send_onesignal_api([
+                            'player_ids' => $xp->player_id,
+                            'external_ids' => $xp->account_id,
+                            'title' => $title,
+                            'message' => $message,
+                            'data' => [
+                                'type' => $title,
+                                'siteid' => $data['siteid'] ?? '',
+                                'kode_outlet' => $data['kode_outlet'] ?? '',
+                                'nama_customer' => $data['nama_customer'] ?? '',
+                                'salesmanid' => $data['salesmanid'] ?? '',
+                            ],
+                        ]);
+                    }
+                }
+            }
+        }
+        return $result;
     }
 
     public function load($data)
@@ -146,24 +182,17 @@ class Request_new_outlet_model extends CI_Model
         }
 
         $field = "a.* ";
-        $table = " (
-            select 
-                a.*, 
-                b.nama_regional, 
-                c.nama_area, 
-                e.nama_class as nama_account, 
-                f.aktif_week, 
-                g.nama_salesman gff_name, 
-                g.tipe_sales position
-            from m_customer a 
-            left join m_area_regional b on a.regionalid=b.regionalid
-            left join m_area_areasite c on a.areaid = c.areaid
-            left join m_customer_class e on a.classid = e.classid
-            left join m_setup_site f on a.siteid=f.siteid
-            left join m_sales_salesman g on a.salesmanid=g.salesmanid
-            where a.customerid = ''
-            ".$strquery."
-            ) a";
+        $table = " (select a.*, b.nama_regional, c.nama_area, d.nama_area as nama_subarea, e.nama_class as nama_account, f.aktif_week, 
+                                g.nama_salesman gff_name, g.tipe_sales position
+                                    from m_customer a left join m_area_regional b on a.regionalid=b.regionalid
+                                    left join m_area_areasite c on a.areaid = c.areaid
+                                    left join m_area_subarea d on a.subareaid = d.subareaid
+                                    left join m_customer_class e on a.classid = e.classid
+                                    left join m_setup_site f on a.siteid=f.siteid
+                                    left join m_sales_salesman g on a.salesmanid=g.salesmanid
+                                    where a.customerid = ''
+                                    ".$strquery."
+                    ) a";
         return easy_pagging($data, $field, $table);
     }
 

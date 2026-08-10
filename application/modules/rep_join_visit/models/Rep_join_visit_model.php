@@ -40,7 +40,6 @@ class Rep_join_visit_model extends CI_Model
 
     public function get_area($data)
     {
-        $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
         $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
                         order by areaid asc
@@ -50,7 +49,6 @@ class Rep_join_visit_model extends CI_Model
 
     public function get_city($data)
     {
-        $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
         $table = " ( select subareaid, nama_area from m_area_subarea where areaid = '".$data['areaid']."' 
                         order by subareaid asc

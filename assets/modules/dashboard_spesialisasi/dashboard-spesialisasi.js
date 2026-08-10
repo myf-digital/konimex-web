@@ -111,28 +111,28 @@ $(function () {
 
       let regionalIds = "";
       let areaIds = "";
-      // let subareaIds = "";
+      let subareaIds = "";
       let namaRegional = "";
       let namaArea = "";
-      // let namaSubarea = "";
+      let namaSubarea = "";
       if (rLoc && rLoc.length > 0) {
         regionalIds = rLoc.map((v) => v.regionalid).join(",");
         areaIds = rLoc.map((v) => v.areaid).join(",");
-        // subareaIds = rLoc.map((v) => v.subareaid).join(",");
+        subareaIds = rLoc.map((v) => v.subareaid).join(",");
 
         namaRegional = rLoc.map((v) => v.nama_regional).join(", ");
         namaArea = rLoc.map((v) => v.nama_area).join(", ");
-        // namaSubarea = rLoc.map((v) => v.nama_subarea).join(", ");
+        namaSubarea = rLoc.map((v) => v.nama_subarea).join(", ");
       }
 
       let restrictLevel = parseInt(paramsession.restrict_level);
 
-      // if (restrictLevel == 4 && subareaIds) {
-      //   activeFilters.regionalid = regionalIds;
-      //   activeFilters.areaid = areaIds;
-      //   activeFilters.subareaid = subareaIds;
-      //   loadSubareaDetail(regionalIds, areaIds, subareaIds, namaSubarea);
-      // }
+      if (restrictLevel == 4 && subareaIds) {
+        activeFilters.regionalid = regionalIds;
+        activeFilters.areaid = areaIds;
+        activeFilters.subareaid = subareaIds;
+        loadSubareaDetail(regionalIds, areaIds, subareaIds, namaSubarea);
+      }
       if (restrictLevel == 3 && areaIds) {
         activeFilters.regionalid = regionalIds;
         activeFilters.areaid = areaIds;
@@ -323,31 +323,31 @@ $(function () {
       exportData.subarea = { label: nama, data: res.result };
       exportData.subarea_detail = null;
       exportData.visits = null;
-      renderSubareaDetail(res.result);
+      renderAreaDetail(res.result);
     });
   }
 
-  // function loadSubareaDetail(regionalid, areaid, subareaid, nama) {
-  //   activeFilters.regionalid = regionalid;
-  //   activeFilters.areaid = areaid;
-  //   activeFilters.subareaid = subareaid;
+  function loadSubareaDetail(regionalid, areaid, subareaid, nama) {
+    activeFilters.regionalid = regionalid;
+    activeFilters.areaid = areaid;
+    activeFilters.subareaid = subareaid;
 
-  //   $titleDetailSubarea.text(nama);
-  //   $colDetailSubarea.html(
-  //     `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
-  //   );
-  //   $rowDetailSubarea.show();
-  //   $rowDetailSalesman.hide();
+    $titleDetailSubarea.text(nama);
+    $colDetailSubarea.html(
+      `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
+    );
+    $rowDetailSubarea.show();
+    $rowDetailSalesman.hide();
 
-  //   scrollTo($rowDetailSubarea);
+    scrollTo($rowDetailSubarea);
 
-  //   apiCall({ regionalid, areaid, subareaid }).done(function (res) {
-  //     if (res.code !== 200) return;
-  //     exportData.subarea_detail = { label: nama, data: res.result };
-  //     exportData.visits = null;
-  //     renderSubareaDetail(res.result);
-  //   });
-  // }
+    apiCall({ regionalid, areaid, subareaid }).done(function (res) {
+      if (res.code !== 200) return;
+      exportData.subarea_detail = { label: nama, data: res.result };
+      exportData.visits = null;
+      renderSubareaDetail(res.result);
+    });
+  }
 
   function loadSpecializationDetail(spesialisasiId, nama) {
     $titleDetailSalesman.text("List TPE - Spesialisasi: " + nama);
@@ -570,22 +570,22 @@ $(function () {
     });
   }
 
-  // function renderAreaDetail(data, regionalid, areaid) {
-  //   $colDetailArea.empty();
-  //   data.forEach(function (row) {
-  //     let canvasId = "chart_area_" + row.id;
-  //     $colDetailArea.append(makeCard(canvasId, row.nama, "col-md-4", true));
-  //     renderChart(canvasId, row.nama, makeDatasets(row));
-  //     $(document)
-  //       .off("click", '[data-canvas="' + canvasId + '"]')
-  //       .on("click", '[data-canvas="' + canvasId + '"]', function () {
-  //         loadSubareaDetail(regionalid, areaid, row.id, row.nama);
-  //       });
-  //   });
-  // }
+  function renderAreaDetail(data, regionalid, areaid) {
+    $colDetailArea.empty();
+    data.forEach(function (row) {
+      let canvasId = "chart_area_" + row.id;
+      $colDetailArea.append(makeCard(canvasId, row.nama, "col-md-4", true));
+      renderChart(canvasId, row.nama, makeDatasets(row));
+      $(document)
+        .off("click", '[data-canvas="' + canvasId + '"]')
+        .on("click", '[data-canvas="' + canvasId + '"]', function () {
+          loadSubareaDetail(regionalid, areaid, row.id, row.nama);
+        });
+    });
+  }
 
   function renderSubareaDetail(data) {
-    $colDetailArea.empty();
+    $colDetailSubarea.empty();
 
     let rows = data
       .map(function (r, i) {
@@ -606,7 +606,7 @@ $(function () {
       })
       .join("");
 
-    $colDetailArea.append(`
+    $colDetailSubarea.append(`
       <div class="dashboard-col-padding">
         <div class="dashboard-card">
           <div class="table-responsive">
@@ -629,7 +629,7 @@ $(function () {
       </div>
     `);
 
-    $colDetailArea
+    $colDetailSubarea
       .find("#tbl-spesialisasi tbody tr[data-spesialisasi-id]")
       .on("click", function () {
         let spesialisasiId = $(this).data("spesialisasi-id");

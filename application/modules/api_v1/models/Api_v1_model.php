@@ -1045,10 +1045,12 @@ class Api_v1_model extends CI_Model
 				select
 					mss.*,
 					mar.nama_regional,
-					maa.nama_area
+					maa.nama_area,
+					mas.nama_area as nama_subarea
 				from m_sales_salesman mss
 				left join m_area_regional mar on mar.regionalid = mss.regionalid
 				left join m_area_areasite maa on maa.areaid = mss.areaid
+				left join m_area_subarea mas on mas.subareaid = mss.subareaid
 				where mss.salesmanid = ?
 			";
 			$salesman = $this->db->query($sql_salesman, [$data['salesmanid']])->row_array();
@@ -1061,6 +1063,10 @@ class Api_v1_model extends CI_Model
 					$where .= ' and a.areaid = "'.$salesman['areaid']. '"';
 					$area[] = $salesman['nama_area'];
 				}
+				if (!empty($salesman['subareaid'])) {
+					$where .= ' and a.subareaid = "'.$salesman['subareaid']. '"';
+					$area[] = $salesman['nama_subarea'];
+				}
 			}
 		}
 
@@ -1072,12 +1078,14 @@ class Api_v1_model extends CI_Model
 				b.nama_class,
 				d.nama_regional,
 				c.nama_area,
+				e.nama_area as nama_subarea,
                 ifnull(pro.list_professional, '') as list_professional,
                 ifnull(group_concat(distinct ob.user_id separator '||'), '') as mapped_professionals
 			from m_customer a 
 			left join m_customer_class b on a.classid = b.classid
 			left join m_area_regional d on a.regionalid = d.regionalid
 			left join m_area_areasite c on a.areaid = c.areaid
+			left join m_area_subarea e on a.subareaid = e.subareaid
             left join (
                 select 
                     rpm.customerid, 

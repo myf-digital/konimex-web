@@ -19,20 +19,14 @@ class Rep_sales_planned_model extends CI_Model
                 s.aktif,
                 s.supervisorid,
                 mss.nama_salesman as supervisor,
-                (
-                    select group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_regional b on msa.regionalid = b.regionalid
-                    where msa.salesmanid = s.salesmanid
-                ) as nama_regional,
-                (
-                    select group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_areasite c on msa.areaid = c.areaid
-                    where msa.salesmanid = s.salesmanid
-                ) as nama_area
+                r.nama_regional,
+                a.nama_area,
+                ss.nama_area as nama_subarea
             from m_sales_salesman s
             left join m_sales_salesman mss on mss.salesmanid = s.supervisorid
+            left join m_area_regional r on r.regionalid = s.regionalid
+            left join m_area_areasite a on a.areaid = s.areaid
+            left join m_area_subarea ss on ss.subareaid = s.subareaid
             where s.salesmanid='".$salesmanid."'"
         );
 		return $query->row();

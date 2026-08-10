@@ -7,7 +7,7 @@
   let uiSelectType = $("#typeid-id");
   let uiSelectRegional = $("#regionalid-id");
   let uiSelectArea = $("#areaid-id");
-  // let uiSelectSubarea = $("#subareaid-id");
+  let uiSelectSubarea = $("#subareaid-id");
   let uiSelectSalesman = $("#salesmanid-id");
 
   // define from *-content.js
@@ -117,12 +117,12 @@
     uiSelectArea.on("select2:select", function (e) {
       areaSelected = e.params.data;
       regionalSelected = uiSelectRegional.val();
-      // loadSubArea({
-      //   regionalid: regionalSelected,
-      //   areaid: areaSelected.areaid,
-      //   usersession: paramsession.username,
-      //   restrict_level: paramsession.restrict_level,
-      // });
+      loadSubArea({
+        regionalid: regionalSelected,
+        areaid: areaSelected.areaid,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      });
     });
 
     uiSelectRegional.select2({
@@ -135,10 +135,10 @@
       allowClear: true,
     });
 
-    // uiSelectSubarea.select2({
-    //   placeholder: "Select SubArea",
-    //   allowClear: true,
-    // });
+    uiSelectSubarea.select2({
+      placeholder: "Select SubArea",
+      allowClear: true,
+    });
 
     uiSelectSalesman.select2({
       placeholder: "Select MEDREP",
@@ -162,12 +162,12 @@
         idjabatan: paramsession.idjabatan,
         restrict_level: paramsession.restrict_level,
       });
-      // loadSubArea({
-      //   regionalid: param.regionalid,
-      //   areaid: param.areaid,
-      //   usersession: paramsession.username,
-      //   restrict_level: paramsession.restrict_level,
-      // });
+      loadSubArea({
+        regionalid: param.regionalid,
+        areaid: param.areaid,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      });
     }
   }
 

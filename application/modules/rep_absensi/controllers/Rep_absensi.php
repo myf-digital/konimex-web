@@ -54,39 +54,45 @@ class Rep_absensi extends BaseController
             $addquery = "";
         }
         $q = $this->db->query(" 
-                select 
-                    a.periode, 
-                    a.salesmanid, 
-                    b.nama_salesman, 
-                    b.nama_area, 
-                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
-                    coalesce(nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
-                    a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
-                    a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
-                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
-                from 
-                attendance_parma a 
-                left join (
-                    select 
-                        s.salesmanid,
-                        s.nama_salesman,
-                        (
-                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                            from m_salesman_area msa
-                            join m_area_areasite ar on msa.areaid = ar.areaid
-                            where msa.salesmanid = s.salesmanid
-                        ) as nama_area,
-                        (
-                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                            from m_salesman_area msa
-                            join m_area_regional r on r.regionalid = msa.regionalid
-                            where msa.salesmanid = s.salesmanid
-                        ) as nama_regional
-                    from m_sales_salesman s
-                ) b on a.salesmanid = b.salesmanid 
-                where a.periode between '$start' and '$end' $addquery $strquery
-                order by a.periode desc;
-            ");
+                                select 
+                                    a.periode, 
+                                    a.salesmanid, 
+                                    b.nama_salesman, 
+                                    b.nama_area, 
+                                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
+                                    coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
+                                    a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
+                                    a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
+                                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
+                                from 
+                                attendance_parma a 
+                                left join (
+                                    select 
+                                        s.salesmanid,
+                                        s.nama_salesman,
+                                        (
+                                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                                            from m_salesman_area msa
+                                            join m_area_subarea sa on msa.subareaid = sa.subareaid
+                                            where msa.salesmanid = s.salesmanid
+                                        ) as nama_subarea,
+                                        (
+                                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                            from m_salesman_area msa
+                                            join m_area_areasite ar on msa.areaid = ar.areaid
+                                            where msa.salesmanid = s.salesmanid
+                                        ) as nama_area,
+                                        (
+                                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                            from m_salesman_area msa
+                                            join m_area_regional r on r.regionalid = msa.regionalid
+                                            where msa.salesmanid = s.salesmanid
+                                        ) as nama_regional
+                                    from m_sales_salesman s
+                                ) b on a.salesmanid = b.salesmanid 
+                                where a.periode between '$start' and '$end' $addquery $strquery
+                                order by a.periode desc;
+                            ");
 
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
@@ -187,7 +193,7 @@ class Rep_absensi extends BaseController
 		$restrict_level = $this->uri->segment('7');
 		$salesmanid = $this->uri->segment('8');
 
-		$filename = "Report_Absensi_".$start."-".$end.".xlsx";
+		$filename = "Report_Kunjungan_".$start."-".$end.".xlsx";
 
         $strquery = "";
         if (!empty($restrict_level)) {
@@ -203,39 +209,45 @@ class Rep_absensi extends BaseController
             $addquery="";
         }
         $q = $this->db->query(" 
-                select 
-                    a.periode, 
-                    a.salesmanid, 
-                    b.nama_salesman, 
-                    b.nama_area, 
-                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
-                    coalesce(nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
-                    a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
-                    a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
-                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
-                from 
-                attendance_parma a 
-                left join (
-                    select 
-                        s.salesmanid,
-                        s.nama_salesman,
-                        (
-                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                            from m_salesman_area msa
-                            join m_area_areasite ar on msa.areaid = ar.areaid
-                            where msa.salesmanid = s.salesmanid
-                        ) as nama_area,
-                        (
-                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                            from m_salesman_area msa
-                            join m_area_regional r on r.regionalid = msa.regionalid
-                            where msa.salesmanid = s.salesmanid
-                        ) as nama_regional
-                    from m_sales_salesman s
-                ) b on a.salesmanid = b.salesmanid 
-                where a.periode between '$start' and '$end' $addquery $strquery
-                order by a.periode desc;
-            ");
+                                select 
+                                    a.periode, 
+                                    a.salesmanid, 
+                                    b.nama_salesman, 
+                                    b.nama_area, 
+                                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
+                                    coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
+                                    a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
+                                    a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
+                                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
+                                from 
+                                attendance_parma a 
+                                left join (
+                                    select 
+                                        s.salesmanid,
+                                        s.nama_salesman,
+                                        (
+                                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                                            from m_salesman_area msa
+                                            join m_area_subarea sa on msa.subareaid = sa.subareaid
+                                            where msa.salesmanid = s.salesmanid
+                                        ) as nama_subarea,
+                                        (
+                                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                                            from m_salesman_area msa
+                                            join m_area_areasite ar on msa.areaid = ar.areaid
+                                            where msa.salesmanid = s.salesmanid
+                                        ) as nama_area,
+                                        (
+                                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                                            from m_salesman_area msa
+                                            join m_area_regional r on r.regionalid = msa.regionalid
+                                            where msa.salesmanid = s.salesmanid
+                                        ) as nama_regional
+                                    from m_sales_salesman s
+                                ) b on a.salesmanid = b.salesmanid 
+                                where a.periode between '$start' and '$end' $addquery $strquery
+                                order by a.periode desc;
+                            ");
 
         $lovkunjungan = $q->result_array();
         
@@ -278,15 +290,15 @@ class Rep_absensi extends BaseController
                             $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['start_image']);
                             $objDrawing->setWidth(120); 
                             $objDrawing->setHeight(120); 
-                            $objDrawing->setCoordinates('F'.$i);
+                            $objDrawing->setCoordinates('E'.$i);
                             $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
                             $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                            $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+                            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
                         } else {
-                            $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, '');
+                            $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
                         }
                     } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, '');
+                        $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
                     }
 
                     if (!empty($vkunjungan['end_image']) or $vkunjungan['end_image']<>'') {
@@ -295,15 +307,15 @@ class Rep_absensi extends BaseController
                             $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['end_image']);
                             $objDrawing->setWidth(120); 
                             $objDrawing->setHeight(120); 
-                            $objDrawing->setCoordinates('I'.$i);
+                            $objDrawing->setCoordinates('H'.$i);
                             $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
                             $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                            $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+                            $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
                         } else {
-                            $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, '');
+                            $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
                         }
                     } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, '');
+                        $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
                     }
 
                     $i++;

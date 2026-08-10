@@ -7,7 +7,7 @@
   let uiEndPeriode = $("#end_periode");
   let uiSelectRegional = $("#regional-id");
   let uiSelectArea = $("#area-id");
-  // let uiSelectSubArea = $("#subarea-id");
+  let uiSelectSubArea = $("#subarea-id");
   let uiSelectSalesman = $("#salesmanid-id");
   let uiBtnPreview = $("#btn-preview-form");
 
@@ -57,10 +57,10 @@
         allowClear: true,
       });
 
-      // uiSelectSubArea.select2({
-      //   placeholder: "Select Sub Area",
-      //   allowClear: true,
-      // });
+      uiSelectSubArea.select2({
+        placeholder: "Select Sub Area",
+        allowClear: true,
+      });
 
       uiSelectSalesman.select2({
         placeholder: "Select TPE",
@@ -131,26 +131,26 @@
     uiSelectRegional.on("change", function () {
       if (!uiSelectRegional.val()) {
         uiSelectArea.empty().trigger("change");
-        // uiSelectSubArea.empty().trigger("change");
+        uiSelectSubArea.empty().trigger("change");
       }
       loadInitialSalesmen();
     });
 
     uiSelectArea.on("select2:select", function (e) {
       let area = e.params.data;
-      // loadSubArea(area);
+      loadSubArea(area);
     });
 
     uiSelectArea.on("change", function () {
       if (!uiSelectArea.val()) {
-        // uiSelectSubArea.empty().trigger("change");
+        uiSelectSubArea.empty().trigger("change");
       }
       loadInitialSalesmen();
     });
 
-    // uiSelectSubArea.on("change", function () {
-    //   loadInitialSalesmen();
-    // });
+    uiSelectSubArea.on("change", function () {
+      loadInitialSalesmen();
+    });
 
     // Action button
     uiBtnPreview.click(function () {
@@ -188,7 +188,7 @@
       rows: 30,
       regionalid: uiSelectRegional.val(),
       areaid: uiSelectArea.val(),
-      // subareaid: uiSelectSubArea.val(),
+      subareaid: uiSelectSubArea.val(),
       usersession: paramsession.username,
       idjabatan: paramsession.idjabatan,
       restrict_level: paramsession.restrict_level,
@@ -233,7 +233,7 @@
           }),
         });
         uiSelectArea.val(null).trigger("change");
-        // uiSelectSubArea.empty().trigger("change");
+        uiSelectSubArea.empty().trigger("change");
         common.loadingClose();
       },
     );

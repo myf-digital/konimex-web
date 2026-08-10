@@ -130,10 +130,10 @@
                         <label for="area">Area</label>
                         <select id="area-id" name="area" class="form-control" placeholder="Select Area"></select>
                     </div>
-                    <!-- <div class="form-group col-md-2">
+                    <div class="form-group col-md-2">
                         <label for="subarea">Sub Area</label>
                         <select id="subarea-id" name="subarea" class="form-control" placeholder="Select Sub Area"></select>
-                    </div> -->
+                    </div>
                 </div>
 
                 <div class="box-footer">
