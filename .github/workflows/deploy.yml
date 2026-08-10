@@ -18,64 +18,36 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install OpenVPN
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openvpn rsync
-
-      - name: Connect to VPN
+      - name: Create VPN config file
         env:
           OVPN_CONFIG: ${{ secrets.OVPN_CONFIG }}
           OVPN_USERNAME: ${{ secrets.OVPN_USERNAME }}
           OVPN_PASSWORD: ${{ secrets.OVPN_PASSWORD }}
         run: |
-          echo "Creating VPN configuration file..."
-          printf '%s\n' "$OVPN_CONFIG" > /tmp/vpn-config.ovpn
+          printf '%s\n' "$OVPN_CONFIG" > /tmp/client.ovpn
 
           # If VPN requires username/password, create auth file
           if [ -n "$OVPN_USERNAME" ] && [ -n "$OVPN_PASSWORD" ]; then
-            echo "Setting up VPN credentials..."
             printf '%s\n%s\n' "$OVPN_USERNAME" "$OVPN_PASSWORD" > /tmp/vpn-auth.txt
             chmod 600 /tmp/vpn-auth.txt
 
             # Ensure config points to our auth file
-            if grep -qE '^auth-user-pass' /tmp/vpn-config.ovpn; then
-              sed -i 's|^auth-user-pass.*|auth-user-pass /tmp/vpn-auth.txt|g' /tmp/vpn-config.ovpn
+            if grep -qE '^auth-user-pass' /tmp/client.ovpn; then
+              sed -i 's|^auth-user-pass.*|auth-user-pass /tmp/vpn-auth.txt|g' /tmp/client.ovpn
             else
-              echo "auth-user-pass /tmp/vpn-auth.txt" >> /tmp/vpn-config.ovpn
+              echo "auth-user-pass /tmp/vpn-auth.txt" >> /tmp/client.ovpn
             fi
           fi
 
-          echo "Starting OpenVPN connection..."
-          sudo openvpn --config /tmp/vpn-config.ovpn --daemon --log /tmp/openvpn.log
-
-          echo "Waiting for VPN connection to establish..."
-          for i in $(seq 1 30); do
-            if ip link show | grep -qE "tun[0-9]|tap[0-9]"; then
-              echo "✅ VPN connected successfully!"
-              break
-            fi
-            if [ "$i" -eq 30 ]; then
-              echo "❌ VPN connection timed out after 30 seconds"
-              cat /tmp/openvpn.log
-              exit 1
-            fi
-            sleep 1
-          done
+      - name: Connect to VPN
+        uses: kota65535/github-openvpn-connect-action@v2
+        with:
+          config_file: /tmp/client.ovpn
 
       - name: Prepare SSH key
-        env:
-          VM_KEY: ${{ secrets.VM_KEY }}
-        run: |
-          set -euo pipefail
-
-          if [ -z "$VM_KEY" ]; then
-            echo "❌ VM_KEY secret is required."
-            exit 1
-          fi
-
-          printf '%s\n' "$VM_KEY" | tr -d '\r' > "$RUNNER_TEMP/deploy-key"
-          chmod 600 "$RUNNER_TEMP/deploy-key"
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VM_KEY }}
 
       - name: Transfer artifact to VM (Tmp Directory)
         env:
@@ -86,23 +58,28 @@ jobs:
           set -euo pipefail
 
           SSH_OPTS=(
-            -i "$RUNNER_TEMP/deploy-key"
             -p "$VM_PORT"
             -o BatchMode=yes
-            -o ConnectTimeout=10
+            -o ConnectTimeout=15
             -o StrictHostKeyChecking=accept-new
           )
 
-          echo "Checking SSH authentication before transfer..."
-          set +e
-          ssh -vvv "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "whoami" 2> "$RUNNER_TEMP/ssh-debug.log"
-          SSH_EXIT_CODE=$?
-          set -e
+          echo "Adding VM host to known_hosts..."
+          ssh-keyscan -H -p "$VM_PORT" "$VM_HOST" >> "$HOME/.ssh/known_hosts" 2>/dev/null || true
 
-          if [ "$SSH_EXIT_CODE" -ne 0 ]; then
-            echo "❌ SSH authentication failed."
-            exit "$SSH_EXIT_CODE"
-          fi
+          echo "Checking SSH authentication before transfer..."
+          for attempt in 1 2 3; do
+            if ssh -vvv "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "whoami" 2> "$RUNNER_TEMP/ssh-debug.log"; then
+              echo "SSH authentication succeeded (attempt $attempt)."
+              SSH_OK=1
+              break
+            fi
+            echo "SSH authentication failed (attempt $attempt/3). Debug log:"
+            cat "$RUNNER_TEMP/ssh-debug.log"
+            [ "$attempt" -eq 3 ] && exit 255
+            sleep 5
+          done
+          test -n "${SSH_OK:-}"
 
           echo "Preparing remote temporary directory..."
           ssh "${SSH_OPTS[@]}" "$VM_USER@$VM_HOST" "rm -rf /tmp/himalaya-web-artifact && mkdir -p /tmp/himalaya-web-artifact"
@@ -120,10 +97,9 @@ jobs:
           set -euo pipefail
 
           SSH_OPTS=(
-            -i "$RUNNER_TEMP/deploy-key"
             -p "$VM_PORT"
             -o BatchMode=yes
-            -o ConnectTimeout=10
+            -o ConnectTimeout=15
             -o StrictHostKeyChecking=accept-new
           )
 
@@ -154,12 +130,12 @@ jobs:
             sudo chown -R www-data:www-data himalaya-web
             sudo find himalaya-web -type d -exec chmod 755 {} \;
             sudo find himalaya-web -type f -exec chmod 644 {} \;
-            
+
             # Optional: Jika codeigniter 4, pastikan folder writable ada dan writeable
             if [ -d "himalaya-web/writable" ]; then
                sudo chmod -R 777 himalaya-web/writable
             fi
-            
+
             # Optional: Jika codeigniter 3, folder cache dsb writeable
             if [ -d "himalaya-web/application/cache" ]; then
                sudo chmod -R 777 himalaya-web/application/cache
@@ -168,11 +144,9 @@ jobs:
             echo "=== Deployment Completed Successfully ==="
           REMOTE_SCRIPT
 
-      - name: Disconnect VPN
+      - name: Cleanup
         if: always()
         run: |
-          echo "Disconnecting VPN..."
-          sudo pkill -f "openvpn --config /tmp/vpn-config.ovpn" || true
-          sudo rm -f /tmp/vpn-config.ovpn /tmp/vpn-auth.txt
-          rm -f "$RUNNER_TEMP/deploy-key"
-          echo "VPN disconnected and cleaned up."
+          rm -f /tmp/client.ovpn /tmp/vpn-auth.txt
+          rm -f "$RUNNER_TEMP/ssh-debug.log"
+          echo "Cleanup done."
