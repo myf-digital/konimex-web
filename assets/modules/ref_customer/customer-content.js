@@ -167,7 +167,6 @@
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
         $(this).datagrid("autoSizeColumn", "list_professional");
-        optionButton(data);
       },
     };
 
@@ -177,6 +176,38 @@
     uiTbl.datagrid("enableFilter");
     common.removeFilter(["options"]);
     common.removeFilter(["detail"]);
+
+    const panel = uiTbl.datagrid("getPanel");
+
+    panel.off("click", ".action-grid a.btn-success").on("click", ".action-grid a.btn-success", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        updateRow(rows[index]);
+      }
+    });
+
+    panel.off("click", ".action-grid a.btn-danger").on("click", ".action-grid a.btn-danger", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        deleteRow(rows[index]);
+      }
+    });
+
+    panel.off("click", ".action-grid a.btn-info").on("click", ".action-grid a.btn-info", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        showLocation(rows[index]);
+      }
+    });
   }
 
   function formatterListProfessional(val, row, index) {
@@ -204,38 +235,6 @@
       return result;
     }
     return "";
-  }
-
-  function optionButton(data) {
-    let btnContent = $(".action-grid");
-    let btnContentdtl = $(".action-grid-detail");
-    let index = 0;
-    for (const btns of btnContent) {
-      const param = data.rows[index];
-      const btnEdit = $(btns).find("a.btn-success");
-      const btnDelete = $(btns).find("a.btn-danger");
-      const btnLocation = $(btns).find("a.btn-info");
-      btnEdit.click(function () {
-        updateRow(param);
-      });
-      btnDelete.click(function () {
-        deleteRow(param);
-      });
-      btnLocation.click(function () {
-        showLocation(param);
-      });
-      index++;
-    }
-
-    let indexd = 0;
-    for (const btnsd of btnContentdtl) {
-      const param = data.rows[indexd];
-      const btnDetailGff = $(btnsd).find("a.btn-primary");
-      btnDetailGff.click(function () {
-        viewGff(param);
-      });
-      indexd++;
-    }
   }
 
   /*

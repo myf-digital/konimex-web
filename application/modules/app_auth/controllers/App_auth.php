@@ -39,13 +39,13 @@ class App_auth extends CI_Controller
                     'external_ids' => $data['username'],
                     'title' => 'Berhasil Login',
                     'message' => $message,
-                    'data' => array_merge(['type' => 'Login'], [
+                    'data' => [
+                        'type' => 'Login',
                         'nip' => $result->session['nip'] ?? '',
                         'name' => $result->session['name'] ?? '',
                         'telepon' => $result->session['salesmanid'] ?? '',
                         'user_type' => $result->session['type'] ?? '',
-                    ]),
-                    'url' => '/app_dashboard',
+                    ],
                 ]);
                 $result->res_onesignal = $resOnesignal['data'] ?? false;
             }

@@ -359,21 +359,25 @@ class Setup_planned_model extends CI_Model
 
             $x_players = get_x_player([$req_data['salesmanid']]);
             if (count($x_players) > 0) {
+                $title = $status == 3 ? 'Approve Planned' : 'Reject Planned';
+                $message = $status == 3 ? 'Planned berhasil di Approve oleh ' . ($user ? ' (' . $user . ')' : '') : 'Planned berhasil di Reject oleh ' . ($user ? ' (' . $user . ')' : '');
                 foreach ($x_players as $xp) {
                     if (isset($xp->account_id)) {
+                        if (!empty($xp->telegram_chat_id)) {
+                            send_telegram_notif($xp->telegram_chat_id, $title, $message);
+                        }
                         send_onesignal_api([
                             'player_ids' => $xp->player_id,
                             'external_ids' => $xp->account_id,
-                            'title' => $status == 3 ? 'Approve Planned' : 'Reject Planned',
-                            'message' => $status == 3 ? 'Planned berhasil di Approve oleh ' . ($user ? ' (' . $user . ')' : '') : 'Planned berhasil di Reject oleh ' . ($user ? ' (' . $user . ')' : ''),
-                            'data' => array_merge(
-                                ['type' => $status == 3 ? 'Approve Planned' : 'Reject Planned'], [
-                                    'req_no' => $req_data['req_no'] ?? '',
-                                    'periode' => $req_data['periode'] ?? '',
-                                    'salesmanid' => $req_data['salesmanid'] ?? '',
-                                    'salesman_name' => $req_data['salesman_name'] ?? '',
-                                ]),
-                            'url' => '/setup_dub',
+                            'title' => $title,
+                            'message' => $message,
+                            'data' => [
+                                'type' => $status == 3 ? 'Approve Planned' : 'Reject Planned',
+                                'req_no' => $req_data['req_no'] ?? '',
+                                'periode' => $req_data['periode'] ?? '',
+                                'salesmanid' => $req_data['salesmanid'] ?? '',
+                                'salesman_name' => $req_data['salesman_name'] ?? '',
+                            ],
                         ]);
                     }
                 }

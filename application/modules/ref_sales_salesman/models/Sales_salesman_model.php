@@ -218,12 +218,12 @@ class Sales_salesman_model extends CI_Model
             'level_5' => ['MEDREP'],
         ];
 
-        $keys = array_keys($levels);
+        $result = [];
         foreach ($levels as $key => $vals) {
             if (in_array($current, $vals)) {
-                $index = array_search($key, $keys);
-                return ($index > 0) ? $levels[$keys[$index - 1]] : [];
+                return $result;
             }
+            $result = array_merge($result, $vals);
         }
         return [];
     }
