@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Prepare SSH key
@@ -34,142 +34,90 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openvpn netcat-openbsd
 
-      - name: Create VPN config file
+      - name: Prepare VPN config
         env:
           OVPN_CONFIG: ${{ secrets.OVPN_CONFIG }}
           VM_HOST: ${{ secrets.VM_HOST }}
         run: |
           printf '%s\n' "$OVPN_CONFIG" > /tmp/client.ovpn
-
-          # GitHub runner has no IPv6, strip IPv6 remote so we connect via IPv4 immediately
           sed -i '/^remote .* udp6$/d' /tmp/client.ovpn
-          sed -i 's/^remote-random$/#remote-random (disabled: use IPv4 remote)/' /tmp/client.ovpn
-
-          # Ignore server-pushed routes (incl. redirect-gateway and the route to the
-          # VPN server itself). Without this, Linux ECMP sends packets to the VPN server
-          # INTO the tunnel -> routing loop -> data channel dead.
+          sed -i '/^remote-random$/d' /tmp/client.ovpn
           sed -i '/^redirect-gateway/d' /tmp/client.ovpn
           echo "route-nopull" >> /tmp/client.ovpn
-
-          # VM is a public IP whitelisted to only accept connections from the VPN IP,
-          # so force traffic to the VM through the VPN tunnel (source IP = VPN IP).
-          if [ -n "$VM_HOST" ] && ! grep -qE "^route[[:space:]]+${VM_HOST}\b" /tmp/client.ovpn; then
+          if [ -n "$VM_HOST" ]; then
             echo "route $VM_HOST 255.255.255.255" >> /tmp/client.ovpn
-            echo "Forcing VM_HOST ($VM_HOST) to route through VPN tunnel."
           fi
 
       - name: Connect to VPN
         run: |
           set -euo pipefail
-
-          echo "Starting OpenVPN..."
           sudo rm -f /tmp/openvpn.log
           sudo openvpn --config /tmp/client.ovpn --daemon --log /tmp/openvpn.log --writepid /tmp/openvpn.pid
 
-          echo "Waiting for 'Initialization Sequence Completed'..."
           for i in $(seq 1 60); do
             if sudo grep -q "Initialization Sequence Completed" /tmp/openvpn.log 2>/dev/null; then
-              echo "VPN connected (Initialization Sequence Completed)."
               break
             fi
             if [ "$i" -eq 60 ]; then
-              echo "!!! VPN did not initialize within 60s. Full log:"
+              echo "VPN init failed:"
               sudo cat /tmp/openvpn.log
               exit 1
             fi
             sleep 1
           done
 
-          echo "=== Route to VPN server (must be dev eth0, NOT tun0) ==="
-          ip route get 147.93.157.98 || true
-
-          echo "=== Tunnel routes ==="
-          ip route | grep -E 'tun[0-9]' || echo "(no routes via tun)"
-
           VPN_GW=$(ip route | awk '/dev tun[0-9]/{print $1; exit}')
-          echo "Tunnel network: $VPN_GW"
-
-          echo "Verifying tunnel data path..."
-          if ping -c 3 -W 2 "${VPN_GW%.*}.1" >/dev/null 2>&1; then
-            echo "Tunnel data path OK (VPN gateway reachable)."
-          else
-            echo "!!! Tunnel data path DEAD (gateway unreachable). Full log:"
+          if ! ping -c 3 -W 2 "${VPN_GW%.*}.1" >/dev/null 2>&1; then
+            echo "VPN data path dead:"
             sudo cat /tmp/openvpn.log
-            echo "=== routes ==="
-            ip route
             exit 1
           fi
+          echo "VPN connected"
 
-      - name: Verify VPN connectivity to VM
+      - name: Check VM reachability
         env:
           VM_HOST: ${{ secrets.VM_HOST }}
           VM_PORT: ${{ secrets.VM_PORT || '22' }}
         run: |
-          set -euo pipefail
+          nc -zv -w 5 "$VM_HOST" "$VM_PORT"
 
-          echo "route to VM:"
-          ip route get "$VM_HOST" || true
-
-          echo "=== Testing TCP reachability to $VM_HOST:$VM_PORT (nc, 15 tries) ==="
-          for i in $(seq 1 15); do
-            if nc -zv -w 3 "$VM_HOST" "$VM_PORT" 2>&1; then
-              echo "OK: $VM_HOST:$VM_PORT reachable through VPN."
-              exit 0
-            fi
-            echo "not reachable yet (attempt $i/15)"
-            sleep 2
-          done
-
-          echo "VM is NOT reachable through VPN."
-          exit 1
-
-      - name: Transfer files to target server
+      - name: Transfer files
         run: |
-          ssh-keyscan -H -p "$VM_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts || true
+          ssh-keyscan -H -p "$VM_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
           tar --exclude='.git' --exclude='.github' -czf - . \
             | ssh -o StrictHostKeyChecking=no -p "$VM_PORT" "$SSH_USERNAME@$SSH_HOST" \
               "rm -rf /tmp/himalaya-web-artifact && mkdir -p /tmp/himalaya-web-artifact && tar -xzf - -C /tmp/himalaya-web-artifact"
 
-      - name: Setup application on target server
+      - name: Setup application
+        env:
+          SUDO_PASSWORD: ${{ secrets.SUDO_PASSWORD }}
         run: |
-          ssh -o StrictHostKeyChecking=no -p "$VM_PORT" "$SSH_USERNAME@$SSH_HOST" bash -s << 'REMOTE'
+          ssh -o StrictHostKeyChecking=no -p "$VM_PORT" "$SSH_USERNAME@$SSH_HOST" \
+            "SUDO_PASSWORD='$SUDO_PASSWORD' bash -s" << 'REMOTE'
             set -euo pipefail
+            sudo() {
+              if [ -n "${SUDO_PASSWORD:-}" ]; then
+                echo "$SUDO_PASSWORD" | command sudo -S "$@"
+              else
+                command sudo "$@"
+              fi
+            }
 
-            echo "=== Starting Deployment for Himalaya Web ==="
-
-            # 1. Ensure application directory exists
             cd /apps
-            if [ ! -d "himalaya-web" ]; then
-              echo "Directory /apps/himalaya-web does not exist. Creating..."
-              sudo mkdir -p himalaya-web
-              sudo chown www-data:www-data himalaya-web
-              sudo chmod 755 himalaya-web
-            fi
-
-            # 2. Deploy artifact to application directory
-            echo "Copying artifact to /apps/himalaya-web..."
+            sudo mkdir -p himalaya-web
             sudo rsync -av --delete --exclude='writable/' --exclude='application/cache/' /tmp/himalaya-web-artifact/ himalaya-web/
-
-            # 3. Clean up temporary artifact
             rm -rf /tmp/himalaya-web-artifact
 
-            # 4. Set appropriate permissions for PHP/Web Server
-            echo "Setting permissions (www-data)..."
             sudo chown -R www-data:www-data himalaya-web
             sudo find himalaya-web -type d -exec chmod 755 {} \;
             sudo find himalaya-web -type f -exec chmod 644 {} \;
 
-            # Optional: Jika codeigniter 4, pastikan folder writable ada dan writeable
-            if [ -d "himalaya-web/writable" ]; then
-               sudo chmod -R 777 himalaya-web/writable
+            if [ -d himalaya-web/writable ]; then
+              sudo chmod -R 777 himalaya-web/writable
             fi
-
-            # Optional: Jika codeigniter 3, folder cache dsb writeable
-            if [ -d "himalaya-web/application/cache" ]; then
-               sudo chmod -R 777 himalaya-web/application/cache
+            if [ -d himalaya-web/application/cache ]; then
+              sudo chmod -R 777 himalaya-web/application/cache
             fi
-
-            echo "=== Deployment Completed Successfully ==="
           REMOTE
 
       - name: Cleanup
@@ -177,4 +125,3 @@ jobs:
         run: |
           sudo pkill -f "openvpn --config /tmp/client.ovpn" || true
           sudo rm -f /tmp/client.ovpn /tmp/openvpn.log /tmp/openvpn.pid
-          echo "Cleanup done."
