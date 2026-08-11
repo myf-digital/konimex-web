@@ -45,6 +45,12 @@ jobs:
           sed -i '/^remote .* udp6$/d' /tmp/client.ovpn
           sed -i 's/^remote-random$/#remote-random (disabled: use IPv4 remote)/' /tmp/client.ovpn
 
+          # Ignore server-pushed routes (incl. redirect-gateway and the route to the
+          # VPN server itself). Without this, Linux ECMP sends packets to the VPN server
+          # INTO the tunnel -> routing loop -> data channel dead.
+          sed -i '/^redirect-gateway/d' /tmp/client.ovpn
+          echo "route-nopull" >> /tmp/client.ovpn
+
           # VM is a public IP whitelisted to only accept connections from the VPN IP,
           # so force traffic to the VM through the VPN tunnel (source IP = VPN IP).
           if [ -n "$VM_HOST" ] && ! grep -qE "^route[[:space:]]+${VM_HOST}\b" /tmp/client.ovpn; then
@@ -74,8 +80,17 @@ jobs:
             sleep 1
           done
 
+          echo "=== Route to VPN server (must be dev eth0, NOT tun0) ==="
+          ip route get 147.93.157.98 || true
+
+          echo "=== Tunnel routes ==="
+          ip route | grep -E 'tun[0-9]' || echo "(no routes via tun)"
+
+          VPN_GW=$(ip route | awk '/dev tun[0-9]/{print $1; exit}')
+          echo "Tunnel network: $VPN_GW"
+
           echo "Verifying tunnel data path..."
-          if ping -c 3 -W 2 192.168.219.1 >/dev/null 2>&1; then
+          if ping -c 3 -W 2 "${VPN_GW%.*}.1" >/dev/null 2>&1; then
             echo "Tunnel data path OK (VPN gateway reachable)."
           else
             echo "!!! Tunnel data path DEAD (gateway unreachable). Full log:"
