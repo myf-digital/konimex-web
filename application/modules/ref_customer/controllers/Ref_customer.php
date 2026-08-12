@@ -267,6 +267,7 @@ class Ref_customer extends BaseController
             'EMAIL',
             'REGIONAL',
             'AREA',
+            'SUB AREA',
             'ALAMAT',
             'ID_USER',
             'NAMA_USER',
@@ -275,7 +276,7 @@ class Ref_customer extends BaseController
         ];
         $sheet1->fromArray($headers1, NULL, 'A1');
         $sheet1->getRowDimension(1)->setRowHeight(25);
-        $headerRange1 = 'A1:L1';
+        $headerRange1 = 'A1:O1';
         $sheet1->getStyle($headerRange1)->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -290,7 +291,7 @@ class Ref_customer extends BaseController
                 'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
-        foreach (range('A', 'L') as $col) {
+        foreach (range('A', 'O') as $col) {
             $sheet1->getColumnDimension($col)->setAutoSize(true);
         }
         
@@ -304,6 +305,7 @@ class Ref_customer extends BaseController
             'klinik.sehat@konimex.com',
             'Barat',
             'Jawa Barat I',
+            'Bandung Selatan',
             'Jl. Sudirman No. 12',
             '5555',
             'dr. Budi Utomo',
@@ -312,14 +314,14 @@ class Ref_customer extends BaseController
         ];
         $sheet1->fromArray($sampleRow, NULL, 'A2');
 
-        $sheet1->getStyle('A2:L2')->applyFromArray([
+        $sheet1->getStyle('A2:O2')->applyFromArray([
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => 'FFFF00'],
             ]
         ]);
 
-        $sheet1->getStyle('A1:L2')->applyFromArray([
+        $sheet1->getStyle('A1:O2')->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -378,6 +380,8 @@ class Ref_customer extends BaseController
         $sheet2->setCellValue('E1', 'NAMA_REGIONAL');
         $sheet2->setCellValue('F1', 'AREA_ID');
         $sheet2->setCellValue('G1', 'NAMA_AREA');
+        $sheet2->setCellValue('H1', 'SUB_AREA_ID');
+        $sheet2->setCellValue('I1', 'NAMA_SUB_AREA');
         
         $rowLoc = 2;
         foreach ($locations as $loc) {
@@ -385,15 +389,17 @@ class Ref_customer extends BaseController
             $sheet2->setCellValue('E' . $rowLoc, $loc['nama_regional']);
             $sheet2->setCellValue('F' . $rowLoc, $loc['areaid']);
             $sheet2->setCellValue('G' . $rowLoc, $loc['nama_area']);
+            $sheet2->setCellValue('H' . $rowLoc, $loc['subareaid']);
+            $sheet2->setCellValue('I' . $rowLoc, $loc['nama_subarea']);
             $rowLoc++;
         }
 
-        $sheet2->setCellValue('I1', 'SPESIALISASI_ID');
-        $sheet2->setCellValue('J1', 'NAMA_SPESIALISASI');
+        $sheet2->setCellValue('J1', 'SPESIALISASI_ID');
+        $sheet2->setCellValue('K1', 'NAMA_SPESIALISASI');
         $rowSpec = 2;
         foreach ($specializations as $spec) {
-            $sheet2->setCellValue('I' . $rowSpec, $spec['id']);
-            $sheet2->setCellValue('J' . $rowSpec, $spec['name']);
+            $sheet2->setCellValue('J' . $rowSpec, $spec['id']);
+            $sheet2->setCellValue('K' . $rowSpec, $spec['name']);
             $rowSpec++;
         }
 
@@ -409,12 +415,12 @@ class Ref_customer extends BaseController
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ]);
-        $sheet2->getStyle('D1:G1')->applyFromArray([
+        $sheet2->getStyle('D1:I1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ]);
-        $sheet2->getStyle('I1:J1')->applyFromArray([
+        $sheet2->getStyle('J1:K1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '70AD47']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
@@ -439,11 +445,11 @@ class Ref_customer extends BaseController
             ],
         ];
         $sheet2->getStyle('A1:B' . $highestRowChan)->applyFromArray($borderStyle);
-        $sheet2->getStyle('D1:G' . $highestRowLoc)->applyFromArray($borderStyle);
-        $sheet2->getStyle('I1:J' . $highestRowSpec)->applyFromArray($borderStyle);
+        $sheet2->getStyle('D1:I' . $highestRowLoc)->applyFromArray($borderStyle);
+        $sheet2->getStyle('J1:K' . $highestRowSpec)->applyFromArray($borderStyle);
         $sheet2->getStyle('L1:L' . $highestRowType)->applyFromArray($borderStyle);
 
-        foreach (range('A', 'L') as $col) {
+        foreach (range('A', 'O') as $col) {
             $sheet2->getColumnDimension($col)->setAutoSize(true);
         }
         
