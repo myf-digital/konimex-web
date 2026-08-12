@@ -28,7 +28,7 @@ function validasiFile() {
 
   let uiSelectRegional = $("#regionalid-id");
   let uiSelectArea = $("#areaid-id");
-  // let uiSelectSubarea = $("#subareaid-id");
+  let uiSelectSubarea = $("#subareaid-id");
   let uiBtnCancel = $("#btn-cancel-form");
   let uiBtnDownloadTemp = $("#btn-download-temp");
   let uiBtnUpload = $("#btn-upload-form");
@@ -62,7 +62,7 @@ function validasiFile() {
       let regVal = uiSelectRegional.val();
       if (!regVal || regVal.length === 0) {
         uiSelectArea.empty().trigger("change");
-        // uiSelectSubarea.empty().trigger("change");
+        uiSelectSubarea.empty().trigger("change");
       } else {
         let regStr = Array.isArray(regVal) ? regVal.join(",") : regVal || "";
         loadArea({
@@ -73,38 +73,38 @@ function validasiFile() {
       }
     });
 
-    // uiSelectArea.on("select2:select", function (e) {
-    // let regVal = uiSelectRegional.val();
-    // let regStr = Array.isArray(regVal) ? regVal.join(",") : regVal || "";
-    // let areaVal = uiSelectArea.val();
-    // let areaStr = Array.isArray(areaVal) ? areaVal.join(",") : areaVal || "";
-    // let srval = {
-    //   regionalid: regStr,
-    //   areaid: areaStr,
-    //   usersession: paramsession.username,
-    //   restrict_level: paramsession.restrict_level,
-    // };
-    // loadSubArea(srval);
-    // });
+    uiSelectArea.on("select2:select", function (e) {
+    let regVal = uiSelectRegional.val();
+    let regStr = Array.isArray(regVal) ? regVal.join(",") : regVal || "";
+    let areaVal = uiSelectArea.val();
+    let areaStr = Array.isArray(areaVal) ? areaVal.join(",") : areaVal || "";
+    let srval = {
+      regionalid: regStr,
+      areaid: areaStr,
+      usersession: paramsession.username,
+      restrict_level: paramsession.restrict_level,
+    };
+    loadSubArea(srval);
+    });
 
-    // uiSelectArea.on("select2:unselect", function (e) {
-    // let areaVal = uiSelectArea.val();
-    // if (!areaVal || areaVal.length === 0) {
-    //   uiSelectSubarea.empty().trigger("change");
-    // } else {
-    //   let regVal = uiSelectRegional.val();
-    //   let regStr = Array.isArray(regVal) ? regVal.join(",") : regVal || "";
-    //   let areaStr = Array.isArray(areaVal)
-    //     ? areaVal.join(",")
-    //     : areaVal || "";
-    //   loadSubArea({
-    //     regionalid: regStr,
-    //     areaid: areaStr,
-    //     usersession: paramsession.username,
-    //     restrict_level: paramsession.restrict_level,
-    //   });
-    // }
-    // });
+    uiSelectArea.on("select2:unselect", function (e) {
+    let areaVal = uiSelectArea.val();
+    if (!areaVal || areaVal.length === 0) {
+      uiSelectSubarea.empty().trigger("change");
+    } else {
+      let regVal = uiSelectRegional.val();
+      let regStr = Array.isArray(regVal) ? regVal.join(",") : regVal || "";
+      let areaStr = Array.isArray(areaVal)
+        ? areaVal.join(",")
+        : areaVal || "";
+      loadSubArea({
+        regionalid: regStr,
+        areaid: areaStr,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      });
+    }
+    });
 
     uiSelectRegional.select2({
       placeholder: "Select Regional",
@@ -118,11 +118,11 @@ function validasiFile() {
       multiple: true,
     });
 
-    // uiSelectSubarea.select2({
-    //   placeholder: "Select SubArea",
-    //   allowClear: true,
-    //   multiple: true,
-    // });
+    uiSelectSubarea.select2({
+      placeholder: "Select SubArea",
+      allowClear: true,
+      multiple: true,
+    });
 
     let urlParams = new URLSearchParams(window.location.search);
     let ref = urlParams.get("ref");
@@ -138,11 +138,10 @@ function validasiFile() {
       let regStr = Array.isArray(regVal) ? regVal.join(",") : regVal || "";
       let areaVal = uiSelectArea.val();
       let areaStr = Array.isArray(areaVal) ? areaVal.join(",") : areaVal || "";
-      // let subareaVal = uiSelectSubarea.val();
-      // let subareaStr = Array.isArray(subareaVal)
-      //   ? subareaVal.join(",")
-      //   : subareaVal || "";
-      let subareaStr = "";
+      let subareaVal = uiSelectSubarea.val();
+      let subareaStr = Array.isArray(subareaVal)
+        ? subareaVal.join(",")
+        : subareaVal || "";
 
       let downloadUrl =
         common.baseURL("ref_customer/download_template") +
@@ -300,16 +299,16 @@ function validasiFile() {
 
         if (filteredAreas.length > 0) {
           uiSelectArea.val(filteredAreas).trigger("change");
-          // let areaStr = filteredAreas.join(",");
-          // loadSubArea({
-          //   regionalid: data.regionalid,
-          //   areaid: areaStr,
-          //   usersession: paramsession.username,
-          //   restrict_level: paramsession.restrict_level,
-          // });
+          let areaStr = filteredAreas.join(",");
+          loadSubArea({
+            regionalid: data.regionalid,
+            areaid: areaStr,
+            usersession: paramsession.username,
+            restrict_level: paramsession.restrict_level,
+          });
         } else {
           uiSelectArea.val(null).trigger("change");
-          // uiSelectSubarea.empty().trigger("change");
+          uiSelectSubarea.empty().trigger("change");
         }
         common.loadingClose();
       },
