@@ -11,18 +11,18 @@
 		"source": "https://github.com/bcit-ci/CodeIgniter"
 	},
 	"require": {
-		"php": ">=5.2.4",
-		"longman/telegram-bot": "^0.45.0",
-		"guzzlehttp/guzzle": "^6.5",
+		"php": "^8.0",
+		"longman/telegram-bot": "^0.80",
+		"guzzlehttp/guzzle": "^7.8",
 		"phpoffice/phpspreadsheet": "^1.30",
 		"tecnickcom/tcpdf": "^6.10"
 	},
 	"suggest": {
-		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
+		"paragonie/random_compat": "Provides better randomness in PHP 8.x"
 	},
 	"require-dev": {
 		"mikey179/vfsstream": "1.1.*",
-		"phpunit/phpunit": "4.* || 5.*"
+		"phpunit/phpunit": "^9.6"
 	},
 	"config": {
 		"policy": {
