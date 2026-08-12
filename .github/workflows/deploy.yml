@@ -108,6 +108,10 @@ jobs:
             sudo rsync -av --delete --exclude='writable/' --exclude='application/cache/' --exclude='.env' /tmp/himalaya-web-artifact/ himalaya-web/
             rm -rf /tmp/himalaya-web-artifact
 
+            cd himalaya-web
+            sudo composer install --no-dev --no-interaction --optimize-autoloader
+            cd /apps
+
             sudo chown -R www-data:www-data himalaya-web
             sudo find himalaya-web -type d -exec chmod 755 {} \;
             sudo find himalaya-web -type f -exec chmod 644 {} \;
