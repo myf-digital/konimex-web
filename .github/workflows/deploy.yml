@@ -109,7 +109,7 @@ jobs:
             rm -rf /tmp/himalaya-web-artifact
 
             cd himalaya-web
-            sudo composer install --no-dev --no-interaction --optimize-autoloader
+            composer install --no-dev --no-interaction --optimize-autoloader
             cd /apps
 
             sudo chown -R www-data:www-data himalaya-web
