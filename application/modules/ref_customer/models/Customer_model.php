@@ -334,9 +334,10 @@ class Customer_model extends CI_Model
     {
         $channels = $this->db->select('typeid, nama_type')->from('m_customer_type')->get()->result_array();
 
-        $this->db->select('r.regionalid, r.nama_regional, a.areaid, a.nama_area');
+        $this->db->select('r.regionalid, r.nama_regional, a.areaid, a.nama_area, s.subareaid, s.nama_area as nama_subarea');
         $this->db->from('m_area_regional r');
         $this->db->join('m_area_areasite a', 'r.regionalid = a.regionalid', 'left');
+        $this->db->join('m_area_subarea s', 'a.areaid = s.areaid', 'left');
 
         if (!empty($regionalid)) {
             $reg_arr = explode(',', $regionalid);
@@ -346,10 +347,10 @@ class Customer_model extends CI_Model
             $area_arr = explode(',', $areaid);
             $this->db->where_in('a.areaid', $area_arr);
         }
-        // if (!empty($subareaid)) {
-        //     $subarea_arr = explode(',', $subareaid);
-        //     $this->db->where_in('s.subareaid', $subarea_arr);
-        // }
+        if (!empty($subareaid)) {
+            $subarea_arr = explode(',', $subareaid);
+            $this->db->where_in('s.subareaid', $subarea_arr);
+        }
 
         $restrict_query = get_salesman_restrict($usersession, $restrict_level);
         if ($restrict_query) {
@@ -401,6 +402,7 @@ class Customer_model extends CI_Model
                 'EMAIL',
                 'REGIONAL',
                 'AREA',
+                'SUB AREA',
                 'ALAMAT',
                 'ID_USER',
                 'NAMA_USER',
@@ -425,11 +427,24 @@ class Customer_model extends CI_Model
                     continue;
                 }
 
-                $id_customer = trim($row[1]);
-                $nama_customer = trim($row[2]);
-                $channel_name = isset($row[3]) ? trim($row[3]) : '';
-                $regional_name = isset($row[6]) ? trim($row[6]) : '';
-                $area_name = isset($row[7]) ? trim($row[7]) : '';
+                $id_customer = isset($row[1]) ? trim($row[1]) : '';
+                $kode_outlet = isset($row[2]) ? trim($row[2]) : '';
+                $nama_customer = isset($row[3]) ? trim($row[3]) : '';
+                $channel_name = isset($row[4]) ? trim($row[4]) : '';
+                $telp = isset($row[5]) ? trim($row[5]) : '';
+                $email = isset($row[6]) ? trim($row[6]) : '';
+                $regional_name = isset($row[7]) ? trim($row[7]) : '';
+                $area_name = isset($row[8]) ? trim($row[8]) : '';
+                $subarea_name = isset($row[9]) ? trim($row[9]) : '';
+                $alamat = isset($row[10]) ? trim($row[10]) : '';
+                $id_professional = isset($row[11]) ? trim($row[11]) : '';
+                $nama_professional = isset($row[12]) ? trim($row[12]) : '';
+                $spesialisasi = isset($row[13]) ? trim($row[13]) : '';
+                $professional_type = isset($row[14]) ? trim($row[14]) : '';
+
+                if (empty($nama_customer)) {
+                    continue;
+                }
 
                 $channel_id = null;
                 if (!empty($channel_name)) {
@@ -449,28 +464,31 @@ class Customer_model extends CI_Model
 
                 $area_id = null;
                 if (!empty($area_name)) {
-                    $area_row = $this->db->select('areaid')->from('m_area_areasite')->where('LOWER(nama_area)', strtolower($area_name))->get()->row_array();
+                    $this->db->select('areaid')->from('m_area_areasite')->where('LOWER(nama_area)', strtolower($area_name));
+                    if (!empty($regional_id)) {
+                        $this->db->where('regionalid', $regional_id);
+                    }
+                    $area_row = $this->db->get()->row_array();
                     if ($area_row) {
                         $area_id = $area_row['areaid'];
+                    }
+                }
+
+                $subarea_id = null;
+                if (!empty($subarea_name)) {
+                    $this->db->select('subareaid')->from('m_area_subarea')->where('LOWER(nama_area)', strtolower($subarea_name));
+                    if (!empty($area_id)) {
+                        $this->db->where('areaid', $area_id);
+                    }
+                    $subarea_row = $this->db->get()->row_array();
+                    if ($subarea_row) {
+                        $subarea_id = $subarea_row['subareaid'];
                     }
                 }
 
                 if (empty($channel_id) || empty($regional_id)) {
                     continue;
                 }
-
-                if (empty($nama_customer)) {
-                    continue;
-                }
-
-                $kode_outlet = isset($row[1]) ? trim($row[1]) : '';
-                $telp = isset($row[4]) ? trim($row[4]) : '';
-                $email = isset($row[5]) ? trim($row[5]) : '';
-                $alamat = isset($row[8]) ? trim($row[8]) : '';
-                $id_professional = isset($row[9]) ? trim($row[9]) : '';
-                $nama_professional = isset($row[10]) ? trim($row[10]) : '';
-                $spesialisasi = isset($row[11]) ? trim($row[11]) : '';
-                $professional_type = isset($row[12]) ? trim($row[12]) : '';
 
                 $existing = null;
                 if (!empty($id_customer)) {
@@ -491,6 +509,7 @@ class Customer_model extends CI_Model
                         'email' => $email,
                         'regionalid' => $regional_id,
                         'areaid' => $area_id,
+                        'subareaid' => $subarea_id,
                         'alamat' => $alamat,
                         'modified_by' => $usersession,
                         'modified_date' => date('Y-m-d H:i:s')
@@ -518,6 +537,7 @@ class Customer_model extends CI_Model
                         'email' => $email,
                         'regionalid' => $regional_id,
                         'areaid' => $area_id,
+                        'subareaid' => $subarea_id,
                         'alamat' => $alamat,
                         'salesmanid' => $salesmanid,
                         'created_by' => $usersession,
