@@ -75,10 +75,10 @@ for (i = 0; i < close.length; i++) {
                                 <label for="areaid">Area</label>
                                 <select id="areaid-id" name="areaid[]" class="form-control" placeholder="Area" multiple="multiple"></select>
                             </div>
-                            <!-- <div class="form-group col-md-4">
+                            <div class="form-group col-md-4">
                                 <label for="subareaid">Sub Area</label>
                                 <select id="subareaid-id" name="subareaid[]" class="form-control" placeholder="Sub Area" multiple="multiple"></select>
-                            </div> -->
+                            </div>
                         </div>
                         <div class="row" style="margin-top: 15px;">
                             <div class="form-group col-xs-12 col-sm-12 col-md-6">
