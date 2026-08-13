@@ -124,7 +124,6 @@
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
         $(this).datagrid("autoSizeColumn", "customer_list");
-        optionButton(data);
       },
     };
     let gridOptions = commonGrid.optionValue(option);
@@ -132,6 +131,58 @@
     uiTbl.datagrid(gridOptions);
     uiTbl.datagrid("enableFilter");
     common.removeFilter(["options"]);
+
+    const panel = uiTbl.datagrid("getPanel");
+
+    panel.off("click", ".action-grid a.btn-warning, .action-grid #btn-viem").on("click", ".action-grid a.btn-warning, .action-grid #btn-viem", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        open_edit(rows[index]);
+      }
+    });
+
+    panel.off("click", ".action-grid #btn-delete").on("click", ".action-grid #btn-delete", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        deleteRow(rows[index]);
+      }
+    });
+
+    panel.off("click", ".action-grid a.btn-success, .action-grid #btn-approval").on("click", ".action-grid a.btn-success, .action-grid #btn-approval", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        handleApproveReject(rows[index].id, 3);
+      }
+    });
+
+    panel.off("click", ".action-grid #btn-reject").on("click", ".action-grid #btn-reject", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        handleApproveReject(rows[index].id, 5);
+      }
+    });
+
+    panel.off("click", ".action-grid a.btn-info, .action-grid #btn-viem-image").on("click", ".action-grid a.btn-info, .action-grid #btn-viem-image", function (e) {
+      e.preventDefault();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        open_image(rows[index]);
+      }
+    });
   }
 
   function toolbar() {
@@ -245,40 +296,7 @@
     return val ? moment(val).format("DD MMM YYYY") : "-";
   }
 
-  function optionButton(data) {
-    let btnContent = $(".action-grid");
-    let index = 0;
-    for (const btns of btnContent) {
-      const param = data.rows[index];
 
-      const btnEdit = $(btns).find("#btn-viem");
-      btnEdit.click(function () {
-        open_edit(param);
-      });
-
-      const btnDelete = $(btns).find("#btn-delete");
-      btnDelete.click(function () {
-        deleteRow(param);
-      });
-
-      const btnApproval = $(btns).find("#btn-approval");
-      btnApproval.click(function () {
-        handleApproveReject(param.id, 3);
-      });
-
-      const btnReject = $(btns).find("#btn-reject");
-      btnReject.click(function () {
-        handleApproveReject(param.id, 5);
-      });
-
-      const btnImage = $(btns).find("#btn-viem-image");
-      btnImage.click(function () {
-        open_image(param);
-      });
-
-      index++;
-    }
-  }
 
   function open_edit(data) {
     common.setCookie("module.professional.update", data);
