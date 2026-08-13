@@ -7,7 +7,7 @@ class Customer_model extends CI_Model
     public function create($data)
     {
         if (empty($data["siteid"])) {
-            $data["siteid"] = "KNX01";
+            $data["siteid"] = "HIMALAYA";
         }
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
@@ -47,7 +47,7 @@ class Customer_model extends CI_Model
     public function update($data)
     {
         if (empty($data["siteid"])) {
-            $data["siteid"] = "KNX01";
+            $data["siteid"] = "HIMALAYA";
         }
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
@@ -411,7 +411,12 @@ class Customer_model extends CI_Model
             ];
 
             if (array_map('strtoupper', $header) !== $expected) {
-                return ['status' => false, 'message' => 'Format header tidak sesuai'];
+                return [
+                    'status' => false,
+                    'message' => 'Format header tidak sesuai',
+                    'header' => $header,
+                    'expected' => $expected
+                ];
             }
 
             $successCount = 0;
@@ -527,7 +532,7 @@ class Customer_model extends CI_Model
                     $this->db->query("update app_table_sequence set used=".$customerid." where id=5");
 
                     $insertData = [
-                        'siteid' => 'KNX01',
+                        'siteid' => 'HIMALAYA',
                         'customerid_m' => '',
                         'customerid' => $customerid,
                         'kode_outlet' => $kode_outlet ? $kode_outlet : $customerid,
@@ -595,7 +600,7 @@ class Customer_model extends CI_Model
                         }
                     } else {
                         $profData = [
-                            'siteid' => 'KNX01',
+                            'siteid' => 'HIMALAYA',
                             'nama_professional' => $prof_name,
                             'spesialisasi_id' => $spesialisasi_id,
                             'spesialisasi_name' => $spesialisasi_name,
