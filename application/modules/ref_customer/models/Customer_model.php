@@ -486,6 +486,9 @@ class Customer_model extends CI_Model
                     $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.customerid = ? ", [trim($id_customer)])->row_array();
                 }
                 if (empty($existing)) {
+                    $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.kode_outlet = ? ", [trim($kode_outlet)])->row_array();
+                }
+                if (empty($existing)) {
                     $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.nama_customer = ? ", [trim($nama_customer)])->row_array();
                 }
 
