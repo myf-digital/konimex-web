@@ -107,7 +107,6 @@
 
   function optionButton(data) {
     let btnContent = $(".action-grid");
-    let btnFiles = $(".btn-preview_files");
     let index = 0;
     for (const btns of btnContent) {
       const param = data.rows[index];
@@ -119,11 +118,16 @@
       btnDelete.click(function () {
         deleteRow(param);
       });
-      btnFiles.click(function () {
-        previewFiles(param);
-      });
       index++;
     }
+
+    $(".btn-preview_files").each(function () {
+      const idx = $(this).data("index");
+      const param = data.rows[idx];
+      $(this).off("click").on("click", function () {
+        previewFiles(param);
+      });
+    });
   }
 
   /*
@@ -146,7 +150,7 @@
   function formatterFile(val, row, index) {
     let html = "";
     if (row && row.files) {
-      html = `<a tabindex="0" class="pointer btn-preview_files">Show</a>`;
+      html = `<a tabindex="0" class="pointer btn-preview_files" data-index="${index}">Show</a>`;
     }
     return html;
   }
