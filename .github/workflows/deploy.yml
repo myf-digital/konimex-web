@@ -105,7 +105,7 @@ jobs:
 
             cd /apps
             sudo mkdir -p himalaya-web
-            sudo rsync -av --delete --exclude='writable/' --exclude='application/cache/' --exclude='.env' /tmp/himalaya-web-artifact/ himalaya-web/
+            sudo rsync -av --delete --exclude='writable/' --exclude='application/cache/' --exclude='.env' --exclude='uploads/' /tmp/himalaya-web-artifact/ himalaya-web/
             rm -rf /tmp/himalaya-web-artifact
 
             cd himalaya-web
