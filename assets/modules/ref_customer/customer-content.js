@@ -151,6 +151,7 @@
             align: "left",
             sortable: "true",
             width: 350,
+            formatter: formatterAlamat,
           },
           {
             field: "list_professional",
@@ -235,6 +236,12 @@
       return result;
     }
     return "";
+  }
+
+  function formatterAlamat(val, row, index) {
+    return val
+      ? '<div style="white-space: normal; word-wrap: break-word;">' + val + "</div>"
+      : "";
   }
 
   /*
