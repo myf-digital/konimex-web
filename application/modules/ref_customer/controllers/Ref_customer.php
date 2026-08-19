@@ -93,7 +93,7 @@ class Ref_customer extends BaseController
         $spreadsheet = new Spreadsheet();
         $header = [
             'ID Outlet',
-            'ID Outlet Distributor',
+            'Kode Outlet',
             'Nama Outlet',
             'Regional',
             'Area',
@@ -134,14 +134,14 @@ class Ref_customer extends BaseController
             }
 
             $content = [
-                $outlet['customerid'],
-                $outlet['cust_id_map'],
-                $outlet['nama_customer'],
-                $outlet['nama_regional'],
-                $outlet['nama_area'],
-                $outlet['nama_subarea'],
-                $outlet['typeid'],
-                $outlet['alamat'],
+                $outlet['customerid'] ?? '',
+                $outlet['kode_outlet'] ?? '',
+                $outlet['nama_customer'] ?? '',
+                $outlet['nama_regional'] ?? '',
+                $outlet['nama_area'] ?? '',
+                $outlet['nama_subarea'] ?? '',
+                $outlet['typeid'] ?? '',
+                $outlet['alamat'] ?? '',
                 $listUser
             ];
 
