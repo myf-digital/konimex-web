@@ -93,7 +93,7 @@ class Ref_customer extends BaseController
         $spreadsheet = new Spreadsheet();
         $header = [
             'ID Outlet',
-            'ID Outlet Distributor',
+            'Kode Outlet',
             'Nama Outlet',
             'Regional',
             'Area',
@@ -134,14 +134,14 @@ class Ref_customer extends BaseController
             }
 
             $content = [
-                $outlet['customerid'],
-                $outlet['cust_id_map'],
-                $outlet['nama_customer'],
-                $outlet['nama_regional'],
-                $outlet['nama_area'],
-                $outlet['nama_subarea'],
-                $outlet['typeid'],
-                $outlet['alamat'],
+                $outlet['customerid'] ?? '',
+                $outlet['kode_outlet'] ?? '',
+                $outlet['nama_customer'] ?? '',
+                $outlet['nama_regional'] ?? '',
+                $outlet['nama_area'] ?? '',
+                $outlet['nama_subarea'] ?? '',
+                $outlet['typeid'] ?? '',
+                $outlet['alamat'] ?? '',
                 $listUser
             ];
 
@@ -188,11 +188,16 @@ class Ref_customer extends BaseController
         
         $writer = new Xlsx($spreadsheet);
         
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename .'"'); 
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
+        exit;
     }
 
 	function open_gff_detail() {

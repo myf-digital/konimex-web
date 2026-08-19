@@ -18,13 +18,16 @@ class Api_v1_model extends CI_Model
             }
     }
 
-	function get_salesman($data)
+	function get_salesman($data = [])
     {
+		$data = is_array($data) ? $data : [];
 		$strquery = "";
 		if (!empty($data['salesmanid'])) {
 			$strquery .= " and a.salesmanid = '".$data['salesmanid']."'";
 		} else {
-			$restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+			$usersession = $data["usersession"] ?? null;
+			$restrict_level = $data["restrict_level"] ?? null;
+			$restrict_query = (!empty($usersession) || !empty($restrict_level)) ? get_salesman_restrict($usersession, $restrict_level) : null;
 			if ($restrict_query) {
 				$strquery = " and a.salesmanid in (" . $restrict_query . ")";
 			}
@@ -131,9 +134,12 @@ class Api_v1_model extends CI_Model
 		}
     }
 
-	function get_all_gff_admin($data)
+	function get_all_gff_admin($data = [])
     {
-		$restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+		$data = is_array($data) ? $data : [];
+		$usersession = $data["usersession"] ?? null;
+		$restrict_level = $data["restrict_level"] ?? null;
+		$restrict_query = (!empty($usersession) || !empty($restrict_level)) ? get_salesman_restrict($usersession, $restrict_level) : null;
 		if ($restrict_query) {
 			$strquery = " and a.salesmanid in (" . $restrict_query . ")";
 		} else {
