@@ -1,5 +1,6 @@
 /vendor
 /uploads/*
+!/uploads/.htaccess
 /application/logs/*
 /application/cache/sessions/*
 /composer.lock
