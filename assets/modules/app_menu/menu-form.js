@@ -8,6 +8,7 @@
     let uiForm = $("#fm-menu");
     let uiInputIcon = $("#menu-icon");
     let uiSelectParent = $("#parent-id");
+    let uiStatus = $("#status");
     let uiBtnCancel = $("#btn-cancel-form");
     // define from *-content.js
     let param = common.getCookie("module.menu.update");
@@ -62,8 +63,18 @@
     function setupFormUI() {
         uiInputIcon.iconpicker();
         uiSelectParent.select2({
-            placeholder: 'Select parent menu'
+            placeholder: 'Select parent menu',
+            allowClear: true
         });
+        uiStatus.select2({
+            placeholder: 'Select status',
+            allowClear: true
+        });
+        if (isUpdate) {
+            if (!param.status) param.status = 'active';
+            else if (param.status) param.status = 'non_active';
+            uiStatus.val(param.status).trigger('change');
+        }
     }
 
     function setupForm(r1, r2) {
@@ -83,8 +94,5 @@
             }),
         });
         if (isUpdate) uiSelectParent.val(param.parent_id).trigger('change');
-
     }
-
-
 })();

@@ -42,8 +42,11 @@
                             <input id="menu-icon" name="menu_icon" class="form-control" placeholder="Menu Icon">
                         </div>
                         <div class="form-group">
-                            <label for="type_menu">Type Menu</label>
-                            <input name="type_menu" class="form-control" placeholder="Type Menu">
+                            <label for="status">Status</label>
+                            <select id="status" name="status" class="form-control">
+                                <option value="active">Active</option>
+                                <option value="non_active">Non Active</option>
+                            </select>
                         </div>
 
                     </div>
@@ -53,7 +56,6 @@
                         <a id="btn-cancel-form" href="javascript:void(0)" class="btn btn-warning">Cancel</a>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
