@@ -40,18 +40,13 @@
                 }
             ]],
             columns: [[
-				//{field:'menu_id', title:'MENU ID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'menu_name', title:'MENU NAME', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'menu_icon', title:'MENU ICON', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'module_name', title:'MODULE NAME', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'type_menu', title:'TYPE MENU', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'seq_number', title:'SEQ NUMBER', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'type_menu', title:'TYPE MENU', halign: 'center', align: 'center', sortable:"true", width:100},
+				{field:'seq_number', title:'SEQ NUMBER', halign: 'center', align: 'center', sortable:"true", width:100},
 				{field:'menu_parent', title:'PARENT MENU', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'status', title:'STATUS', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'created_by', title:'CREATED BY', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'created_date', title:'CREATED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'modified_by', title:'MODIFIED BY', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'modified_date', title:'MODIFIED DATE', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'status_label', title:'STATUS', halign: 'center', align: 'center', sortable:"true", width:100},
             ]],
             onBeforeLoad: function (param) {
                 param = common.replaceGridFilterPrefix(param, "a");
