@@ -72,6 +72,7 @@
         });
         if (isUpdate) {
             if (!param.status) param.status = 'active';
+            else if (param.status) param.status = 'non_active';
             uiStatus.val(param.status).trigger('change');
         }
     }
