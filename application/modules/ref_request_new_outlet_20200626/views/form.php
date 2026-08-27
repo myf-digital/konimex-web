@@ -80,8 +80,8 @@
                                 <select id="kelurahanid-id" name="kelurahanid" class="form-control" placeholder="Kelurahan"></select>
 							</div>
 							<div class="form-group col-md-6">
-								<label for="salesmanid">TPE ID</label>
-                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
+								<label for="salesmanid">MEDREP ID</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP"></select>
 							</div>
 							<div class="form-group col-md-4">
 								<label for="mcc">DC</label>

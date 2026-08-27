@@ -123,8 +123,8 @@ class Rep_att_sales extends CI_Controller {
 		$html .= '<div id="table-wrapper"><div id="table-scroll"><table id="activity_table" border="1" class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead>';
 		$html .= '<tr>';
-		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">TPE ID</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama TPE</th>';
+		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">MEDREP ID</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama MEDREP</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -193,7 +193,7 @@ class Rep_att_sales extends CI_Controller {
 		$html .= '</tbody>';
 		$html .= '</table></div></div>';
 		$html .= '<script>
-					var name = "Report_TPE_Aktif.xls";
+					var name = "Report_MEDREP_Aktif.xls";
 					$("#save_excell").on("click", function () {
 						var uri = $("#activity_table").btechco_excelexport({
 						containerid: "activity_table"

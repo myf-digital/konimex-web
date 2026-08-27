@@ -599,8 +599,8 @@ $(function () {
       "Visit (Target)",
     ];
     let hdrSalesman = [
-      "TPE ID",
-      "Nama TPE",
+      "MEDREP ID",
+      "Nama MEDREP",
       "Tipe Sales",
       "Jabatan",
       "Area",
@@ -734,8 +734,8 @@ $(function () {
 
     let hdrVisit = [
       "Periode",
-      "Nama TPE",
-      "TPE ID",
+      "Nama MEDREP",
+      "MEDREP ID",
       "Customer ID",
       "Nama Customer",
       "Check In",
@@ -834,8 +834,8 @@ $(function () {
 
     let hdrSpesialisasi = [
       "Periode",
-      "TPE ID",
-      "Nama TPE",
+      "MEDREP ID",
+      "Nama MEDREP",
       "Spesialisasi",
       "Target",
       "Realisasi",
@@ -846,8 +846,8 @@ $(function () {
 
     let hdrProduk = [
       "Periode",
-      "TPE ID",
-      "Nama TPE",
+      "MEDREP ID",
+      "Nama MEDREP",
       "Product ID",
       "Nama Invoice",
       "Target",
@@ -905,8 +905,8 @@ $(function () {
 
     let hdrSales = [
       "Periode",
-      "TPE ID",
-      "Nama TPE",
+      "MEDREP ID",
+      "Nama MEDREP",
       "Target Nominal",
       "Realisasi",
       "Kekurangan",
@@ -991,7 +991,7 @@ $(function () {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Nama TPE</th>
+                  <th>Nama MEDREP</th>
                   <th>Tipe</th>
                   <th>Jabatan</th>
                   <th>Area</th>
@@ -1192,7 +1192,7 @@ $(function () {
 
       let rowHtml = `
         <tr>
-          <td><strong>Sales TPE</strong></td>
+          <td><strong>Sales MEDREP</strong></td>
           <td class="text-right">Rp ${formatNumber(targetVal)}</td>
           <td class="text-right">Rp ${formatNumber(actualVal)}</td>
           <td class="text-right">Rp ${formatNumber(kekurangan)}</td>
@@ -1334,7 +1334,7 @@ $(function () {
       ],
       ["Periode", val(r.periode)],
       [
-        "TPE",
+        "MEDREP",
         `${val(r.nama_salesman)} <small class="text-muted">(${val(r.salesmanid)})</small>`,
       ],
       ["Check In", formatDateTime(r.check_in, 16, "-")],

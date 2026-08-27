@@ -1,6 +1,6 @@
 (function () {
   const common = new Common();
-  common.setTitle("TPE");
+  common.setTitle("MEDREP");
   // declare dom
   let uiForm = $("#fm-sales-salesman");
   let uiBtnCancel = $("#btn-cancel-form");
@@ -108,7 +108,7 @@
     });
 
     uiSelectTipesales.select2({
-      placeholder: "Select TPE Type",
+      placeholder: "Select MEDREP Type",
       allowClear: true,
     });
 
@@ -454,7 +454,7 @@
       .empty()
       .append('<option value=""></option>')
       .select2({
-        placeholder: "Select TPE Type",
+        placeholder: "Select MEDREP Type",
         allowClear: true,
         data: $.map(rows3, function (o) {
           o.id = o.idtipesales; // replace name with the property used for the text

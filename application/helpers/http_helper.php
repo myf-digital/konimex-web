@@ -634,7 +634,7 @@ if (!function_exists('send_telegram_notif')) {
     function send_telegram_notif($chat_id, $title, $message) {
         $url = env('TELEGRAM_BOT_URL');
         $token = env('TELEGRAM_BOT_TOKEN_NOTIF');
-        $titleNotif = env('TELEGRAM_BOT_TITLE_NOTIF') ?? 'KONIMEX-TPE NOTIF';
+        $titleNotif = env('TELEGRAM_BOT_TITLE_NOTIF') ?? 'KONIMEX-HIMALAYA NOTIF';
 
         if (empty($chat_id) || empty($url) || empty($token) || $token == 'telegram_bot_token' || $chat_id == 'telegram_chat_id') {
             return false;

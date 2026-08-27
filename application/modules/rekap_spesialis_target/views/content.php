@@ -87,8 +87,8 @@
                         <thead>
                             <tr>
                                 <th style="width: 5%;">#</th>
-                                <th>TPE ID</th>
-                                <th>Nama TPE</th>
+                                <th>MEDREP ID</th>
+                                <th>Nama MEDREP</th>
                                 <th>Customer ID</th>
                                 <th>Nama Customer</th>
                                 <th>Nama Dokter</th>

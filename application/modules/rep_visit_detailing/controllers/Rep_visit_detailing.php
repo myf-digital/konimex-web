@@ -358,7 +358,7 @@ class Rep_visit_detailing extends BaseController
             'No',
             'Periode',
             'User Login',
-            'TPE',
+            'MEDREP',
             'Outlet ID',
             'Outlet',
             'User',

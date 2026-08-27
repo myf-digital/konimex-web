@@ -118,8 +118,8 @@ class Rekap_spesialis_target extends BaseController
 
         $detailSheet->setCellValue('A1', 'No')
                     ->setCellValue('B1', 'Tanggal')
-                    ->setCellValue('C1', 'TPE ID')
-                    ->setCellValue('D1', 'Nama TPE')
+                    ->setCellValue('C1', 'MEDREP ID')
+                    ->setCellValue('D1', 'Nama MEDREP')
                     ->setCellValue('E1', 'Spesialisasi ID')
                     ->setCellValue('F1', 'Nama Spesialisasi')
                     ->setCellValue('G1', 'Customer ID')

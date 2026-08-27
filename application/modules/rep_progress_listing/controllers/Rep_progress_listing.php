@@ -132,8 +132,8 @@ class Rep_progress_listing extends BaseController
         $header = [
             'No',
             'Periode',
-            'TPE ID',
-            'TPE Name',
+            'MEDREP ID',
+            'MEDREP Name',
             'Customer ID',
             'Customer Name',
             'Brand ID',
@@ -211,8 +211,8 @@ class Rep_progress_listing extends BaseController
         $header = [
             'No',
             'Periode',
-            'TPE ID',
-            'TPE Name',
+            'MEDREP ID',
+            'MEDREP Name',
             'Customer ID',
             'Customer Name',
             'Brand ID',
@@ -227,7 +227,7 @@ class Rep_progress_listing extends BaseController
             'Sign Dokter 5',
             'Dokumen Registrasi Lengkap',
         ];
-		$filename = "Progress_Listing_All_TPE_".$startdate."_".$enddate;
+		$filename = "Progress_Listing_All_MEDREP_".$startdate."_".$enddate;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

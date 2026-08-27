@@ -350,7 +350,7 @@ $(function () {
   }
 
   function loadSpecializationDetail(spesialisasiId, nama) {
-    $titleDetailSalesman.text("List TPE - Spesialisasi: " + nama);
+    $titleDetailSalesman.text("List MEDREP - Spesialisasi: " + nama);
     $colDetailSalesman.html(
       `<p class="text-muted dashboard-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</p>`,
     );
@@ -684,7 +684,7 @@ $(function () {
             <thead>
               <tr>
                 <th class="th-w-50">#</th>
-                <th>Nama TPE</th>
+                <th>Nama MEDREP</th>
                 <th>Tipe</th>
                 <th>Target</th>
                 <th>Realisasi</th>
@@ -746,7 +746,7 @@ $(function () {
     }
 
     $modalVisitTitle.html(
-      `Kunjungan TPE: ${sm.nama_salesman} (${sm.salesmanid})`,
+      `Kunjungan MEDREP: ${sm.nama_salesman} (${sm.salesmanid})`,
     );
     $modalVisitBody.html(`
       <div class="table-responsive">
@@ -873,8 +873,8 @@ $(function () {
       }
 
       let hdrSalesman = [
-        "TPE ID",
-        "Nama TPE",
+        "MEDREP ID",
+        "Nama MEDREP",
         "Tipe Sales",
         "Target",
         "Realisasi",
@@ -882,7 +882,7 @@ $(function () {
       ];
 
       addSection(
-        "List TPE - " + (exportData.visits.label || "Spesialisasi"),
+        "List MEDREP - " + (exportData.visits.label || "Spesialisasi"),
         hdrSalesman,
         filteredSalesmanData.map(function (r) {
           let targetVal = parseInt(r.target) || 0;
@@ -914,8 +914,8 @@ $(function () {
       }
 
       let hdrVisit = [
-        "Nama TPE",
-        "TPE ID",
+        "Nama MEDREP",
+        "MEDREP ID",
         "Nama Professional",
         "Tipe PIC",
         "Spesialisasi",

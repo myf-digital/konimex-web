@@ -1,6 +1,6 @@
 (function () {
   const common = new Common();
-  common.setTitle("TPE Relationship");
+  common.setTitle("MEDREP Relationship");
   // declare dom
   let uiForm = $("#fm-salesman-relationship");
   let uiBtnCancel = $("#btn-cancel-form");
@@ -43,7 +43,7 @@
       },
       messages: {
         salesmanid: {
-          required: "TPE wajib dipilih",
+          required: "MEDREP wajib dipilih",
         },
         relationship: {
           required: "Relationship wajib dipilih",
