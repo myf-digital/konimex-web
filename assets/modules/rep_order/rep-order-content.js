@@ -63,7 +63,7 @@
       });
 
       uiSelectSalesman.select2({
-        placeholder: "Select TPE",
+        placeholder: "Select MEDREP",
         allowClear: true,
         ajax: {
           transport: function (params, success, failure) {
@@ -172,7 +172,7 @@
       ) {
         $.alert({
           title: "Error ",
-          content: "TPE harus di isi...!",
+          content: "MEDREP harus di isi...!",
           containerFluid: true,
         });
       } else {

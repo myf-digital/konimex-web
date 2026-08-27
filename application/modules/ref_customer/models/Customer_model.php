@@ -121,6 +121,58 @@ class Customer_model extends CI_Model
         return $this->db->update('m_customer', $payload);
     }
 
+    public function get_detail($data)
+    {
+        if (empty($data['customerid'])) {
+            return result(new stdClass(), 422, 'customerid is required');
+        }
+
+        $customerid = $data['customerid'];
+
+        $this->db->where('customerid', $customerid);
+        $customer = $this->db->get('m_customer')->row_array();
+
+        if (!$customer) {
+            return result(new stdClass(), 404, 'Data outlet tidak ditemukan');
+        }
+
+        $sqlPro = "
+            SELECT 
+                rp.id,
+                rp.nama_professional,
+                rs.name as spesialisasi_name,
+                rp.type as professional_type,
+                concat(
+                    rp.id, ' - ',
+                    rp.nama_professional,
+                    case 
+                        when (rs.name is not null and rs.name <> '') and (rp.type is not null and rp.type <> '') 
+                            then concat(' (', rs.name, ' - ', rp.type, ')')
+                        when (rs.name is not null and rs.name <> '') 
+                            then concat(' (', rs.name, ')')
+                        when (rp.type is not null and rp.type <> '') 
+                            then concat(' (', rp.type, ')')
+                        else ''
+                    end
+                ) as display_text
+            FROM ref_professional_mapping rpm
+            JOIN ref_professional rp ON rp.id = rpm.id_professional AND rp.status = '3'
+            LEFT JOIN ref_spesialisasi rs ON rs.id = rp.spesialisasi_id
+            WHERE rpm.customerid = " . $this->db->escape($customerid) . "
+            ORDER BY rp.id ASC
+        ";
+        $proRows = $this->db->query($sqlPro)->result_array();
+        
+        $listProfArray = array_map(function($row) {
+            return $row['display_text'];
+        }, $proRows);
+
+        $customer['list_professional'] = implode('||', $listProfArray);
+        $customer['professionals'] = $proRows;
+
+        return result($customer);
+    }
+
     public function delete($data)
     {
         $data["deleted_by"] = $data["usersession"];

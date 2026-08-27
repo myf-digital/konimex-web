@@ -9,24 +9,26 @@
   let uiSelectArea = $("#areaid-id");
   let uiSelectSubarea = $("#subareaid-id");
 
-  let param = common.getCookie("module.customer.update");
+  let paramCookie = common.getCookie("module.customer.update");
   let paramsession = common.getCookie("session");
   let uiSearchProfessional = $("#professional");
 
-  let isUpdate = param !== undefined; // flag create update
+  let isUpdate =
+    paramCookie !== undefined &&
+    paramCookie !== null &&
+    paramCookie.customerid !== undefined; // flag create update
+  let customerData = null;
   let searchTimeout = null;
 
   let modalSpesialisasiLoaded = false;
   let modalTypeLoaded = false;
 
   initializeParam();
-  initialize();
 
   function initialize() {
-    let url =
-      param === undefined
-        ? common.baseURL("ref_customer/create")
-        : common.baseURL("ref_customer/update");
+    let url = !isUpdate
+      ? common.baseURL("ref_customer/create")
+      : common.baseURL("ref_customer/update");
 
     $.validator.setDefaults({
       errorPlacement: function (error, element) {
@@ -37,13 +39,16 @@
         }
       },
     });
+
     uiForm.initForm({
       url: url,
-      param: param,
+      param: {},
+      initEasyui: false,
       directUrl: "ref_customer",
       beforeSubmit: function (form, options) {
-        if (param !== undefined) {
-          form.push({ name: "siteid", value: param.siteid });
+        if (isUpdate && customerData) {
+          form.push({ name: "siteid", value: customerData.siteid || "KNX01" });
+          form.push({ name: "customerid", value: customerData.customerid });
         }
         form.push({ name: "usersession", value: paramsession.username });
 
@@ -79,38 +84,10 @@
         },
       },
     });
+
     uiBtnCancel.click(function () {
+      common.removeCookie("module.customer.update");
       common.direct("ref_customer");
-    });
-
-    loadProfessional("", true);
-    loadRegional({
-      usersession: paramsession.username,
-      idjabatan: paramsession.idjabatan,
-      restrict_level: paramsession.restrict_level,
-      restrict_bu: paramsession.restrict_bu,
-    });
-
-    uiSelectRegional.on("select2:select", function (e) {
-      regionalSelected = e.params.data;
-      let srval = regionalSelected;
-      srval = {
-        regionalid: srval.regionalid,
-        usersession: paramsession.username,
-        restrict_level: paramsession.restrict_level,
-      };
-      loadArea(srval);
-    });
-
-    uiSelectArea.on("select2:select", function (e) {
-      areaSelected = e.params.data;
-      srval = {
-        regionalid: uiSelectRegional.val(),
-        areaid: areaSelected.areaid,
-        usersession: paramsession.username,
-        restrict_level: paramsession.restrict_level,
-      };
-      loadSubArea(srval);
     });
 
     uiSelectRegional.select2({
@@ -126,6 +103,30 @@
     uiSelectSubarea.select2({
       placeholder: "Select SubArea",
       allowClear: true,
+    });
+
+    uiSelectRegional.on("select2:select", function (e) {
+      let regionalSelected = e.params.data;
+      let srval = {
+        regionalid: regionalSelected.regionalid || regionalSelected.id,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      };
+      uiSelectArea.val(null).trigger("change");
+      uiSelectSubarea.val(null).trigger("change");
+      loadArea(srval);
+    });
+
+    uiSelectArea.on("select2:select", function (e) {
+      let areaSelected = e.params.data;
+      let srval = {
+        regionalid: uiSelectRegional.val(),
+        areaid: areaSelected.areaid || areaSelected.id,
+        usersession: paramsession.username,
+        restrict_level: paramsession.restrict_level,
+      };
+      uiSelectSubarea.val(null).trigger("change");
+      loadSubArea(srval);
     });
 
     uiSearchProfessional.multiselect({
@@ -144,26 +145,6 @@
       submitAllLeft: false,
       submitAllRight: false,
     });
-
-    if (isUpdate) {
-      loadRegional({
-        usersession: paramsession.username,
-        idjabatan: paramsession.idjabatan,
-        restrict_level: paramsession.restrict_level,
-      });
-      loadArea({
-        regionalid: param.regionalid,
-        usersession: paramsession.username,
-        idjabatan: paramsession.idjabatan,
-        restrict_level: paramsession.restrict_level,
-      });
-      loadSubArea({
-        regionalid: param.regionalid,
-        areaid: param.areaid,
-        usersession: paramsession.username,
-        restrict_level: paramsession.restrict_level,
-      });
-    }
 
     $("#modal-tanggal_lahir, #modal-tanggal_aniv_pernikahan").datepicker({
       format: "yyyy-mm-dd",
@@ -247,36 +228,103 @@
     let resolver = new HttpResolver();
     let filter = new Filter();
 
-    $.when($.post(common.baseURL("ref_customer_type/load"), filter.build()))
-      .done(function (data, textStatus, jqXHR) {})
-      .then(function (ct, cc) {
+    initialize();
+
+    let requests = [
+      $.post(common.baseURL("ref_customer_type/load"), filter.build()),
+    ];
+
+    if (isUpdate) {
+      requests.push(
+        $.post(common.baseURL("ref_customer/get_detail"), {
+          customerid: paramCookie.customerid,
+        }),
+      );
+    }
+
+    $.when
+      .apply($, requests)
+      .done(function () {})
+      .then(function (resType, resDetail) {
         common.loadingClose();
+        let ct = isUpdate ? resType[0] : resType;
+        if (isUpdate && resDetail) {
+          let detailResponse = resDetail[0];
+          if (detailResponse && detailResponse.code === 200 && detailResponse.result) {
+            customerData = detailResponse.result;
+          }
+        }
+
         setupForm(ct);
+
+        if (isUpdate && customerData) {
+          uiForm.form("load", customerData);
+
+          loadRegional(
+            {
+              usersession: paramsession.username,
+              idjabatan: paramsession.idjabatan,
+              restrict_level: paramsession.restrict_level,
+            },
+            customerData.regionalid,
+          );
+          loadArea(
+            {
+              regionalid: customerData.regionalid,
+              usersession: paramsession.username,
+              idjabatan: paramsession.idjabatan,
+              restrict_level: paramsession.restrict_level,
+            },
+            customerData.areaid,
+          );
+          loadSubArea(
+            {
+              regionalid: customerData.regionalid,
+              areaid: customerData.areaid,
+              usersession: paramsession.username,
+              restrict_level: paramsession.restrict_level,
+            },
+            customerData.subareaid,
+          );
+
+          loadProfessional("", true);
+        } else {
+          loadRegional({
+            usersession: paramsession.username,
+            idjabatan: paramsession.idjabatan,
+            restrict_level: paramsession.restrict_level,
+            restrict_bu: paramsession.restrict_bu,
+          });
+          loadProfessional("", true);
+        }
       })
-      .fail(resolver.fail);
+      .fail(function (err) {
+        common.loadingClose();
+        resolver.fail(err);
+      });
   }
 
   function setupForm(ct) {
-    let rowsCT = ct.rows;
+    let rowsCT = ct.rows || [];
 
     uiSelectType.select2({
       placeholder: "Select Channel",
       allowClear: true,
       data: $.map(rowsCT, function (o) {
-        o.id = o.typeid; // replace name with the property used for the text
-        o.text = o.nama_type; // replace name with the property used for the text
+        o.id = o.typeid;
+        o.text = o.nama_type;
         return o;
       }),
     });
 
-    if (isUpdate) {
-      uiSelectType.val(param.typeid).trigger("change");
+    if (isUpdate && customerData) {
+      uiSelectType.val(customerData.typeid).trigger("change");
     } else {
       uiSelectType.val(null).trigger("change");
     }
   }
 
-  function loadRegional(data) {
+  function loadRegional(data, selectedVal = null) {
     common.loading();
     $.post(
       common.baseURL("api_v1/call_regional_restrict"),
@@ -286,15 +334,15 @@
         uiSelectRegional.select2({
           placeholder: "Select Regional",
           allowClear: true,
-          data: $.map(res.result, function (o) {
-            o.id = o.regionalid; // replace name with the property used for the text
+          data: $.map(res.result || [], function (o) {
+            o.id = o.regionalid;
             o.text = o.nama_regional;
             return o;
           }),
         });
 
-        if (isUpdate) {
-          uiSelectRegional.val(param.regionalid).trigger("change");
+        if (selectedVal) {
+          uiSelectRegional.val(selectedVal).trigger("change");
         } else {
           uiSelectRegional.val(null).trigger("change");
         }
@@ -303,7 +351,7 @@
     );
   }
 
-  function loadArea(data) {
+  function loadArea(data, selectedVal = null) {
     common.loading();
     $.post(
       common.baseURL("api_v1/call_area_restrict"),
@@ -317,15 +365,15 @@
         uiSelectArea.select2({
           placeholder: "Select Area",
           allowClear: true,
-          data: $.map(res.result, function (o) {
-            o.id = o.areaid; // replace name with the property used for the text
+          data: $.map(res.result || [], function (o) {
+            o.id = o.areaid;
             o.text = o.nama_area;
             return o;
           }),
         });
 
-        if (isUpdate) {
-          uiSelectArea.val(param.areaid).trigger("change");
+        if (selectedVal) {
+          uiSelectArea.val(selectedVal).trigger("change");
         } else {
           uiSelectArea.val(null).trigger("change");
         }
@@ -334,7 +382,7 @@
     );
   }
 
-  function loadSubArea(data) {
+  function loadSubArea(data, selectedVal = null) {
     common.loading();
     $.post(
       common.baseURL("api_v1/call_subarea_restrict"),
@@ -349,15 +397,15 @@
         uiSelectSubarea.select2({
           placeholder: "Select SubArea",
           allowClear: true,
-          data: $.map(res.result, function (o) {
-            o.id = o.subareaid; // replace name with the property used for the text
+          data: $.map(res.result || [], function (o) {
+            o.id = o.subareaid;
             o.text = o.nama_area;
             return o;
           }),
         });
 
-        if (isUpdate) {
-          uiSelectSubarea.val(param.subareaid).trigger("change");
+        if (selectedVal) {
+          uiSelectSubarea.val(selectedVal).trigger("change");
         } else {
           uiSelectSubarea.val(null).trigger("change");
         }
@@ -373,7 +421,7 @@
         q: keyword,
       },
       function (res) {
-        let result = res.result;
+        let result = res.result || [];
         let select = document.getElementById("professional");
         let selectTo = document.getElementById("professional_to");
 
@@ -389,13 +437,13 @@
             selectTo.options[i] = null;
           }
 
-          if (isUpdate && param.list_professional) {
-            const professionalList = param.list_professional
-              ? param.list_professional.split("||")
+          if (isUpdate && customerData && customerData.list_professional) {
+            const professionalList = customerData.list_professional
+              ? customerData.list_professional.split("||")
               : [];
             professionalList.forEach((item) => {
               const parts = item.split(" - ");
-              const professionalId = parts[0];
+              const professionalId = parts[0].trim();
               selectedOutlet.push(professionalId);
 
               let optSelected = document.createElement("option");
@@ -412,7 +460,7 @@
         }
 
         for (let i = 0; i < result.length; i++) {
-          if (selectedOutlet.includes(result[i].id)) {
+          if (selectedOutlet.includes(String(result[i].id))) {
             continue;
           }
 

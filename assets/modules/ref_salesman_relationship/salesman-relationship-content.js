@@ -3,7 +3,7 @@
   const common = new Common();
   const commonGrid = new CommonGrid();
   // update title
-  common.setTitle("TPE Relationship");
+  common.setTitle("MEDREP Relationship");
   // ui components
   let uiTbl = $("#tbl-salesman-relationship");
 
@@ -22,7 +22,7 @@
 
   function initializeGrid() {
     let option = {
-      title: "TPE Relationship",
+      title: "MEDREP Relationship",
       toolbar: toolbar(),
       url: common.baseURL("ref_salesman_relationship/load"),
       pageNumber: 1,
@@ -44,7 +44,7 @@
         [
           {
             field: "salesmanid",
-            title: "TPE Id",
+            title: "MEDREP Id",
             halign: "left",
             align: "left",
             sortable: "true",
@@ -52,7 +52,7 @@
           },
           {
             field: "nama_salesman",
-            title: "Nama TPE",
+            title: "Nama MEDREP",
             halign: "left",
             align: "left",
             sortable: "true",

@@ -125,7 +125,7 @@ class Ref_sales_salesman extends BaseController
 
     public function download_template()
     {
-        $filePath = FCPATH . 'assets/templates/Template-Mapping-TPE.xlsx';
+        $filePath = FCPATH . 'assets/templates/Template-Mapping-MEDREP.xlsx';
         if (file_exists($filePath)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

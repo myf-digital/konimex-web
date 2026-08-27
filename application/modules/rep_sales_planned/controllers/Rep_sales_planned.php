@@ -22,7 +22,7 @@ class Rep_sales_planned extends BaseController
     	$salesmanid = $this->input->post("salesmanid");
 
     	if ($salesmanid == 'null' || !$salesmanid) {
-    		echo json_encode(['status' => false, 'message' => 'TPE ID is empty']);
+    		echo json_encode(['status' => false, 'message' => 'MEDREP ID is empty']);
     		return;
     	}	
 
@@ -30,7 +30,7 @@ class Rep_sales_planned extends BaseController
     	$salesSales = $this->rep_sales_planned->getSales($salesmanid);
 
     	if (!$salesSales) {
-    		echo json_encode(['status' => false, 'message' => 'TPE not found']);
+    		echo json_encode(['status' => false, 'message' => 'MEDREP not found']);
     		return;
     	}
 

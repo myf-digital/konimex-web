@@ -1,6 +1,6 @@
 (function () {
   const common = new Common();
-  common.setTitle("TPE");
+  common.setTitle("MEDREP");
   // declare dom
   let uiForm = $("#fm-karyawan");
   let uiBtnCancel = $("#btn-cancel-form");

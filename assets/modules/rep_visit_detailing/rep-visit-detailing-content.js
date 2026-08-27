@@ -45,8 +45,16 @@
             width: 100,
           },
           {
+            field: "salesmanid",
+            title: "MEDREP ID",
+            halign: "left",
+            align: "left",
+            sortable: "true",
+            width: 100,
+          },
+          {
             field: "nama_salesman",
-            title: "TPE",
+            title: "MEDREP",
             halign: "left",
             align: "left",
             sortable: "true",

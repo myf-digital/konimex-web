@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        TPE <small>Control panel</small>
+        MEDREP <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> TPE</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> MEDREP</a></li>
         <li class="active">Content</li>
     </ol>
 </section>
@@ -33,16 +33,16 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<!-- TPE Details Table -->
+				<!-- MEDREP Details Table -->
 				<table class="table table-striped table-striped" style="margin-bottom: 20px;">
 					<tr>
-						<th width="15%">TPE ID</th>
+						<th width="15%">MEDREP ID</th>
 						<td width="35%" id="detail-salesman-id">-</td>
-						<th>Tipe TPE</th>
+						<th>Tipe MEDREP</th>
 						<td id="detail-salesman-tipe">-</td>
 					</tr>
 					<tr>
-						<th width="15%">Nama TPE</th>
+						<th width="15%">Nama MEDREP</th>
 						<td width="35%" id="detail-salesman-name">-</td>
 						<th>Leader</th>
 						<td id="detail-salesman-supervisor">-</td>

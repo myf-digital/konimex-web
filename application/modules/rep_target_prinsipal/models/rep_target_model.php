@@ -109,7 +109,7 @@ class Rep_target_model extends CI_Model {
 		$data = $this->db->get()->result_array();
 		
 		$return   ='<select name="salesmanid" id="salesmanid" class="chosen-select">';
-		$return .='<option value="">--TPE--</option>';
+		$return .='<option value="">--MEDREP--</option>';
 		foreach ($data as $value) {
 			$return .='<option value="'.$value['salesmanid'].'">'.$value['nama_salesman'].'</option>';
 		} 		

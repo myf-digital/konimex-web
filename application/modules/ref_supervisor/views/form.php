@@ -25,8 +25,8 @@
                                 <select id="siteid-id" name="siteid" class="form-control" placeholder="SiteID"></select>
 							</div>
 							<div class="form-group col-md-3">
-								<label for="salesmanid">TPE ID</label>
-								<input name="salesmanid" class="form-control" value="" placeholder="TPE ID">
+								<label for="salesmanid">MEDREP ID</label>
+								<input name="salesmanid" class="form-control" value="" placeholder="MEDREP ID">
 							</div>
 							<div class="form-group col-md-6">
 								<label for="password">Password</label>
@@ -53,8 +53,8 @@
                                 <select id="aktif-id" name="aktif" class="form-control" placeholder="Active/Not Active"></select>
 							</div>
 							<div class="form-group  col-md-3">
-								<label for="tipe_sales">Tipe TPE</label>
-                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="TPE Type"></select>
+								<label for="tipe_sales">Tipe MEDREP</label>
+                                <select id="tipe_sales-id" name="tipe_sales" class="form-control" placeholder="MEDREP Type"></select>
 							</div>
 							<!--<div class="form-group">
 								<label for="nilai_sales">Nilai Sales</label>

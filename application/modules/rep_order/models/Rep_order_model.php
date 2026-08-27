@@ -390,8 +390,8 @@ class Rep_order_model extends CI_Model
                     <th style="width: 200px">Customer Name </th>
                     <th style="width: 600px;">No Bill</th>
                     <th style="width: 600px;">No Faktur / Bill Doc</th>
-                    <th style="width: 200px;">TPE Name</th>
-                    <th style="width: 150px;">TPE Type</th>
+                    <th style="width: 200px;">MEDREP Name</th>
+                    <th style="width: 150px;">MEDREP Type</th>
                     <th style="width: 200px; text-align: right;" >Bill Value</th>
                     <th style="width: 200px; text-align: right;" >Pay</th>
                     <th style="width: 200px; text-align: right;" >Total</th>

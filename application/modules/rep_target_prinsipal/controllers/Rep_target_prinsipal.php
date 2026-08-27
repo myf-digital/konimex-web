@@ -108,8 +108,8 @@ class Rep_target_prinsipal extends CI_Controller {
 				<tr>
 					<th>No</th>
 					<th>Periode</th>
-					<th>TPE ID</th>
-					<th>Nama TPE</th>
+					<th>MEDREP ID</th>
+					<th>Nama MEDREP</th>
 					<th>Prinsipal ID</th>
 					<th>Nama Prinsipal</th>
 					<th>Target</th>

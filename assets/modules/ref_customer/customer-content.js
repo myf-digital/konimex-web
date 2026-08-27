@@ -209,30 +209,61 @@
         showLocation(rows[index]);
       }
     });
+
+    panel.off("click", ".btn-show-more-user").on("click", ".btn-show-more-user", function (e) {
+      e.preventDefault();
+      let index = parseInt($(this).attr("data-index"));
+      if (isNaN(index)) {
+        const tr = $(this).closest("tr.datagrid-row");
+        index = parseInt(tr.attr("datagrid-row-index"));
+      }
+      const rows = uiTbl.datagrid("getRows");
+      if (!isNaN(index) && rows[index]) {
+        showAllUsers(rows[index]);
+      }
+    });
   }
 
   function formatterListProfessional(val, row, index) {
     if (val) {
-      let listProfessional = val.split("||");
-      let chunks = [];
-      for (let i = 0; i < listProfessional.length; i += 5) {
-        chunks.push(listProfessional.slice(i, i + 5));
+      let listProfessional = val
+        .split("||")
+        .map(function (item) {
+          return item.trim();
+        })
+        .filter(function (item) {
+          return item !== "";
+        });
+
+      if (listProfessional.length === 0) {
+        return "";
       }
 
-      let result =
-        '<div style="display: flex; gap: 15px; align-items: start;">';
-      chunks.forEach((chunk, chunkIdx) => {
-        let startNum = chunkIdx * 5 + 1;
-        result +=
-          '<ol start="' +
-          startNum +
-          '" style="margin: 0; padding-left: 15px; width: 320px; min-width: 320px; max-width: 320px; white-space: normal; word-break: break-word;">';
-        for (const professional of chunk) {
+      if (listProfessional.length <= 4) {
+        let result =
+          '<ol style="margin: 0; padding-left: 15px; width: 320px; min-width: 320px; max-width: 320px; white-space: normal; word-break: break-word;">';
+        for (const professional of listProfessional) {
           result += "<li>" + professional + "</li>";
         }
         result += "</ol>";
-      });
-      result += "</div>";
+        return result;
+      }
+
+      let firstFour = listProfessional.slice(0, 4);
+      let result =
+        '<ol style="margin: 0; padding-left: 15px; width: 320px; min-width: 320px; max-width: 320px; white-space: normal; word-break: break-word;">';
+      for (const professional of firstFour) {
+        result += "<li>" + professional + "</li>";
+      }
+      result += "</ol>";
+      result +=
+        '<div style="margin-top: 5px;">' +
+        '<button type="button" class="btn btn-xs btn-primary btn-show-more-user" data-index="' +
+        index +
+        '">' +
+        '<i class="fa fa-list"></i> Lihat Selengkapnya' +
+        "</button>" +
+        "</div>";
       return result;
     }
     return "";
@@ -288,7 +319,7 @@
   }
 
   function updateRow(val) {
-    common.setCookie("module.customer.update", val);
+    common.setCookie("module.customer.update", { customerid: val.customerid });
     common.direct("ref_customer/form");
   }
 
@@ -430,6 +461,75 @@
 
       $("#modalMaps").modal("show");
     }, 500);
+  }
+
+  function ensureModalUser() {
+    if ($("#modalUser").length === 0) {
+      const modalHtml = `
+        <div class="modal fade" id="modalUser" tabindex="-1" role="dialog" aria-labelledby="myModalUserLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalUserLabel">Daftar User</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modalUserContent"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      `;
+      $("body").append(modalHtml);
+    }
+  }
+
+  function showAllUsers(val) {
+    if (!val || !val.list_professional) return;
+    ensureModalUser();
+
+    let listProfessional = val.list_professional
+      .split("||")
+      .map(function (item) {
+        return item.trim();
+      })
+      .filter(function (item) {
+        return item !== "";
+      });
+
+    if (listProfessional.length === 0) return;
+
+    let outletName = val.nama_customer || "Outlet";
+    $("#myModalUserLabel").html(
+      `Daftar User — <b>${outletName}</b> <span class="badge bg-green" style="margin-left: 8px;">Total: ${listProfessional.length} User</span>`
+    );
+
+    let contentHtml = `
+      <div style="max-height: 420px; overflow-y: auto; padding: 5px;">
+        <ol class="list-group" style="padding-left: 0; margin-bottom: 0;">
+    `;
+
+    listProfessional.forEach(function (user, idx) {
+      contentHtml += `
+        <li class="list-group-item" style="display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-left: 3px solid #3c8dbc; margin-bottom: 5px; border-radius: 3px;">
+          <span class="badge bg-blue" style="font-size: 12px; min-width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;">${idx + 1}</span>
+          <span style="font-size: 13px; color: #333; word-break: break-word;">${user}</span>
+        </li>
+      `;
+    });
+
+    contentHtml += `
+        </ol>
+      </div>
+    `;
+
+    $("#modalUserContent").html(contentHtml);
+    $("#modalUser").modal("show");
   }
 
   function viewGff(val) {
