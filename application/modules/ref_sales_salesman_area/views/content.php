@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Sales Medrep Area <small>Control panel</small>
+        Sales TPE Area <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Sales Medrep Area</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Sales TPE Area</a></li>
         <li class="active">Content</li>
     </ol>
 </section>

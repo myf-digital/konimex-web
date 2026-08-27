@@ -135,8 +135,8 @@ class Setup_dub extends BaseController
         $spreadsheet = new Spreadsheet();
         $header = [
             'REQ NO',
-            'ID MEDREP',
-            'NAMA MEDREP',
+            'ID TPE',
+            'NAMA TPE',
             'PERIODE',
             'KETERANGAN',
             'STATUS',

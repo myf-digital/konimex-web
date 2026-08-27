@@ -3,7 +3,7 @@
   const common = new Common();
   const commonGrid = new CommonGrid();
   // update title
-  common.setTitle("Absen Medrep");
+  common.setTitle("Absen TPE");
   // ui components
   let uiTbl = $("#tbl");
 
@@ -23,7 +23,7 @@
 
   function initializeGrid() {
     let option = {
-      title: "Absen Medrep",
+      title: "Absen TPE",
       toolbar: toolbar(),
       url: common.baseURL("ref_absen_salesman/load"),
       pageNumber: 1,

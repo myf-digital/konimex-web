@@ -104,7 +104,7 @@ class Rep_absensi extends BaseController
 		$html .= '<tr>';
         $html .= '<th class="text-center" style="width: 50px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
-		$html .= '<th style="width: 150px">User Medrep</th>';
+		$html .= '<th style="width: 150px">User TPE</th>';
 		$html .= '<th style="width: 150px">Area</th>';
 		$html .= '<th style="width: 150px">Start Time</th>';
 		$html .= '<th style="width: 120px">Foto Checkin</th>';
@@ -167,7 +167,7 @@ class Rep_absensi extends BaseController
                 function preview_image(parma,image,ket) {
                     let tempFile = [{
                         href: image,
-                        title: `MEDREP: ${parma} <br /> Keterangan: ${ket}`
+                        title: `TPE: ${parma} <br /> Keterangan: ${ket}`
                     }];
                     $.fancybox.open(tempFile, {
                         helpers: {
@@ -254,10 +254,10 @@ class Rep_absensi extends BaseController
         $this->load->library('excel');
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('A1', 'List Report Absensi Medrep')
+            ->setCellValue('A1', 'List Report Absensi TPE')
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
-            ->setCellValue('C2', 'User Medrep')
+            ->setCellValue('C2', 'User TPE')
             ->setCellValue('D2', 'Area')
             ->setCellValue('E2', 'Start Time')
             ->setCellValue('F2', 'Foto Checkin')

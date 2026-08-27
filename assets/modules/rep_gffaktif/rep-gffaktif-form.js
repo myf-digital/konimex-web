@@ -1,6 +1,6 @@
 (function () {
   const common = new Common();
-  common.setTitle("Report MEDREP Aktif");
+  common.setTitle("Report TPE Aktif");
   // declare dom
   let uiForm = $("#fm-report-promo");
   let uiBtnPreview = $("#btn-preview-form");

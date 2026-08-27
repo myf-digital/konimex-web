@@ -57,10 +57,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        MEDREP Aktif <small>Control panel</small>
+        TPE Aktif <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> MEDREP Aktif</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> TPE Aktif</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -71,7 +71,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Report MEDREP Aktif</h3>
+                    <h3 class="box-title">Report TPE Aktif</h3>
                 </div>
 
                 <form id="fm-report_promo" role="form" method="post">

@@ -302,12 +302,12 @@ class Rep_productivity_model extends CI_Model
                         ) 
                         ELSE 0 
                     END
-                ) AS 'MEDREP Aktif', 
+                ) AS 'TPE Aktif', 
                 (
                     SELECT COUNT(1) 
                     FROM t_sales_absensi 
                     WHERE status = 'H' AND salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
-                ) AS 'MEDREP Hadir',
+                ) AS 'TPE Hadir',
                 (
                     SELECT COUNT(1) 
                     FROM t_sales_absensi 

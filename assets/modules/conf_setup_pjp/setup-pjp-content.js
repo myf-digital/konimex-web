@@ -65,7 +65,7 @@
         [
           {
             field: "salesmanid",
-            title: "USER MEDREP",
+            title: "USER TPE",
             halign: "center",
             align: "left",
             sortable: "true",
@@ -73,7 +73,7 @@
           },
           {
             field: "gffname",
-            title: "NAMA MEDREP",
+            title: "NAMA TPE",
             halign: "center",
             align: "left",
             sortable: "true",
@@ -81,7 +81,7 @@
           },
           {
             field: "customerid",
-            title: "MEDREP ID OUTLET",
+            title: "TPE ID OUTLET",
             halign: "center",
             align: "left",
             sortable: "true",
@@ -97,7 +97,7 @@
           },
           {
             field: "nama_customer",
-            title: "MEDREP OUTLET NAME",
+            title: "TPE OUTLET NAME",
             halign: "center",
             align: "left",
             sortable: "true",

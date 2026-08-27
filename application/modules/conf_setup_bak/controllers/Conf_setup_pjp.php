@@ -83,7 +83,7 @@ class Conf_setup_pjp extends BaseController
         ini_set('max_execution_time', '60');
         
         if ($salesmanid=='' or empty($salesmanid) or $salesmanid=='null'){
-            $filename='All_MEDREP';
+            $filename='All_TPE';
             if ($restrict_level=='4'){
                 $strquery = " where a.salesmanid in (select salesmanid from m_sales_salesman where subareaid in (select distinct b.subareaid from  
                                                     app_resource a left join app_restrict_location b on a.resource_id=b.resource_id 
@@ -130,9 +130,9 @@ class Conf_setup_pjp extends BaseController
 
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu')
-                        ->setCellValue('A2', 'USER MEDREP')
-                        ->setCellValue('B2', 'KE USER MEDREP')
-                        ->setCellValue('C2', 'NAMA MEDREP')
+                        ->setCellValue('A2', 'USER TPE')
+                        ->setCellValue('B2', 'KE USER TPE')
+                        ->setCellValue('C2', 'NAMA TPE')
                         ->setCellValue('D2', 'POSITION')
                         ->setCellValue('E2', 'ID OUTLET')
                         ->setCellValue('F2', 'KODE OUTLET')

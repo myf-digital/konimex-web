@@ -99,8 +99,8 @@ class Rep_gffaktif extends BaseController
 		$html .= '<tbody>';
 		$html .= '<tr>';
 		$html .='<th rowspan="2" style="text-align:center;width: 80px">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;width: 200px">MEDREP</th>';
-		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama MEDREP</th>';
+		$html .='<th rowspan="2" style="text-align:center;width: 200px">TPE</th>';
+		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama TPE</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Area</th>';
@@ -304,8 +304,8 @@ class Rep_gffaktif extends BaseController
 		$html .= '<thead>';
 		$html .= '<tr>';
 		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">MEDREP</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama MEDREP</th>';
+		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">TPE</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama TPE</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area</th>';
@@ -454,7 +454,7 @@ class Rep_gffaktif extends BaseController
 		$html .= '</tbody>';
 		$html .= '</table></div></div>';
 
-		$filename = "Report_MEDREP_Aktif_".$periodemonth.".xls";
+		$filename = "Report_TPE_Aktif_".$periodemonth.".xls";
         /*header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header("Content-Disposition: attachment;filename=$filename");
         header('Cache-Control: max-age=0');
@@ -498,7 +498,7 @@ class Rep_gffaktif extends BaseController
 
 		$spreadsheet = new Spreadsheet();
 		$nb = ['Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti'];
-		$header = ['No', 'Medrep', 'Medrep Name', 'Area', 'Sub Area'];
+		$header = ['No', 'TPE', 'TPE Name', 'Area', 'Sub Area'];
 
 		$headerDate = [];
 		$headerDay = [];
@@ -597,7 +597,7 @@ class Rep_gffaktif extends BaseController
 		$sheet = $spreadsheet->getActiveSheet();
 
 		$sheet->setTitle('Non Aktif');
-		$header = ['No', 'Tanggal', 'Medrep', 'Medrep Name', 'Status', 'Keterangan', 'Photo'];
+		$header = ['No', 'Tanggal', 'TPE', 'TPE Name', 'Status', 'Keterangan', 'Photo'];
 		$sheet->fromArray($nb,NULL,'A1');
 		$sheet->fromArray($header,NULL,'A2');
 
@@ -693,8 +693,8 @@ class Rep_gffaktif extends BaseController
         $sheetAttendance = $objPHPExcel->setActiveSheetIndex(0);
 		$sheetAttendance->setTitle('Attendance');
         $sheetAttendance->setCellValue('A1', 'No.')
-            ->setCellValue('B1', 'Medrep')
-            ->setCellValue('C1', 'Medrep Name')
+            ->setCellValue('B1', 'TPE')
+            ->setCellValue('C1', 'TPE Name')
             ->setCellValue('D1', 'Area');
         $sheetAttendance->mergeCells('A1:A2');
         $sheetAttendance->mergeCells('B1:B2');

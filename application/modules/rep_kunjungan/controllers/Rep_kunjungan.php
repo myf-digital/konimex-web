@@ -110,7 +110,7 @@ class Rep_kunjungan extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
-		$html .= '<th style="width: 150px">User Medrep</th>';
+		$html .= '<th style="width: 150px">User TPE</th>';
 		$html .= '<th style="width: 150px">Outlet ID</th>';
 		$html .= '<th style="width: 200px">Outlet Name</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';
@@ -169,7 +169,7 @@ class Rep_kunjungan extends BaseController
                 function preview_image(parma,image,ket) {
                     let tempFile = [{
                         href: image,
-                        title: `MEDREP: ${parma} <br /> Keterangan: ${ket}`
+                        title: `TPE: ${parma} <br /> Keterangan: ${ket}`
                     }];
                     $.fancybox.open(tempFile, {
                         helpers: {
@@ -264,7 +264,7 @@ class Rep_kunjungan extends BaseController
             ->setCellValue('A1', 'List Report Kunjungan')
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
-            ->setCellValue('C2', 'User Medrep')
+            ->setCellValue('C2', 'User TPE')
             ->setCellValue('D2', 'Outlet ID')
             ->setCellValue('E2', 'Outlet Name')
             ->setCellValue('F2', 'Alamat')

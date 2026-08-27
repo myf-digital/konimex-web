@@ -68,7 +68,7 @@
     });
 
     uiSalesmanId.select2({
-      placeholder: "Pilih Medrep",
+      placeholder: "Pilih TPE",
       allowClear: true,
     });
 
@@ -123,7 +123,7 @@
       function (res) {
         uiSalesmanId.empty();
         uiSalesmanId.select2({
-          placeholder: "Pilih Medrep",
+          placeholder: "Pilih TPE",
           allowClear: true,
           data: $.map(res.result, function (o) {
             o.id = o.salesmanid;

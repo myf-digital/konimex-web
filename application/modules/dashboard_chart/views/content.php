@@ -40,8 +40,8 @@
             <div class="box box-success">
                 <div class="box-header with-border">
                     <div class="form-group col-md-3">
-                        <label for="salesmanid">MEDREP</label>
-                        <select id="salesmanid" name="salesmanid[]" class="form-control" placeholder="Select MEDREP" multiple="multiple">
+                        <label for="salesmanid">TPE</label>
+                        <select id="salesmanid" name="salesmanid[]" class="form-control" placeholder="Select TPE" multiple="multiple">
                         </select>
                     </div>
                     <div class="form-group col-md-3">
@@ -100,7 +100,7 @@
         </div>
         <div class="col-md-6 col-sm-12">
             <h4 class="section-title">
-                Performance MEDREP
+                Performance TPE
                 <span id="labelPerformance"></span>
             </h4>
             <div class="dashboard-card mb-4">
@@ -113,7 +113,7 @@
     <div class="row mt-3r">
         <div class="col-md-6 col-sm-12">
             <h4 class="section-title">
-                Preseni MEDREP
+                Preseni TPE
                 <span id="labelPresensi"></span>
             </h4>
             <div class="dashboard-card mb-4">
@@ -124,7 +124,7 @@
         </div>
         <div class="col-md-6 col-sm-12">
             <h4 class="section-title">
-                Man Power MEDREP
+                Man Power TPE
                 <span id="labelMedrepCoverage"></span>
             </h4>
             <div class="dashboard-card mb-4">

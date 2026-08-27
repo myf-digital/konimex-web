@@ -91,7 +91,7 @@ class Rep_dokumentasi extends BaseController
 		$html .= '<th style="width: 200px">Foto Selling Out I</th>';
 		$html .= '<th style="width: 200px">Foto Selling Out II</th>';
         $html .= '<th style="width: 200px">Foto OOS</th>';
-		$html .= '<th style="width: 300px">User MEDREP</th>';
+		$html .= '<th style="width: 300px">User TPE</th>';
         $html .= '</tr>';
         $html .= '</tbody>';
         $html .= '</table>';
@@ -280,7 +280,7 @@ class Rep_dokumentasi extends BaseController
                     ->setCellValue('L2', 'Foto Selling Out I')
                     ->setCellValue('M2', 'Foto Selling Out II')
                     ->setCellValue('N2', 'Foto OOS')
-                    ->setCellValue('O2', 'User MEDREP')
+                    ->setCellValue('O2', 'User TPE')
                     ;
         
                     $i = 3;
@@ -553,7 +553,7 @@ class Rep_dokumentasi extends BaseController
                     ->setCellValue('G2', 'Alamat')
                     ->setCellValue('H2', 'Kota')
                     ->setCellValue('I2', 'Foto OOS')
-                    ->setCellValue('J2', 'User MEDREP')
+                    ->setCellValue('J2', 'User TPE')
                     ;
         
                     $i = 3;

@@ -101,8 +101,8 @@ class Rep_gffaktif extends BaseController
 		$html .= '<tbody>';
 		$html .= '<tr>';
 		$html .='<th rowspan="2" style="text-align:center;width: 80px">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;width: 200px">MEDREP</th>';
-		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama MEDREP</th>';
+		$html .='<th rowspan="2" style="text-align:center;width: 200px">TPE</th>';
+		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama TPE</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;width: 200px">Area FC</th>';
@@ -302,8 +302,8 @@ class Rep_gffaktif extends BaseController
 		$html .= '<thead>';
 		$html .= '<tr>';
 		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">MEDREP</th>';
-		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama MEDREP</th>';
+		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">TPE</th>';
+		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama TPE</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Position</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area FC</th>';
@@ -452,7 +452,7 @@ class Rep_gffaktif extends BaseController
 		$html .= '</tbody>';
 		$html .= '</table></div></div>';
 
-		$filename = "Report_MEDREP_Aktif_".$periodemonth.".xls";
+		$filename = "Report_TPE_Aktif_".$periodemonth.".xls";
         /*header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header("Content-Disposition: attachment;filename=$filename");
         header('Cache-Control: max-age=0');
@@ -484,7 +484,7 @@ class Rep_gffaktif extends BaseController
         $idjabatan = $this->uri->segment('5');
         $usersession = $this->uri->segment('6');
 
-		$filename = "Report_MEDREP_Aktif_".$start.".xlsx";
+		$filename = "Report_TPE_Aktif_".$start.".xlsx";
         
         $this->load->library('excel');
 
@@ -493,8 +493,8 @@ class Rep_gffaktif extends BaseController
         $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A1', 'Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti')
                     ->setCellValue('A2', 'No.')
-                    ->setCellValue('B2', 'MEDREP')
-                    ->setCellValue('C2', 'Nama MEDREP')
+                    ->setCellValue('B2', 'TPE')
+                    ->setCellValue('C2', 'Nama TPE')
                     ->setCellValue('D2', 'Position')
                     ->setCellValue('E2', 'Regional')
                     ->setCellValue('F2', 'Area FC')

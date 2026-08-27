@@ -108,8 +108,8 @@ class Req_pjp_daily extends BaseController
         $objPHPExcelActive->getStyle('A1:I1')->getFont()->setBold(true);
         $objPHPExcelActive->setCellValue('A1', 'Keterangan Week Active '.$weekaktif)
             ->setCellValue('A3', 'Periode')
-            ->setCellValue('B3', 'Kode Medrep')
-            ->setCellValue('C3', 'Nama Medrep')
+            ->setCellValue('B3', 'Kode TPE')
+            ->setCellValue('C3', 'Nama TPE')
             ->setCellValue('D3', 'Status')
             ->setCellValue('E3', 'Reason')
             ->setCellValue('F3', 'Keterangan')

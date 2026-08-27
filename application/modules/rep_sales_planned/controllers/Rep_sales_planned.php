@@ -45,7 +45,7 @@ class Rep_sales_planned extends BaseController
     	<table class="table table-bordered table-condensed report-table">
 			<thead>
 				<tr>
-					<th style="white-space: nowrap;" colspan="2">MEDREP</th>
+					<th style="white-space: nowrap;" colspan="2">TPE</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -110,7 +110,7 @@ class Rep_sales_planned extends BaseController
     	$html .= '<table class="table table-bordered table-condensed report-table">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-		$html .= '<th style="white-space: nowrap;" colspan="2">MEDREP</th>';
+		$html .= '<th style="white-space: nowrap;" colspan="2">TPE</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';
 		$html .= '<tbody">';
@@ -207,7 +207,7 @@ class Rep_sales_planned extends BaseController
 
 		$spreadsheet = new Spreadsheet();
 		$spreadsheet->getActiveSheet()->setTitle('Report Planned');
-		$row1 = ['MEDREP'];
+		$row1 = ['TPE'];
 		$row2 = ['Nama', $salesSales->salesmanid. ' - '.$salesSales->nama_salesman];
 		$row3 = ['Posisi', $salesSales->posisi];
 		$row4 = ['Supervisor', $supervisor];
@@ -267,7 +267,7 @@ class Rep_sales_planned extends BaseController
 		];
 		$spreadsheet->getActiveSheet()->getStyle('A10:E10')->applyFromArray($headerStyle);
 
-		// Style MEDREP header cell A1:B1
+		// Style TPE header cell A1:B1
 		$spreadsheet->getActiveSheet()->mergeCells('A1:B1');
 		$spreadsheet->getActiveSheet()->getStyle('A1:B1')->applyFromArray($headerStyle);
 
@@ -285,7 +285,7 @@ class Rep_sales_planned extends BaseController
 			$spreadsheet->getActiveSheet()->getStyle('A10:E' . $lastRow)->applyFromArray($borderStyle);
 		}
 
-		// Apply borders to the MEDREP Info box (A1:B8)
+		// Apply borders to the TPE Info box (A1:B8)
 		$spreadsheet->getActiveSheet()->getStyle('A1:B8')->applyFromArray($borderStyle);
 
 		// Style Info Label columns (A2:A8) with soft pink background and bold font

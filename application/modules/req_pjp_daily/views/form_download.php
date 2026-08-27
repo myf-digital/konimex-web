@@ -30,7 +30,7 @@
 
 <div id="alertnotif" class="alert warning" style="display:none;">
   <span class="closebtn">&times;</span>  
-  <strong></strong> Medrep harus di isi...
+  <strong></strong> TPE harus di isi...
 </div>
 
 <script>

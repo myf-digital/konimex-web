@@ -253,7 +253,7 @@ class Drc_dashboard extends BaseController
 		//echo $this->db->last_query();
 		$dataatt = $qattnat->result_array();
 
-		##query get performance MEDREP national
+		##query get performance TPE national
 		$qpfgffnat = $this->db->query(" 
 										select '_PJP' header, 
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) MD,
@@ -979,7 +979,7 @@ class Drc_dashboard extends BaseController
 		}
 		
 		$qattreg = $this->db->query(" 
-									select x.regionalid, x.nama_regional, 'MEDREP Aktif' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
+									select x.regionalid, x.nama_regional, 'TPE Aktif' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid$strquery) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid$strquery) spg,
@@ -992,7 +992,7 @@ class Drc_dashboard extends BaseController
 									group by  a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area 
 									) x group by x.regionalid, x.nama_regional
 									union all
-									select x.regionalid, x.nama_regional, 'MEDREP Hadir' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
+									select x.regionalid, x.nama_regional, 'TPE Hadir' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
 									(select e.regionalid, e.nama_regional,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
@@ -1052,7 +1052,7 @@ class Drc_dashboard extends BaseController
 				$html .= '</tr>';
 				}
 			}
-			if ($vreg['item']=='MEDREP Aktif'){
+			if ($vreg['item']=='TPE Aktif'){
 					$html .= '<tr>';
 					$html .= '<td style="white-space: nowrap;"><a href="#" id="hcnational" onclick="open_preview_att_perregional_area('.$vreg['regionalid'].',\''.$vreg['nama_regional'].'\');">'.$vreg['nama_regional'].'</a></td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['item'].'</td>';
@@ -1069,7 +1069,7 @@ class Drc_dashboard extends BaseController
 					$quotasfmtreg=$vreg['jmlsfmt'];
 					$quotasfgtreg=$vreg['jmlsfgt'];
 
-				}else if ($vreg['item']=='MEDREP Hadir'){
+				}else if ($vreg['item']=='TPE Hadir'){
 					$html .= '<tr>';
 					$html .= '<td style="white-space: nowrap;"></td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['item'].'</td>';
@@ -1238,7 +1238,7 @@ class Drc_dashboard extends BaseController
 			}
 		}
 		
-		##query get performance MEDREP regional
+		##query get performance TPE regional
 		$qpfgffreg = $this->db->query(" select * from (
 										select e.regionalid,e.nama_regional,'PJP' header, '1' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
@@ -1868,7 +1868,7 @@ class Drc_dashboard extends BaseController
 		}
 
 		$qattreg = $this->db->query(" 
-									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, 'MEDREP Aktif' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
+									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, 'TPE Aktif' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
@@ -1881,7 +1881,7 @@ class Drc_dashboard extends BaseController
 									group by  a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area 
 									) x group by x.regionalid, x.nama_regional, x.areaid, x.nama_area
 									union all
-									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, 'MEDREP Hadir' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
+									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, 'TPE Hadir' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
 									(select e.regionalid, e.nama_regional, d.areaid, d.nama_area,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
@@ -1941,7 +1941,7 @@ class Drc_dashboard extends BaseController
 				$html .= '</tr>';
 				}
 			}
-			if ($vreg['item']=='MEDREP Aktif'){
+			if ($vreg['item']=='TPE Aktif'){
 					$html .= '<tr>';
 					$html .= '<td style="white-space: nowrap;"><a href="#" id="attnational" onclick="open_preview_att_perregional_area_city('.$vreg['regionalid'].',\''.$vreg['nama_regional'].'\','.$vreg['areaid'].',\''.$vreg['nama_area'].'\');">'.$vreg['nama_area'].'</a></td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['item'].'</td>';
@@ -1958,7 +1958,7 @@ class Drc_dashboard extends BaseController
 					$quotasfmtreg=$vreg['jmlsfmt'];
 					$quotasfgtreg=$vreg['jmlsfgt'];
 
-				}else if ($vreg['item']=='MEDREP Hadir'){
+				}else if ($vreg['item']=='TPE Hadir'){
 					$html .= '<tr>';
 					$html .= '<td style="white-space: nowrap;"></td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['item'].'</td>';
@@ -2142,7 +2142,7 @@ class Drc_dashboard extends BaseController
 			}
 		}
 		
-		##query get performance MEDREP regional
+		##query get performance TPE regional
 		$qpfgffreg = $this->db->query(" select * from (
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,'PJP' header, '1' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
@@ -2758,7 +2758,7 @@ class Drc_dashboard extends BaseController
 		}
 
 		$qattreg = $this->db->query(" 
-									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, x.subareaid, x.city, 'MEDREP Aktif' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
+									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, x.subareaid, x.city, 'TPE Aktif' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
 									(select a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area city,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='MERCHANDISER' and aktif=1 and subareaid=c.subareaid) md,
 									(select if(count(1)>0,count(1)$strpengali,count(1)) from m_sales_salesman where tipe_sales='SPG' and aktif=1 and subareaid=c.subareaid) spg,
@@ -2771,7 +2771,7 @@ class Drc_dashboard extends BaseController
 									group by  a.regionalid,a.nama_regional, b.areaid, b.nama_area, c.subareaid, c.nama_area 
 									) x group by x.regionalid, x.nama_regional, x.areaid, x.nama_area, x.subareaid, x.city
 									union all
-									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, x.subareaid, x.city, 'MEDREP Hadir' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
+									select x.regionalid, x.nama_regional, x.areaid, x.nama_area, x.subareaid, x.city, 'TPE Hadir' item, sum(x.md) jmlmd, sum(x.spg) jmlspg, sum(x.sfmt) jmlsfmt, sum(x.sfgt) jmlsfgt from
 									(select e.regionalid, e.nama_regional, d.areaid, d.nama_area, c.subareaid, c.nama_area city,
 									case when b.tipe_sales='MERCHANDISER' then 1 else 0 end md,
 									case when b.tipe_sales='SPG' then 1 else 0 end spg,
@@ -2831,7 +2831,7 @@ class Drc_dashboard extends BaseController
 				$html .= '</tr>';
 				}
 			}
-			if ($vreg['item']=='MEDREP Aktif'){
+			if ($vreg['item']=='TPE Aktif'){
 					$html .= '<tr>';
 					$html .= '<td style="white-space: nowrap;"><a href="#" id="attnational" onclick="open_att_detail_regional_area_city_gff('.$vreg['regionalid'].',\''.$vreg['nama_regional'].'\','.$vreg['areaid'].',\''.$vreg['nama_area'].'\','.$vreg['subareaid'].',\''.$vreg['city'].'\');">'.$vreg['city'].'</a></td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['item'].'</td>';
@@ -2848,7 +2848,7 @@ class Drc_dashboard extends BaseController
 					$quotasfmtreg=$vreg['jmlsfmt'];
 					$quotasfgtreg=$vreg['jmlsfgt'];
 
-				}else if ($vreg['item']=='MEDREP Hadir'){
+				}else if ($vreg['item']=='TPE Hadir'){
 					$html .= '<tr>';
 					$html .= '<td style="white-space: nowrap;"></td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['item'].'</td>';
@@ -3017,7 +3017,7 @@ class Drc_dashboard extends BaseController
 			}
 		}
 		
-		##query get performance MEDREP regional
+		##query get performance TPE regional
 		$qpfgffreg = $this->db->query(" select * from (
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city, 'PJP' header, '1' as _order,
 												sum(case when b.tipe_sales='MERCHANDISER' then a.pjp else 0 end) md,
@@ -3377,7 +3377,7 @@ class Drc_dashboard extends BaseController
 			}
 		}
 		
-		##query get performance MEDREP
+		##query get performance TPE
 		/*$qpfgffreg = $this->db->query(" select * from (
 										select e.regionalid,e.nama_regional,d.areaid,d.nama_area,c.subareaid,c.nama_area city, '1' as _order,
 											b.salesmanid,b.nama_salesman,b.tipe_sales,sum(a.pjp) PJP, 0 CallOnPJP
@@ -3460,7 +3460,7 @@ class Drc_dashboard extends BaseController
 		$dataprfgff = $qpfgffreg->result_array();
 		
 		##generate div per regional
-		$html ='<div class="box-body" id="regional"><h3>Summary Actual Call By MEDREP City '.$city.'</h3>';
+		$html ='<div class="box-body" id="regional"><h3>Summary Actual Call By TPE City '.$city.'</h3>';
 		$html .='<div class="box-footer"><a id="btn-home-form" href="javascript:void(0)" onclick="open_preview_national();" class="btn btn-success fa fa-home"> Home</a>
 				<a id="btn-cancel-form" href="javascript:void(0)" onclick="open_preview_act_call_regional_area_city('.$regionalid.',\''.$nama_regional.'\','.$areaid.',\''.$nama_area.'\');" class="btn btn-warning fa fa-backward"> Back</a></div>';
 		$html .= '<div class="table-responsive col-md-9"><table class="table table-striped table-bordered table-condensed report-table">';
@@ -3468,7 +3468,7 @@ class Drc_dashboard extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="white-space: nowrap;width:40px;" rowspan=2>No.</th>';
         $html .= '<th style="white-space: nowrap;width:200px;" rowspan=2>Position</th>';
-        $html .= '<th style="white-space: nowrap;width:300px;" rowspan=2">User MEDREP</th>';
+        $html .= '<th style="white-space: nowrap;width:300px;" rowspan=2">User TPE</th>';
         $html .= '<th style="white-space: nowrap;text-align:center;" colspan="5">'.date_format($periodedate,"M-Y").'</th>';
 		$html .= '</tr>';
 		$html .= '<th style="white-space: nowrap; width:150px;text-align:center;">PJP</th>';
@@ -3611,7 +3611,7 @@ class Drc_dashboard extends BaseController
 
 		$qattreg = $this->db->query(" 
 									select e.regionalid, e.nama_regional, d.areaid, d.nama_area, c.subareaid, c.nama_area city,b.salesmanid,b.nama_salesman,b.tipe_sales, 
-											date_format('$periodedate','%d')-FLOOR(date_format('$periodedate','%d')/7)-(case when date_format('$periodedate','%d') > 25 then (select jml_libur from setup_jumlah_harilibur where tahun='$tahun' and bulan='$bulan') else 0 end) as 'MEDREP Aktif', count(1) as 'MEDREP Hadir', 
+											date_format('$periodedate','%d')-FLOOR(date_format('$periodedate','%d')/7)-(case when date_format('$periodedate','%d') > 25 then (select jml_libur from setup_jumlah_harilibur where tahun='$tahun' and bulan='$bulan') else 0 end) as 'TPE Aktif', count(1) as 'TPE Hadir', 
 											round((count(1)/(date_format('$periodedate','%d')-FLOOR(date_format('$periodedate','%d')/7)-(case when date_format('$periodedate','%d') > 25 then (select jml_libur from setup_jumlah_harilibur where tahun='$tahun' and bulan='$bulan') else 0 end)))*100,0) as persentasi
 									from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid and b.aktif=1 left join m_area_subarea c on b.subareaid=c.subareaid 
 									left join m_area_areasite d on c.areaid=d.areaid left join m_area_regional e on e.regionalid=d.regionalid 
@@ -3622,7 +3622,7 @@ class Drc_dashboard extends BaseController
 		$datarg = $qattreg->result_array();
 		//echo $this->db->last_query();
 		##generate div per regional
-		$html ='<div class="box-body" id="regional"><h3>Summary Man Power Attendance By MEDREP City '.$city.'</h3>';
+		$html ='<div class="box-body" id="regional"><h3>Summary Man Power Attendance By TPE City '.$city.'</h3>';
 		$html .='<div class="box-footer"><a id="btn-home-form" href="javascript:void(0)" onclick="open_preview_national();" class="btn btn-success fa fa-home"> Home</a>
 				 <a id="btn-cancel-form" href="javascript:void(0)" onclick="open_preview_att_perregional_area_city('.$regionalid.',\''.$nama_regional.'\','.$areaid.',\''.$nama_area.'\');" class="btn btn-warning fa fa-backward"> Back</a></div>';
 		$html .= '<div class="table-responsive col-md-9"><table class="table table-striped table-bordered table-condensed report-table">';
@@ -3630,11 +3630,11 @@ class Drc_dashboard extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="white-space: nowrap;width:40px;" rowspan=2>No.</th>';
         $html .= '<th style="white-space: nowrap;width:200px;" rowspan=2>Position</th>';
-        $html .= '<th style="white-space: nowrap;width:300px;" rowspan=2">User MEDREP</th>';
+        $html .= '<th style="white-space: nowrap;width:300px;" rowspan=2">User TPE</th>';
         $html .= '<th style="white-space: nowrap;text-align:center;" colspan="5">'.date("M-Y",strtotime($periodedate)).'</th>';
 		$html .= '</tr>';
-		$html .= '<th style="white-space: nowrap; width:150px;text-align:center;">MEDREP Aktif</th>';
-		$html .= '<th style="white-space: nowrap; width:150px;text-align:center;">MEDREP Hadir</th>';
+		$html .= '<th style="white-space: nowrap; width:150px;text-align:center;">TPE Aktif</th>';
+		$html .= '<th style="white-space: nowrap; width:150px;text-align:center;">TPE Hadir</th>';
 		$html .= '<th style="white-space: nowrap; width:150px;text-align:center;">%</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';
@@ -3645,8 +3645,8 @@ class Drc_dashboard extends BaseController
 					$html .= '<td style="white-space: nowrap;text-align:right;">'.$i.'</td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['tipe_sales'].'</td>';
 					$html .= '<td style="white-space: nowrap;">'.$vreg['salesmanid'].'-'.$vreg['nama_salesman'].'</td>';
-					$html .= '<td style="white-space: nowrap;text-align:center;">'.number_format($vreg['MEDREP Aktif'], 0, '.', ',').' </td>';
-					$html .= '<td style="white-space: nowrap;text-align:center;">'.number_format($vreg['MEDREP Hadir'], 0, '.', ',').' </td>';
+					$html .= '<td style="white-space: nowrap;text-align:center;">'.number_format($vreg['TPE Aktif'], 0, '.', ',').' </td>';
+					$html .= '<td style="white-space: nowrap;text-align:center;">'.number_format($vreg['TPE Hadir'], 0, '.', ',').' </td>';
 					$html .= '<td style="white-space: nowrap;text-align:center;">'.number_format($vreg['persentasi'], 0, '.', ',').' %</td>';
 					$html .= '</tr>';
 					$i++;
@@ -3769,7 +3769,7 @@ class Drc_dashboard extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="white-space: nowrap;width:40px;" >No.</th>';
         $html .= '<th style="white-space: nowrap;width:100px;" >Position</th>';
-        $html .= '<th style="white-space: nowrap;width:300px;" ">User MEDREP</th>';
+        $html .= '<th style="white-space: nowrap;width:300px;" ">User TPE</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';
 		$html .= '<tbody">';

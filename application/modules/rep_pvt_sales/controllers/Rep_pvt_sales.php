@@ -114,7 +114,7 @@ class Rep_pvt_sales extends CI_Controller {
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>Nama Medrep</th>					
+					<th>Nama TPE</th>					
 					<th>Schedule</th>					
 					<th>Eff Call</th>					
 					<th>Ex Call</th>					

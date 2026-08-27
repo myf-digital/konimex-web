@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Medrep Relationship <small>Control panel</small>
+        TPE Relationship <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Medrep Relationship</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> TPE Relationship</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Medrep Relationship</h3>
+                    <h3 class="box-title">Form TPE Relationship</h3>
                 </div>
                 <form id="fm-salesman-relationship" role="form" method="post">
                     <div class="box-body">

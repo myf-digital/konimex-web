@@ -88,7 +88,7 @@ class Conf_setup_pjp extends BaseController
         ini_set('max_execution_time', '0');
         
         if ($salesmanid=='' or empty($salesmanid) or $salesmanid=='null'){
-            $filename='All_MEDREP';
+            $filename='All_TPE';
             
             $strquery = "";
             if (!empty($restrict_level)) {
@@ -126,13 +126,13 @@ class Conf_setup_pjp extends BaseController
 
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('A1', 'Keterangan hari : 0: Minggu, 1: Senin, 2: Selasa, 3:Rabu, 4:Kamis, 5:Jumat, 6:Sabtu; Week Active '.$weekaktif)
-                        ->setCellValue('A2', 'USER MEDREP')
-                        ->setCellValue('B2', 'KE USER MEDREP')
-                        ->setCellValue('C2', 'NAMA MEDREP')
+                        ->setCellValue('A2', 'USER TPE')
+                        ->setCellValue('B2', 'KE USER TPE')
+                        ->setCellValue('C2', 'NAMA TPE')
                         ->setCellValue('D2', 'POSITION')
-                        ->setCellValue('E2', 'MEDREP ID OUTLET')
+                        ->setCellValue('E2', 'TPE ID OUTLET')
                         ->setCellValue('F2', 'LATEST CUSTOMER NAME')
-                        ->setCellValue('G2', 'MEDREP NAMA OUTLET')
+                        ->setCellValue('G2', 'TPE NAMA OUTLET')
                         ->setCellValue('H2', 'ALAMAT')
                         ->setCellValue('I2', 'CLUSTER')
                         ->setCellValue('J2', 'TIER')

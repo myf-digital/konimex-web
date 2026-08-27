@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Medrep Relationship <small>Control panel</small>
+        TPE Relationship <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Medrep Relationship</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> TPE Relationship</a></li>
         <li class="active">Content</li>
     </ol>
 </section>

@@ -173,7 +173,7 @@
     function loadSalesman() {
         uiSelectSalesman.empty();
         uiSelectSalesman.select2({
-            placeholder: "Select Medrep",
+            placeholder: "Select TPE",
             allowClear: false,
             data: [{
                 id: param.salesmanid, // replace name with the property used for the text

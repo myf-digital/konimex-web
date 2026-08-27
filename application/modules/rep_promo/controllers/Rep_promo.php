@@ -110,7 +110,7 @@ class Rep_promo extends BaseController
 		$html .= '<th style="width: 100px">Tanggal</th>';
 		$html .= '<th style="width: 250px">Promo</th>';
 		$html .= '<th style="width: 100px">Account</th>';
-		$html .= '<th style="width: 150px">User MEDREP</th>';
+		$html .= '<th style="width: 150px">User TPE</th>';
 		$html .= '<th style="width: 80px">Outlet ID</th>';
 		$html .= '<th style="width: 100px">Kode Outlet</th>';
 		$html .= '<th style="width: 250px">Nama Outlet</th>';
@@ -222,7 +222,7 @@ class Rep_promo extends BaseController
 		$html .= '<th style="width: 100px">Tanggal</th>';
 		$html .= '<th style="width: 450px">Promo</th>';
 		$html .= '<th style="width: 150px">Account</th>';
-		$html .= '<th style="width: 300px">User MEDREP</th>';
+		$html .= '<th style="width: 300px">User TPE</th>';
 		$html .= '<th style="width: 100px">Outlet ID</th>';
 		$html .= '<th style="width: 150px">Kode Outlet</th>';
 		$html .= '<th style="width: 200px">Nama Outlet</th>';
@@ -347,7 +347,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('C2', 'Promo')
                     ->setCellValue('D2', 'Type Promo')
                     ->setCellValue('E2', 'Account')
-                    ->setCellValue('F2', 'User MEDREP')
+                    ->setCellValue('F2', 'User TPE')
                     ->setCellValue('G2', 'Outlet ID')
                     ->setCellValue('H2', 'Kode Outlet')
                     ->setCellValue('I2', 'Nama Outlet')
@@ -492,7 +492,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('B2', 'Tanggal')
                     ->setCellValue('C2', 'Promo')
                     ->setCellValue('D2', 'Account')
-                    ->setCellValue('E2', 'User MEDREP')
+                    ->setCellValue('E2', 'User TPE')
                     ->setCellValue('F2', 'Outlet ID')
                     ->setCellValue('G2', 'Kode Outlet')
                     ->setCellValue('H2', 'Nama Outlet')
@@ -652,7 +652,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('C2', 'Promo')
                     ->setCellValue('D2', 'Type Promo')
                     ->setCellValue('E2', 'Account')
-                    ->setCellValue('F2', 'User MEDREP')
+                    ->setCellValue('F2', 'User TPE')
                     ->setCellValue('G2', 'Outlet ID')
                     ->setCellValue('H2', 'Kode Outlet')
                     ->setCellValue('I2', 'Nama Outlet')
@@ -768,7 +768,7 @@ class Rep_promo extends BaseController
                     ->setCellValue('B2', 'Tanggal')
                     ->setCellValue('C2', 'Promo')
                     ->setCellValue('D2', 'Account')
-                    ->setCellValue('E2', 'User MEDREP')
+                    ->setCellValue('E2', 'User TPE')
                     ->setCellValue('F2', 'Outlet ID')
                     ->setCellValue('G2', 'Kode Outlet')
                     ->setCellValue('H2', 'Nama Outlet')

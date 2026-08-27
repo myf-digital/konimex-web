@@ -47,7 +47,7 @@
             ]],
             columns: [[
 				{field:'salesmanid', title:'Salesman', halign: 'center', align: 'left', sortable:"true", width:100},
-				{field:'salesman_name', title:'Nama Medrep', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesman_name', title:'Nama TPE', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'status_label', title:'Status', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'reason', title:'Reason', halign: 'center', align: 'left', sortable:"true", width:100},
 				{field:'keterangan', title:'Keterangan', halign: 'center', align: 'left', sortable:"true", width:200},

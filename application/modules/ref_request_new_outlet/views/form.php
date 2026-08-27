@@ -25,8 +25,8 @@
 						<input name="customerid" type=hidden>
 						<div class="row" style="display: flex; flex-wrap: wrap;">
 							<div class="form-group col-md-4">
-								<label for="salesmanid">MEDREP</label>
-								<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP"></select>
+								<label for="salesmanid">TPE</label>
+								<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
 							</div>
 							<div class="form-group col-md-4">
 								<label for="kode_outlet">Kode Outlet</label>

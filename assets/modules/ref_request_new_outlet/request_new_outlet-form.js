@@ -73,7 +73,7 @@
           required: "Nama outlet wajib diisi.",
         },
         salesmanid: {
-          required: "MEDREP wajib dipilih.",
+          required: "TPE wajib dipilih.",
         },
         regionalid: {
           required: "Regional wajib dipilih.",
@@ -141,7 +141,7 @@
     });
 
     uiSelectSalesman.select2({
-      placeholder: "Select MEDREP",
+      placeholder: "Select TPE",
       allowClear: true,
     });
 
@@ -307,7 +307,7 @@
       function (res) {
         uiSelectSalesman.empty();
         uiSelectSalesman.select2({
-          placeholder: "Select Medrep",
+          placeholder: "Select TPE",
           allowClear: true,
           data: $.map(res.result, function (o) {
             o.id = o.salesmanid; // replace name with the property used for the text

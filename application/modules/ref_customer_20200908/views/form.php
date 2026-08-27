@@ -96,7 +96,7 @@
 								<input name="mcc" class="form-control" placeholder="DC">
 							</div>
 							<div class="form-group col-md-6">
-								<label for="salesmanid">Kode MEDREP - Double Cover <input id="doublecover-id" type = "checkbox" name="doublecover"></label>  
+								<label for="salesmanid">Kode TPE - Double Cover <input id="doublecover-id" type = "checkbox" name="doublecover"></label>  
                                 <select id="salesmanid-id" name="salesmanid[]" class="form-control" placeholder="TPE"></select>
 							</div>
 							<!--<div class="form-group">

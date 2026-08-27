@@ -36,7 +36,7 @@
         alert("Periode harus di isi...!");
       } else if (uiSelectMedrep.val() === null) {
         //uiAlertNotif.show();
-        alert("Medrep harus di isi...!");
+        alert("TPE harus di isi...!");
       } else {
         open_preview();
       }
@@ -48,7 +48,7 @@
         alert("Periode harus di isi...!");
       } else if (uiSelectMedrep.val() === null) {
         //uiAlertNotif.show();
-        alert("Medrep harus di isi...!");
+        alert("TPE harus di isi...!");
       } else {
         save_xls();
       }
@@ -75,13 +75,11 @@
   function setupForm(r1) {
     let rows1 = r1.rows;
     uiSelectMedrep.select2({
-      placeholder: "Select User Medrep",
+      placeholder: "Select User TPE",
       allowClear: true,
       data: $.map(rows1, function (o) {
-        let locationName =
-          o.nama_subarea || o.nama_area || o.nama_regional || "";
-        o.id = o.salesmanid; // replace name with the property used for the text
-        o.text = o.salesmanid + "-" + o.nama_salesman + "-" + locationName; // replace name with the property used for the text
+        o.id = o.salesmanid;
+        o.text = o.salesmanid + " - " + o.nama_salesman;
         return o;
       }),
     });

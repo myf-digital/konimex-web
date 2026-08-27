@@ -87,7 +87,7 @@ class Rep_stock extends BaseController
 		$html .= '<thead">';
 		$html .= '<tr>';
 		$html .= '<th style="white-space: nowrap;">Tanggal</th>';
-		$html .= '<th style="white-space: nowrap;">MEDREP</th>';
+		$html .= '<th style="white-space: nowrap;">TPE</th>';
 		$html .= '<th style="white-space: nowrap;">OutletID</th>';
 		$html .= '<th style="white-space: nowrap;">Kode Outlet</th>';
 		$html .= '<th style="white-space: nowrap;">Nama Outlet</th>';
@@ -174,7 +174,7 @@ class Rep_stock extends BaseController
 		$html .= '<th style="white-space: nowrap;">Tanggal</th>';
 		$html .= '<th style="white-space: nowrap;">Promo</th>';
 		$html .= '<th style="white-space: nowrap;">Account</th>';
-		$html .= '<th style="white-space: nowrap;">User MEDREP</th>';
+		$html .= '<th style="white-space: nowrap;">User TPE</th>';
 		$html .= '<th style="white-space: nowrap;">Outlet ID</th>';
 		$html .= '<th style="white-space: nowrap;">Kode Outlet</th>';
 		$html .= '<th style="white-space: nowrap;">Nama Outlet</th>';
@@ -305,7 +305,7 @@ class Rep_stock extends BaseController
                 $html .= '<th style="white-space: nowrap;">Tanggal</th>';
                 $html .= '<th style="white-space: nowrap;">Promo</th>';
                 $html .= '<th style="white-space: nowrap;">Account</th>';
-                $html .= '<th style="white-space: nowrap;">User MEDREP</th>';
+                $html .= '<th style="white-space: nowrap;">User TPE</th>';
                 $html .= '<th style="white-space: nowrap;">Outlet ID</th>';
                 $html .= '<th style="white-space: nowrap;">Kode Outlet</th>';
                 $html .= '<th style="white-space: nowrap;">Nama Outlet</th>';
@@ -419,7 +419,7 @@ class Rep_stock extends BaseController
                     ->setCellValue('B2', 'Tanggal')
                     ->setCellValue('C2', 'Promo')
                     ->setCellValue('D2', 'Account')
-                    ->setCellValue('E2', 'User MEDREP')
+                    ->setCellValue('E2', 'User TPE')
                     ->setCellValue('F2', 'Outlet ID')
                     ->setCellValue('G2', 'Kode Outlet')
                     ->setCellValue('H2', 'Nama Outlet')
@@ -557,7 +557,7 @@ class Rep_stock extends BaseController
                     ->setCellValue('B2', 'Tanggal')
                     ->setCellValue('C2', 'Promo')
                     ->setCellValue('D2', 'Account')
-                    ->setCellValue('E2', 'User MEDREP')
+                    ->setCellValue('E2', 'User TPE')
                     ->setCellValue('F2', 'Outlet ID')
                     ->setCellValue('G2', 'Kode Outlet')
                     ->setCellValue('H2', 'Nama Outlet')

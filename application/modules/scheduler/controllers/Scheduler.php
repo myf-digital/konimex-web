@@ -45,7 +45,7 @@ class Scheduler extends BaseController
             }
 			$data = [
 				'name' => explode('@', $val->send_to)[0] ?? $val->send_to,
-				'subject' => 'Laporan Aktivitas MEDREP - ' . format_date_id(date('Y-m-d'), true, false),
+				'subject' => 'Laporan Aktivitas TPE - ' . format_date_id(date('Y-m-d'), true, false),
 				'message' => render_tables_html($tables),
 			];
 
@@ -54,7 +54,7 @@ class Scheduler extends BaseController
             $filePdf = null;
             $fileExcel = null;
             if (in_array('pdf', $arrAttach)) {
-                $title = 'Laporan Aktivitas MEDREP - ' . format_date_id(date('Y-m-d'), true, false);
+                $title = 'Laporan Aktivitas TPE - ' . format_date_id(date('Y-m-d'), true, false);
                 $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
                 $pdf->SetTitle($title);
                 $pdf->AddPage();
@@ -65,7 +65,7 @@ class Scheduler extends BaseController
                 $html = $this->load->view($this->email_template, $dataPDF, TRUE);
 
                 $pdf->writeHTML($html, true, false, true, false, '');
-                $filePdf = FCPATH . 'uploads/laporan_aktivitas_MEDREP_' . date('Ymd') . '.pdf';
+                $filePdf = FCPATH . 'uploads/laporan_aktivitas_TPE_' . date('Ymd') . '.pdf';
                 $pdf->Output($filePdf, 'F');
                 
                 $fileAttach[] = $filePdf;
@@ -82,8 +82,8 @@ class Scheduler extends BaseController
                 $sheetOutletCoverage
                     ->setCellValue('A1', 'No')
                     ->setCellValue('B1', 'City/Area')
-                    ->setCellValue('C1', 'Code MEDREP')
-                    ->setCellValue('D1', 'MEDREP Name')
+                    ->setCellValue('C1', 'Code TPE')
+                    ->setCellValue('D1', 'TPE Name')
                     ->setCellValue('E1', 'Apotik')
                     ->setCellValue('F1', 'Clinic')
                     ->setCellValue('G1', 'Hospital');
@@ -110,8 +110,8 @@ class Scheduler extends BaseController
                 $sheetTargetCallMonthly->setTitle('Target Call Monthly');
                 $sheetTargetCallMonthly
                     ->setCellValue('A1', 'No')
-                    ->setCellValue('B1', 'Code MEDREP')
-                    ->setCellValue('C1', 'MEDREP Name')
+                    ->setCellValue('B1', 'Code TPE')
+                    ->setCellValue('C1', 'TPE Name')
                     ->setCellValue('D1', 'Area')
                     ->setCellValue('E1', 'Target')
                     ->setCellValue('F1', 'Call')
@@ -142,8 +142,8 @@ class Scheduler extends BaseController
                 $sheetTargetCallDaily
                     ->setCellValue('A1', 'No')
                     ->setCellValue('B1', 'Tanggal')
-                    ->setCellValue('C1', 'Code MEDREP')
-                    ->setCellValue('D1', 'MEDREP Name')
+                    ->setCellValue('C1', 'Code TPE')
+                    ->setCellValue('D1', 'TPE Name')
                     ->setCellValue('E1', 'Area')
                     ->setCellValue('F1', 'Target')
                     ->setCellValue('G1', 'Call')
@@ -169,7 +169,7 @@ class Scheduler extends BaseController
                     }
                 }
 
-                $fileExcel = FCPATH . 'uploads/laporan_aktivitas_MEDREP_' . date('Ymd') . '.xlsx';
+                $fileExcel = FCPATH . 'uploads/laporan_aktivitas_TPE_' . date('Ymd') . '.xlsx';
                 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
                 $objWriter->save($fileExcel);
 
@@ -221,7 +221,7 @@ class Scheduler extends BaseController
 
 			$data = [
 				'name' => explode('@', $val->send_to)[0] ?? $val->send_to,
-				'subject' => 'Laporan Pending Order MEDREP - ' . format_date_id(date('Y-m-d'), true, false),
+				'subject' => 'Laporan Pending Order TPE - ' . format_date_id(date('Y-m-d'), true, false),
 				'message' => render_order_pending_html($dataOrders),
                 'cc_to' => $cc_to ? explode(',', $cc_to) : [],
 			];
@@ -231,7 +231,7 @@ class Scheduler extends BaseController
             $filePdf = null;
             $fileExcel = null;
             if (in_array('pdf', $arrAttach)) {
-                $title = 'Laporan Pending Order MEDREP - ' . format_date_id(date('Y-m-d'), true, false);
+                $title = 'Laporan Pending Order TPE - ' . format_date_id(date('Y-m-d'), true, false);
                 $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
                 $pdf->SetTitle($title);
                 $pdf->AddPage();
@@ -242,7 +242,7 @@ class Scheduler extends BaseController
                 $html = $this->load->view($this->email_template, $dataPDF, TRUE);
 
                 $pdf->writeHTML($html, true, false, true, false, '');
-                $filePdf = FCPATH . 'uploads/laporan_pending_order_MEDREP_' . date('Ymd') . '.pdf';
+                $filePdf = FCPATH . 'uploads/laporan_pending_order_TPE_' . date('Ymd') . '.pdf';
                 $pdf->Output($filePdf, 'F');
                 
                 $fileAttach[] = $filePdf;
@@ -267,7 +267,7 @@ class Scheduler extends BaseController
 
                     $sheet->setCellValue("A{$row}", "No Sales");
                     $sheet->setCellValue("B{$row}", $header['no_sales']);
-                    $sheet->setCellValue("D{$row}", "Medrep");
+                    $sheet->setCellValue("D{$row}", "TPE");
                     $sheet->setCellValue("E{$row}", $header['salesman']);
                     $row++;
 
@@ -299,7 +299,7 @@ class Scheduler extends BaseController
                     $row += 3;
                 }
 
-                $fileExcel = FCPATH . 'uploads/laporan_pending_order_MEDREP_' . date('Ymd') . '.xlsx';
+                $fileExcel = FCPATH . 'uploads/laporan_pending_order_TPE_' . date('Ymd') . '.xlsx';
                 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
                 $objWriter->save($fileExcel);
 

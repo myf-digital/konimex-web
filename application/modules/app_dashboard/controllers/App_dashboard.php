@@ -150,7 +150,7 @@ class App_dashboard extends BaseController
 			$html .='<table class="table table-striped table-bordered table-condensed" style="width:1000px;">
 						<thead>
 							<tr style="align:center;">
-								<th width="70">User MEDREP</th>
+								<th width="70">User TPE</th>
 								<th width="70">Foto Checkin</th>
 								<th width="70">Check IN</th>
 								<th width="70">Check OUT</th>
@@ -798,7 +798,7 @@ class App_dashboard extends BaseController
 													\'<td class="text-muted">'.@$map['alamat'].'</td>\'+	
 												\'</tr>\'+
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Nama Medrep</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">Nama TPE</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
 												\'</tr>\'+
@@ -945,7 +945,7 @@ class App_dashboard extends BaseController
 													\'<td class="text-muted">'.@$map['alamat'].'</td>\'+	
 												\'</tr>\'+											
 												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Nama Medrep</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">Nama TPE</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">'.@$map['nama_salesman'].' ('.@$map['salesmanid'].')</td>\'+	
 												\'</tr>\'+

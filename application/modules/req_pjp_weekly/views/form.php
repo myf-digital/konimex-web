@@ -22,8 +22,8 @@
                     <div class="box-body">
 						<input type="hidden" name="req_no" id="req_no">
 						<div class="form-group col-xs-12 col-sm-12 col-md-6">
-							<label for="salesmanid">MEDREP</label>
-							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP" readonly></select>
+							<label for="salesmanid">TPE</label>
+							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE" readonly></select>
 						</div>
 						<div class="form-group col-xs-12 col-sm-12 col-md-6">
 							<label for="keterangan">Keterangan</label>

@@ -84,8 +84,8 @@
                 <form id="fm-add-setup-pjp" role="form" method="post">
                     <div class="box-body">
 						<div class="form-group col-xs-12 col-sm-12 col-md-6">
-							<label for="salesmanid">MEDREP</label>
-							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP"></select>
+							<label for="salesmanid">TPE</label>
+							<select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
 						</div>
 						<div class="form-group col-xs-12 col-sm-12 col-md-6">
 							<label for="salesmanid">Pilih Outlet dari:</label> <br>

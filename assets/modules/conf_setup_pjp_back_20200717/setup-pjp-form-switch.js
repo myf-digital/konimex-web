@@ -46,7 +46,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession}, function (res) {
             uiSelectSalesmanFrom.empty();
             uiSelectSalesmanFrom.select2({
-                placeholder: "Select Medrep",
+                placeholder: "Select TPE",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text
@@ -65,7 +65,7 @@
         $.post(common.baseURL("api_v1/call_salesman"), {idjabatan:data.idjabatan, usersession:data.usersession}, function (res) {
             uiSelectSalesmanTo.empty();
             uiSelectSalesmanTo.select2({
-                placeholder: "Select Medrep",
+                placeholder: "Select TPE",
                 allowClear: true,
                 data: $.map(res.result, function (o) {
                     o.id = o.salesmanid; // replace name with the property used for the text

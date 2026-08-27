@@ -89,8 +89,8 @@
       },
       messages: {
         salesmanid: {
-          required: "Isi User MEDREP",
-          remote: "User MEDREP Sudah terdaftar",
+          required: "Isi User TPE",
+          remote: "User TPE Sudah terdaftar",
         },
       },
     });

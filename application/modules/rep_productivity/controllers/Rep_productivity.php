@@ -69,8 +69,8 @@ class Rep_productivity extends BaseController
 		$html .= '<tr>';
         $html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 50px">No</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Area</th>';
-		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">ID MEDREP</th>';
-		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 300px;">Nama MEDREP</th>';
+		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">ID TPE</th>';
+		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 300px;">Nama TPE</th>';
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Position</th>';
 		$html .= '<th colspan="13" style="vertical-align : middle;text-align:center;width: 2600px;">Kuantitatif</th>';
 		$html .= '</tr><tr>';
@@ -103,9 +103,9 @@ class Rep_productivity extends BaseController
 			$html .= '<td style="width:300px;">'.$value['nama_salesman'].'</td>';
 			$html .= '<td style="width:150px;">'.$value['tipe_sales'].'</td>';
 
-			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['MEDREP Aktif'], 0, '.', ',').' </td>';
-			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['MEDREP Hadir'], 0, '.', ',').' </td>';
-			$kehadiran_pct = $value['MEDREP Aktif'] > 0 ? ($value['MEDREP Hadir'] / $value['MEDREP Aktif'] * 100) : 0;
+			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['TPE Aktif'], 0, '.', ',').' </td>';
+			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['TPE Hadir'], 0, '.', ',').' </td>';
+			$kehadiran_pct = $value['TPE Aktif'] > 0 ? ($value['TPE Hadir'] / $value['TPE Aktif'] * 100) : 0;
 			$html .= '<td style="text-align:center;width: 200px">'.number_format($kehadiran_pct, 2, '.', ',').' %</td>';
 			$html .= '<td style="text-align:center;width: 200px">Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').') </td>';
 			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['call_dub'], 0, '.', ',').'</td>';
@@ -165,7 +165,7 @@ class Rep_productivity extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Area', 'ID MEDREP', 'Nama MEDREP', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan Absensi', 'Call DUB', 'Target DUB', 'Efektif Call', 'Call Visi', 'Target Visit', 'Rata-Rata Visit', 'Keterangan', 'Detailing'];
+        $header = ['No', 'Area', 'ID TPE', 'Nama TPE', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan Absensi', 'Call DUB', 'Target DUB', 'Efektif Call', 'Call Visi', 'Target Visit', 'Rata-Rata Visit', 'Keterangan', 'Detailing'];
 
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -183,9 +183,9 @@ class Rep_productivity extends BaseController
 				$value['salesmanid'],
 				$value['nama_salesman'],
 				$value['tipe_sales'],
-				number_format($value['MEDREP Aktif'], 0, '.', ','),
-				number_format($value['MEDREP Hadir'], 0, '.', ','),
-				$value['MEDREP Aktif'] > 0 ? number_format($value['MEDREP Hadir']/$value['MEDREP Aktif']*100, 2, '.', ',') : '0.00',
+				number_format($value['TPE Aktif'], 0, '.', ','),
+				number_format($value['TPE Hadir'], 0, '.', ','),
+				$value['TPE Aktif'] > 0 ? number_format($value['TPE Hadir']/$value['TPE Aktif']*100, 2, '.', ',') : '0.00',
 				'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')',
 				number_format($value['call_dub'], 0, '.', ','),
 				number_format($value['target_dub'], 0, '.', ','),
@@ -256,8 +256,8 @@ class Rep_productivity extends BaseController
         $sheetProductivity
             ->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Area')
-            ->setCellValue('C1', 'MEDREP')
-            ->setCellValue('D1', 'MEDREP Name')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
             ->setCellValue('E1', 'Position')
             ->setCellValue('F1', 'HK')
             ->setCellValue('G1', 'Absensi')
@@ -283,8 +283,8 @@ class Rep_productivity extends BaseController
                 ->setCellValue('C'.$row, $value['salesmanid'] ?? '')
                 ->setCellValue('D'.$row, $value['nama_salesman'] ?? '')
                 ->setCellValue('E'.$row, $value['tipe_sales'] ?? '')
-                ->setCellValue('F'.$row, $value['MEDREP Aktif'] ?? '')
-                ->setCellValue('G'.$row, $value['MEDREP Hadir'] ?? '')
+                ->setCellValue('F'.$row, $value['TPE Aktif'] ?? '')
+                ->setCellValue('G'.$row, $value['TPE Hadir'] ?? '')
                 ->setCellValue('H'.$row, '=IF(F'.$row.'>0, G'.$row.'/F'.$row.', 0)')
                 ->setCellValue('I'.$row, 'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')')
                 ->setCellValue('J'.$row, $value['call_dub'] ?? '')
@@ -304,16 +304,16 @@ class Rep_productivity extends BaseController
             $row++;
         }
 		
-        // Visit MEDREP
+        // Visit TPE
         $objPHPExcel->createSheet(1);
         $sheetVisit = $objPHPExcel->setActiveSheetIndex(1);
-        $sheetVisit->setTitle('Visit MEDREP');
+        $sheetVisit->setTitle('Visit TPE');
         $sheetVisit->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Period')
-            ->setCellValue('C1', 'MEDREP')
-            ->setCellValue('D1', 'MEDREP Name')
-            ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'MEDREP Nama Outlet')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
+            ->setCellValue('E1', 'TPE ID Outlet')
+            ->setCellValue('F1', 'TPE Nama Outlet')
             ->setCellValue('G1', 'Channel')
             ->setCellValue('H1', 'Regional')
             ->setCellValue('I1', 'Area')
@@ -349,24 +349,24 @@ class Rep_productivity extends BaseController
             $row++;
         }
 		
-        // Order MEDREP
+        // Order TPE
         $objPHPExcel->createSheet(2);
         $sheetOrder = $objPHPExcel->setActiveSheetIndex(2);
-        $sheetOrder->setTitle('Order MEDREP');
+        $sheetOrder->setTitle('Order TPE');
 		$sheetOrder->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Tanggal')
-            ->setCellValue('C1', 'User MEDREP')
-            ->setCellValue('D1', 'MEDREP ID Outlet')
+            ->setCellValue('C1', 'User TPE')
+            ->setCellValue('D1', 'TPE ID Outlet')
             ->setCellValue('E1', 'ID Outlet Distributor')
-            ->setCellValue('F1', 'MEDREP Nama Outlet')
+            ->setCellValue('F1', 'TPE Nama Outlet')
             ->setCellValue('G1', 'Channel')
             ->setCellValue('H1', 'No SP')
             ->setCellValue('I1', 'No Sales Order')
             ->setCellValue('J1', 'ProductID')
             ->setCellValue('K1', 'Product Name')
-            ->setCellValue('L1', 'Qty (MEDREP Apps)')
+            ->setCellValue('L1', 'Qty (TPE Apps)')
             ->setCellValue('M1', 'Price')
-            ->setCellValue('N1', 'Total GTS (MEDREP Apps)')
+            ->setCellValue('N1', 'Total GTS (TPE Apps)')
             ->setCellValue('O1', 'Status')
             ->setCellValue('P1', 'JJID + Product Name')
             ->setCellValue('Q1', 'Qty Actual (Tableau Konimex)')
@@ -408,10 +408,10 @@ class Rep_productivity extends BaseController
 		$sheetDetailing->setTitle('Detailing');
         $sheetDetailing->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Period')
-            ->setCellValue('C1', 'MEDREP')
-            ->setCellValue('D1', 'MEDREP Name')
-            ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'MEDREP Nama Outlet')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
+            ->setCellValue('E1', 'TPE ID Outlet')
+            ->setCellValue('F1', 'TPE Nama Outlet')
             ->setCellValue('G1', 'Channel')
             ->setCellValue('H1', 'Regional')
             ->setCellValue('I1', 'Area')
@@ -451,10 +451,10 @@ class Rep_productivity extends BaseController
 		$sheetProgressListing->setTitle('Progress Listing');
         $sheetProgressListing->setCellValue('A1', 'No')
             ->setCellValue('B1', 'Periode')
-            ->setCellValue('C1', 'MEDREP')
-            ->setCellValue('D1', 'MEDREP Name')
-            ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'MEDREP Nama Outlet')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
+            ->setCellValue('E1', 'TPE ID Outlet')
+            ->setCellValue('F1', 'TPE Nama Outlet')
             ->setCellValue('G1', 'Brand ID')
             ->setCellValue('H1', 'Brand Name')
             ->setCellValue('I1', 'Progress')
@@ -498,8 +498,8 @@ class Rep_productivity extends BaseController
         $sheetAttendance = $objPHPExcel->setActiveSheetIndex(0);
 		$sheetAttendance->setTitle('Attendance');
         $sheetAttendance->setCellValue('A1', 'No.')
-            ->setCellValue('B1', 'Medrep')
-            ->setCellValue('C1', 'Medrep Name')
+            ->setCellValue('B1', 'TPE')
+            ->setCellValue('C1', 'TPE Name')
             ->setCellValue('D1', 'Area');
         $sheetAttendance->mergeCells('A1:A2');
         $sheetAttendance->mergeCells('B1:B2');
@@ -609,8 +609,8 @@ class Rep_productivity extends BaseController
         $sheetcall = $objPHPExcel->setActiveSheetIndex(6);
 		$sheetcall->setTitle('Call Daily');
         $sheetcall->setCellValue('A1', 'No.')
-            ->setCellValue('B1', 'Medrep')
-            ->setCellValue('C1', 'Medrep Name')
+            ->setCellValue('B1', 'TPE')
+            ->setCellValue('C1', 'TPE Name')
             ->setCellValue('D1', 'Area');
         $sheetcall->mergeCells('A1:A2');
         $sheetcall->mergeCells('B1:B2');

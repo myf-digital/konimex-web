@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Promo Medrep <small>Control panel</small>
+        Promo TPE <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Promo Medrep</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Promo TPE</a></li>
         <li class="active">Form</li>
     </ol>
 </section>
@@ -15,7 +15,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Promo Medrep</h3>
+                    <h3 class="box-title">Form Promo TPE</h3>
                 </div>
 
                 <form id="fm-promo-product" role="form" method="post">

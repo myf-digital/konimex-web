@@ -259,8 +259,8 @@ table {
                                     </div>
 							</div>
 							<div class="form-group col-md-3">
-								<label for="salesmanid">Medrep User</label>
-                        <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select Medrep"></select>
+								<label for="salesmanid">TPE User</label>
+                        <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select TPE"></select>
 							</div>
 
                     </div>

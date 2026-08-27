@@ -29,7 +29,7 @@
 </style>
 <div id="alertnotif" class="alert warning" style="display:none;">
   <span class="closebtn">&times;</span>  
-  <strong></strong> MEDREP harus di isi...
+  <strong></strong> TPE harus di isi...
 </div>
 <script>
 // Get all elements with class="closebtn"
@@ -68,8 +68,8 @@ for (i = 0; i < close.length; i++) {
                 <form id="fm-download-setup-pjp" role="form" method="post">
                     <div class="box-body">
                       <div class="form-group col-xs-12 col-sm-12 col-md-6">
-                        <label for="salesmanid">MEDREP</label>
-                        <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP"></select>
+                        <label for="salesmanid">TPE</label>
+                        <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
                       </div>
                     </div>
                     <div class="box-footer">

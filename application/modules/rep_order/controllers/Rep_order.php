@@ -98,7 +98,7 @@ class Rep_order extends BaseController
                                     <td class='text-bold'>{$header['nama_customer']}</td>
                                 </tr>
                                 <tr>
-                                    <td width='25%'>Medrep</td>
+                                    <td width='25%'>TPE</td>
                                     <td width='1%'>:</td>
                                     <td class='text-bold'>{$header['salesman']}</td>
                                 </tr>
@@ -276,7 +276,7 @@ class Rep_order extends BaseController
 
             $sheet->setCellValue("A{$row}", "No Faktur / Bill Doc");
             $sheet->setCellValue("B{$row}", $header['no_sales']);
-            $sheet->setCellValue("D{$row}", "Medrep");
+            $sheet->setCellValue("D{$row}", "TPE");
             $sheet->setCellValue("E{$row}", $header['salesman']);
             $row++;
 
@@ -383,7 +383,7 @@ class Rep_order extends BaseController
 
             $sheet->setCellValue("A{$row}", "No Faktur / Bill Doc");
             $sheet->setCellValue("B{$row}", $header['no_sales']);
-            $sheet->setCellValue("D{$row}", "Medrep");
+            $sheet->setCellValue("D{$row}", "TPE");
             $sheet->setCellValue("E{$row}", $header['salesman']);
             $row++;
 

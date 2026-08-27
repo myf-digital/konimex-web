@@ -115,7 +115,7 @@ class Rep_tagihan extends CI_Controller {
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>Nama Medrep</th>					
+					<th>Nama TPE</th>					
 					<th>Schedule</th>					
 					<th>Eff Call</th>					
 					<th>Ex Call</th>					
@@ -329,7 +329,7 @@ class Rep_tagihan extends CI_Controller {
 		
 		
 		$newDate = date("d-m-Y", strtotime($date));
-		$html = '<h3>List Tagihan Medrep '.$namasls.' '.$newDate.'</h3>';
+		$html = '<h3>List Tagihan TPE '.$namasls.' '.$newDate.'</h3>';
 		$html .= '<table class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead style="display: block; width:1135px;">';
 		$html .= '<tr>';
@@ -426,7 +426,7 @@ class Rep_tagihan extends CI_Controller {
 		
 		$data = $this->db->get()->result_array();
 		
-		$html = '<h3>List Tagihan Medrep '.$namasls.'</h3>';
+		$html = '<h3>List Tagihan TPE '.$namasls.'</h3>';
 		$html .= '<table class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead style="display: block; width:1000px;">';
 		$html .= '<tr>';

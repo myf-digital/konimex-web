@@ -62,7 +62,7 @@
 				{field:'subareaid', title:'Sub Area', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'latitude', title:'LATITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'longitude', title:'LONGITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'MEDREPID', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'TPEID', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:200},
             ]],
             onBeforeLoad: function (param) {

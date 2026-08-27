@@ -33,8 +33,8 @@
                 <form id="fm-absen" role="form" method="post" enctype="multipart/form-data">
                     <div class="box-body">
                         <div class="form-group col-md-7">
-                            <label for="salesmanid">MEDREP (MD/SPG/MEDREP)</label>
-                            <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP (MD/SPG/MEDREP)"></select>
+                            <label for="salesmanid">TPE (MD/SPG/MEDREP)</label>
+                            <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE (MD/SPG/MEDREP)"></select>
                         </div>
                         <div class="form-group col-md-5">
                             <label for="periode">Periode</label>

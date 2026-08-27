@@ -1,10 +1,10 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Promo Medrep <small>Control panel</small>
+        Promo TPE <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Promo Medrep</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Promo TPE</a></li>
         <li class="active">Content</li>
     </ol>
 </section>

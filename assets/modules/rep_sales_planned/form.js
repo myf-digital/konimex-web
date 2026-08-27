@@ -56,7 +56,7 @@
     let salesmanid = uiSelectSalesID.val();
 
     if (!salesmanid) {
-      alert("Pilih MEDREP terlebih dahulu");
+      alert("Pilih TPE terlebih dahulu");
       return;
     }
 
@@ -86,7 +86,7 @@
   function save_xls() {
     let salesmanid = uiSelectSalesID.val();
     if (!salesmanid) {
-      alert("Pilih MEDREP terlebih dahulu");
+      alert("Pilih TPE terlebih dahulu");
       return;
     }
 
@@ -101,7 +101,7 @@
     $.post(common.baseURL("api_v1/call_salesman"), function (res) {
       uiSelectSalesID.empty();
       uiSelectSalesID.select2({
-        placeholder: "Select MEDREP",
+        placeholder: "Select TPE",
         allowClear: true,
         data: $.map(res.result, function (o) {
           o.id = o.salesmanid; // replace name with the property used for the text

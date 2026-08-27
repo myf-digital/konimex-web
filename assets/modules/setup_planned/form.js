@@ -355,7 +355,7 @@
       function (res) {
         uiSelectSalesman.empty();
         uiSelectSalesman.select2({
-          placeholder: "Select MEDREP",
+          placeholder: "Select TPE",
           allowClear: true,
           data: $.map(res.result, function (o) {
             o.id = o.salesmanid;

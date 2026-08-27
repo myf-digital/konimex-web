@@ -25,7 +25,7 @@
   //alert(baseurl);
   function initializeGrid() {
     let option = {
-      title: "Table Performance MEDREP",
+      title: "Table Performance TPE",
       toolbar: toolbar(),
       url: common.baseURL("app_dashboard/load"),
       queryParams: {
@@ -55,7 +55,7 @@
         [
           {
             field: "salesmanid",
-            title: "Kode MEDREP",
+            title: "Kode TPE",
             width: 60,
             sortable: "true",
             halign: "left",
@@ -63,7 +63,7 @@
           },
           {
             field: "nama_salesman",
-            title: "Nama MEDREP",
+            title: "Nama TPE",
             width: 120,
             sortable: "true",
             halign: "left",

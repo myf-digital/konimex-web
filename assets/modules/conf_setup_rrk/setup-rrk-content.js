@@ -41,7 +41,7 @@
             ]],
             columns: [[
 				{field:'siteid', title:'SITEID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'MEDREP', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'TPE', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'nama_area', title:'AREA', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'repeat_minggu', title:'FREQUENCY', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'groupminggu', title:'WEEKS', halign: 'center', align: 'left', sortable:"true", width:200},

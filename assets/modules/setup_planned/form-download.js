@@ -25,7 +25,7 @@
       if (!vSelected || (vSelected && vSelected.length == 0)) {
         Swal.fire({
           title: "Perhatian",
-          text: "Harap pilih minimal 1 MEDREP",
+          text: "Harap pilih minimal 1 TPE",
           icon: "warning",
         });
         return;
@@ -59,7 +59,7 @@
       function (res) {
         uiSelectSalesman.empty();
         uiSelectSalesman.select2({
-          placeholder: "All MEDREP",
+          placeholder: "All TPE",
           allowClear: true,
           multiple: true,
           data: $.map(res.result, function (o) {

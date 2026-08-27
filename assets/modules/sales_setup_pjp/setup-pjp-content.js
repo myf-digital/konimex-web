@@ -41,8 +41,8 @@
             ]],
             columns: [[
 				{field:'siteid', title:'SITEID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'salesmanid', title:'MEDREPID', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'nama_salesman', title:'NAMA MEDREP', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'TPEID', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'nama_salesman', title:'NAMA TPE', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'position', title:'POSITION', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'ram_rsm', title:'RAM RSM', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'aas_aam_tss_tsm', title:'AAS AAM TSS TSM', halign: 'center', align: 'left', sortable:"true", width:200},

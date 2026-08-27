@@ -149,8 +149,8 @@ class Ref_customer extends BaseController
                     ->setCellValue('I1', 'Channel/Type')
                     ->setCellValue('J1', 'SubChannel/Account')
                     ->setCellValue('K1', 'DC')
-                    ->setCellValue('L1', 'MEDREP')
-                    ->setCellValue('M1', 'MEDREP Name')
+                    ->setCellValue('L1', 'TPE')
+                    ->setCellValue('M1', 'TPE Name')
                     ->setCellValue('N1', 'Position')
                     ;
         $i = 2;
@@ -206,8 +206,8 @@ class Ref_customer extends BaseController
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-        $html .= '<th style="white-space: nowrap;">User MEDREP</th>';
-		$html .= '<th style="white-space: nowrap;">Nama MEDREP</th>';
+        $html .= '<th style="white-space: nowrap;">User TPE</th>';
+		$html .= '<th style="white-space: nowrap;">Nama TPE</th>';
 		$html .= '<th style="white-space: nowrap;">Posisi</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';

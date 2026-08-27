@@ -20,8 +20,8 @@
                 <form id="fm-report-planned" role="form" method="post">
                     <div class="box-body">
                         <div class="form-group col-md-4">
-                            <label for="salesmanid">MEDREP</label>
-                            <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="MEDREP"></select>
+                            <label for="salesmanid">TPE</label>
+                            <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="TPE"></select>
                         </div>
                     </div>
                 </form>

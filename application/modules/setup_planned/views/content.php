@@ -43,7 +43,7 @@
 					<tr>
 						<th>PERIODE</th>
 						<td id="detail-periode">-</td>
-						<th>MEDREP</th>
+						<th>TPE</th>
 						<td id="detail-salesman">-</td>
 					</tr>
 					<tr>

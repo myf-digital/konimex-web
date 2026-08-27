@@ -259,7 +259,7 @@
             columns: [[
           	   
                     {field: 'options', title: 'ACTION', width: 300, halign: 'center', align: 'center', formatter: formatButton},
-					{field: 'nama_salesman', title: 'Nama Medrep', width: 220, sortable: 'true', halign: 'center', align: 'center'},
+					{field: 'nama_salesman', title: 'Nama TPE', width: 220, sortable: 'true', halign: 'center', align: 'center'},
 					{field: 'jadwal', title: 'Scedule', width: 70, sortable: 'true', halign: 'center', align: 'center'},
                     {field: 'effectivecall', title: '<img class="color" src="<?php echo base_url(); ?>assets/mapIcon/legend_1.png"></img> Eff Call', width: 75, sortable: 'true', halign: 'center', align: 'center'},
                     {field: 'ExtraCall', title: '<img class="color" src="<?php echo base_url(); ?>assets/mapIcon/legend_2.png"></img>Ex Call', width: 75, sortable: 'true', halign: 'center', align: 'center'},

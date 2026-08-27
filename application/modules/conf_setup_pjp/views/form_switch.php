@@ -25,12 +25,12 @@
 								<input name="week_aktif" class="form-control" placeholder="Week Aktif" disabled>
 							</div>-->
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">From Medrep</label>
-                                <select id="salesmanid-id-from" name="salesmanid_from" class="form-control" placeholder="Select Medrep"></select>
+								<label for="salesmanid">From TPE</label>
+                                <select id="salesmanid-id-from" name="salesmanid_from" class="form-control" placeholder="Select TPE"></select>
 							</div>
 							<div class="form-group col-xs-12 col-sm-12 col-md-6">
-								<label for="salesmanid">To Medrep</label>
-                                <select id="salesmanid-id-to" name="salesmanid_to" class="form-control" placeholder="Select Medrep"></select>
+								<label for="salesmanid">To TPE</label>
+                                <select id="salesmanid-id-to" name="salesmanid_to" class="form-control" placeholder="Select TPE"></select>
 							</div>
 							<!--<div class="form-group col-xs-12 col-sm-12 col-md-6">
 								<label for="ram_rsm">Ram-Rsm</label>

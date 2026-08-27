@@ -34,8 +34,8 @@
       ]],
       columns: [[
         {field: 'periode', title: 'Periode', width: 60, sortable: 'true', halign: 'center', align: 'center'},
-        {field: 'salesmanid', title: 'Kode Medrep', width: 60, sortable: 'true', halign: 'left', align: 'left'},
-        {field: 'nama_salesman', title: 'Nama Medrep', width: 120, sortable: 'true', halign: 'left', align: 'left'},
+        {field: 'salesmanid', title: 'Kode TPE', width: 60, sortable: 'true', halign: 'left', align: 'left'},
+        {field: 'nama_salesman', title: 'Nama TPE', width: 120, sortable: 'true', halign: 'left', align: 'left'},
         {field: 'tipe_sales', title: 'Posisi', width: 80, sortable: 'true', halign: 'left', align: 'left'},
         {field: 'kode_outlet', title: 'Kode Outlet', width: 100, sortable: 'true', halign: 'left', align: 'left'},
         {field: 'nama_customer', title: 'Outlet', width: 200, sortable: 'true', halign: 'left', align: 'left'},

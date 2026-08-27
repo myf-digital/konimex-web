@@ -26,7 +26,7 @@
             {field: 'event', title: 'Event', width: 100, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'start_period', title: 'Start', width: 30, sortable: 'true', halign: 'left', align: 'center'},
             {field: 'end_period', title: 'End', width: 30, sortable: 'true', halign: 'left', align: 'center'},
-            {field: 'username', title: 'Kode MEDREP', width: 60, sortable: 'true', halign: 'left', align: 'left'},
+            {field: 'username', title: 'Kode TPE', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'nama_salesman', title: 'Name', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'nama_regional', title: 'Regional', width: 60, sortable: 'true', halign: 'left', align: 'left'},
             {field: 'nama_area', title: 'Area', width: 60, sortable: 'true', halign: 'left', align: 'left'},

@@ -227,8 +227,8 @@
                             <input id="search-id" type="text" name="search" class="form-control" placeholder="Outlet Nama / Outlet ID / Kode Outlet">
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="salesmanid">User MEDREP</label>
-                            <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select User MEDREP"></select>
+                            <label for="salesmanid">User TPE</label>
+                            <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select User TPE"></select>
                         </div>
                     </div>
 

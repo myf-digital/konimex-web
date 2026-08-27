@@ -79,8 +79,8 @@
 				//{field:'latitude', title:'LATITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
 				//{field:'longitude', title:'LONGITUDE', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'mcc', title:'DC', halign: 'center', align: 'left', sortable:"true", width:200},            ]],
-				{field:'salesmanid', title:'User MEDREP', halign: 'center', align: 'left', sortable:"true", width:200},
-				{field:'gff_name', title:'MEDREP Name', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'salesmanid', title:'User TPE', halign: 'center', align: 'left', sortable:"true", width:200},
+				{field:'gff_name', title:'TPE Name', halign: 'center', align: 'left', sortable:"true", width:200},
 				{field:'position', title:'Position', halign: 'center', align: 'left', sortable:"true", width:200},
 				]]
             onBeforeLoad: function (param) {

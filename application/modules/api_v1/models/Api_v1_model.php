@@ -1725,8 +1725,8 @@ class Api_v1_model extends CI_Model
             $sql = " select e.nama_regional, d.nama_area, c.nama_area city,
 							b.salesmanid,b.nama_salesman,b.tipe_sales, 
 							date_format('".$data["periode"]."','%d')-FLOOR(date_format('".$data["periode"]."','%d')/7)-(case when date_format('".$data["periode"]."','%d') > 15 
-							then (select jml_libur from setup_jumlah_harilibur where tahun=date_format('".$data["periode"]."','%Y') and bulan=date_format('".$data["periode"]."','%m')) else 0 end) as 'MEDREP Aktif', 
-							(select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as 'MEDREP Hadir',
+							then (select jml_libur from setup_jumlah_harilibur where tahun=date_format('".$data["periode"]."','%Y') and bulan=date_format('".$data["periode"]."','%m')) else 0 end) as 'TPE Aktif', 
+							(select count(1) from t_sales_absensi where status='H' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as 'TPE Hadir',
 							(select count(1) from t_sales_absensi where status='C' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as cuti,
 							(select count(1) from t_sales_absensi where status='S' and salesmanid=a.salesmanid and periode between '".$data["periode"]."' and LAST_DAY('".$data["periode"]."')) as sakit, 
 							round((count(1)/(date_format('".$data["periode"]."','%d')-FLOOR(date_format('".$data["periode"]."','%d')/7)-(case when date_format('".$data["periode"]."','%d') > 25 

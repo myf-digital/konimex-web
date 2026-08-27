@@ -85,7 +85,7 @@ class Set_quota_budget extends BaseController
 		$html .= '<th style="white-space: nowrap;">Tanggal</th>';
 		$html .= '<th style="white-space: nowrap;">Promo</th>';
 		$html .= '<th style="white-space: nowrap;">Account</th>';
-		$html .= '<th style="white-space: nowrap;">User MEDREP</th>';
+		$html .= '<th style="white-space: nowrap;">User TPE</th>';
 		$html .= '<th style="white-space: nowrap;">Outlet ID</th>';
 		$html .= '<th style="white-space: nowrap;">Kode Outlet</th>';
 		$html .= '<th style="white-space: nowrap;">Nama Outlet</th>';
@@ -317,8 +317,8 @@ class Set_quota_budget extends BaseController
 		// $html .='<th style="text-align:left;white-space:nowrap;width:100px;">City</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">SPG</th>';
         $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MERCHANDISER</th>';
-        $html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP</th>';
-		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">MEDREP</th>';
+        $html .='<th style="text-align:left;white-space:nowrap;width:100px;">TPE</th>';
+		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">TPE</th>';
 		$html .='<th style="text-align:left;white-space:nowrap;width:100px;">FC</th>';
 
 		$start = date_create($periode);

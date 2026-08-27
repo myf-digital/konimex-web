@@ -208,8 +208,8 @@ class Ref_customer extends BaseController
 		$html = '<table class="table table-striped table-bordered table-condensed ">';
 		$html .= '<thead">';
 		$html .= '<tr>';
-        $html .= '<th style="white-space: nowrap;">User MEDREP</th>';
-		$html .= '<th style="white-space: nowrap;">Nama MEDREP</th>';
+        $html .= '<th style="white-space: nowrap;">User TPE</th>';
+		$html .= '<th style="white-space: nowrap;">Nama TPE</th>';
 		$html .= '<th style="white-space: nowrap;">Posisi</th>';
 		$html .= '</tr>';
 		$html .= '</thead">';

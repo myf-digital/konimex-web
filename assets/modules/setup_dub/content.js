@@ -77,7 +77,7 @@
           },
           {
             field: "salesmanid",
-            title: "ID MEDREP",
+            title: "ID TPE",
             halign: "center",
             align: "left",
             sortable: "true",
@@ -85,7 +85,7 @@
           },
           {
             field: "nama_salesman",
-            title: "NAMA MEDREP",
+            title: "NAMA TPE",
             halign: "center",
             align: "left",
             sortable: "true",

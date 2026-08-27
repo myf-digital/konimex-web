@@ -1,7 +1,7 @@
 (function () {
 
     const common = new Common();
-    common.setTitle("Sales Medrep Category");
+    common.setTitle("Sales TPE Category");
     // declare dom
     let uiForm = $("#fm-sales-salesman-category");
     let uiBtnCancel = $("#btn-cancel-form");
