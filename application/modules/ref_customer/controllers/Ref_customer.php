@@ -66,6 +66,12 @@ class Ref_customer extends BaseController
         responseJSON($this->customer->load($data));
     }
 
+    public function get_detail()
+    {
+        $data = param_input();
+        responseJSON($this->customer->get_detail($data));
+    }
+
     function savetoxlsx() {
         $account = $this->uri->segment('3');
         $username = $this->uri->segment('4');

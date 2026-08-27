@@ -59,5 +59,24 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalUser" tabindex="-1" role="dialog" aria-labelledby="myModalUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalUserLabel">Daftar User</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modalUserContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>      
+            </div>
+        </div>
+    </div>
+</div>
 <!-- JS content -->
 <script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-content.js' ?>"></script>

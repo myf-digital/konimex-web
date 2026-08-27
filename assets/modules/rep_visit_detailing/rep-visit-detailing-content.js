@@ -45,6 +45,14 @@
             width: 100,
           },
           {
+            field: "salesmanid",
+            title: "TPE ID",
+            halign: "left",
+            align: "left",
+            sortable: "true",
+            width: 100,
+          },
+          {
             field: "nama_salesman",
             title: "TPE",
             halign: "left",
