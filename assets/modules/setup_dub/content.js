@@ -29,6 +29,11 @@
       common.removeCookie("module.setup_dub.update");
       common.direct("setup_dub/form_download");
     });
+
+    $("#btn-upload").click(function () {
+      common.removeCookie("module.setup_dub.update");
+      common.direct("setup_dub/form_upload");
+    });
   }
 
   function initializeGrid() {
@@ -145,8 +150,18 @@
       "fa fa-download",
       " Download DUB",
     );
+    const btnUpload = commonGrid.btnBuilderText(
+      "btn-upload",
+      "warning",
+      "fa fa-upload",
+      " Upload DUB",
+    );
     return (
-      '<div class="action-grid-toolbar">' + btnCreate + btnDownload + "</div>"
+      '<div class="action-grid-toolbar">' +
+      btnCreate +
+      btnDownload +
+      btnUpload +
+      "</div>"
     );
   }
 

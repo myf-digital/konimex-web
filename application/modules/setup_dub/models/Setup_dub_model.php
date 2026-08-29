@@ -437,4 +437,237 @@ class Setup_dub_model extends CI_Model
             $this->db->insert_batch('m_customer_ob', $ob);
         }
     }
+
+    public function get_template_data($salesmanid)
+    {
+        $salesman_areas = $this->db->get_where('m_salesman_area', ['salesmanid' => $salesmanid])->result_array();
+        if (empty($salesman_areas)) {
+            return [];
+        }
+
+        $subareaids = array_unique(array_filter(array_column($salesman_areas, 'subareaid')));
+        $areaids = array_unique(array_filter(array_column($salesman_areas, 'areaid')));
+        $regionalids = array_unique(array_filter(array_column($salesman_areas, 'regionalid')));
+
+        $conditions = [];
+        if (!empty($subareaids)) {
+            $conditions[] = "a.subareaid IN (" . implode(",", $subareaids) . ")";
+        }
+        if (!empty($areaids)) {
+            $conditions[] = "a.areaid IN (" . implode(",", $areaids) . ")";
+        }
+        if (!empty($regionalids)) {
+            $conditions[] = "a.regionalid IN (" . implode(",", $regionalids) . ")";
+        }
+
+        if (empty($conditions)) {
+            return [];
+        }
+
+        $where = " AND (" . implode(" OR ", $conditions) . ")";
+
+        $sql = "
+            select distinct
+                '".$this->db->escape_str($salesmanid)."' as salesmanid,
+                a.customerid,
+                a.nama_customer,
+                rp.id as user_id,
+                rp.nama_professional as nama_user
+            from m_customer a
+            join ref_professional_mapping rpm on rpm.customerid = a.customerid
+            join ref_professional rp on rp.id = rpm.id_professional
+            where a.customerid <> '' $where
+            order by a.nama_customer asc, rp.nama_professional asc
+        ";
+        return $this->db->query($sql)->result_array();
+    }
+
+    public function get_active_target_dub($salesmanid)
+    {
+        $sql = "
+            select 
+                mss.salesmanid,
+                mss.nama_salesman,
+                mss.tipe_sales,
+                role.role_id,
+                role.role_name,
+                rmt.target_dub,
+                rmt.tahun,
+                rmt.bulan
+            from m_sales_salesman mss
+            left join app_role role on role.role_name = mss.tipe_sales
+            left join role_mapping_target rmt on rmt.role_id = role.role_id
+                and rmt.tahun = YEAR(CURRENT_DATE) and rmt.bulan = MONTH(CURRENT_DATE)
+            where mss.salesmanid = ? and mss.aktif = 1
+        ";
+        return $this->db->query($sql, [$salesmanid])->row_array();
+    }
+
+    public function process_upload($grouped_data, $usersession, $rolename)
+    {
+        if (empty($grouped_data)) {
+            return [
+                'status' => false,
+                'message' => 'Tidak ada data valid yang diupload.'
+            ];
+        }
+
+        $isAdmin = !empty($rolename) && strpos(strtolower($rolename), 'admin') !== false;
+
+        // 1. Validate all salesmen first before running database transactions
+        $prepared = [];
+        foreach ($grouped_data as $salesmanid => $rows) {
+            $salesmanid = trim($salesmanid);
+            if ($salesmanid === '') {
+                continue;
+            }
+
+            $target_info = $this->get_active_target_dub($salesmanid);
+            if (empty($target_info)) {
+                return [
+                    'status' => false,
+                    'message' => "MEDREP dengan ID '{$salesmanid}' tidak ditemukan atau tidak aktif."
+                ];
+            }
+
+            if (empty($target_info['role_id'])) {
+                return [
+                    'status' => false,
+                    'message' => "Role untuk tipe sales '{$target_info['tipe_sales']}' (MEDREP {$salesmanid}) tidak ditemukan."
+                ];
+            }
+
+            if (is_null($target_info['target_dub']) || (int)$target_info['target_dub'] <= 0) {
+                return [
+                    'status' => false,
+                    'message' => "Target DUB untuk tipe sales '{$target_info['tipe_sales']}' (MEDREP {$salesmanid} - {$target_info['nama_salesman']}) belum diatur pada periode aktif bulan ini."
+                ];
+            }
+
+            $target_dub = (int)$target_info['target_dub'];
+
+            // Deduplicate items for this salesman
+            $unique_keys = [];
+            $unique_details = [];
+            foreach ($rows as $item) {
+                $cid = trim($item['customerid'] ?? '');
+                $uid = trim($item['user_id'] ?? '');
+
+                if ($cid === '' || $uid === '') {
+                    continue;
+                }
+
+                $key = $cid . '_' . $uid;
+                if (!isset($unique_keys[$key])) {
+                    $unique_keys[$key] = true;
+                    $unique_details[] = [
+                        'customerid' => $cid,
+                        'user_id' => $uid,
+                    ];
+                }
+            }
+
+            $count_user = count($unique_details);
+            if ($count_user !== $target_dub) {
+                return [
+                    'status' => false,
+                    'message' => "Jumlah user DUB untuk MEDREP {$salesmanid} ({$target_info['nama_salesman']}) adalah {$count_user} user, wajib tepat {$target_dub} user sesuai target role {$target_info['tipe_sales']} periode aktif."
+                ];
+            }
+
+            $prepared[$salesmanid] = [
+                'target_info' => $target_info,
+                'details' => $unique_details
+            ];
+        }
+
+        if (empty($prepared)) {
+            return [
+                'status' => false,
+                'message' => 'Tidak ada data valid yang dapat diproses.'
+            ];
+        }
+
+        // 2. Perform database transaction
+        $sqldate = "select sysdate() datetime;";
+        $datetime = $this->db->query($sqldate)->row();
+        $now = $datetime->datetime;
+        $periode = date('Y-m-d');
+
+        $this->db->trans_begin();
+
+        $processed_req_nos = [];
+        foreach ($prepared as $salesmanid => $pData) {
+            $existing_req = $this->db->get_where('req_dub', ['salesmanid' => $salesmanid])->row_array();
+
+            $status = $isAdmin ? 3 : 1;
+            $reason = $isAdmin ? ('Data DUB telah diupload dan disetujui oleh ' . $usersession) : 'Upload Setup DUB';
+
+            if ($existing_req) {
+                $req_no = $existing_req['req_no'];
+                $this->db->where('req_no', $req_no);
+                $this->db->update('req_dub', [
+                    'siteid' => 'HIMALAYA',
+                    'periode' => $periode,
+                    'keterangan' => 'Upload Setup DUB',
+                    'status' => $status,
+                    'reason' => $reason,
+                    'modified_by' => $usersession,
+                    'modified_date' => $now
+                ]);
+
+                $this->db->where('req_no', $req_no);
+                $this->db->delete('req_dub_detail');
+            } else {
+                $this->db->insert('req_dub', [
+                    'siteid' => 'HIMALAYA',
+                    'periode' => $periode,
+                    'salesmanid' => $salesmanid,
+                    'keterangan' => 'Upload Setup DUB',
+                    'status' => $status,
+                    'reason' => $reason,
+                    'created_by' => $usersession,
+                    'created_date' => $now
+                ]);
+                $req_no = $this->db->insert_id();
+            }
+
+            $insert_details = [];
+            foreach ($pData['details'] as $det) {
+                $insert_details[] = [
+                    'req_no' => $req_no,
+                    'salesmanid' => $salesmanid,
+                    'customerid' => $det['customerid'],
+                    'user_id' => $det['user_id'],
+                    'created_by' => $usersession,
+                    'created_date' => $now
+                ];
+            }
+
+            if (!empty($insert_details)) {
+                $this->db->insert_batch('req_dub_detail', $insert_details);
+            }
+
+            if ($status == 3) {
+                $this->sync_to_customer_ob($req_no, $usersession);
+            }
+
+            $processed_req_nos[] = $req_no;
+        }
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return [
+                'status' => false,
+                'message' => 'Gagal menyimpan data upload DUB.'
+            ];
+        } else {
+            $this->db->trans_commit();
+            return [
+                'status' => true,
+                'message' => 'Berhasil upload data DUB.',
+                'data' => $processed_req_nos
+            ];
+        }
+    }
 }
