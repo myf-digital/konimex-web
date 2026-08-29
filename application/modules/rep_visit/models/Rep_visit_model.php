@@ -67,7 +67,7 @@ class Rep_visit_model extends CI_Model
     public function load($data)
     {
         $field = "a.* ";
-        $table = " (select a.periode, a.salesmanid, case when a.status='C' then 'Cuti' when a.status='H' then 'Hadir' when a.status='HF' then 'Hari Off' when a.status='S' then 'Sakit' else 'Alpha' end as status, 
+        $table = " (select a.periode, a.salesmanid, case when a.status='C' then 'Cuti' when a.status='H' then 'Hadir' when a.status='HF' then 'Izin' when a.status='S' then 'Sakit' else 'Alpha' end as status, 
 					a.checkin, a.checkout, a.keterangan, concat('".URL_IMAGE."', a.image) as image, b.nama_salesman,
 					(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid) as visit 
                     from t_sales_absensi a left join m_sales_salesman b on a.salesmanid=b.salesmanid 

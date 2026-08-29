@@ -94,7 +94,7 @@ class Rep_gffaktif extends BaseController
 
 		$html = '<div class="box-body">';
 		$html .= '<div class="container-table">';
-		$html .= 'Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti';
+		$html .= 'Keterangan : H -> Hadir , I -> Izin, S -> Sakit, C -> Izin Cuti';
 		$html .= '<table id="activity_table" border="1" class="table table-bordered table-condensed fixed-table">';
 		$html .= '<tbody>';
 		$html .= '<tr>';
@@ -134,7 +134,7 @@ class Rep_gffaktif extends BaseController
 		}
 
 		$html .= '	<th style="text-align:left;width: 50px">H</th>
-					<th style="text-align:left;width: 50px">HF</th>
+					<th style="text-align:left;width: 50px">I</th>
 					<th style="text-align:left;width: 50px">S</th>
 					<th style="text-align:left;width: 65px">C</th>
 					</tr>
@@ -299,7 +299,7 @@ class Rep_gffaktif extends BaseController
 				</style>';
 		$html .= '<div id="table-wrapper">
 					<div id="table-scroll">
-					Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti
+					Keterangan : H -> Hadir , I -> Izin, S -> Sakit, C -> Izin Cuti
 					<table id="activity_table" border="1" class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead>';
 		$html .= '<tr>';
@@ -340,7 +340,7 @@ class Rep_gffaktif extends BaseController
 		}
 
 		$html .= '	<th style="text-align:left;white-space:nowrap;">H</th>
-					<th style="text-align:left;white-space:nowrap;">HF</th>
+					<th style="text-align:left;white-space:nowrap;">I</th>
 					<th style="text-align:left;white-space:nowrap;">S</th>
 					<th style="text-align:left;white-space:nowrap;">C</th>
 					</tr>
@@ -497,7 +497,7 @@ class Rep_gffaktif extends BaseController
     	$filename = "Report_attendance_parma_".date_format($start,"M-Y");
 
 		$spreadsheet = new Spreadsheet();
-		$nb = ['Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti'];
+		$nb = ['Keterangan : H -> Hadir , I -> Izin, S -> Sakit, C -> Izin Cuti'];
 		$header = ['No', 'Medrep', 'Medrep Name', 'Area', 'Sub Area'];
 
 		$headerDate = [];
@@ -526,7 +526,7 @@ class Rep_gffaktif extends BaseController
 		$sheet->fromArray($nb,NULL,'A1');
 		$sheet->fromArray($header,NULL,'A2');
 		$sheet->fromArray(array_merge($headerDate, ['Total']),NULL,'F2');
-		$sheet->fromArray(array_merge($headerDay, ['H', 'HF', 'S', 'C']),NULL,'F3');
+		$sheet->fromArray(array_merge($headerDay, ['H', 'I', 'S', 'C']),NULL,'F3');
 
 		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel,$regionalid,$areaid,$subareaid);
 

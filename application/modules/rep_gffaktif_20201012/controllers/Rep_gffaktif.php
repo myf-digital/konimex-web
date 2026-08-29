@@ -96,7 +96,7 @@ class Rep_gffaktif extends BaseController
 
 		$html = '<div class="box-body">';
 		$html .= '<div class="container-table">';
-		$html .= 'Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti';
+		$html .= 'Keterangan : H -> Hadir , I -> Izin, S -> Sakit, C -> Izin Cuti';
 		$html .= '<table id="activity_table" border="1" class="table table-bordered table-condensed fixed-table">';
 		$html .= '<tbody>';
 		$html .= '<tr>';
@@ -136,7 +136,7 @@ class Rep_gffaktif extends BaseController
 		}
 
 		$html .= '	<th style="text-align:left;width: 50px">H</th>
-					<th style="text-align:left;width: 50px">HF</th>
+					<th style="text-align:left;width: 50px">I</th>
 					<th style="text-align:left;width: 50px">S</th>
 					<th style="text-align:left;width: 50px">C</th>
 					</tr>
@@ -297,7 +297,7 @@ class Rep_gffaktif extends BaseController
 				</style>';
 		$html .= '<div id="table-wrapper">
 					<div id="table-scroll">
-					Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti
+					Keterangan : H -> Hadir , I -> Izin, S -> Sakit, C -> Izin Cuti
 					<table id="activity_table" border="1" class="table table-striped table-bordered table-condensed">';
 		$html .= '<thead>';
 		$html .= '<tr>';
@@ -338,7 +338,7 @@ class Rep_gffaktif extends BaseController
 		}
 
 		$html .= '	<th style="text-align:left;white-space:nowrap;">H</th>
-					<th style="text-align:left;white-space:nowrap;">HF</th>
+					<th style="text-align:left;white-space:nowrap;">I</th>
 					<th style="text-align:left;white-space:nowrap;">S</th>
 					<th style="text-align:left;white-space:nowrap;">C</th>
 					</tr>
@@ -491,7 +491,7 @@ class Rep_gffaktif extends BaseController
         //$objDrawing = new PHPExcel_Worksheet_Drawing();
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti')
+                    ->setCellValue('A1', 'Keterangan : H -> Hadir , I -> Izin, S -> Sakit, C -> Izin Cuti')
                     ->setCellValue('A2', 'No.')
                     ->setCellValue('B2', 'MEDREP')
                     ->setCellValue('C2', 'Nama MEDREP')
