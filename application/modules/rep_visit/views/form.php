@@ -85,7 +85,7 @@
                             <label for="status">Status</label>
                             <select id="status-id" name="status" class="form-control" placeholder="Select Status">
                                 <option value="H">Masuk</option>
-                                <option value="HF">Libur</option>
+                                <option value="HF">Izin</option>
                                 <option value="C">Cuti</option>
                                 <option value="S">Sakit</option>
                             </select>
