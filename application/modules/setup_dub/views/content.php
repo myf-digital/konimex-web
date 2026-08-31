@@ -74,4 +74,4 @@
 </div>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/setup_dub/content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/setup_dub/content.js' ?>?v=1.0"></script>

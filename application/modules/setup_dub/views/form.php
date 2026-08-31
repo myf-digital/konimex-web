@@ -58,4 +58,4 @@
     </div>
 </section>
 
-<script src="<?php echo base_url() . 'assets/modules/setup_dub/form.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/setup_dub/form.js' ?>?v=1.0"></script>

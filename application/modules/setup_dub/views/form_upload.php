@@ -95,4 +95,4 @@ for (i = 0; i < close.length; i++) {
     </div>
 </section>
 
-<script src="<?php echo base_url() . 'assets/modules/setup_dub/form-upload.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/setup_dub/form-upload.js' ?>?v=1.0"></script>
