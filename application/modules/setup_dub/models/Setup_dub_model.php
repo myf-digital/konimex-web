@@ -198,15 +198,19 @@ class Setup_dub_model extends CI_Model
     public function load($data, $type = 'load')
     {
 		$strquery = "";
-        if (!empty($data["restrict_level"])) {
+        if (!empty($data["restrict_level"]) && $data["restrict_level"] != 'null' && !empty($data["usersession"])) {
             $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
             if ($restrict_query) {
                 $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
-        if (!empty($data['salesmanid'])) {
-            $strquery .= " and a.salesmanid IN (".$data['salesmanid'].") ";
+        if (!empty($data['salesmanid']) && $data['salesmanid'] !== 'null') {
+            $salesman_ids = is_array($data['salesmanid']) ? $data['salesmanid'] : explode(',', $data['salesmanid']);
+            $escaped_ids = array_map(function($id) {
+                return "'" . $this->db->escape_str(trim($id)) . "'";
+            }, $salesman_ids);
+            $strquery .= " AND a.salesmanid IN (" . implode(',', $escaped_ids) . ") ";
         }
 
         $field = " a.* ";

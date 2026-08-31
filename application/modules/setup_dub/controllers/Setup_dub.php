@@ -113,8 +113,9 @@ class Setup_dub extends BaseController
         $data = [
             'salesmanid' => $salesmanid,
             'username' => $username,
+            'usersession' => $username,
             'jabatan' => $jabatan,
-            'restrict_level' => $restrict_level,
+            'restrict_level' => ($restrict_level == 'null' || empty($restrict_level)) ? null : $restrict_level,
             'filtername' => $filtername,
         ];
         $datas = $this->setup_dub->load($data, 'export');
