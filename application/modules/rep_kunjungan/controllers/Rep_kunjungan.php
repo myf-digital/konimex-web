@@ -206,7 +206,12 @@ class Rep_kunjungan extends BaseController
             }
         }
 
-        if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
+        if ($salesmanid!=''){
+            $addquery=" and a.salesmanid in ('".$salesmanid."') ";
+		    $filename = "Report_Kunjungan_".$salesmanid."_".$start."-".$end.".xlsx";
+        } else { 
+            $addquery="";
+        }
         $q = $this->db->query(" 
                                 select 
                                     a.periode, 
@@ -295,41 +300,45 @@ class Rep_kunjungan extends BaseController
                     ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']));
 
                     if (!empty($vkunjungan['image'])) {
-                        if (file_exists(DIR_IMAGE_PATH.$vkunjungan['image'])) {
-                            $objDrawing = new PHPExcel_Worksheet_Drawing();
-                            $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
-                            $objDrawing->setWidth(120); 
-                            $objDrawing->setHeight(120); 
-                            $objDrawing->setCoordinates('O'.$i);
-                            $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                            $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(15);
-                        } else {
-                            $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
-                        }
+                        $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, URL_IMAGE.$vkunjungan['image']);
+                        // if (file_exists(DIR_IMAGE_PATH.$vkunjungan['image'])) {
+                        //     $objDrawing = new PHPExcel_Worksheet_Drawing();
+                        //     $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
+                        //     $objDrawing->setWidth(120); 
+                        //     $objDrawing->setHeight(120); 
+                        //     $objDrawing->setCoordinates('M'.$i);
+                        //     $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+                        //     $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
+                        //     $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(15);
+                        // } else {
+                        //     $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, '');
+                        // }
                     } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
+                        $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, '');
                     }
                 $i++;
                 $no++;
             }
                         
+        if (ob_get_length()) ob_end_clean();
+        ob_start();
+        error_reporting(0);
+
+        if (ob_get_length()) ob_end_clean();
+
         // Redirect output to a client's web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment;filename=$filename");
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE over SSL, then the following may be needed
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header ('Pragma: public'); // HTTP/1.0
-        
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
         unset($objPHPExcel);
-        return true;
-
+        exit;
     }
-
 }
