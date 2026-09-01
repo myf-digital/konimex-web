@@ -304,19 +304,14 @@ class Rep_absensi extends BaseController
                     if (!empty($vkunjungan['start_image']) or $vkunjungan['start_image']<>'') { 
                         $start_images = explode(',', $vkunjungan['start_image']);
                         $start_img = trim($start_images[0]);
-                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, URL_IMAGE.$start_img);
-                        // if (file_exists(DIR_IMAGE_PATH.$start_img)) {
-                        //     $objDrawing = new PHPExcel_Worksheet_Drawing();
-                        //     $objDrawing->setPath(DIR_IMAGE_PATH.$start_img);
-                        //     $objDrawing->setWidth(120); 
-                        //     $objDrawing->setHeight(120); 
-                        //     $objDrawing->setCoordinates('F'.$i);
-                        //     $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                        //     $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                        //     $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
-                        // } else {
-                        //     $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, '');
-                        // }
+                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, 'Foto Check In');
+                        $objPHPExcel->getActiveSheet()->getCell('F'.$i)->getHyperlink()->setUrl(URL_IMAGE.$start_img);
+                        $objPHPExcel->getActiveSheet()->getStyle('F'.$i)->applyFromArray([
+                            'font' => [
+                                'color' => ['rgb' => '0000FF'],
+                                'underline' => 'single'
+                            ]
+                        ]);
                     } else {
                         $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, '');
                     }
@@ -324,19 +319,14 @@ class Rep_absensi extends BaseController
                     if (!empty($vkunjungan['end_image']) or $vkunjungan['end_image']<>'') {
                         $end_images = explode(',', $vkunjungan['end_image']);
                         $end_img = trim($end_images[0]);
-                        $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, URL_IMAGE.$end_img);
-                        // if (file_exists(DIR_IMAGE_PATH.$end_img)) {
-                        //     $objDrawing = new PHPExcel_Worksheet_Drawing();
-                        //     $objDrawing->setPath(DIR_IMAGE_PATH.$end_img);
-                        //     $objDrawing->setWidth(120); 
-                        //     $objDrawing->setHeight(120); 
-                        //     $objDrawing->setCoordinates('I'.$i);
-                        //     $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                        //     $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                        //     $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
-                        // } else {
-                        //     $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, '');
-                        // }
+                        $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, 'Foto Check Out');
+                        $objPHPExcel->getActiveSheet()->getCell('I'.$i)->getHyperlink()->setUrl(URL_IMAGE.$end_img);
+                        $objPHPExcel->getActiveSheet()->getStyle('I'.$i)->applyFromArray([
+                            'font' => [
+                                'color' => ['rgb' => '0000FF'],
+                                'underline' => 'single'
+                            ]
+                        ]);
                     } else {
                         $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, '');
                     }

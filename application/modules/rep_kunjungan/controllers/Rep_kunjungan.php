@@ -300,19 +300,14 @@ class Rep_kunjungan extends BaseController
                     ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']));
 
                     if (!empty($vkunjungan['image'])) {
-                        $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, URL_IMAGE.$vkunjungan['image']);
-                        // if (file_exists(DIR_IMAGE_PATH.$vkunjungan['image'])) {
-                        //     $objDrawing = new PHPExcel_Worksheet_Drawing();
-                        //     $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
-                        //     $objDrawing->setWidth(120); 
-                        //     $objDrawing->setHeight(120); 
-                        //     $objDrawing->setCoordinates('M'.$i);
-                        //     $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                        //     $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                        //     $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(15);
-                        // } else {
-                        //     $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, '');
-                        // }
+                        $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, 'Foto Kunjungan');
+                        $objPHPExcel->getActiveSheet()->getCell('M'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vkunjungan['image']);
+                        $objPHPExcel->getActiveSheet()->getStyle('M'.$i)->applyFromArray([
+                            'font' => [
+                                'color' => ['rgb' => '0000FF'],
+                                'underline' => 'single'
+                            ]
+                        ]);
                     } else {
                         $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, '');
                     }
