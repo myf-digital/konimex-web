@@ -193,7 +193,7 @@ class Rep_absensi extends BaseController
 		$restrict_level = $this->uri->segment('7');
 		$salesmanid = $this->uri->segment('8');
 
-		$filename = "Report_Kunjungan_".$start."-".$end.".xlsx";
+		$filename = "Report_Absensi_".$start."-".$end.".xlsx";
 
         $strquery = "";
         if (!empty($restrict_level)) {
@@ -205,6 +205,7 @@ class Rep_absensi extends BaseController
 
         if ($salesmanid!='') {
             $addquery=" and a.salesmanid in ('".$salesmanid."') ";
+		    $filename = "Report_Absensi_".$salesmanid."_".$start."-".$end.".xlsx";
         } else {
             $addquery="";
         }
@@ -216,8 +217,16 @@ class Rep_absensi extends BaseController
                                     b.nama_area, 
                                     concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
                                     coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
-                                    a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
-                                    a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
+                                    a.start_time,
+                                    a.start_image,
+                                    a.start_keterangan,
+                                    a.start_latitude,
+                                    a.start_longitude,
+                                    a.end_time,
+                                    a.end_image,
+                                    a.end_keterangan,
+                                    a.end_latitude,
+                                    a.end_longitude,
                                     TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
                                 from 
                                 attendance_parma a 
@@ -285,58 +294,100 @@ class Rep_absensi extends BaseController
                     ->setCellValue('K'.$i, cal_duration_date($vkunjungan['start_time'],$vkunjungan['end_time']));
 
                     if (!empty($vkunjungan['start_image']) or $vkunjungan['start_image']<>'') { 
-                        if (file_exists(DIR_IMAGE_PATH.$vkunjungan['start_image'])) {
-                            $objDrawing = new PHPExcel_Worksheet_Drawing();
-                            $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['start_image']);
-                            $objDrawing->setWidth(120); 
-                            $objDrawing->setHeight(120); 
-                            $objDrawing->setCoordinates('E'.$i);
-                            $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
-                        } else {
-                            $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
-                        }
+                        $start_images = explode(',', $vkunjungan['start_image']);
+                        $start_img = trim($start_images[0]);
+                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, 'Foto Check In');
+                        $objPHPExcel->getActiveSheet()->getCell('F'.$i)->getHyperlink()->setUrl(URL_IMAGE.$start_img);
+                        $objPHPExcel->getActiveSheet()->getStyle('F'.$i)->applyFromArray([
+                            'font' => [
+                                'color' => ['rgb' => '0000FF'],
+                                'underline' => 'single'
+                            ]
+                        ]);
                     } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('E'.$i, '');
+                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, '');
                     }
 
                     if (!empty($vkunjungan['end_image']) or $vkunjungan['end_image']<>'') {
-                        if (file_exists(DIR_IMAGE_PATH.$vkunjungan['end_image']))	 {
-                            $objDrawing = new PHPExcel_Worksheet_Drawing();
-                            $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['end_image']);
-                            $objDrawing->setWidth(120); 
-                            $objDrawing->setHeight(120); 
-                            $objDrawing->setCoordinates('H'.$i);
-                            $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                            $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
-                        } else {
-                            $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
-                        }
+                        $end_images = explode(',', $vkunjungan['end_image']);
+                        $end_img = trim($end_images[0]);
+                        $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, 'Foto Check Out');
+                        $objPHPExcel->getActiveSheet()->getCell('I'.$i)->getHyperlink()->setUrl(URL_IMAGE.$end_img);
+                        $objPHPExcel->getActiveSheet()->getStyle('I'.$i)->applyFromArray([
+                            'font' => [
+                                'color' => ['rgb' => '0000FF'],
+                                'underline' => 'single'
+                            ]
+                        ]);
                     } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('H'.$i, '');
+                        $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, '');
                     }
 
                     $i++;
                     $no++;
                 }
-                        
+
+        $sheet = $objPHPExcel->getActiveSheet();
+        $lastRow = ($i > 3) ? ($i - 1) : 2;
+
+        $sheet->mergeCells('A1:K1');
+        $sheet->getStyle('A1:K1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->getStyle('A2:K2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        // 3. Semua kolom border dan width menyesuaikan text
+        $sheet->getStyle('A2:K' . $lastRow)->applyFromArray([
+            'borders' => [
+                'allborders' => [
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        if ($lastRow >= 3) {
+            $sheet->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        }
+
+        foreach (range('A', 'K') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        if (ob_get_length()) ob_end_clean();
+        ob_start();
+        error_reporting(0);
+
+        if (ob_get_length()) ob_end_clean();
+
         // Redirect output to a client's web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment;filename=$filename");
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE over SSL, then the following may be needed
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header ('Pragma: public'); // HTTP/1.0
-        
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
         unset($objPHPExcel);
-        return true;
+        exit;
     }
-
 }
