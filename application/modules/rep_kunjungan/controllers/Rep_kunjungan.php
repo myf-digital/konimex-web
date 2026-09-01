@@ -206,7 +206,12 @@ class Rep_kunjungan extends BaseController
             }
         }
 
-        if ($salesmanid!=''){$addquery=" and a.salesmanid in ('".$salesmanid."') ";} else { $addquery="";}
+        if ($salesmanid!=''){
+            $addquery=" and a.salesmanid in ('".$salesmanid."') ";
+		    $filename = "Report_Kunjungan_".$salesmanid."_".$start."-".$end.".xlsx";
+        } else { 
+            $addquery="";
+        }
         $q = $this->db->query(" 
                                 select 
                                     a.periode, 
@@ -265,8 +270,8 @@ class Rep_kunjungan extends BaseController
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
             ->setCellValue('C2', 'User Medrep')
-            ->setCellValue('D2', 'Medrep Outlet ID')
-            ->setCellValue('E2', 'Latest Customer Name')
+            ->setCellValue('D2', 'Outlet ID')
+            ->setCellValue('E2', 'Outlet Name')
             ->setCellValue('F2', 'Alamat')
             ->setCellValue('G2', 'Area')
             ->setCellValue('H2', 'Cluster')
@@ -295,41 +300,81 @@ class Rep_kunjungan extends BaseController
                     ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']));
 
                     if (!empty($vkunjungan['image'])) {
-                        if (file_exists(DIR_IMAGE_PATH.$vkunjungan['image'])) {
-                            $objDrawing = new PHPExcel_Worksheet_Drawing();
-                            $objDrawing->setPath(DIR_IMAGE_PATH.$vkunjungan['image']);
-                            $objDrawing->setWidth(120); 
-                            $objDrawing->setHeight(120); 
-                            $objDrawing->setCoordinates('O'.$i);
-                            $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
-                            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
-                            $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(15);
-                        } else {
-                            $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
-                        }
+                        $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, 'Foto Kunjungan');
+                        $objPHPExcel->getActiveSheet()->getCell('M'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vkunjungan['image']);
+                        $objPHPExcel->getActiveSheet()->getStyle('M'.$i)->applyFromArray([
+                            'font' => [
+                                'color' => ['rgb' => '0000FF'],
+                                'underline' => 'single'
+                            ]
+                        ]);
                     } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('O'.$i, '');
+                        $objPHPExcel->getActiveSheet()->setCellValue('M'.$i, '');
                     }
                 $i++;
                 $no++;
             }
-                        
+
+        $sheet = $objPHPExcel->getActiveSheet();
+        $lastRow = ($i > 3) ? ($i - 1) : 2;
+
+        $sheet->mergeCells('A1:M1');
+        $sheet->getStyle('A1:M1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->getStyle('A2:M2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->getStyle('A2:M' . $lastRow)->applyFromArray([
+            'borders' => [
+                'allborders' => [
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        if ($lastRow >= 3) {
+            $sheet->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        }
+
+        foreach (range('A', 'M') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        if (ob_get_length()) ob_end_clean();
+        ob_start();
+        error_reporting(0);
+
+        if (ob_get_length()) ob_end_clean();
+
         // Redirect output to a client's web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment;filename=$filename");
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE over SSL, then the following may be needed
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header ('Pragma: public'); // HTTP/1.0
-        
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
         unset($objPHPExcel);
-        return true;
-
+        exit;
     }
-
 }
