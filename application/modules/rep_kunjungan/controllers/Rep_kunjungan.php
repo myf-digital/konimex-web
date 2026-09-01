@@ -314,7 +314,48 @@ class Rep_kunjungan extends BaseController
                 $i++;
                 $no++;
             }
-                        
+
+        $sheet = $objPHPExcel->getActiveSheet();
+        $lastRow = ($i > 3) ? ($i - 1) : 2;
+
+        $sheet->mergeCells('A1:M1');
+        $sheet->getStyle('A1:M1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->getStyle('A2:M2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->getStyle('A2:M' . $lastRow)->applyFromArray([
+            'borders' => [
+                'allborders' => [
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        if ($lastRow >= 3) {
+            $sheet->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        }
+
+        foreach (range('A', 'M') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
         if (ob_get_length()) ob_end_clean();
         ob_start();
         error_reporting(0);

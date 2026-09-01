@@ -335,6 +335,48 @@ class Rep_absensi extends BaseController
                     $no++;
                 }
 
+        $sheet = $objPHPExcel->getActiveSheet();
+        $lastRow = ($i > 3) ? ($i - 1) : 2;
+
+        $sheet->mergeCells('A1:K1');
+        $sheet->getStyle('A1:K1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->getStyle('A2:K2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        // 3. Semua kolom border dan width menyesuaikan text
+        $sheet->getStyle('A2:K' . $lastRow)->applyFromArray([
+            'borders' => [
+                'allborders' => [
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        if ($lastRow >= 3) {
+            $sheet->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        }
+
+        foreach (range('A', 'K') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
         if (ob_get_length()) ob_end_clean();
         ob_start();
         error_reporting(0);
