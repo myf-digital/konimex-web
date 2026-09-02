@@ -37,4 +37,4 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-form-download.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-form-download.js' ?>?v=1.0"></script>
