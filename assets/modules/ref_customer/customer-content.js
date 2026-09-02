@@ -324,9 +324,12 @@
   }
 
   function deleteRow(val) {
+    if (paramsession && paramsession.username) {
+      val.usersession = paramsession.username;
+    }
     common.dialogDelete(function () {
       $.post("ref_customer/delete", val, function (data, status) {
-        if (200 === data.code) {
+        if (200 == data.code) {
           $.alert("Delete success!");
           uiTbl.datagrid("reload");
         } else {

@@ -99,4 +99,4 @@ for (i = 0; i < close.length; i++) {
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-form-upload.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-form-upload.js' ?>?v=1.0"></script>

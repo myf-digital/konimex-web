@@ -185,7 +185,8 @@ class Customer_model extends CI_Model
 
     public function delete($data)
     {
-        $data["deleted_by"] = $data["usersession"];
+        $deleted_by = !empty($data["usersession"]) ? $data["usersession"] : ($this->session->userdata('username') ?? 'admin');
+        $data["deleted_by"] = $deleted_by;
         
         $customer_fields = $this->db->list_fields('m_customer');
         $delete_fields = $this->db->list_fields('m_customer_delete');
@@ -196,22 +197,29 @@ class Customer_model extends CI_Model
         if (!empty($common_fields)) {
             $fields_str = implode(', ', $common_fields);
             $this->db->query("insert into m_customer_delete ($fields_str, deleted_by, deleted_date) 
-                              select $fields_str, '".$this->db->escape_str($data["deleted_by"])."' deleted_by, now() deleted_date 
+                              select $fields_str, '".$this->db->escape_str($deleted_by)."' deleted_by, now() deleted_date 
                               from m_customer where customerid='".$this->db->escape_str($data['customerid'])."'");
         }
         $this->db->where('customerid', $data['customerid']);
         $this->db->delete('m_customer_ob');
 
-        $this->db->where('siteid', $data['siteid']);
-        $this->db->where('customerid_m', $data['customerid_m']);
+        if (!empty($data['siteid'])) {
+            $this->db->where('siteid', $data['siteid']);
+        }
+        if (isset($data['customerid_m'])) {
+            $this->db->where('customerid_m', $data['customerid_m']);
+        }
         $this->db->where('customerid', $data['customerid']);
         $this->db->delete('m_customer');
 
-        $this->db->query("delete from t_sales_rrk where customerid='".$data['customerid']."' and salesmanid='".$data['salesmanid']."' 
+        $salesmanid = !empty($data['salesmanid']) ? $data['salesmanid'] : '';
+        $this->db->query("delete from t_sales_rrk where customerid='".$this->db->escape_str($data['customerid'])."' and salesmanid='".$this->db->escape_str($salesmanid)."' 
                             and periode=(select tanggal from m_setup_site);");
         $this->db->query("Update app_data_version set version=version+1, modified_date=now(), modified_by='Delete Outlet'");
 
-        $this->db->where('siteid', $data['siteid']);
+        if (!empty($data['siteid'])) {
+            $this->db->where('siteid', $data['siteid']);
+        }
         $this->db->where('customerid', $data['customerid']);
         return $this->db->delete('t_sales_setup_rrk');
     }
