@@ -79,4 +79,4 @@
     </div>
 </div>
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-content.js' ?>?v=1.0"></script>
