@@ -18,6 +18,10 @@ class Customer_model extends CI_Model
         $newidcust = $this->db->query($sql)->row();
         $data['customerid'] =  $newidcust->customerid_new;
 
+        if (empty($data['kode_outlet']) || trim($data['kode_outlet']) === '') {
+            $data['kode_outlet'] = $data['customerid'];
+        }
+
         $this->db->where('customerid', $data['customerid']);
         $this->db->delete('ref_professional_mapping');
 
@@ -48,6 +52,9 @@ class Customer_model extends CI_Model
     {
         if (empty($data["siteid"])) {
             $data["siteid"] = "KNX01";
+        }
+        if (empty($data['kode_outlet']) || trim($data['kode_outlet']) === '') {
+            $data['kode_outlet'] = $data['customerid'];
         }
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
@@ -80,6 +87,9 @@ class Customer_model extends CI_Model
 
     public function generatePayload($data)
     {
+        if ((empty($data['kode_outlet']) || trim($data['kode_outlet']) === '') && !empty($data['customerid'])) {
+            $data['kode_outlet'] = $data['customerid'];
+        }
         $payload = payload([
             "siteid",
             "customerid_m",
@@ -537,7 +547,7 @@ class Customer_model extends CI_Model
                 if (!empty($id_customer)) {
                     $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.customerid = ? ", [trim($id_customer)])->row_array();
                 }
-                if (empty($existing)) {
+                if (empty($existing) && !empty($kode_outlet)) {
                     $existing = $this->db->query("SELECT a.* FROM m_customer a WHERE a.kode_outlet = ? ", [trim($kode_outlet)])->row_array();
                 }
                 if (empty($existing)) {
@@ -548,7 +558,7 @@ class Customer_model extends CI_Model
                 if ($existing) {
                     $customerid = $existing['customerid'];
                     $updateData = [
-                        'kode_outlet' => $kode_outlet ? $kode_outlet : $existing['kode_outlet'],
+                        'kode_outlet' => !empty($kode_outlet) ? $kode_outlet : (!empty($existing['kode_outlet']) ? $existing['kode_outlet'] : $customerid),
                         'nama_customer' => $nama_customer ? $nama_customer : $existing['nama_customer'],
                         'typeid' => $channel_id,
                         'telp' => $telp,
@@ -576,7 +586,7 @@ class Customer_model extends CI_Model
                         'siteid' => 'KNX01',
                         'customerid_m' => '',
                         'customerid' => $customerid,
-                        'kode_outlet' => $kode_outlet ? $kode_outlet : $customerid,
+                        'kode_outlet' => !empty($kode_outlet) ? $kode_outlet : $customerid,
                         'nama_customer' => $nama_customer,
                         'typeid' => $channel_id,
                         'telp' => $telp,
