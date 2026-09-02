@@ -1043,30 +1043,54 @@ class Api_v1_model extends CI_Model
 			$salesmanid_val = $data['salesmanid'];
 			$sql_salesman = "
 				select
-					mss.*,
+					msa.regionalid,
+					msa.areaid,
+					msa.subareaid,
 					mar.nama_regional,
 					maa.nama_area,
 					mas.nama_area as nama_subarea
-				from m_sales_salesman mss
-				left join m_area_regional mar on mar.regionalid = mss.regionalid
-				left join m_area_areasite maa on maa.areaid = mss.areaid
-				left join m_area_subarea mas on mas.subareaid = mss.subareaid
-				where mss.salesmanid = ?
+				from m_salesman_area msa
+				left join m_area_regional mar on mar.regionalid = msa.regionalid
+				left join m_area_areasite maa on maa.areaid = msa.areaid
+				left join m_area_subarea mas on mas.subareaid = msa.subareaid
+				where msa.salesmanid = ?
 			";
-			$salesman = $this->db->query($sql_salesman, [$data['salesmanid']])->row_array();
-			if ($salesman) {
-				if (!empty($salesman['regionalid'])) {
-					$where .= ' and a.regionalid = "'.$salesman['regionalid']. '"';
-					$area[] = $salesman['nama_regional'];
+			$salesman_areas = $this->db->query($sql_salesman, [$data['salesmanid']])->result_array();
+			if (!empty($salesman_areas)) {
+				$subareaids = array_unique(array_filter(array_column($salesman_areas, 'subareaid')));
+				$areaids = array_unique(array_filter(array_column($salesman_areas, 'areaid')));
+				$regionalids = array_unique(array_filter(array_column($salesman_areas, 'regionalid')));
+
+				$conditions = [];
+				if (!empty($subareaids)) {
+					$escaped_subareas = array_map(function($val) { return "'" . $this->db->escape_str($val) . "'"; }, $subareaids);
+					$conditions[] = "a.subareaid in (" . implode(",", $escaped_subareas) . ")";
 				}
-				if (!empty($salesman['areaid'])) {
-					$where .= ' and a.areaid = "'.$salesman['areaid']. '"';
-					$area[] = $salesman['nama_area'];
+				if (!empty($areaids)) {
+					$escaped_areas = array_map(function($val) { return "'" . $this->db->escape_str($val) . "'"; }, $areaids);
+					$conditions[] = "a.areaid in (" . implode(",", $escaped_areas) . ")";
 				}
-				if (!empty($salesman['subareaid'])) {
-					$where .= ' and a.subareaid = "'.$salesman['subareaid']. '"';
-					$area[] = $salesman['nama_subarea'];
+				if (!empty($regionalids)) {
+					$escaped_regionals = array_map(function($val) { return "'" . $this->db->escape_str($val) . "'"; }, $regionalids);
+					$conditions[] = "a.regionalid in (" . implode(",", $escaped_regionals) . ")";
 				}
+
+				if (!empty($conditions)) {
+					$where .= " and (" . implode(" or ", $conditions) . ")";
+				}
+
+				foreach ($salesman_areas as $sa) {
+					if (!empty($sa['nama_regional'])) {
+						$area[] = $sa['nama_regional'];
+					}
+					if (!empty($sa['nama_area'])) {
+						$area[] = $sa['nama_area'];
+					}
+					if (!empty($sa['nama_subarea'])) {
+						$area[] = $sa['nama_subarea'];
+					}
+				}
+				$area = array_unique(array_filter($area));
 			}
 		}
 
