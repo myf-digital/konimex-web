@@ -201,7 +201,13 @@
       "fa fa-trash-o",
     );
     if (row.status == 3) {
-      return '<div class="action-grid">' + btnDetail + "</div>";
+      return (
+        '<div class="action-grid">' +
+        btnUpdate +
+        " " +
+        btnDetail +
+        "</div>"
+      );
     } else {
       return (
         '<div class="action-grid">' +
