@@ -252,11 +252,12 @@ if (!function_exists('date_interval')) {
 if (!function_exists('format_jarak')) {
     function format_jarak($meter)
     {
-        if (!$meter) return '-';
+        if (empty($meter) || !is_numeric($meter)) return '-';
         
+        $meter = (float)$meter;
         if ($meter >= 1000) {
             $km = floor($meter / 1000);
-            $m  = $meter % 1000;
+            $m  = fmod($meter, 1000);
             return number_format($km,0,'.','.') . ' km ' . number_format($m,0,'.','.') . ' m';
         } else {
             return number_format($meter,0,'.','.') . ' m';

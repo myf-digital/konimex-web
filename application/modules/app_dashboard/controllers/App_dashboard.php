@@ -134,7 +134,7 @@ class App_dashboard extends BaseController
 			$html .= '<td colspan="6">';
 			
 			$customerid = $value['customerid'];
-			$html .= '<div id="detail_product_"'.$i.' style="overflow-y: auto; max-height: 300px; max-width: 900px; white-space: nowrap; ">';
+			$html .= '<div id="detail_product_"'.$i.' style="overflow-y: auto; max-height: 500px; max-width: 900px; white-space: nowrap; ">';
 			
 			$d_rrk = $this->dashboard->get_detail_rrk($siteid,$customerid,$sid,$date);
 			$d_img_checkin = $this->dashboard->get_image_checkin($siteid,$date,$sid,$customerid);
@@ -167,7 +167,7 @@ class App_dashboard extends BaseController
 								<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>
 								<td class="danger" style="text-align:center;">'.@$d_rrk->lama_kunjungan.'</td>
 								<td class="info" style="text-align:left;padding-left:10px;">'.@$d_rrk->alasan.'</td>
-								<td class="info" style="text-align:left;padding-left:10px;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan)).'</td>
+								<td class="info" style="text-align:left;padding-left:10px;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan ?? '')).'</td>
 							</tr>
 						</tbody>
 					</table>';
@@ -198,7 +198,7 @@ class App_dashboard extends BaseController
 										<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>
 										<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>
 										<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>
-										<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>
+										<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'] ?? '')).'</p>
 										</td>
 									</tr>';
 								}
@@ -837,7 +837,7 @@ class App_dashboard extends BaseController
 										\'<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>\'+	
 										\'<td class="danger" style="text-align:center;">'.@$d_rrk->lama_kunjungan.'</td>\'+
 										\'<td class="info" style="text-align:left;">'.@$d_rrk->alasan.'</td>\'+	
-										\'<td class="info" style="text-align:left;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan)).'</td>\'+	
+										\'<td class="info" style="text-align:left;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan ?? '')).'</td>\'+	
 									\'</tr>\'+
 								\'</tbody>\'+
 							\'</table>\'+
@@ -864,7 +864,7 @@ class App_dashboard extends BaseController
 												\'<p>Channel - Class :'.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC :'.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
 												\'<p>Detailing Product :'.@$rowsdetailing['brands'].'</p>\'+
-												\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>\'+
+												\'<p>Description :'.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'] ?? '')).'</p>\'+
 												\'</td>\'+
 												\'</tr>';
 								}
@@ -982,7 +982,7 @@ class App_dashboard extends BaseController
 										\'<td class="success" style="text-align:center;">'.@$d_rrk->check_out.'</td>\'+	
 										\'<td class="danger" style="text-align:center;">'.@$d_rrk->lama_kunjungan.'</td>\'+
 										\'<td class="info" style="text-align:left;">'.@$d_rrk->alasan.'</td>\'+	
-										\'<td class="info" style="text-align:left;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan)).'</td>\'+	
+										\'<td class="info" style="text-align:left;">'.str_replace(array("\n","\r"),"",str_replace("'","`", @$d_rrk->keterangan ?? '')).'</td>\'+	
 									\'</tr>\'+
 								\'</tbody>\'+
 							\'</table>\'+
@@ -1009,7 +1009,7 @@ class App_dashboard extends BaseController
 												\'<p>Channel - Class : '.@$rowsdetailing['typeid'].' - '.@$rowsdetailing['nama_account'].'</p>\'+
 												\'<p>PIC : '.@$rowsdetailing['professional_name'].'('.@$rowsdetailing['tipe_pic'].')</p>\'+
 												\'<p>Detailing Product : '.@$rowsdetailing['brands'].'</p>\'+
-												\'<p>Description : '.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'])).'</p>\'+
+												\'<p>Description : '.str_replace(array("\n","\r"),"",str_replace("'","`", @$rowsdetailing['keterangan'] ?? '')).'</p>\'+
 												\'</td>\'+
 												\'</tr>';
 								}

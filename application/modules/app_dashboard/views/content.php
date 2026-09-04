@@ -89,12 +89,12 @@
 </section>
 <div class="modal fade" id="modal_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" >
-    <div class="modal-content" style="overflow-y: auto; width: 900px; max-height: 500px;" >
+    <div class="modal-content" style="overflow-y: auto; width: 900px; height: 90vh;" >
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title" id="myModalLabel">List Data</h4>
       </div>
-		<div class="modal-body" style=" max-height: 75%; width: 100%;">
+		<div class="modal-body" style="min-height: 85%; width: 100%;">
 		</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>      
