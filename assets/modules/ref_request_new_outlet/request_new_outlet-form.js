@@ -46,9 +46,6 @@
         return true; // MANDATORY!
       },
       rules: {
-        kode_outlet: {
-          required: true,
-        },
         nama_customer: {
           required: true,
         },
