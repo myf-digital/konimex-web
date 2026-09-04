@@ -2056,45 +2056,81 @@ class Api_v1_model extends CI_Model
 
     public function update_table($table, $data, $where)
     {
-        $this->db->trans_begin();
-        $this->db->where($where);
-        $this->db->update($table, $data);
+        $db_debug = $this->db->db_debug;
+        $this->db->db_debug = FALSE;
 
-        $affected_rows = $this->db->affected_rows();
+        try {
+            $this->db->trans_begin();
+            $this->db->where($where);
+            $this->db->update($table, $data);
 
-        if ($this->db->trans_status() === FALSE) {
+            $affected_rows = $this->db->affected_rows();
+
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $error = $this->db->error();
+                $err_msg = !empty($error['message']) ? $error['message'] : 'Unknown database error';
+                $this->db->db_debug = $db_debug;
+                return result(null, 500, "Database error: " . $err_msg);
+            } else {
+                $this->db->trans_commit();
+                $this->db->db_debug = $db_debug;
+                return result(array("affected_rows" => $affected_rows), 200, "Update successful.");
+            }
+        } catch (\Throwable $e) {
             $this->db->trans_rollback();
-            return result(null, 500, "Database error: " . $this->db->error()['message']);
-        } else {
-            $this->db->trans_commit();
-            return result(array("affected_rows" => $affected_rows), 200, "Update successful.");
+            $this->db->db_debug = $db_debug;
+            return result(null, 500, "Database error: " . $e->getMessage());
         }
     }
 
     public function execute_query_table($query_string)
     {
-        $query = $this->db->query($query_string);
-        if ($query === TRUE) {
-            return result(array("affected_rows" => $this->db->affected_rows()), 200, "Query executed successfully.");
-        } else if ($query === FALSE) {
-            return result(null, 500, "Database error: " . $this->db->error()['message']);
-        } else {
-            return result($query->result_array(), 200, "Query executed successfully.");
+        $db_debug = $this->db->db_debug;
+        $this->db->db_debug = FALSE;
+
+        try {
+            $query = $this->db->query($query_string);
+            $this->db->db_debug = $db_debug;
+
+            if ($query === TRUE) {
+                return result(array("affected_rows" => $this->db->affected_rows()), 200, "Query executed successfully.");
+            } else if ($query === FALSE) {
+                $error = $this->db->error();
+                $err_msg = !empty($error['message']) ? $error['message'] : 'Unknown database error';
+                return result(null, 500, "Database error: " . $err_msg);
+            } else {
+                return result($query->result_array(), 200, "Query executed successfully.");
+            }
+        } catch (\Throwable $e) {
+            $this->db->db_debug = $db_debug;
+            return result(null, 500, "Database error: " . $e->getMessage());
         }
     }
 
     public function get_table($table, $columns = '*', $where = null)
     {
-        $this->db->select($columns);
-        if (!empty($where)) {
-            $this->db->where($where);
-        }
-        $query = $this->db->get($table);
+        $db_debug = $this->db->db_debug;
+        $this->db->db_debug = FALSE;
 
-        if ($query === FALSE) {
-            return result(null, 500, "Database error: " . $this->db->error()['message']);
-        } else {
-            return result($query->result_array(), 200, "Query executed successfully.");
+        try {
+            $this->db->select($columns);
+            if (!empty($where)) {
+                $this->db->where($where);
+            }
+            $query = $this->db->get($table);
+            $this->db->db_debug = $db_debug;
+
+            if ($query === FALSE) {
+                $error = $this->db->error();
+                $err_msg = !empty($error['message']) ? $error['message'] : 'Unknown database error';
+                return result(null, 500, "Database error: " . $err_msg);
+            } else {
+                return result($query->result_array(), 200, "Query executed successfully.");
+            }
+        } catch (\Throwable $e) {
+            $this->db->db_debug = $db_debug;
+            return result(null, 500, "Database error: " . $e->getMessage());
         }
     }
 }
