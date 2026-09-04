@@ -58,7 +58,7 @@
       format: "yyyy-mm-dd",
       autoclose: true,
       todayHighlight: true,
-    });
+    }).datepicker("setDate", new Date());
 
     uiStartPeriode.on("changeDate", function (selected) {
       var startDate = new Date(selected.date.valueOf());
@@ -74,14 +74,17 @@
 
   function setupForm(r1) {
     let rows1 = r1.rows;
+    let options = [
+        { id: "all", text: "Semua TPE" },
+        ...(rows1.map((o) => ({
+            id: o.salesmanid,
+            text: o.salesmanid + " - " + o.nama_salesman,
+        }))),
+    ];
     uiSelectMedrep.select2({
-      placeholder: "Select User TPE",
-      allowClear: true,
-      data: $.map(rows1, function (o) {
-        o.id = o.salesmanid;
-        o.text = o.salesmanid + " - " + o.nama_salesman;
-        return o;
-      }),
+        placeholder: 'Select User TPE',
+        allowClear: true,
+        data: options,
     });
 
     uiSelectMedrep.val(null).trigger("change");

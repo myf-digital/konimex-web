@@ -1,6 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
 class Rep_absensi extends BaseController
 {
 
@@ -48,59 +53,39 @@ class Rep_absensi extends BaseController
             }
         }
 
-        if ($salesmanid != '') {
-            $addquery = " and a.salesmanid in ('".$salesmanid."') ";
-        } else {
-            $addquery = "";
+        $addquery = "";
+        if (!empty($salesmanid) && $salesmanid != 'all') {
+            $addquery=" and a.salesmanid in ('".$salesmanid."') ";
         }
         $q = $this->db->query(" 
-                                select 
-                                    a.periode, 
-                                    a.salesmanid, 
-                                    b.nama_salesman, 
-                                    b.nama_area, 
-                                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
-                                    coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
-                                    a.start_time,
-                                    a.start_image,
-                                    a.start_keterangan,
-                                    a.start_latitude,
-                                    a.start_longitude,
-                                    a.end_time,
-                                    a.end_image,
-                                    a.end_keterangan,
-                                    a.end_latitude,
-                                    a.end_longitude,
-                                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
-                                from 
-                                attendance_parma a 
-                                left join (
-                                    select 
-                                        s.salesmanid,
-                                        s.nama_salesman,
-                                        (
-                                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_subarea sa on msa.subareaid = sa.subareaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_subarea,
-                                        (
-                                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_areasite ar on msa.areaid = ar.areaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_area,
-                                        (
-                                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_regional r on r.regionalid = msa.regionalid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_regional
-                                    from m_sales_salesman s
-                                ) b on a.salesmanid = b.salesmanid 
-                                where a.periode between '$start' and '$end' $addquery $strquery
-                                order by a.periode desc;
-                            ");
+            select 
+                a.periode, 
+                a.salesmanid, 
+                s.nama_salesman, 
+                b.nama_area, 
+                concat(a.salesmanid, '-', coalesce(s.nama_salesman, '')) as parma_user,
+                coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
+                a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
+                a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
+                TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
+            from 
+            attendance_parma a 
+            LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT sa.nama_area ORDER BY sa.nama_area ASC SEPARATOR ', ') AS nama_subarea,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_subarea sa ON msa.subareaid = sa.subareaid
+                LEFT JOIN m_area_areasite ar ON msa.areaid = ar.areaid
+                LEFT JOIN m_area_regional r ON msa.regionalid = r.regionalid
+                GROUP BY msa.salesmanid
+            ) b ON a.salesmanid = b.salesmanid
+            where a.periode between '$start' and '$end' $addquery $strquery
+            order by a.periode desc;
+        ");
 
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
@@ -112,7 +97,7 @@ class Rep_absensi extends BaseController
 		$html .= '<tr>';
         $html .= '<th class="text-center" style="width: 50px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
-		$html .= '<th style="width: 150px">User TPE</th>';
+		$html .= '<th style="width: 150px">TPE</th>';
 		$html .= '<th style="width: 150px">Area</th>';
 		$html .= '<th style="width: 150px">Start Time</th>';
 		$html .= '<th style="width: 120px">Foto Checkin</th>';
@@ -211,70 +196,59 @@ class Rep_absensi extends BaseController
             }
         }
 
-        if ($salesmanid!='') {
+        $addquery = "";
+        if (!empty($salesmanid) && $salesmanid != 'all') {
             $addquery=" and a.salesmanid in ('".$salesmanid."') ";
 		    $filename = "Report_Absensi_".$salesmanid."_".$start."-".$end.".xlsx";
-        } else {
-            $addquery="";
         }
         $q = $this->db->query(" 
-                                select 
-                                    a.periode, 
-                                    a.salesmanid, 
-                                    b.nama_salesman, 
-                                    b.nama_area, 
-                                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
-                                    coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
-                                    a.start_time,
-                                    a.start_image,
-                                    a.start_keterangan,
-                                    a.start_latitude,
-                                    a.start_longitude,
-                                    a.end_time,
-                                    a.end_image,
-                                    a.end_keterangan,
-                                    a.end_latitude,
-                                    a.end_longitude,
-                                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
-                                from 
-                                attendance_parma a 
-                                left join (
-                                    select 
-                                        s.salesmanid,
-                                        s.nama_salesman,
-                                        (
-                                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_subarea sa on msa.subareaid = sa.subareaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_subarea,
-                                        (
-                                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_areasite ar on msa.areaid = ar.areaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_area,
-                                        (
-                                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_regional r on r.regionalid = msa.regionalid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_regional
-                                    from m_sales_salesman s
-                                ) b on a.salesmanid = b.salesmanid 
-                                where a.periode between '$start' and '$end' $addquery $strquery
-                                order by a.periode desc;
-                            ");
+            select 
+                a.periode, 
+                a.salesmanid, 
+                s.nama_salesman, 
+                b.nama_area, 
+                concat(a.salesmanid, '-', coalesce(s.nama_salesman, '')) as parma_user,
+                coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
+                a.start_time,
+                a.start_image,
+                a.start_keterangan,
+                a.start_latitude,
+                a.start_longitude,
+                a.end_time,
+                a.end_image,
+                a.end_keterangan,
+                a.end_latitude,
+                a.end_longitude,
+                TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
+            from 
+            attendance_parma a 
+            LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT sa.nama_area ORDER BY sa.nama_area ASC SEPARATOR ', ') AS nama_subarea,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_subarea sa ON msa.subareaid = sa.subareaid
+                LEFT JOIN m_area_areasite ar ON msa.areaid = ar.areaid
+                LEFT JOIN m_area_regional r ON msa.regionalid = r.regionalid
+                GROUP BY msa.salesmanid
+            ) b ON a.salesmanid = b.salesmanid
+            where a.periode between '$start' and '$end' $addquery $strquery
+            order by a.periode desc;
+        ");
 
         $lovkunjungan = $q->result_array();
         
-        $this->load->library('excel');
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('A1', 'List Report Absensi TPE')
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Report Absensi');
+
+        $sheet->setCellValue('A1', 'List Report Absensi TPE')
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
-            ->setCellValue('C2', 'User TPE')
+            ->setCellValue('C2', 'TPE')
             ->setCellValue('D2', 'Area')
             ->setCellValue('E2', 'Start Time')
             ->setCellValue('F2', 'Foto Checkin')
@@ -282,60 +256,57 @@ class Rep_absensi extends BaseController
             ->setCellValue('H2', 'End Time')
             ->setCellValue('I2', 'Foto Checkout')
             ->setCellValue('J2', 'Keterangan Checkout')
-            ->setCellValue('K2', 'Durasi')
-            ;
+            ->setCellValue('K2', 'Durasi');
 
-            $i = 3;
-            $no = 1;
-            foreach ($lovkunjungan as $vkunjungan) {
-                $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A'.$i, $no)
-                    ->setCellValue('B'.$i, $vkunjungan['periode'])
-                    ->setCellValue('C'.$i, $vkunjungan['parma_user'])
-                    ->setCellValue('D'.$i, $vkunjungan['parma_area'])
-                    ->setCellValue('E'.$i, format_time($vkunjungan['start_time']))
-                    ->setCellValue('F'.$i, '')
-                    ->setCellValue('G'.$i, $vkunjungan['start_keterangan'])
-                    ->setCellValue('H'.$i, format_time($vkunjungan['end_time']))
-                    ->setCellValue('I'.$i, '')
-                    ->setCellValue('J'.$i, $vkunjungan['end_keterangan'])
-                    ->setCellValue('K'.$i, cal_duration_date($vkunjungan['start_time'],$vkunjungan['end_time']));
+        $i = 3;
+        $no = 1;
+        foreach ($lovkunjungan as $vkunjungan) {
+            $sheet->setCellValue('A'.$i, $no)
+                ->setCellValue('B'.$i, $vkunjungan['periode'])
+                ->setCellValue('C'.$i, $vkunjungan['parma_user'])
+                ->setCellValue('D'.$i, $vkunjungan['parma_area'])
+                ->setCellValue('E'.$i, format_time($vkunjungan['start_time']))
+                ->setCellValue('F'.$i, '')
+                ->setCellValue('G'.$i, $vkunjungan['start_keterangan'])
+                ->setCellValue('H'.$i, format_time($vkunjungan['end_time']))
+                ->setCellValue('I'.$i, '')
+                ->setCellValue('J'.$i, $vkunjungan['end_keterangan'])
+                ->setCellValue('K'.$i, cal_duration_date($vkunjungan['start_time'],$vkunjungan['end_time']));
 
-                    if (!empty($vkunjungan['start_image']) or $vkunjungan['start_image']<>'') { 
-                        $start_images = explode(',', $vkunjungan['start_image']);
-                        $start_img = trim($start_images[0]);
-                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, 'Foto Check In');
-                        $objPHPExcel->getActiveSheet()->getCell('F'.$i)->getHyperlink()->setUrl(URL_IMAGE.$start_img);
-                        $objPHPExcel->getActiveSheet()->getStyle('F'.$i)->applyFromArray([
-                            'font' => [
-                                'color' => ['rgb' => '0000FF'],
-                                'underline' => 'single'
-                            ]
-                        ]);
-                    } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$i, '');
-                    }
+            if (!empty($vkunjungan['start_image']) || $vkunjungan['start_image'] != '') { 
+                $start_images = explode(',', $vkunjungan['start_image']);
+                $start_img = trim($start_images[0]);
+                $sheet->setCellValue('F'.$i, 'Foto Check In');
+                $sheet->getCell('F'.$i)->getHyperlink()->setUrl(URL_IMAGE.$start_img);
+                $sheet->getStyle('F'.$i)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => '0000FF'],
+                        'underline' => 'single'
+                    ]
+                ]);
+            } else {
+                $sheet->setCellValue('F'.$i, '');
+            }
 
-                    if (!empty($vkunjungan['end_image']) or $vkunjungan['end_image']<>'') {
-                        $end_images = explode(',', $vkunjungan['end_image']);
-                        $end_img = trim($end_images[0]);
-                        $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, 'Foto Check Out');
-                        $objPHPExcel->getActiveSheet()->getCell('I'.$i)->getHyperlink()->setUrl(URL_IMAGE.$end_img);
-                        $objPHPExcel->getActiveSheet()->getStyle('I'.$i)->applyFromArray([
-                            'font' => [
-                                'color' => ['rgb' => '0000FF'],
-                                'underline' => 'single'
-                            ]
-                        ]);
-                    } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue('I'.$i, '');
-                    }
+            if (!empty($vkunjungan['end_image']) || $vkunjungan['end_image'] != '') { 
+                $end_images = explode(',', $vkunjungan['end_image']);
+                $end_img = trim($end_images[0]);
+                $sheet->setCellValue('I'.$i, 'Foto Check Out');
+                $sheet->getCell('I'.$i)->getHyperlink()->setUrl(URL_IMAGE.$end_img);
+                $sheet->getStyle('I'.$i)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => '0000FF'],
+                        'underline' => 'single'
+                    ]
+                ]);
+            } else {
+                $sheet->setCellValue('I'.$i, '');
+            }
 
-                    $i++;
-                    $no++;
-                }
+            $i++;
+            $no++;
+        }
 
-        $sheet = $objPHPExcel->getActiveSheet();
         $lastRow = ($i > 3) ? ($i - 1) : 2;
 
         $sheet->mergeCells('A1:K1');
@@ -344,8 +315,8 @@ class Rep_absensi extends BaseController
                 'bold' => true,
             ],
             'alignment' => [
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
@@ -354,23 +325,22 @@ class Rep_absensi extends BaseController
                 'bold' => true,
             ],
             'alignment' => [
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
-        // 3. Semua kolom border dan width menyesuaikan text
         $sheet->getStyle('A2:K' . $lastRow)->applyFromArray([
             'borders' => [
-                'allborders' => [
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
                     'color' => ['rgb' => '000000'],
                 ],
             ],
         ]);
 
         if ($lastRow >= 3) {
-            $sheet->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
 
         foreach (range('A', 'K') as $col) {
@@ -378,12 +348,6 @@ class Rep_absensi extends BaseController
         }
 
         if (ob_get_length()) ob_end_clean();
-        ob_start();
-        error_reporting(0);
-
-        if (ob_get_length()) ob_end_clean();
-
-        // Redirect output to a client's web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
@@ -393,10 +357,8 @@ class Rep_absensi extends BaseController
         header('Cache-Control: cache, must-revalidate');
         header('Pragma: public');
 
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
-        unset($objPHPExcel);
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
         exit;
     }
-
 }

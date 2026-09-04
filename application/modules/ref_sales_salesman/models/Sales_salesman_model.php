@@ -118,28 +118,24 @@ class Sales_salesman_model extends CI_Model
         $table = " (
             select
                 a.*,
-                (
-                    select group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_regional b on msa.regionalid = b.regionalid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_regional,
-                (
-                    select group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_areasite c on msa.areaid = c.areaid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_area,
-                (
-                    select group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_subarea d on msa.subareaid = d.subareaid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_subarea,
-                0 as has_token,
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea,
                 case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
                 mss.nama_salesman as supervisor
             from m_sales_salesman a 
+            left join (
+                select 
+                    msa.salesmanid,
+                    group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') as nama_regional,
+                    group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') as nama_area,
+                    group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') as nama_subarea
+                from m_salesman_area msa
+                left join m_area_regional b on msa.regionalid = b.regionalid
+                left join m_area_areasite c on msa.areaid = c.areaid
+                left join m_area_subarea d on msa.subareaid = d.subareaid
+                group by msa.salesmanid
+            ) area on a.salesmanid = area.salesmanid
             left join m_sales_salesman mss on a.supervisorid=mss.salesmanid
         ) a";
         return easy_pagging($data, $field, $table);
@@ -165,26 +161,23 @@ class Sales_salesman_model extends CI_Model
                 a.jabatan,
                 a.kpp_area,
                 COALESCE(NULLIF(a.supervisorid, 0), '') as pid,
-                (
-                    select group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_regional b on msa.regionalid = b.regionalid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_regional,
-                (
-                    select group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_areasite c on msa.areaid = c.areaid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_area,
-                (
-                    select group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') 
-                    from m_salesman_area msa
-                    join m_area_subarea d on msa.subareaid = d.subareaid
-                    where msa.salesmanid = a.salesmanid
-                ) as nama_subarea,
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea,
                 'https://cdn-icons-png.flaticon.com/512/149/149071.png' as img
             FROM m_sales_salesman a
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT b.nama_regional ORDER BY b.nama_regional ASC SEPARATOR ', ') AS nama_regional,
+                    GROUP_CONCAT(DISTINCT c.nama_area ORDER BY c.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT d.nama_area ORDER BY d.nama_area ASC SEPARATOR ', ') AS nama_subarea
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_regional b ON msa.regionalid = b.regionalid
+                LEFT JOIN m_area_areasite c ON msa.areaid = c.areaid
+                LEFT JOIN m_area_subarea d ON msa.subareaid = d.subareaid
+                GROUP BY msa.salesmanid
+            ) area ON a.salesmanid = area.salesmanid
             WHERE a.salesmanid NOT IN (00332,09174,09159,09173)
         ")->result_array();
         return $data;
