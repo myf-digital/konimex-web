@@ -77,7 +77,11 @@ class Rep_kunjungan extends BaseController
                     THEN NULL
                     ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
                 END AS jarak_meter,
-                a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image 
+                a.check_in,
+                a.check_out,
+                TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit,
+                d.image,
+                (SELECT COUNT(*) FROM trx_visit_detailing x WHERE x.salesmanid = a.salesmanid) AS total_kunjungan
             FROM t_sales_rrk_trans a 
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid 
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
@@ -111,7 +115,7 @@ class Rep_kunjungan extends BaseController
 		$html .= '<th style="width: 100px">Periode</th>';
 		$html .= '<th style="width: 150px">TPE</th>';
 		$html .= '<th style="width: 150px">Outlet ID</th>';
-		$html .= '<th style="width: 150px">Outlet</th>';
+		$html .= '<th style="width: 200px">Outlet</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';
 		$html .= '<th style="width: 200px">Area</th>';
 		$html .= '<th style="width: 100px">Cluster</th>';
@@ -119,6 +123,7 @@ class Rep_kunjungan extends BaseController
         $html .= '<th style="width: 100px">Checkout</th>';
         $html .= '<th style="width: 100px">Durasi</th>';
         $html .= '<th style="width: 100px">Jarak</th>';
+        $html .= '<th style="width: 100px">Kunjungan</th>';
         $html .= '<th style="width: 120px">Foto Checkin</th>';
         $html .= '</tr>';
 		$html .= '</tbody>';
@@ -144,6 +149,7 @@ class Rep_kunjungan extends BaseController
 			$html .= '<td style="width: 100px">'.format_time($value['check_out']).'</td>';
 			$html .= '<td style="width: 100px">'.cal_duration_date($value['check_in'],$value['check_out']).'</td>';
 			$html .= '<td style="width: 100px">'.format_jarak($value['jarak_meter']).'</td>';
+			$html .= '<td style="width: 100px">'.$value['total_kunjungan'].' User</td>';
             $html .= '<td style="width: 120px">';
             if (!empty($value['image']) or $value['image']<>''){
                 $arrimages = explode(',', $value['image']);
@@ -304,7 +310,11 @@ class Rep_kunjungan extends BaseController
                     THEN NULL
                     ELSE CALCULATE_DISTANCE(b.latitude, b.longitude, a.latitude_cell, a.longitude_cell) * 1000
                 END AS jarak_meter,
-                a.check_in, a.check_out, TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit, d.image 
+                a.check_in,
+                a.check_out,
+                TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit,
+                d.image,
+                (SELECT COUNT(*) FROM trx_visit_detailing x WHERE x.salesmanid = a.salesmanid) AS total_kunjungan
             FROM t_sales_rrk_trans a 
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid 
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
@@ -326,6 +336,70 @@ class Rep_kunjungan extends BaseController
         ");
 
         $lovkunjungan = $q->result_array();
+
+        $q_detailing = $this->db->query(" 
+            SELECT 
+                a.periode,
+                a.salesmanid,
+                s.nama_salesman,
+                CONCAT(a.salesmanid, '-', s.nama_salesman) AS parma_user,
+                COALESCE(NULLIF(c.nama_subarea, ''), NULLIF(c.nama_area, ''), NULLIF(c.nama_regional, ''), '') AS parma_area,
+                a.customerid,
+                b.nama_customer,
+                b.typeid AS cluster,
+                b.alamat,
+                a.professional_name,
+                a.tipe_pic,
+                rp.spesialisasi,
+                COALESCE(
+                    (
+                        SELECT GROUP_CONCAT(DISTINCT CONCAT(mp.productid, ' - ', mp.nama_invoice) ORDER BY mp.nama_invoice SEPARATOR '\n')
+                        FROM m_product mp
+                        WHERE FIND_IN_SET(mp.productid, a.array_product) > 0
+                    ),
+                    a.array_product
+                ) AS products,
+                DATE_FORMAT(a.start_detailing, '%H:%i') AS start_detailing,
+                DATE_FORMAT(a.end_detailing, '%H:%i') AS end_detailing,
+                TIMEDIFF(a.end_detailing, a.start_detailing) AS durasi,
+                a.keterangan,
+                a.reason,
+                CASE
+                    WHEN a.status = 5 THEN 'Tidak Valid'
+                    WHEN a.status = 3 THEN 'Valid'
+                    WHEN a.status = 2 THEN 'Belum Valid'
+                    ELSE 'Butuh Verifikasi'
+                END AS status_label,
+                a.url_img_detailing,
+                a.url_file_signature
+            FROM trx_visit_detailing a
+            LEFT JOIN v_outlet_all b ON a.customerid = b.customerid
+            LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT sa.nama_area ORDER BY sa.nama_area ASC SEPARATOR ', ') AS nama_subarea,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_subarea sa ON msa.subareaid = sa.subareaid
+                LEFT JOIN m_area_areasite ar ON msa.areaid = ar.areaid
+                LEFT JOIN m_area_regional r ON msa.regionalid = r.regionalid
+                GROUP BY msa.salesmanid
+            ) c ON a.salesmanid = c.salesmanid
+            LEFT JOIN (
+                SELECT 
+                    a.id,
+                    a.nama_professional,
+                    b.name AS spesialisasi
+                FROM ref_professional a
+                LEFT JOIN ref_spesialisasi b ON b.id = a.spesialisasi_id
+            ) rp ON rp.id = a.user_id
+            WHERE a.periode BETWEEN '$start' AND '$end' $addquery $strquery
+            ORDER BY a.periode DESC, a.start_detailing ASC;
+        ");
+
+        $lovdetailing = $q_detailing->result_array();
 
         $bulan_indo = [
             1 => 'Januari',
@@ -434,7 +508,7 @@ class Rep_kunjungan extends BaseController
                 $remark_fg = '9C0006';
             }
 
-            $sheetAct->setCellValue('A' . $rowAct, $act['nama_salesman']);
+            $sheetAct->setCellValue('A' . $rowAct, $act['nama_salesman'] . ' (' . $act['salesmanid'] . ')');
             $sheetAct->setCellValue('B' . $rowAct, $act['tipe_sales']);
             $sheetAct->setCellValue('C' . $rowAct, $act['wilayah']);
             $sheetAct->setCellValue('D' . $rowAct, (int)$act['hari_kerja']);
@@ -499,7 +573,8 @@ class Rep_kunjungan extends BaseController
             ->setCellValue('J2', 'CheckOut')
             ->setCellValue('K2', 'Durasi')
             ->setCellValue('L2', 'Jarak')
-            ->setCellValue('M2', 'Foto');
+            ->setCellValue('M2', 'Kunjungan')
+            ->setCellValue('N2', 'Foto');
 
         $i = 3;
         $no = 1;
@@ -515,19 +590,20 @@ class Rep_kunjungan extends BaseController
                 ->setCellValue('I'.$i, format_time($vkunjungan['check_in']))
                 ->setCellValue('J'.$i, format_time($vkunjungan['check_out']))
                 ->setCellValue('K'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
-                ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']));
+                ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']))
+                ->setCellValue('M'.$i, $vkunjungan['total_kunjungan'].' User');
 
             if (!empty($vkunjungan['image'])) {
-                $sheetKunjungan->setCellValue('M'.$i, 'Foto Kunjungan');
-                $sheetKunjungan->getCell('M'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vkunjungan['image']);
-                $sheetKunjungan->getStyle('M'.$i)->applyFromArray([
+                $sheetKunjungan->setCellValue('N'.$i, 'Foto Kunjungan');
+                $sheetKunjungan->getCell('N'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vkunjungan['image']);
+                $sheetKunjungan->getStyle('N'.$i)->applyFromArray([
                     'font' => [
                         'color' => ['rgb' => '0000FF'],
                         'underline' => true,
                     ]
                 ]);
             } else {
-                $sheetKunjungan->setCellValue('M'.$i, '');
+                $sheetKunjungan->setCellValue('N'.$i, '');
             }
             $i++;
             $no++;
@@ -535,8 +611,8 @@ class Rep_kunjungan extends BaseController
 
         $lastRow = ($i > 3) ? ($i - 1) : 2;
 
-        $sheetKunjungan->mergeCells('A1:M1');
-        $sheetKunjungan->getStyle('A1:M1')->applyFromArray([
+        $sheetKunjungan->mergeCells('A1:N1');
+        $sheetKunjungan->getStyle('A1:N1')->applyFromArray([
             'font' => [
                 'bold' => true,
             ],
@@ -546,7 +622,7 @@ class Rep_kunjungan extends BaseController
             ],
         ]);
 
-        $sheetKunjungan->getStyle('A2:M2')->applyFromArray([
+        $sheetKunjungan->getStyle('A2:N2')->applyFromArray([
             'font' => [
                 'bold' => true,
             ],
@@ -556,7 +632,7 @@ class Rep_kunjungan extends BaseController
             ],
         ]);
 
-        $sheetKunjungan->getStyle('A2:M' . $lastRow)->applyFromArray([
+        $sheetKunjungan->getStyle('A2:N' . $lastRow)->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -569,8 +645,126 @@ class Rep_kunjungan extends BaseController
             $sheetKunjungan->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
 
-        foreach (range('A', 'M') as $col) {
+        foreach (range('A', 'N') as $col) {
             $sheetKunjungan->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $sheetDetailing = $spreadsheet->createSheet(2);
+        $spreadsheet->setActiveSheetIndex(2);
+        $sheetDetailing->setTitle('Detailing Kunjungan');
+
+        $sheetDetailing->setCellValue('A1', 'List Detailing Kunjungan TPE')
+            ->setCellValue('A2', 'No.')
+            ->setCellValue('B2', 'Periode')
+            ->setCellValue('C2', 'TPE')
+            ->setCellValue('D2', 'Outlet ID')
+            ->setCellValue('E2', 'Outlet Name')
+            ->setCellValue('F2', 'Area')
+            ->setCellValue('G2', 'Tipe Outlet')
+            ->setCellValue('H2', 'PIC / User')
+            ->setCellValue('I2', 'Tipe PIC')
+            ->setCellValue('J2', 'Spesialisasi')
+            ->setCellValue('K2', 'Produk')
+            ->setCellValue('L2', 'Start Detailing')
+            ->setCellValue('M2', 'End Detailing')
+            ->setCellValue('N2', 'Durasi')
+            ->setCellValue('O2', 'Keterangan')
+            ->setCellValue('P2', 'Status')
+            ->setCellValue('Q2', 'Reason')
+            ->setCellValue('R2', 'Foto Detailing')
+            ->setCellValue('S2', 'Signature');
+
+        $i = 3;
+        $no = 1;
+        foreach ($lovdetailing as $vdetailing) {
+            $sheetDetailing->setCellValue('A'.$i, $no)
+                ->setCellValue('B'.$i, $vdetailing['periode'])
+                ->setCellValue('C'.$i, $vdetailing['parma_user'])
+                ->setCellValue('D'.$i, $vdetailing['customerid'])
+                ->setCellValue('E'.$i, $vdetailing['nama_customer'])
+                ->setCellValue('F'.$i, $vdetailing['parma_area'])
+                ->setCellValue('G'.$i, $vdetailing['cluster'])
+                ->setCellValue('H'.$i, $vdetailing['professional_name'])
+                ->setCellValue('I'.$i, $vdetailing['tipe_pic'])
+                ->setCellValue('J'.$i, $vdetailing['spesialisasi'])
+                ->setCellValue('K'.$i, $vdetailing['products'])
+                ->setCellValue('L'.$i, $vdetailing['start_detailing'])
+                ->setCellValue('M'.$i, $vdetailing['end_detailing'])
+                ->setCellValue('N'.$i, $vdetailing['durasi'])
+                ->setCellValue('O'.$i, $vdetailing['keterangan'])
+                ->setCellValue('P'.$i, $vdetailing['status_label'])
+                ->setCellValue('Q'.$i, $vdetailing['reason']);
+
+            if (!empty($vdetailing['url_img_detailing'])) {
+                $sheetDetailing->setCellValue('R'.$i, 'Foto Detailing');
+                $sheetDetailing->getCell('R'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vdetailing['url_img_detailing']);
+                $sheetDetailing->getStyle('R'.$i)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => '0000FF'],
+                        'underline' => true,
+                    ]
+                ]);
+            } else {
+                $sheetDetailing->setCellValue('R'.$i, '');
+            }
+
+            if (!empty($vdetailing['url_file_signature'])) {
+                $sheetDetailing->setCellValue('S'.$i, 'Signature');
+                $sheetDetailing->getCell('S'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vdetailing['url_file_signature']);
+                $sheetDetailing->getStyle('S'.$i)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => '0000FF'],
+                        'underline' => true,
+                    ]
+                ]);
+            } else {
+                $sheetDetailing->setCellValue('S'.$i, '');
+            }
+
+            $i++;
+            $no++;
+        }
+
+        $lastRowDetailing = ($i > 3) ? ($i - 1) : 2;
+
+        $sheetDetailing->mergeCells('A1:S1');
+        $sheetDetailing->getStyle('A1:S1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheetDetailing->getStyle('A2:S2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheetDetailing->getStyle('A2:S' . $lastRowDetailing)->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        if ($lastRowDetailing >= 3) {
+            $sheetDetailing->getStyle('A3:A' . $lastRowDetailing)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheetDetailing->getStyle('K3:K' . $lastRowDetailing)->getAlignment()->setWrapText(true);
+            $sheetDetailing->getStyle('A3:S' . $lastRowDetailing)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        }
+
+        foreach (range('A', 'S') as $col) {
+            $sheetDetailing->getColumnDimension($col)->setAutoSize(true);
         }
 
         $spreadsheet->setActiveSheetIndex(0);
