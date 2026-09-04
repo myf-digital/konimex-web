@@ -246,33 +246,15 @@ class Rep_productivity_model extends CI_Model
         $targetsResult = $this->db->query($sqlTargets, [$year, (int)$month])->result_array();
         $targetsMap = [];
         foreach ($targetsResult as $t) {
-            $targetsMap[strtolower($t['tipe_sales'])] = $t;
+        $targetsMap[strtolower($t['tipe_sales'])] = $t;
         }
 
         $query = $this->db->query(" 
             SELECT 
-                (
-                    select group_concat(distinct msa.regionalid separator ', ')
-                    from m_salesman_area msa
-                    where msa.salesmanid = b.salesmanid
-                ) as regionalid,
-                (
-                    select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                    from m_salesman_area msa
-                    join m_area_regional r on r.regionalid = msa.regionalid
-                    where msa.salesmanid = b.salesmanid
-                ) as nama_regional,
-                (
-                    select group_concat(distinct msa.areaid separator ', ')
-                    from m_salesman_area msa
-                    where msa.salesmanid = b.salesmanid
-                ) as areaid,
-                (
-                    select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                    from m_salesman_area msa
-                    join m_area_areasite ar on msa.areaid = ar.areaid
-                    where msa.salesmanid = b.salesmanid
-                ) as nama_area,
+                area.regionalid,
+                area.nama_regional,
+                area.areaid,
+                area.nama_area,
                 b.salesmanid,
                 b.nama_salesman,
                 b.tipe_sales, 
@@ -329,11 +311,6 @@ class Rep_productivity_model extends CI_Model
                         ON mco.salesmanid = tsrt.salesmanid
                         AND mco.customerid = tsrt.customerid
                         AND mco.user_id = tvd.user_id
-                    JOIN t_sales_rrk_user tsru
-                        ON tsru.salesmanid = tsrt.salesmanid
-                        AND tsru.customerid = tsrt.customerid
-                        AND tsru.periode = tsrt.periode
-                        AND tsru.user_id = tvd.user_id
                     WHERE tsrt.salesmanid = a.salesmanid
                       AND tsrt.periode BETWEEN '$start' AND '$end'
                 ) AS call_dub,
@@ -357,6 +334,27 @@ class Rep_productivity_model extends CI_Model
                     WHERE tsrt.salesmanid = a.salesmanid
                       AND tsrt.periode BETWEEN '$start' AND '$end'
                 ) AS call_visit,
+                (
+                    SELECT COUNT(DISTINCT CONCAT(customerid, '-', periode)) 
+                    FROM t_sales_rrk_trans 
+                    WHERE salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
+                ) AS actual_call, 
+                (
+                    SELECT COUNT(DISTINCT CONCAT(customerid, '-', periode)) 
+                    FROM t_sales_rrk_trans 
+                    WHERE salesmanid = a.salesmanid 
+                      AND customerid NOT IN (
+                          SELECT customerid 
+                          FROM t_sales_rrk 
+                          WHERE salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
+                      ) 
+                      AND periode BETWEEN '$start' AND '$end'
+                ) AS actual_extra_call,
+                (
+                    SELECT COUNT(customerid) 
+                    FROM t_sales_master 
+                    WHERE salesmanid = a.salesmanid AND tanggal BETWEEN '$start' AND '$end'
+                ) AS effective_call,
                 IFNULL((
                     SELECT GROUP_CONCAT(x.reason_rrk SEPARATOR ' , ') 
                     FROM ( 
@@ -373,7 +371,7 @@ class Rep_productivity_model extends CI_Model
                     GROUP BY x.salesmanid
                 ), '-') AS rrk_keterangan,
                 IFNULL((
-                    SELECT GROUP_CONCAT(x.reason_detailing SEPARATOR ' , ') 
+                    SELECT GROUP_CONCAT(x.reason_detailing ORDER BY x.reason_detailing SEPARATOR ', ')
                     FROM (
                         SELECT 
                             z.salesmanid, 
@@ -395,6 +393,18 @@ class Rep_productivity_model extends CI_Model
             LEFT JOIN m_sales_salesman b ON a.salesmanid = b.salesmanid AND b.aktif = 1
             LEFT JOIN (
                 SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT msa.regionalid SEPARATOR ', ') AS regionalid,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional,
+                    GROUP_CONCAT(DISTINCT msa.areaid SEPARATOR ', ') AS areaid,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_regional r ON msa.regionalid = r.regionalid
+                LEFT JOIN m_area_areasite ar ON msa.areaid = ar.areaid
+                GROUP BY msa.salesmanid
+            ) area ON b.salesmanid = area.salesmanid
+            LEFT JOIN (
+                SELECT 
                     salesmanid, 
                     tanggal,
                     COUNT(customerid) AS total_transaksi,
@@ -407,7 +417,7 @@ class Rep_productivity_model extends CI_Model
             WHERE a.periode BETWEEN '$start' AND '$end' 
               AND b.tipe_sales NOT IN ('ADMIN', 'SPV', 'FC') 
               $strquery $subarea $area $regional
-            GROUP BY b.salesmanid, b.nama_salesman, b.tipe_sales
+            GROUP BY b.salesmanid, b.nama_salesman, b.tipe_sales, area.regionalid, area.nama_regional, area.areaid, area.nama_area
             ORDER BY b.nama_salesman ASC;
         ");
 
@@ -595,28 +605,10 @@ class Rep_productivity_model extends CI_Model
                     c.nama_customer,
                     c.alamat,
                     c.typeid,
-                    (
-                        select group_concat(distinct msa.regionalid separator ', ')
-                        from m_salesman_area msa
-                        where msa.salesmanid = b.salesmanid
-                    ) as regionalid,
-                    (
-                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                        from m_salesman_area msa
-                        join m_area_regional r on r.regionalid = msa.regionalid
-                        where msa.salesmanid = b.salesmanid
-                    ) as nama_regional,
-                    (
-                        select group_concat(distinct msa.areaid separator ', ')
-                        from m_salesman_area msa
-                        where msa.salesmanid = b.salesmanid
-                    ) as areaid,
-                    (
-                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                        from m_salesman_area msa
-                        join m_area_areasite ar on msa.areaid = ar.areaid
-                        where msa.salesmanid = b.salesmanid
-                    ) as nama_area,
+                    area.regionalid,
+                    area.nama_regional,
+                    area.areaid,
+                    area.nama_area,
                     c.typeid as channel,
                     e.nama_class as account,
                     DATE_FORMAT(a.check_in, '%H:%i:%s') check_in,
@@ -643,6 +635,18 @@ class Rep_productivity_model extends CI_Model
                         end as flag
                 from t_sales_rrk_trans a
                 left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                left join (
+                    select 
+                        msa.salesmanid,
+                        group_concat(distinct msa.regionalid separator ', ') as regionalid,
+                        group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ') as nama_regional,
+                        group_concat(distinct msa.areaid separator ', ') as areaid,
+                        group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area
+                    from m_salesman_area msa
+                    left join m_area_regional r on r.regionalid = msa.regionalid
+                    left join m_area_areasite ar on msa.areaid = ar.areaid
+                    group by msa.salesmanid
+                ) area on b.salesmanid = area.salesmanid
                 left join m_customer c on a.customerid= c.customerid 
                 left join m_customer_class e on e.classid=c.classid
                 where a.periode between '".$start."' and '".$end."' 
@@ -660,28 +664,10 @@ class Rep_productivity_model extends CI_Model
                     c.nama_customer,
                     c.alamat,
                     c.typeid,
-                    (
-                        select group_concat(distinct msa.regionalid separator ', ')
-                        from m_salesman_area msa
-                        where msa.salesmanid = b.salesmanid
-                    ) as regionalid,
-                    (
-                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                        from m_salesman_area msa
-                        join m_area_regional r on r.regionalid = msa.regionalid
-                        where msa.salesmanid = b.salesmanid
-                    ) as nama_regional,
-                    (
-                        select group_concat(distinct msa.areaid separator ', ')
-                        from m_salesman_area msa
-                        where msa.salesmanid = b.salesmanid
-                    ) as areaid,
-                    (
-                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                        from m_salesman_area msa
-                        join m_area_areasite ar on msa.areaid = ar.areaid
-                        where msa.salesmanid = b.salesmanid
-                    ) as nama_area,
+                    area.regionalid,
+                    area.nama_regional,
+                    area.areaid,
+                    area.nama_area,
                     c.typeid as channel,
                     e.nama_class as account,
                     0 check_in,
@@ -692,6 +678,18 @@ class Rep_productivity_model extends CI_Model
                     'FJP Tidak Terkunjungi' as flag
                 from t_sales_rrk a
                 left join m_sales_salesman b on a.salesmanid = b.salesmanid
+                left join (
+                    select 
+                        msa.salesmanid,
+                        group_concat(distinct msa.regionalid separator ', ') as regionalid,
+                        group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ') as nama_regional,
+                        group_concat(distinct msa.areaid separator ', ') as areaid,
+                        group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area
+                    from m_salesman_area msa
+                    left join m_area_regional r on r.regionalid = msa.regionalid
+                    left join m_area_areasite ar on msa.areaid = ar.areaid
+                    group by msa.salesmanid
+                ) area on b.salesmanid = area.salesmanid
                 left join m_customer c on a.customerid= c.customerid 
                 left join m_customer_class e on e.classid=c.classid
                 where a.periode between '".$start."' and '".$end."' 
@@ -749,12 +747,7 @@ class Rep_productivity_model extends CI_Model
                 concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
                 b.nama_salesman,
                 c.nama_customer,c.typeid as channel,c.nama_account as account,
-                (
-                    select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                    from m_salesman_area msa
-                    join m_area_areasite ar on msa.areaid = ar.areaid
-                    where msa.salesmanid = a.salesmanid
-                ) as city,
+                area.city,
                 CASE
                     WHEN a.status = 5 THEN 'Tidak Valid'
                     WHEN a.status = 3 THEN 'Valid'
@@ -771,6 +764,14 @@ class Rep_productivity_model extends CI_Model
                 ) as products
             from trx_visit_detailing a
             left join m_sales_salesman b on a.salesmanid=b.salesmanid
+            left join (
+                select 
+                    msa.salesmanid,
+                    group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as city
+                from m_salesman_area msa
+                join m_area_areasite ar on msa.areaid = ar.areaid
+                group by msa.salesmanid
+            ) area on a.salesmanid = area.salesmanid
             left join v_outlet_all c on a.customerid=c.customerid
             left join (
                 select 
@@ -858,12 +859,7 @@ class Rep_productivity_model extends CI_Model
         SELECT 
             mss.nama_salesman, 
             tsa.salesmanid, 
-            (
-                select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                from m_salesman_area msa
-                join m_area_areasite ar on msa.areaid = ar.areaid
-                where msa.salesmanid = tsa.salesmanid
-            ) as nama_area,
+            area.nama_area,
             tsa.status, 
             tsa.periode, 
             ap.start_time, 
@@ -872,9 +868,17 @@ class Rep_productivity_model extends CI_Model
             ap.end_image
         FROM t_sales_absensi tsa
             LEFT JOIN m_sales_salesman mss ON mss.salesmanid = tsa.salesmanid 
-            left join attendance_parma ap on tsa.salesmanid=ap.salesmanid and tsa.periode=ap.periode 
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_areasite ar ON msa.areaid = ar.areaid
+                GROUP BY msa.salesmanid
+            ) area ON tsa.salesmanid = area.salesmanid
+            LEFT JOIN attendance_parma ap ON tsa.salesmanid = ap.salesmanid AND tsa.periode = ap.periode 
             WHERE ".$where . $strquery ."
-            order by tsa.periode, tsa.salesmanid 
+            ORDER BY tsa.periode, tsa.salesmanid 
         ");
         return $query->result_array();
     }
@@ -957,18 +961,18 @@ class Rep_productivity_model extends CI_Model
                     select 
                         s.salesmanid,
                         s.nama_salesman,
-                        (
-                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                            from m_salesman_area msa
-                            join m_area_areasite ar on msa.areaid = ar.areaid
-                            where msa.salesmanid = s.salesmanid
-                        ) as nama_area,
-                        (
-                            select group_concat(distinct msa.areaid separator ', ')
-                            from m_salesman_area msa
-                            where msa.salesmanid = s.salesmanid
-                        ) as areaid
+                        area.nama_area,
+                        area.areaid
                     from m_sales_salesman s
+                    left join (
+                        select 
+                            msa.salesmanid,
+                            group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area,
+                            group_concat(distinct msa.areaid separator ', ') as areaid
+                        from m_salesman_area msa
+                        left join m_area_areasite ar on msa.areaid = ar.areaid
+                        group by msa.salesmanid
+                    ) area on s.salesmanid = area.salesmanid
                     where s.tipe_sales = 'MEDREP'
                 ) c on (c.salesmanid = a.salesmanid))
                 left join t_sales_rrk d on
