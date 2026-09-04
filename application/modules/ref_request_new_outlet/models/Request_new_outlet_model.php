@@ -86,13 +86,13 @@ class Request_new_outlet_model extends CI_Model
         //update sequence
         $this->db->query("update app_table_sequence set used=".$data['customerid']." where id=5");
 
+        $data['customerid_m'] = '';
         $this->db->where('customerid_m', $datacustidm);
         $this->db->where('customerid', $datacustid);
         $this->db->where('salesmanid', $data['salesmanid']);
         $this->db->update('m_customer', $data); 
 
         $data_custob = array(
-            "customerid_m" => "",
             "customerid" => $data['customerid'],
             "kode_outlet" => !empty($data['kode_outlet']) ? $data['kode_outlet'] : $data['customerid'],
             "salesmanid" => $data['salesmanid'],
