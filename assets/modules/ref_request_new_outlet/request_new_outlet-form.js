@@ -66,9 +66,6 @@
         },
       },
       message: {
-        kode_outlet: {
-          required: "Kode outlet wajib diisi.",
-        },
         nama_customer: {
           required: "Nama outlet wajib diisi.",
         },

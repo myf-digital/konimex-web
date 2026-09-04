@@ -82,4 +82,4 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/ref_request_new_outlet/request_new_outlet-form.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_request_new_outlet/request_new_outlet-form.js' ?>?v=1.0"></script>
