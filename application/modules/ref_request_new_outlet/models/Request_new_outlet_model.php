@@ -74,7 +74,6 @@ class Request_new_outlet_model extends CI_Model
         $data["modified_date"] = $datetime->datetime;
         unset($data["usersession"]);
         
-        $data["kode_outlet"] = $this->str_valid($data["kode_outlet"]);
         $data["nama_customer"] = $this->str_valid($data["nama_customer"]);
         $data["alamat"] = $this->str_valid($data["alamat"]);
 
@@ -87,15 +86,15 @@ class Request_new_outlet_model extends CI_Model
         //update sequence
         $this->db->query("update app_table_sequence set used=".$data['customerid']." where id=5");
 
-        $data['customerid_m'] = $datacustidm;
-
         $this->db->where('customerid_m', $datacustidm);
         $this->db->where('customerid', $datacustid);
         $this->db->where('salesmanid', $data['salesmanid']);
         $this->db->update('m_customer', $data); 
 
         $data_custob = array(
+            "customerid_m" => "",
             "customerid" => $data['customerid'],
+            "kode_outlet" => !empty($data['kode_outlet']) ? $data['kode_outlet'] : $data['customerid'],
             "salesmanid" => $data['salesmanid'],
             "created_date" =>  $datetime->datetime,
             "created_by" => $data["modified_by"]

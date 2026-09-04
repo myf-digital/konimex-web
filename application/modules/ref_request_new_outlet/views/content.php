@@ -24,4 +24,4 @@
 </section>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/ref_request_new_outlet/request_new_outlet-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_request_new_outlet/request_new_outlet-content.js' ?>?v=1.0"></script>
