@@ -81,4 +81,4 @@ for (i = 0; i < close.length; i++) {
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/setup_planned/form-download.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/setup_planned/form-download.js' ?>?v=1.0"></script>
