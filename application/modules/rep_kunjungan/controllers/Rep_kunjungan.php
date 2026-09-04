@@ -559,7 +559,7 @@ class Rep_kunjungan extends BaseController
         $spreadsheet->setActiveSheetIndex(1);
         $sheetKunjungan->setTitle('Report Kunjungan');
 
-        $sheetKunjungan->setCellValue('A1', 'List Report Kunjungan')
+        $sheetKunjungan->setCellValue('A1', 'List Report Kunjungan Medrep')
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
             ->setCellValue('C2', 'User Medrep')
@@ -652,10 +652,10 @@ class Rep_kunjungan extends BaseController
         $spreadsheet->setActiveSheetIndex(2);
         $sheetDetailing->setTitle('Detailing Kunjungan');
 
-        $sheetDetailing->setCellValue('A1', 'List Detailing Kunjungan TPE')
+        $sheetDetailing->setCellValue('A1', 'List Detailing Kunjungan Medrep')
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
-            ->setCellValue('C2', 'TPE')
+            ->setCellValue('C2', 'Medrep')
             ->setCellValue('D2', 'Outlet ID')
             ->setCellValue('E2', 'Outlet Name')
             ->setCellValue('F2', 'Area')
