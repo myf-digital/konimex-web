@@ -81,7 +81,13 @@ class Rep_kunjungan extends BaseController
                 a.check_out,
                 TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit,
                 d.image,
-                (SELECT COUNT(*) FROM trx_visit_detailing x WHERE x.salesmanid = a.salesmanid) AS total_kunjungan
+                (
+                    SELECT COUNT(*) FROM
+                    trx_visit_detailing x
+                    WHERE x.salesmanid = a.salesmanid
+                    AND x.customerid = a.customerid
+                    AND x.periode = a.periode
+                ) AS total_kunjungan
             FROM t_sales_rrk_trans a 
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid 
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
@@ -314,7 +320,13 @@ class Rep_kunjungan extends BaseController
                 a.check_out,
                 TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit,
                 d.image,
-                (SELECT COUNT(*) FROM trx_visit_detailing x WHERE x.salesmanid = a.salesmanid) AS total_kunjungan
+                (
+                    SELECT COUNT(*) FROM
+                    trx_visit_detailing x
+                    WHERE x.salesmanid = a.salesmanid
+                    AND x.customerid = a.customerid
+                    AND x.periode = a.periode
+                ) AS total_kunjungan
             FROM t_sales_rrk_trans a 
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid 
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
