@@ -81,7 +81,13 @@ class Rep_kunjungan extends BaseController
                 a.check_out,
                 TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit,
                 d.image,
-                (SELECT COUNT(*) FROM trx_visit_detailing x WHERE x.salesmanid = a.salesmanid) AS total_kunjungan
+                (
+                    SELECT COUNT(*) FROM
+                    trx_visit_detailing x
+                    WHERE x.salesmanid = a.salesmanid
+                    AND x.customerid = a.customerid
+                    AND x.periode = a.periode
+                ) AS total_kunjungan
             FROM t_sales_rrk_trans a 
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid 
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
@@ -313,7 +319,13 @@ class Rep_kunjungan extends BaseController
                 a.check_out,
                 TIMESTAMPDIFF(MINUTE, a.check_in, a.check_out) AS durasi_menit,
                 d.image,
-                (SELECT COUNT(*) FROM trx_visit_detailing x WHERE x.salesmanid = a.salesmanid) AS total_kunjungan
+                (
+                    SELECT COUNT(*) FROM
+                    trx_visit_detailing x
+                    WHERE x.salesmanid = a.salesmanid
+                    AND x.customerid = a.customerid
+                    AND x.periode = a.periode
+                ) AS total_kunjungan
             FROM t_sales_rrk_trans a 
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid 
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
@@ -348,7 +360,7 @@ class Rep_kunjungan extends BaseController
                 b.typeid AS cluster,
                 b.alamat,
                 a.professional_name,
-                a.tipe_pic,
+                rp.tipe_pic,
                 rp.spesialisasi,
                 COALESCE(
                     (
@@ -389,6 +401,7 @@ class Rep_kunjungan extends BaseController
             LEFT JOIN (
                 SELECT 
                     a.id,
+                    a.type as tipe_pic,
                     a.nama_professional,
                     b.name AS spesialisasi
                 FROM ref_professional a
@@ -559,7 +572,7 @@ class Rep_kunjungan extends BaseController
         $spreadsheet->setActiveSheetIndex(1);
         $sheetKunjungan->setTitle('Report Kunjungan');
 
-        $sheetKunjungan->setCellValue('A1', 'List Report Kunjungan')
+        $sheetKunjungan->setCellValue('A1', 'List Report Kunjungan Medrep')
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
             ->setCellValue('C2', 'User Medrep')
@@ -652,10 +665,10 @@ class Rep_kunjungan extends BaseController
         $spreadsheet->setActiveSheetIndex(2);
         $sheetDetailing->setTitle('Detailing Kunjungan');
 
-        $sheetDetailing->setCellValue('A1', 'List Detailing Kunjungan TPE')
+        $sheetDetailing->setCellValue('A1', 'List Detailing Kunjungan Medrep')
             ->setCellValue('A2', 'No.')
             ->setCellValue('B2', 'Periode')
-            ->setCellValue('C2', 'TPE')
+            ->setCellValue('C2', 'Medrep')
             ->setCellValue('D2', 'Outlet ID')
             ->setCellValue('E2', 'Outlet Name')
             ->setCellValue('F2', 'Area')
