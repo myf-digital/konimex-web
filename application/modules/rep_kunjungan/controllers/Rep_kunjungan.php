@@ -361,7 +361,7 @@ class Rep_kunjungan extends BaseController
                 b.typeid AS cluster,
                 b.alamat,
                 a.professional_name,
-                a.tipe_pic,
+                rp.tipe_pic,
                 rp.spesialisasi,
                 COALESCE(
                     (
@@ -402,6 +402,7 @@ class Rep_kunjungan extends BaseController
             LEFT JOIN (
                 SELECT 
                     a.id,
+                    a.type AS tipe_pic,
                     a.nama_professional,
                     b.name AS spesialisasi
                 FROM ref_professional a
