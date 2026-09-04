@@ -9,16 +9,12 @@
   let uiEndPeriode = $("#end_periode");
   let uiSelectMedrep = $("#salesmanid-id");
 
-  //let uiTblReport = $("#tbl-content");
-
   // define from *-content.js
-  //let param = common.getCookie("module.report.promo.update");
   let paramsession = common.getCookie("session");
 
   initializeParam();
 
   function initializeParam() {
-    //common.loading();
     let resolver = new HttpResolver();
     let filter = new Filter();
 
@@ -32,10 +28,8 @@
 
     uiBtnPreview.click(function () {
       if (uiStartPeriode.val() === "") {
-        //uiAlertNotif.show();
         alert("Periode harus di isi...!");
       } else if (uiSelectMedrep.val() === null) {
-        //uiAlertNotif.show();
         alert("Medrep harus di isi...!");
       } else {
         open_preview();
@@ -44,10 +38,8 @@
 
     uiBtnDownload.click(function () {
       if (uiStartPeriode.val() === "") {
-        //uiAlertNotif.show();
         alert("Periode harus di isi...!");
       } else if (uiSelectMedrep.val() === null) {
-        //uiAlertNotif.show();
         alert("Medrep harus di isi...!");
       } else {
         save_xls();
@@ -58,7 +50,7 @@
       format: "yyyy-mm-dd",
       autoclose: true,
       todayHighlight: true,
-    });
+    }).datepicker("setDate", new Date());
 
     uiStartPeriode.on("changeDate", function (selected) {
       var startDate = new Date(selected.date.valueOf());
@@ -74,14 +66,17 @@
 
   function setupForm(r1) {
     let rows1 = r1.rows;
+    let options = [
+      { id: "all", text: "Semua Medrep" },
+      ...(rows1.map((o) => ({
+        id: o.salesmanid,
+        text: o.salesmanid + " - " + o.nama_salesman,
+      }))),
+    ];
     uiSelectMedrep.select2({
       placeholder: "Select User Medrep",
       allowClear: true,
-      data: $.map(rows1, function (o) {
-        o.id = o.salesmanid; // replace name with the property used for the text
-        o.text = o.salesmanid + " - " + o.nama_salesman; // replace name with the property used for the text
-        return o;
-      }),
+      data: options,
     });
 
     uiSelectMedrep.val(null).trigger("change");

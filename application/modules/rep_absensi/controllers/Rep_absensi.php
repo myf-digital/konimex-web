@@ -48,51 +48,50 @@ class Rep_absensi extends BaseController
             }
         }
 
-        if ($salesmanid != '') {
-            $addquery = " and a.salesmanid in ('".$salesmanid."') ";
-        } else {
-            $addquery = "";
+        $addquery = "";
+        if (!empty($salesmanid) && $salesmanid != 'all') {
+            $addquery=" and a.salesmanid in ('".$salesmanid."') ";
         }
         $q = $this->db->query(" 
-                                select 
-                                    a.periode, 
-                                    a.salesmanid, 
-                                    b.nama_salesman, 
-                                    b.nama_area, 
-                                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
-                                    coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
-                                    a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
-                                    a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
-                                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
-                                from 
-                                attendance_parma a 
-                                left join (
-                                    select 
-                                        s.salesmanid,
-                                        s.nama_salesman,
-                                        (
-                                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_subarea sa on msa.subareaid = sa.subareaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_subarea,
-                                        (
-                                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_areasite ar on msa.areaid = ar.areaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_area,
-                                        (
-                                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_regional r on r.regionalid = msa.regionalid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_regional
-                                    from m_sales_salesman s
-                                ) b on a.salesmanid = b.salesmanid 
-                                where a.periode between '$start' and '$end' $addquery $strquery
-                                order by a.periode desc;
-                            ");
+            select 
+                a.periode, 
+                a.salesmanid, 
+                b.nama_salesman, 
+                b.nama_area, 
+                concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
+                coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
+                a.start_time,a.start_image,a.start_keterangan,a.start_latitude,a.start_longitude,
+                a.end_time,a.end_image,a.end_keterangan,a.end_latitude,a.end_longitude,
+                TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
+            from 
+            attendance_parma a 
+            left join (
+                select 
+                    s.salesmanid,
+                    s.nama_salesman,
+                    (
+                        select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_subarea sa on msa.subareaid = sa.subareaid
+                        where msa.salesmanid = s.salesmanid
+                    ) as nama_subarea,
+                    (
+                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_areasite ar on msa.areaid = ar.areaid
+                        where msa.salesmanid = s.salesmanid
+                    ) as nama_area,
+                    (
+                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_regional r on r.regionalid = msa.regionalid
+                        where msa.salesmanid = s.salesmanid
+                    ) as nama_regional
+                from m_sales_salesman s
+            ) b on a.salesmanid = b.salesmanid 
+            where a.periode between '$start' and '$end' $addquery $strquery
+            order by a.periode desc;
+        ");
 
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
@@ -203,60 +202,59 @@ class Rep_absensi extends BaseController
             }
         }
 
-        if ($salesmanid!='') {
+        $addquery = "";
+        if (!empty($salesmanid) && $salesmanid != 'all') {
             $addquery=" and a.salesmanid in ('".$salesmanid."') ";
 		    $filename = "Report_Absensi_".$salesmanid."_".$start."-".$end.".xlsx";
-        } else {
-            $addquery="";
         }
         $q = $this->db->query(" 
-                                select 
-                                    a.periode, 
-                                    a.salesmanid, 
-                                    b.nama_salesman, 
-                                    b.nama_area, 
-                                    concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
-                                    coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
-                                    a.start_time,
-                                    a.start_image,
-                                    a.start_keterangan,
-                                    a.start_latitude,
-                                    a.start_longitude,
-                                    a.end_time,
-                                    a.end_image,
-                                    a.end_keterangan,
-                                    a.end_latitude,
-                                    a.end_longitude,
-                                    TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
-                                from 
-                                attendance_parma a 
-                                left join (
-                                    select 
-                                        s.salesmanid,
-                                        s.nama_salesman,
-                                        (
-                                            select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_subarea sa on msa.subareaid = sa.subareaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_subarea,
-                                        (
-                                            select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_areasite ar on msa.areaid = ar.areaid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_area,
-                                        (
-                                            select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
-                                            from m_salesman_area msa
-                                            join m_area_regional r on r.regionalid = msa.regionalid
-                                            where msa.salesmanid = s.salesmanid
-                                        ) as nama_regional
-                                    from m_sales_salesman s
-                                ) b on a.salesmanid = b.salesmanid 
-                                where a.periode between '$start' and '$end' $addquery $strquery
-                                order by a.periode desc;
-                            ");
+            select 
+                a.periode, 
+                a.salesmanid, 
+                b.nama_salesman, 
+                b.nama_area, 
+                concat(a.salesmanid, '-', b.nama_salesman) as parma_user,
+                coalesce(nullif(b.nama_subarea, ''), nullif(b.nama_area, ''), nullif(b.nama_regional, ''), '') as parma_area,
+                a.start_time,
+                a.start_image,
+                a.start_keterangan,
+                a.start_latitude,
+                a.start_longitude,
+                a.end_time,
+                a.end_image,
+                a.end_keterangan,
+                a.end_latitude,
+                a.end_longitude,
+                TIMESTAMPDIFF(MINUTE, a.start_time, a.end_time) AS durasi_menit
+            from 
+            attendance_parma a 
+            left join (
+                select 
+                    s.salesmanid,
+                    s.nama_salesman,
+                    (
+                        select group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_subarea sa on msa.subareaid = sa.subareaid
+                        where msa.salesmanid = s.salesmanid
+                    ) as nama_subarea,
+                    (
+                        select group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_areasite ar on msa.areaid = ar.areaid
+                        where msa.salesmanid = s.salesmanid
+                    ) as nama_area,
+                    (
+                        select group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ')
+                        from m_salesman_area msa
+                        join m_area_regional r on r.regionalid = msa.regionalid
+                        where msa.salesmanid = s.salesmanid
+                    ) as nama_regional
+                from m_sales_salesman s
+            ) b on a.salesmanid = b.salesmanid 
+            where a.periode between '$start' and '$end' $addquery $strquery
+            order by a.periode desc;
+        ");
 
         $lovkunjungan = $q->result_array();
         

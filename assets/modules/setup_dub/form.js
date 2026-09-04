@@ -74,14 +74,14 @@
           return false;
         }
 
-        if (checkedProfessionals.length !== maxLimit && maxLimit > 0) {
-          Swal.fire({
-            title: "Validation",
-            html: `Jumlah DUB wajib tepat ${maxLimit}. Saat ini Anda memilih ${checkedProfessionals.length}.`,
-            icon: "warning",
-          });
-          return false;
-        }
+        // if (checkedProfessionals.length !== maxLimit && maxLimit > 0) {
+        //   Swal.fire({
+        //     title: "Validation",
+        //     html: `Jumlah DUB wajib tepat ${maxLimit}. Saat ini Anda memilih ${checkedProfessionals.length}.`,
+        //     icon: "warning",
+        //   });
+        //   return false;
+        // }
 
         let formData = $(form).serializeArray();
         if (param !== undefined) {
@@ -228,16 +228,16 @@
     );
 
     $(document).on("change", ".professional-checkbox", function () {
-      let totalChecked = $(".professional-checkbox:checked").length;
-      if (totalChecked > maxLimit && maxLimit > 0) {
-        $(this).prop("checked", false);
-        Swal.fire({
-          title: "Batas Maksimum",
-          text: `Maksimal professional yang boleh dipilih adalah ${maxLimit}. Anda sudah memilih ${totalChecked}.`,
-          icon: "warning",
-        });
-        return;
-      }
+      // let totalChecked = $(".professional-checkbox:checked").length;
+      // if (totalChecked > maxLimit && maxLimit > 0) {
+      //   $(this).prop("checked", false);
+      //   Swal.fire({
+      //     title: "Batas Maksimum",
+      //     text: `Maksimal professional yang boleh dipilih adalah ${maxLimit}. Anda sudah memilih ${totalChecked}.`,
+      //     icon: "warning",
+      //   });
+      //   return;
+      // }
 
       let parentPanel = $(this).closest(".outlet-accordion-item");
       let count = parentPanel.find(".professional-checkbox:checked").length;
