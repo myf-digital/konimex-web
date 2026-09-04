@@ -104,6 +104,9 @@ class Setup_planned_model extends CI_Model
        
         $req_no = $data['req_no'];
 
+        $old_details = $this->db->get_where('req_pjp_daily_detail', ['req_no' => $req_no])->result_array();
+        $old_periodes = array_unique(array_filter(array_column($old_details, 'periode')));
+
         $this->db->where('req_no', $req_no);
         $this->db->delete('req_pjp_daily_detail');
 
@@ -143,8 +146,9 @@ class Setup_planned_model extends CI_Model
                 'message' => 'Gagal memnyimpan Planned'
             ];
         } else {
-            if (isset($data['status']) && $data['status'] == 3) {
-                $this->sync_to_rrk($req_no, $data['modified_by']);
+            $current_req = $this->db->get_where('req_pjp_daily', ['req_no' => $req_no])->row_array();
+            if ($current_req && $current_req['status'] == 3) {
+                $this->sync_to_rrk($req_no, $data['modified_by'], $old_periodes);
             }
         }
 
@@ -173,6 +177,8 @@ class Setup_planned_model extends CI_Model
             ];
         }
         $this->db->trans_begin();
+
+        $this->delete_from_rrk($data['req_no']);
         
         $this->db->where('req_no', $data['req_no']);
         $this->db->delete('req_pjp_daily');
@@ -346,6 +352,8 @@ class Setup_planned_model extends CI_Model
 
         if ($status == 3) {
             $this->sync_to_rrk($req_no, $user);
+        } else {
+            $this->delete_from_rrk($req_no);
         }
 
         if ($this->db->trans_status() === FALSE) {
@@ -391,7 +399,37 @@ class Setup_planned_model extends CI_Model
         }
     }
 
-    public function sync_to_rrk($req_no, $user_create)
+    public function delete_from_rrk($req_no, $extra_periodes = [])
+    {
+        $req = $this->db->get_where('req_pjp_daily', ['req_no' => $req_no])->row_array();
+        if (!$req) {
+            return;
+        }
+
+        $salesmanid = $req['salesmanid'];
+        $siteid = !empty($req['siteid']) ? $req['siteid'] : 'HIMALAYA';
+        $details = $this->db->get_where('req_pjp_daily_detail', ['req_no' => $req_no])->result_array();
+
+        $periodes = array_unique(array_filter(array_merge(
+            array_column($details, 'periode'),
+            (array)$extra_periodes,
+            [$req['periode'] ?? null]
+        )));
+
+        if (!empty($periodes)) {
+            $this->db->where('salesmanid', $salesmanid);
+            $this->db->where('siteid', $siteid);
+            $this->db->where_in('periode', $periodes);
+            $this->db->delete('t_sales_rrk');
+
+            $this->db->where('salesmanid', $salesmanid);
+            $this->db->where('siteid', $siteid);
+            $this->db->where_in('periode', $periodes);
+            $this->db->delete('t_sales_rrk_user');
+        }
+    }
+
+    public function sync_to_rrk($req_no, $user_create, $extra_periodes = [])
     {
         $req = $this->db->get_where('req_pjp_daily', ['req_no' => $req_no])->row_array();
         if (!$req) {
@@ -406,58 +444,70 @@ class Setup_planned_model extends CI_Model
 
         $details = $this->db->get_where('req_pjp_daily_detail', ['req_no' => $req_no])->result_array();
 
+        $periodes = array_unique(array_filter(array_merge(
+            array_column($details, 'periode'),
+            (array)$extra_periodes,
+            [$req['periode'] ?? null]
+        )));
+
+        if (!empty($periodes)) {
+            $this->db->where('salesmanid', $salesmanid);
+            $this->db->where('siteid', $siteid);
+            $this->db->where_in('periode', $periodes);
+            $this->db->delete('t_sales_rrk');
+
+            $this->db->where('salesmanid', $salesmanid);
+            $this->db->where('siteid', $siteid);
+            $this->db->where_in('periode', $periodes);
+            $this->db->delete('t_sales_rrk_user');
+        }
+
+        if (empty($details)) {
+            return;
+        }
+
         $unique_rrk_keys = [];
         $unique_rrk_user_keys = [];
+        $rrk_insert = [];
+        $rrk_user_insert = [];
+        $now = date('Y-m-d H:i:s');
 
         foreach ($details as $detail) {
             $rrk_key = $detail['periode'] . '_' . $siteid . '_' . $detail['customerid'] . '_' . $salesmanid;
             if (!in_array($rrk_key, $unique_rrk_keys)) {
                 $unique_rrk_keys[] = $rrk_key;
-
-                $res_rrk = $this->db->get_where('t_sales_rrk', [
+                $rrk_insert[] = [
                     'periode' => $detail['periode'],
                     'siteid' => $siteid,
                     'customerid' => $detail['customerid'],
                     'salesmanid' => $salesmanid,
-                ])->result_array();
-
-                if (count($res_rrk) < 1) {
-                    $this->db->insert('t_sales_rrk', [
-                        'periode' => $detail['periode'],
-                        'siteid' => $siteid,
-                        'customerid' => $detail['customerid'],
-                        'salesmanid' => $salesmanid,
-                        'nama_salesman' => $nama_salesman,
-                        'flag_proses' => '0',
-                        'user_create' => $user_create,
-                        'date_create' => date('Y-m-d H:i:s'),
-                    ]);
-                }
+                    'nama_salesman' => $nama_salesman,
+                    'flag_proses' => '0',
+                    'user_create' => $user_create,
+                    'date_create' => $now,
+                ];
             }
 
             $rrk_user_key = $detail['periode'] . '_' . $siteid . '_' . $detail['customerid'] . '_' . $salesmanid . '_' . $detail['user_id'];
             if (!in_array($rrk_user_key, $unique_rrk_user_keys)) {
                 $unique_rrk_user_keys[] = $rrk_user_key;
-
-                $res_rrk_user = $this->db->get_where('t_sales_rrk_user', [
+                $rrk_user_insert[] = [
                     'periode' => $detail['periode'],
                     'siteid' => $siteid,
                     'customerid' => $detail['customerid'],
                     'salesmanid' => $salesmanid,
+                    'nama_salesman' => $nama_salesman,
                     'user_id' => $detail['user_id'],
-                ])->result_array();
-
-                if (count($res_rrk_user) < 1) {
-                    $this->db->insert('t_sales_rrk_user', [
-                        'periode' => $detail['periode'],
-                        'siteid' => $siteid,
-                        'customerid' => $detail['customerid'],
-                        'salesmanid' => $salesmanid,
-                        'nama_salesman' => $nama_salesman,
-                        'user_id' => $detail['user_id'],
-                    ]);
-                }
+                ];
             }
+        }
+
+        if (!empty($rrk_insert)) {
+            $this->db->insert_batch('t_sales_rrk', $rrk_insert);
+        }
+
+        if (!empty($rrk_user_insert)) {
+            $this->db->insert_batch('t_sales_rrk_user', $rrk_user_insert);
         }
     }
 }
