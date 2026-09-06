@@ -268,7 +268,7 @@
         usersession: data.usersession,
         restrict_level: data.restrict_level,
         salesmanid: data.salesmanid || "",
-        skip_req_dub: 1,
+        // skip_req_dub: 1,
       },
       function (res) {
         uiSelectSalesman.empty();
