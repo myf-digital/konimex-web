@@ -172,7 +172,12 @@
         }
       });
 
-    renderCalendar();
+    let salesmanid = uiSelectSalesID.val();
+    if (salesmanid) {
+      open_preview();
+    } else {
+      renderCalendar();
+    }
   }
 
   function navigateMonth(direction) {
@@ -184,7 +189,12 @@
       calendarState.currentMonth = 0;
       calendarState.currentYear += 1;
     }
-    renderCalendar();
+    let salesmanid = uiSelectSalesID.val();
+    if (salesmanid) {
+      open_preview();
+    } else {
+      renderCalendar();
+    }
   }
 
   function renderCalendar() {
