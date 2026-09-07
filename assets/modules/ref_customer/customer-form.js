@@ -47,7 +47,7 @@
       directUrl: "ref_customer",
       beforeSubmit: function (form, options) {
         if (isUpdate && customerData) {
-          form.push({ name: "siteid", value: customerData.siteid || "KNX01" });
+          form.push({ name: "siteid", value: customerData.siteid || "HIMALAYA" });
           form.push({ name: "customerid", value: customerData.customerid });
         }
         form.push({ name: "usersession", value: paramsession.username });
