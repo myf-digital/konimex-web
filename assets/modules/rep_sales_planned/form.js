@@ -60,12 +60,19 @@
       return;
     }
 
+    let month = calendarState.currentMonth + 1;
+    let year = calendarState.currentYear;
+
     common.loading();
     $.ajax({
       type: "POST",
       dataType: "json",
       url: common.baseURL("rep_sales_planned/load_view_planned"),
-      data: "salesmanid=" + salesmanid,
+      data: {
+        salesmanid: salesmanid,
+        month: month,
+        year: year,
+      },
       success: function (res) {
         if (res.status) {
           $("#salesman-info-container").html(res.info_html);
@@ -90,9 +97,16 @@
       return;
     }
 
+    let month = calendarState.currentMonth + 1;
+    let year = calendarState.currentYear;
+
     common.direct(
       "rep_sales_planned/download_to_excel_spreadsheet?salesmanid=" +
-        salesmanid,
+        salesmanid +
+        "&month=" +
+        month +
+        "&year=" +
+        year,
     );
   }
 

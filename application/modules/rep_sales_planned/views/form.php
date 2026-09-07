@@ -68,4 +68,4 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/rep_sales_planned/form.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/rep_sales_planned/form.js' ?>?v=1.0"></script>

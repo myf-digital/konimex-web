@@ -32,21 +32,29 @@ class Rep_sales_planned_model extends CI_Model
 		return $query->row();
 	}
 
-	function getSalesPlannedDetail($salesmanid) {
+	function getSalesPlannedDetail($salesmanid, $month = null, $year = null) {
+		$where_periode = "";
+		if (!empty($month) && !empty($year)) {
+			$periode_prefix = $year . "-" . str_pad($month, 2, "0", STR_PAD_LEFT);
+			$where_periode = " AND a.periode LIKE '" . $this->db->escape_str($periode_prefix) . "%' ";
+		} else {
+			$periode_prefix = date("Y-m");
+			$where_periode = " AND a.periode LIKE '" . $this->db->escape_str($periode_prefix) . "%' ";
+        }
+
 		$sql = "
 			SELECT 
-				d.periode,
-				d.customerid,
-				c.nama_customer as outlet,
-				c.kode_outlet,
-				d.user_id,
+				a.periode,
+				a.customerid,
+				mc.nama_customer as outlet,
+				mc.kode_outlet,
+				a.user_id,
 				p.nama_professional as user_name
-			FROM req_pjp_daily a
-			JOIN req_pjp_daily_detail d ON a.req_no = d.req_no
-			LEFT JOIN m_customer c ON d.customerid = c.customerid
-			LEFT JOIN ref_professional p ON d.user_id = p.id
-			WHERE a.salesmanid = ? AND a.status = 3
-			ORDER BY d.periode ASC
+			FROM t_sales_rrk_user a
+			LEFT JOIN m_customer mc ON mc.customerid = a.customerid
+			LEFT JOIN ref_professional p ON a.user_id = p.id
+			WHERE a.salesmanid = ? $where_periode
+			ORDER BY a.periode ASC
 		";
 		$query = $this->db->query($sql, array($salesmanid));
 		return $query->result_array();
