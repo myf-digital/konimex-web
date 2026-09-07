@@ -19404,7 +19404,7 @@ function make_xlsx_lib(e) {
     t[t.length] = '<a:font script="Cans" typeface="Euphemia"/>';
     t[t.length] = '<a:font script="Cher" typeface="Plantagenet Cherokee"/>';
     t[t.length] = '<a:font script="Yiii" typeface="Microsoft Yi Baiti"/>';
-    t[t.length] = '<a:font script="Tibt" typeface="Microsoft Himalaya"/>';
+    t[t.length] = '<a:font script="Tibt" typeface="Microsoft Konimex"/>';
     t[t.length] = '<a:font script="Thaa" typeface="MV Boli"/>';
     t[t.length] = '<a:font script="Deva" typeface="Mangal"/>';
     t[t.length] = '<a:font script="Telu" typeface="Gautami"/>';
@@ -19439,7 +19439,7 @@ function make_xlsx_lib(e) {
     t[t.length] = '<a:font script="Cans" typeface="Euphemia"/>';
     t[t.length] = '<a:font script="Cher" typeface="Plantagenet Cherokee"/>';
     t[t.length] = '<a:font script="Yiii" typeface="Microsoft Yi Baiti"/>';
-    t[t.length] = '<a:font script="Tibt" typeface="Microsoft Himalaya"/>';
+    t[t.length] = '<a:font script="Tibt" typeface="Microsoft Konimex"/>';
     t[t.length] = '<a:font script="Thaa" typeface="MV Boli"/>';
     t[t.length] = '<a:font script="Deva" typeface="Mangal"/>';
     t[t.length] = '<a:font script="Telu" typeface="Gautami"/>';

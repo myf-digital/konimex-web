@@ -131,7 +131,7 @@ class Theme extends AbstractPart
         $str .= '<a:font script="Cans" typeface="Euphemia" />';
         $str .= '<a:font script="Cher" typeface="Plantagenet Cherokee" />';
         $str .= '<a:font script="Yiii" typeface="Microsoft Yi Baiti" />';
-        $str .= '<a:font script="Tibt" typeface="Microsoft Himalaya" />';
+        $str .= '<a:font script="Tibt" typeface="Microsoft Konimex" />';
         $str .= '<a:font script="Thaa" typeface="MV Boli" />';
         $str .= '<a:font script="Deva" typeface="Mangal" />';
         $str .= '<a:font script="Telu" typeface="Gautami" />';
@@ -166,7 +166,7 @@ class Theme extends AbstractPart
         $str .= '<a:font script="Cans" typeface="Euphemia" />';
         $str .= '<a:font script="Cher" typeface="Plantagenet Cherokee" />';
         $str .= '<a:font script="Yiii" typeface="Microsoft Yi Baiti" />';
-        $str .= '<a:font script="Tibt" typeface="Microsoft Himalaya" />';
+        $str .= '<a:font script="Tibt" typeface="Microsoft Konimex" />';
         $str .= '<a:font script="Thaa" typeface="MV Boli" />';
         $str .= '<a:font script="Deva" typeface="Mangal" />';
         $str .= '<a:font script="Telu" typeface="Gautami" />';

@@ -607,7 +607,7 @@ class Setup_dub_model extends CI_Model
                 $req_no = $existing_req['req_no'];
                 $this->db->where('req_no', $req_no);
                 $this->db->update('req_dub', [
-                    'siteid' => 'HIMALAYA',
+                    'siteid' => 'KNX01',
                     'periode' => $periode,
                     'keterangan' => 'Upload Setup DUB',
                     'status' => $status,
@@ -620,7 +620,7 @@ class Setup_dub_model extends CI_Model
                 $this->db->delete('req_dub_detail');
             } else {
                 $this->db->insert('req_dub', [
-                    'siteid' => 'HIMALAYA',
+                    'siteid' => 'KNX01',
                     'periode' => $periode,
                     'salesmanid' => $salesmanid,
                     'keterangan' => 'Upload Setup DUB',

@@ -1,6 +1,6 @@
 # Program
 
-    Himalaya Web
+    Konimex Web
 
 ## Configuration
 

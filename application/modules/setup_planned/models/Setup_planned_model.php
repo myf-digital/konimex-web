@@ -407,7 +407,7 @@ class Setup_planned_model extends CI_Model
         }
 
         $salesmanid = $req['salesmanid'];
-        $siteid = !empty($req['siteid']) ? $req['siteid'] : 'HIMALAYA';
+        $siteid = !empty($req['siteid']) ? $req['siteid'] : 'KNX01';
         $details = $this->db->get_where('req_pjp_daily_detail', ['req_no' => $req_no])->result_array();
 
         $periodes = array_unique(array_filter(array_merge(
