@@ -37,6 +37,8 @@
     "Sabtu",
   ];
 
+  let paramsession = common.getCookie("session") || {};
+
   initializeParam();
 
   function initializeParam() {
@@ -60,19 +62,26 @@
       return;
     }
 
+    let month = calendarState.currentMonth + 1;
+    let year = calendarState.currentYear;
+
     common.loading();
     $.ajax({
       type: "POST",
       dataType: "json",
       url: common.baseURL("rep_sales_planned/load_view_planned"),
-      data: "salesmanid=" + salesmanid,
+      data: {
+        salesmanid: salesmanid,
+        month: month,
+        year: year,
+      },
       success: function (res) {
-        if (res.status) {
+        if (res && res.status) {
           $("#salesman-info-container").html(res.info_html);
           calendarState.events = res.events || [];
           renderCalendar();
         } else {
-          alert(res.message || "Failed to load data");
+          alert((res && res.message) ? res.message : "Failed to load data");
         }
         common.loadingClose();
       },
@@ -90,28 +99,56 @@
       return;
     }
 
+    let month = calendarState.currentMonth + 1;
+    let year = calendarState.currentYear;
+
     common.direct(
       "rep_sales_planned/download_to_excel_spreadsheet?salesmanid=" +
-        salesmanid,
+        salesmanid +
+        "&month=" +
+        month +
+        "&year=" +
+        year,
     );
   }
 
   function load_salesid() {
     common.loading();
-    $.post(common.baseURL("api_v1/call_salesman"), function (res) {
-      uiSelectSalesID.empty();
-      uiSelectSalesID.select2({
-        placeholder: "Select TPE",
-        allowClear: true,
-        data: $.map(res.result, function (o) {
-          o.id = o.salesmanid; // replace name with the property used for the text
-          o.text = o.salesmanid + " - " + o.nama_salesman;
-          return o;
-        }),
-      });
+    $.ajax({
+      url: common.baseURL("api_v1/call_salesman"),
+      type: "POST",
+      dataType: "json",
+      data: {
+        idjabatan: paramsession.idjabatan,
+        usersession: paramsession.usersession,
+        restrict_level: paramsession.restrict_level,
+        salesmanid: paramsession.salesmanid || "",
+      },
+      success: function (res) {
+        try {
+          uiSelectSalesID.empty();
+          let items = (res && res.result) ? res.result : (Array.isArray(res) ? res : []);
+          uiSelectSalesID.select2({
+            placeholder: "Select TPE",
+            allowClear: true,
+            data: $.map(items, function (o) {
+              o.id = o.salesmanid;
+              o.text = o.salesmanid + " - " + o.nama_salesman;
+              return o;
+            }),
+          });
 
-      uiSelectSalesID.val(null).trigger("change");
-      common.loadingClose();
+          uiSelectSalesID.val(null).trigger("change");
+        } catch (e) {
+          console.error("Error populating select2:", e);
+        } finally {
+          common.loadingClose();
+        }
+      },
+      error: function (xhr, status, err) {
+        console.error("Error loading salesman list:", status, err);
+        common.loadingClose();
+      },
     });
   }
 
@@ -140,7 +177,12 @@
         e.preventDefault();
         calendarState.currentMonth = new Date().getMonth();
         calendarState.currentYear = new Date().getFullYear();
-        renderCalendar();
+        let salesmanid = uiSelectSalesID.val();
+        if (salesmanid) {
+          open_preview();
+        } else {
+          renderCalendar();
+        }
       });
 
     $("#btn-close-modal")
@@ -170,7 +212,13 @@
       calendarState.currentMonth = 0;
       calendarState.currentYear += 1;
     }
-    renderCalendar();
+    
+    let salesmanid = uiSelectSalesID.val();
+    if (salesmanid) {
+      open_preview();
+    } else {
+      renderCalendar();
+    }
   }
 
   function renderCalendar() {

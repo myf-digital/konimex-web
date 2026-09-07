@@ -20,13 +20,15 @@ class Rep_sales_planned extends BaseController
 
     function load_view_planned() {
     	$salesmanid = $this->input->post("salesmanid");
+    	$month = $this->input->post("month");
+    	$year = $this->input->post("year");
 
     	if ($salesmanid == 'null' || !$salesmanid) {
     		echo json_encode(['status' => false, 'message' => 'TPE ID is empty']);
     		return;
     	}	
 
-    	$plannedDetail = $this->rep_sales_planned->getSalesPlannedDetail($salesmanid);
+    	$plannedDetail = $this->rep_sales_planned->getSalesPlannedDetail($salesmanid, $month, $year);
     	$salesSales = $this->rep_sales_planned->getSales($salesmanid);
 
     	if (!$salesSales) {
@@ -89,12 +91,14 @@ class Rep_sales_planned extends BaseController
 
     function download_to_excel() {
     	$salesmanid = $this->input->get("salesmanid");
+    	$month = $this->input->get("month");
+    	$year = $this->input->get("year");
 
     	if ($salesmanid == 'null') return false;
 
     	$salesmanid = str_replace('/', '', trim($salesmanid));	
 
-    	$salesRekap = $this->rep_sales_planned->getSalesPlannedDetail($salesmanid);
+    	$salesRekap = $this->rep_sales_planned->getSalesPlannedDetail($salesmanid, $month, $year);
     	$salesSales = $this->rep_sales_planned->getSales($salesmanid);
 
     	$salesActive = $salesSales->aktif == 1 ? 'Active' : 'Non Active';
@@ -188,12 +192,14 @@ class Rep_sales_planned extends BaseController
     function download_to_excel_spreadsheet() {
     	ini_set('memory_limit', '128M');
     	$salesmanid = $this->input->get("salesmanid");
+    	$month = $this->input->get("month");
+    	$year = $this->input->get("year");
 
     	if ($salesmanid == 'null') return false;
 
     	$salesmanid = str_replace('/', '', trim($salesmanid));	
 
-    	$salesRekap = $this->rep_sales_planned->getSalesPlannedDetail($salesmanid);
+    	$salesRekap = $this->rep_sales_planned->getSalesPlannedDetail($salesmanid, $month, $year);
     	$salesSales = $this->rep_sales_planned->getSales($salesmanid);
 
     	$salesActive = $salesSales->aktif == 1 ? 'Active' : 'Non Active';

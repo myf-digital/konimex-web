@@ -24,7 +24,9 @@ class Api_v1_model extends CI_Model
 		if (!empty($data['salesmanid'])) {
 			$strquery .= " and a.salesmanid = '".$data['salesmanid']."'";
 		} else {
-			$restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+			$usersession = isset($data["usersession"]) ? $data["usersession"] : null;
+			$restrict_level = isset($data["restrict_level"]) ? $data["restrict_level"] : null;
+			$restrict_query = get_salesman_restrict($usersession, $restrict_level);
 			if ($restrict_query) {
 				$strquery = " and a.salesmanid in (" . $restrict_query . ")";
 			}
