@@ -1057,27 +1057,13 @@ class Api_v1_model extends CI_Model
 			";
 			$salesman_areas = $this->db->query($sql_salesman, [$data['salesmanid']])->result_array();
 			if (!empty($salesman_areas)) {
-				$subareaids = array_unique(array_filter(array_column($salesman_areas, 'subareaid')));
-				$areaids = array_unique(array_filter(array_column($salesman_areas, 'areaid')));
-				$regionalids = array_unique(array_filter(array_column($salesman_areas, 'regionalid')));
-
-				$conditions = [];
-				if (!empty($subareaids)) {
-					$escaped_subareas = array_map(function($val) { return "'" . $this->db->escape_str($val) . "'"; }, $subareaids);
-					$conditions[] = "a.subareaid in (" . implode(",", $escaped_subareas) . ")";
-				}
-				if (!empty($areaids)) {
-					$escaped_areas = array_map(function($val) { return "'" . $this->db->escape_str($val) . "'"; }, $areaids);
-					$conditions[] = "a.areaid in (" . implode(",", $escaped_areas) . ")";
-				}
-				if (!empty($regionalids)) {
-					$escaped_regionals = array_map(function($val) { return "'" . $this->db->escape_str($val) . "'"; }, $regionalids);
-					$conditions[] = "a.regionalid in (" . implode(",", $escaped_regionals) . ")";
-				}
-
-				if (!empty($conditions)) {
-					$where .= " and (" . implode(" or ", $conditions) . ")";
-				}
+				$where .= " and exists (
+					select 1 from m_salesman_area msa 
+					where msa.regionalid = a.regionalid 
+					  and msa.areaid = a.areaid 
+					  and msa.subareaid = a.subareaid 
+					  and msa.salesmanid = '" . $this->db->escape_str($salesmanid_val) . "'
+				)";
 
 				foreach ($salesman_areas as $sa) {
 					if (!empty($sa['nama_regional'])) {
