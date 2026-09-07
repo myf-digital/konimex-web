@@ -1122,7 +1122,7 @@ class Api_v1_model extends CI_Model
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
             left join m_customer_ob ob on a.customerid = ob.customerid and ob.salesmanid = '".$this->db->escape_str($salesmanid_val)."'
-			where a.customerid <> '' and pro.list_professional is not null $where
+			where a.customerid <> '' and (a.customerid_m = '' or a.customerid_m is null) and pro.list_professional is not null $where
 			group by a.customerid
 		";
 		$res = $this->db->query($sql);

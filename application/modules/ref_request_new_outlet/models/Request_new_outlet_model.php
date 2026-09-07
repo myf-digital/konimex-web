@@ -189,7 +189,7 @@ class Request_new_outlet_model extends CI_Model
                                     left join m_customer_class e on a.classid = e.classid
                                     left join m_setup_site f on a.siteid=f.siteid
                                     left join m_sales_salesman g on a.salesmanid=g.salesmanid
-                                    where a.customerid = ''
+                                    where (a.customerid = '' or a.customerid is null) and (a.customerid_m <> '' and a.customerid_m is not null)
                                     ".$strquery."
                     ) a";
         return easy_pagging($data, $field, $table);

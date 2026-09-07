@@ -299,7 +299,7 @@ class Customer_model extends CI_Model
                 left join ref_spesialisasi rs on rs.id = rp.spesialisasi_id
                 group by rpm.customerid
             ) AS pro ON a.customerid = pro.customerid
-            where a.customerid <> '' ".$strquery."
+            where a.customerid <> '' and (a.customerid_m = '' or a.customerid_m is null) ".$strquery."
         ) a";
 
         if ($type == 'export') {
