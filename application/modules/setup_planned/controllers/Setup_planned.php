@@ -6,6 +6,8 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class Setup_planned extends BaseController
 {
@@ -29,6 +31,11 @@ class Setup_planned extends BaseController
     public function form_download()
     {
         $this->template->show($this, 'form_download');
+    }
+    
+    public function form_upload()
+    {
+        $this->template->show($this, 'form_upload');
     }
 
     public function load()
@@ -276,5 +283,282 @@ class Setup_planned extends BaseController
 
         $writer->save('php://output');
     
+    }
+
+    public function download_template($salesmanid = '')
+    {
+        if (empty($salesmanid)) {
+            $salesmanid = $this->uri->segment('3');
+        }
+
+        ini_set("memory_limit", "1024M");
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Template Planned');
+
+        $headers = [
+            'SALESMANID',
+            'OUTLETID',
+            'NAMA_OUTLET',
+            'USERID',
+            'NAMA_USER',
+            'TANGGAL',
+        ];
+
+        $sheet->fromArray($headers, NULL, 'A1');
+        $sheet->getRowDimension(1)->setRowHeight(25);
+
+        $rowNum = 2;
+        if (!empty($salesmanid)) {
+            $data = $this->setup_planned->get_template_data($salesmanid);
+            if (!empty($data)) {
+                foreach ($data as $item) {
+                    $sheet->fromArray([
+                        $item['salesmanid'],
+                        $item['customerid'],
+                        $item['nama_customer'],
+                        $item['user_id'],
+                        $item['nama_user'],
+                        NULL,
+                    ], NULL, 'A' . $rowNum);
+                    $rowNum++;
+                }
+            }
+        }
+
+        $highestRow = max(2, $sheet->getHighestRow());
+        $highestColumn = 'F';
+        $fullRange = 'A1:' . $highestColumn . $highestRow;
+
+        $sheet->getStyle($fullRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->freezePane('A2');
+
+        foreach (range('A', $highestColumn) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $sheet->getStyle($fullRange)->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'D3D3D3'],
+                ],
+            ],
+        ]);
+
+        $headerRange = 'A1:' . $highestColumn . '1';
+        $sheet->getStyle($headerRange)->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1F4E78'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+                'startColor' => ['rgb' => '3C8DBC'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $filename = "Template_Setup_Planned_" . (!empty($salesmanid) ? str_replace(',', '_', $salesmanid) . "_" : "") . date('His') . ".xlsx";
+
+        if (ob_get_length()) ob_end_clean();
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function upload()
+    {
+        ini_set("memory_limit", "1024M");
+
+        $usersession = $this->input->post('usersession');
+        $rolename = $this->input->post('rolename');
+
+        if (empty($_FILES['fileupload']['name'])) {
+            responseJSON(['status' => false, 'message' => 'File tidak boleh kosong']);
+            return;
+        }
+
+        $allowedExtensions = ['xls', 'xlsx'];
+        $ext = strtolower(pathinfo($_FILES['fileupload']['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($ext, $allowedExtensions)) {
+            responseJSON(['status' => false, 'message' => 'Format file harus .xls atau .xlsx']);
+            return;
+        }
+
+        $fileTmp = $_FILES['fileupload']['tmp_name'];
+
+        try {
+            $spreadsheet = IOFactory::load($fileTmp);
+            $sheet = $spreadsheet->getActiveSheet()->toArray(null, true, false, false);
+
+            if (empty($sheet) || count($sheet) < 2) {
+                responseJSON(['status' => false, 'message' => 'File kosong atau tidak memiliki baris data']);
+                return;
+            }
+
+            $headerRowIndex = 0;
+            $header = array_values(array_filter(array_map(function($v) {
+                return strtoupper(trim((string)$v));
+            }, $sheet[0]), function($v) {
+                return $v !== '';
+            }));
+
+            $expected = [
+                'SALESMANID',
+                'OUTLETID',
+                'NAMA_OUTLET',
+                'USERID',
+                'NAMA_USER',
+                'TANGGAL',
+            ];
+
+            if ($header !== $expected && isset($sheet[1])) {
+                $checkRow1 = array_values(array_filter(array_map(function($v) {
+                    return strtoupper(trim((string)$v));
+                }, $sheet[1]), function($v) {
+                    return $v !== '';
+                }));
+                if ($checkRow1 === $expected) {
+                    $headerRowIndex = 1;
+                    $header = $checkRow1;
+                }
+            }
+
+            $headerFirst = array_slice($header, 0, 6);
+            if ($headerFirst !== $expected) {
+                responseJSON([
+                    'status' => false,
+                    'message' => 'Format header Excel tidak sesuai. Wajib berisi kolom: SALESMANID, OUTLETID, NAMA_OUTLET, USERID, NAMA_USER, TANGGAL'
+                ]);
+                return;
+            }
+
+            $grouped = [];
+            for ($i = $headerRowIndex + 1; $i < count($sheet); $i++) {
+                $row = $sheet[$i];
+                $salesmanid = trim((string)($row[0] ?? ''));
+                $customerid = trim((string)($row[1] ?? ''));
+                $nama_customer = trim((string)($row[2] ?? ''));
+                $userid = trim((string)($row[3] ?? ''));
+                $nama_user = trim((string)($row[4] ?? ''));
+                $tanggal = $row[5] ?? '';
+
+                if ($salesmanid === '' && $customerid === '' && $userid === '' && (string)$tanggal === '') {
+                    continue;
+                }
+
+                if ($salesmanid === '') {
+                    responseJSON([
+                        'status' => false,
+                        'message' => "Kolom SALESMANID kosong pada baris ke-" . ($i + 1)
+                    ]);
+                    return;
+                }
+
+                if ($customerid === '') {
+                    responseJSON([
+                        'status' => false,
+                        'message' => "Kolom OUTLETID kosong pada baris ke-" . ($i + 1)
+                    ]);
+                    return;
+                }
+
+                if ($userid === '') {
+                    responseJSON([
+                        'status' => false,
+                        'message' => "Kolom USERID kosong pada baris ke-" . ($i + 1)
+                    ]);
+                    return;
+                }
+
+                if ((string)$tanggal === '') {
+                    responseJSON([
+                        'status' => false,
+                        'message' => "Kolom TANGGAL kosong pada baris ke-" . ($i + 1)
+                    ]);
+                    return;
+                }
+
+                $formattedDate = false;
+                if (is_numeric($tanggal) && (float)$tanggal > 0) {
+                    try {
+                        $dateObj = Date::excelToDateTimeObject((float)$tanggal);
+                        $formattedDate = $dateObj->format('Y-m-d');
+                    } catch (\Throwable $t) {
+                        $formattedDate = false;
+                    }
+                }
+
+                if (!$formattedDate && is_string($tanggal) && trim($tanggal) !== '') {
+                    $trimmedDate = trim($tanggal);
+                    $formats = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'Y/m/d', 'd.m.Y'];
+                    foreach ($formats as $fmt) {
+                        $d = \DateTime::createFromFormat('!' . $fmt, $trimmedDate);
+                        if ($d && $d->format($fmt) === $trimmedDate) {
+                            $formattedDate = $d->format('Y-m-d');
+                            break;
+                        }
+                    }
+                }
+
+                if (!$formattedDate) {
+                    responseJSON([
+                        'status' => false,
+                        'message' => "Format tanggal tidak valid pada baris ke-" . ($i + 1) . ": " . (string)$tanggal . " (Wajib format DD/MM/YYYY atau YYYY-MM-DD)"
+                    ]);
+                    return;
+                }
+
+                if (!isset($grouped[$salesmanid])) {
+                    $grouped[$salesmanid] = [];
+                }
+
+                $grouped[$salesmanid][] = [
+                    'customerid' => $customerid,
+                    'nama_customer' => $nama_customer,
+                    'user_id' => $userid,
+                    'user_name' => $nama_user,
+                    'tanggal' => $formattedDate,
+                    'row_num' => $i + 1
+                ];
+            }
+
+            if (empty($grouped)) {
+                responseJSON(['status' => false, 'message' => 'Tidak ada baris data yang valid dalam file Excel']);
+                return;
+            }
+
+            $result = $this->setup_planned->process_upload($grouped, $usersession, $rolename);
+            responseJSON($result);
+
+        } catch (\Throwable $e) {
+            responseJSON(['status' => false, 'message' => "Terjadi kesalahan saat memproses file: " . $e->getMessage()]);
+        }
     }
 }
