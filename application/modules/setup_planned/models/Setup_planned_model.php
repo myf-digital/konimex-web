@@ -510,4 +510,155 @@ class Setup_planned_model extends CI_Model
             $this->db->insert_batch('t_sales_rrk_user', $rrk_user_insert);
         }
     }
+
+    public function get_template_data($salesmanid)
+    {
+        $salesId = $this->db->escape_str($salesmanid);
+        $where = '';
+        if (!empty($salesId) && $salesId != 'all') {
+            $where = "and a.salesmanid = '".$salesId."'";
+        }
+        $sql = "
+            select distinct
+                a.salesmanid,
+                rpm.customerid,
+                rpm.nama_customer,
+                rpm.id_professional as user_id,
+                rpm.nama_professional as nama_user
+            from m_customer_ob a
+            join ref_professional_mapping rpm on rpm.id_professional = a.user_id and rpm.customerid = a.customerid
+            where a.customerid <> '' $where
+            order by rpm.customerid desc, rpm.id_professional desc
+        ";
+        $data = $this->db->query($sql)->result_array();
+        return $data;
+    }
+
+    public function process_upload($grouped_data, $usersession, $rolename)
+    {
+        if (empty($grouped_data)) {
+            return [
+                'status' => false,
+                'message' => 'Tidak ada data valid yang diupload.'
+            ];
+        }
+
+        $isAdmin = !empty($rolename) && strpos(strtolower($rolename), 'admin') !== false;
+
+        $prepared = [];
+        foreach ($grouped_data as $salesmanid => $rows) {
+            $salesmanid = trim($salesmanid);
+            if ($salesmanid === '') {
+                continue;
+            }
+
+            $sales = $this->db->get_where('m_sales_salesman', ['salesmanid' => $salesmanid])->row_array();
+            if (!$sales) {
+                return [
+                    'status' => false,
+                    'message' => "Salesman ID '{$salesmanid}' tidak ditemukan dalam database."
+                ];
+            }
+
+            $unique_keys = [];
+            $unique_details = [];
+            foreach ($rows as $item) {
+                $cid = trim($item['customerid'] ?? '');
+                $uid = trim($item['user_id'] ?? '');
+                $tanggal = trim($item['tanggal'] ?? '');
+
+                if ($cid === '' || $uid === '' || $tanggal === '') {
+                    continue;
+                }
+
+                $key = $tanggal . '_' . $cid . '_' . $uid;
+                if (!isset($unique_keys[$key])) {
+                    $unique_keys[$key] = true;
+                    $unique_details[] = [
+                        'customerid' => $cid,
+                        'periode' => $tanggal,
+                        'user_id' => $uid,
+                    ];
+                }
+            }
+
+            if (empty($unique_details)) {
+                continue;
+            }
+
+            $prepared[$salesmanid] = [
+                'salesman_name' => $sales['nama_salesman'],
+                'details' => $unique_details
+            ];
+        }
+
+        if (empty($prepared)) {
+            return [
+                'status' => false,
+                'message' => 'Tidak ada data valid yang dapat diproses.'
+            ];
+        }
+
+        $sqldate = "select sysdate() datetime;";
+        $datetime = $this->db->query($sqldate)->row();
+        $now = $datetime->datetime;
+        $periode = date('Y-m-d');
+
+        $this->db->trans_begin();
+
+        $processed_req_nos = [];
+        foreach ($prepared as $salesmanid => $pData) {
+            $status = $isAdmin ? 3 : 1;
+            $reason = $isAdmin ? ('Data Planned telah diupload dan disetujui oleh ' . $usersession) : 'Upload Setup Planned';
+
+            $this->db->insert('req_pjp_daily', [
+                'siteid' => 'KNX01',
+                'periode' => $periode,
+                'salesmanid' => $salesmanid,
+                'salesman_name' => $pData['salesman_name'],
+                'keterangan' => 'Upload Setup Planned',
+                'status' => $status,
+                'reason' => $reason,
+                'created_by' => $usersession,
+                'created_date' => $now
+            ]);
+            $req_no = $this->db->insert_id();
+
+            $insert_details = [];
+            foreach ($pData['details'] as $det) {
+                $insert_details[] = [
+                    'req_no' => $req_no,
+                    'salesmanid' => $salesmanid,
+                    'customerid' => $det['customerid'],
+                    'periode' => $det['periode'],
+                    'user_id' => $det['user_id'] ?? 0,
+                ];
+            }
+
+            if (!empty($insert_details)) {
+                $this->db->insert_batch('req_pjp_daily_detail', $insert_details);
+            }
+
+            if ($status == 3) {
+                $this->sync_to_rrk($req_no, $usersession);
+            }
+
+            $processed_req_nos[] = $req_no;
+        }
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return [
+                'status' => false,
+                'message' => 'Gagal menyimpan data upload Planned.'
+            ];
+        } else {
+            $this->db->trans_commit();
+            return [
+                'status' => true,
+                'message' => 'Berhasil upload data Planned.',
+                'data' => $processed_req_nos
+            ];
+        }
+    }
 }

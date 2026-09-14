@@ -28,6 +28,11 @@
       common.removeCookie("module.setup_planned.update");
       common.direct("setup_planned/form_download");
     });
+
+    $("#btn-upload").click(function () {
+      common.removeCookie("module.setup_planned.update");
+      common.direct("setup_planned/form_upload");
+    });
   }
 
   function initializeGrid() {
@@ -144,8 +149,14 @@
       "fa fa-download",
       " Download Planned",
     );
+    const btnUpload = commonGrid.btnBuilderText(
+      "btn-upload",
+      "warning",
+      "fa fa-upload",
+      " Upload Planned",
+    );
     return (
-      '<div class="action-grid-toolbar">' + btnCreate + btnDownload + "</div>"
+      '<div class="action-grid-toolbar">' + btnCreate + btnDownload + btnUpload + "</div>"
     );
   }
 
