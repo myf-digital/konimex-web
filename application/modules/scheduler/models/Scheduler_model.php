@@ -536,12 +536,17 @@ class Scheduler_model extends CI_Model
 		$this->db->query($queryTrans);
 		$affectedTrans = $this->db->affected_rows();
 
-		$totalAffected = $affectedOutlet + $affectedDetailing + $affectedTrans;
+		$queryTokens = "DELETE FROM tokens WHERE expires_at < NOW()";
+		$this->db->query($queryTokens);
+		$affectedTokens = $this->db->affected_rows();
+
+		$totalAffected = $affectedOutlet + $affectedDetailing + $affectedTrans + $affectedTokens;
 
 		return [
 			'm_customer' => $affectedOutlet,
 			'trx_visit_detailing' => $affectedDetailing,
 			't_sales_rrk_trans' => $affectedTrans,
+			'tokens' => $affectedTokens,
 			'total' => $totalAffected
 		];
 	}

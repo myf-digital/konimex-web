@@ -461,9 +461,10 @@ class Scheduler extends BaseController
             $affectedOutlet = $affected['m_customer'] ?? 0;
             $affectedDetailing = $affected['trx_visit_detailing'] ?? 0;
             $affectedTrans = $affected['t_sales_rrk_trans'] ?? 0;
+            $affectedTokens = $affected['tokens'] ?? 0;
 
             if ($totalAffected > 0 || $this->input->get('force_notif')) {
-                $this->notif_telegram_rekonsiliasi($affectedOutlet, $affectedDetailing, $affectedTrans, $totalAffected, $duration);
+                $this->notif_telegram_rekonsiliasi($affectedOutlet, $affectedDetailing, $affectedTrans, $affectedTokens, $totalAffected, $duration);
             }
 
             responseJSON([
@@ -481,7 +482,7 @@ class Scheduler extends BaseController
         }
     }
 
-    private function notif_telegram_rekonsiliasi($affectedOutlet, $affectedDetailing, $affectedTrans, $totalAffected, $duration)
+    private function notif_telegram_rekonsiliasi($affectedOutlet, $affectedDetailing, $affectedTrans, $affectedTokens, $totalAffected, $duration)
     {
         $title = "<b>CRON: REKONSILIASI OUTLET & VISIT</b>";
         $msg_lines = [
@@ -498,6 +499,9 @@ class Scheduler extends BaseController
         }
         if ($affectedTrans) {
             $msg_lines[] = "• t_sales_rrk_trans (Sync Periode Check-in): <b>" . number_format($affectedTrans) . "</b> baris";
+        }
+        if ($affectedTokens) {
+            $msg_lines[] = "• tokens (Hapus Token Expired): <b>" . number_format($affectedTokens) . "</b> baris";
         }
         $msg_lines = array_merge($msg_lines, [
             "",
