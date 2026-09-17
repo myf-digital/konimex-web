@@ -679,3 +679,57 @@ if (!function_exists('send_telegram_notif')) {
         ];
     }
 }
+
+if (!function_exists('send_telegram')) {
+    function send_telegram($title, $message) {
+        $url = env('TELEGRAM_BOT_URL');
+        $token = env('TELEGRAM_BOT_TOKEN');
+        $chat_id = env('TELEGRAM_CHAT_ID');
+        $titleNotif = env('TELEGRAM_BOT_TITLE_NOTIF') ?? 'KONIMEX NOTIF';
+
+        if (empty($token) || empty($url) || empty($chat_id) || $token == 'telegram_bot_token' || $chat_id == 'telegram_chat_id') {
+            return false;
+        }
+
+        if (strlen($message) > 4000) {
+            $message = substr($message, 0, 4000) . '... [TRUNCATED]';
+        }
+        
+        $url = "{$url}{$token}/sendMessage";
+        $full_message = "<b>[{$titleNotif}]</b>\n{$title}\n{$message}";
+        $data = [
+            'chat_id' => $chat_id,
+            'text' => $full_message,
+            'parse_mode' => 'HTML'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $result = curl_exec($ch);
+        if ($result === false) {
+            $err = curl_error($ch);
+            log_message('error', "telegram_helper send_telegram curl error: " . $err);
+        }
+        curl_close($ch);
+
+        // Try to decode JSON response from Telegram and return structured array
+        $parsed = json_decode($result, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($parsed)) {
+            return [
+                'status' => isset($parsed['ok']) ? (bool)$parsed['ok'] : true,
+                'data' => $parsed,
+                'raw' => $result
+            ];
+        }
+
+        return [
+            'status' => false,
+            'data' => null,
+            'raw' => $result
+        ];
+    }
+}

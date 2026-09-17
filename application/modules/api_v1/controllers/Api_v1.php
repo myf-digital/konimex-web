@@ -407,6 +407,7 @@ class Api_v1 extends CI_Controller
     {
         ini_set("memory_limit","512M");
         ini_set('max_execution_time', '0');
+        $start_time = microtime(true);
 		
         if (empty($_GET['periode'])){
             $vdate = date("Y-m-d"); //format date yyyy-mm-dd
@@ -415,6 +416,9 @@ class Api_v1 extends CI_Controller
         }
         
         $createby = 'Scheduler';
+
+        $setup_before = $this->db->get("m_setup_site")->row();
+
         //$data = param_input();
         $resultsos = $this->api_v1->generate_rekap_sos($vdate);
         //$resultstock = $this->api_v1->generate_stock($vdate);
@@ -422,6 +426,11 @@ class Api_v1 extends CI_Controller
         $result = $this->api_v1->get_pjp_daily($vdate,$createby);
         //$resultoos = $this->api_v1->get_stock_all_periode_fr_oos($vdate);
         //echo $this->db->last_query();
+
+        $duration = round(microtime(true) - $start_time, 2);
+
+        $this->notif_telegram_pjp_daily($vdate, $result, $resultatt, $resultsos, $setup_before, $duration);
+
         if (true == $result) {
             if (true == $resultatt){
 				return response("PJP Ok, Att Ok");    
@@ -436,6 +445,59 @@ class Api_v1 extends CI_Controller
             }
         }
 
+    }
+
+    private function notif_telegram_pjp_daily($vdate, $result, $resultatt, $resultsos, $setup_before, $duration)
+    {
+        $setup_after = $this->db->get('m_setup_site')->row();
+
+        $total_rrk = $this->db->where('periode', $vdate)->count_all_results('t_sales_rrk');
+        $salesman_row = $this->db->select('count(distinct salesmanid) as total')->where('periode', $vdate)->get('t_sales_rrk')->row();
+        $total_salesman = $salesman_row ? $salesman_row->total : 0;
+
+        $total_crc = $this->db->where('periode', $vdate)->count_all_results('t_sales_crc');
+        $total_absensi = $this->db->where('periode', $vdate)->count_all_results('t_sales_absensi');
+        $total_sos = $this->db->where('periode', $vdate)->count_all_results('rekap_sos_detail');
+
+        $status_pjp = $result ? "✅ OK" : "❌ Gagal / Terlewat";
+        $status_att = $resultatt ? "✅ OK" : "❌ Gagal";
+        $status_sos = $resultsos ? "✅ OK" : "❌ Gagal";
+
+        $before_date = $setup_before ? date("Y-m-d", strtotime($setup_before->tanggal)) : '-';
+        $before_week = $setup_before ? $setup_before->aktif_week : '-';
+        $after_date = $setup_after ? date("Y-m-d", strtotime($setup_after->tanggal)) : '-';
+        $after_week = $setup_after ? $setup_after->aktif_week : '-';
+
+        if ($result && $setup_after && $after_date === $vdate) {
+            $setup_info = "✅ <b>Berhasil diubah</b> ke: <code>{$after_date}</code> (Week {$after_week})\n<i>(Sebelumnya: {$before_date} / Week {$before_week})</i>";
+        } else {
+            $setup_info = "⚠️ <b>Tidak diubah / Tetap:</b> <code>{$after_date}</code> (Week {$after_week})\n<i>(Tanggal setup site sudah >= target atau proses dilewati)</i>";
+        }
+
+        $title = "<b>CRON: PJP DAILY REPORT</b>";
+        $msg_lines = [
+            "📅 <b>Target Periode:</b> <code>{$vdate}</code>",
+            "⏱️ <b>Durasi Eksekusi:</b> {$duration}s",
+            "",
+            "⚙️ <b>Setup Site (m_setup_site):</b>",
+            $setup_info,
+            "",
+            "📊 <b>Status Eksekusi:</b>",
+            "• PJP Daily: {$status_pjp}",
+            "• Absensi: {$status_att}",
+            "• Rekap SOS: {$status_sos}",
+            "",
+            "📦 <b>Ringkasan Jumlah Data Periode [{$vdate}]:</b>",
+            "• Total PJP (RRK): <b>" . number_format($total_rrk) . "</b> baris (" . number_format($total_salesman) . " Salesman)",
+            "• Total CRC: <b>" . number_format($total_crc) . "</b> baris",
+            "• Total Absensi: <b>" . number_format($total_absensi) . "</b> baris",
+            "• Total Rekap SOS: <b>" . number_format($total_sos) . "</b> baris",
+            "",
+            "🕐 <i>Selesai: " . date('Y-m-d H:i:s') . "</i>"
+        ];
+
+        $message = implode("\n", $msg_lines);
+        send_telegram($title, $message);
     }
 
     function call_outlet_pjp()
@@ -703,6 +765,7 @@ class Api_v1 extends CI_Controller
     {
         ini_set("memory_limit","512M");
         ini_set('max_execution_time', '0');
+        $start_time = microtime(true);
 		
         if (empty($_GET['periode'])) {
             $vdate = date("Y-m"); //format date yyyy-mm
@@ -712,11 +775,71 @@ class Api_v1 extends CI_Controller
         
         $createby = 'Scheduler';
         $result = $this->api_v1->get_schedule_dub($vdate, $createby);
+        $duration = round(microtime(true) - $start_time, 2);
+
+        $this->notif_telegram_schedule_dub($vdate, $result, $duration);
+
         if (!empty($result) && count($result) > 0) {
 			return response("Schedule DUB Done");    
         } else {
 			return response("Schedule DUB Not Done");
         }
+    }
+
+    private function notif_telegram_schedule_dub($vdate, $result, $duration)
+    {
+        $time = strtotime($vdate);
+        if (!$time) {
+            if (strlen($vdate) == 7 && strpos($vdate, '-') !== false) {
+                $time = strtotime($vdate . '-01');
+            } else {
+                $time = time();
+            }
+        }
+        $tahun = (int) date('Y', $time);
+        $bulan = (int) date('n', $time);
+
+        $is_success = !empty($result) && count($result) > 0;
+        $status_dub = $is_success ? "✅ Done" : "❌ Not Done";
+
+        $total_role_targets = $this->db->where('tahun', $tahun)->where('bulan', $bulan)->count_all_results('role_mapping_target');
+        $total_spesialis_targets = $this->db->where('tahun', $tahun)->where('bulan', $bulan)->count_all_results('m_sales_spesialis_target');
+        $total_produk_targets = $this->db->where('tahun', $tahun)->where('bulan', $bulan)->count_all_results('m_sales_produk_target');
+
+        $role_summaries = [];
+        if ($is_success && is_array($result)) {
+            foreach ($result as $r) {
+                $r_name = $r['role_name'] ?? '-';
+                $r_dub = $r['target_dub'] ?? '-';
+                $r_hk = $r['target_hk'] ?? '-';
+                $role_summaries[] = "• {$r_name}: Target DUB <b>{$r_dub}</b> (HK: {$r_hk})";
+            }
+        }
+
+        $title = "<b>CRON: SCHEDULE DUB REPORT</b>";
+        $msg_lines = [
+            "📅 <b>Target Periode:</b> <code>" . date('F Y', $time) . " ({$vdate})</code>",
+            "⏱️ <b>Durasi Eksekusi:</b> {$duration}s",
+            "",
+            "📊 <b>Status Eksekusi:</b> {$status_dub}",
+            "",
+            "📦 <b>Ringkasan Jumlah Data:</b>",
+            "• Total Role Mapping Target: <b>" . number_format($total_role_targets) . "</b> baris",
+            "• Total Target Spesialisasi: <b>" . number_format($total_spesialis_targets) . "</b> baris",
+            "• Total Target Produk: <b>" . number_format($total_produk_targets) . "</b> baris",
+        ];
+
+        if (!empty($role_summaries)) {
+            $msg_lines[] = "";
+            $msg_lines[] = "🎯 <b>Detail Target per Role:</b>";
+            $msg_lines = array_merge($msg_lines, $role_summaries);
+        }
+
+        $msg_lines[] = "";
+        $msg_lines[] = "🕐 <i>Selesai: " . date('Y-m-d H:i:s') . "</i>";
+
+        $message = implode("\n", $msg_lines);
+        send_telegram($title, $message);
     }
 
     function call_update_table()
