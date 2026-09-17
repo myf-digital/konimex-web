@@ -487,4 +487,62 @@ class Scheduler_model extends CI_Model
 		$s = $diff % 60;
 		return sprintf('%02d:%02d:%02d', $h, $m, $s);
 	}
+
+	public function rekonsiliasi_outlet_visit() {
+		$queryOutlet = "UPDATE m_customer SET customerid_m = '' WHERE customerid <> '' AND customerid_m <> ''";
+		$this->db->query($queryOutlet);
+		$affectedOutlet = $this->db->affected_rows();
+
+		$queryDetailing = "UPDATE trx_visit_detailing target 
+			JOIN (
+				SELECT 
+					t.periode AS old_periode, 
+					t.siteid, 
+					t.salesmanid, 
+					t.customerid, 
+					t.nourut AS old_nourut, 
+					DATE(t.start_detailing) AS target_date, 
+					COALESCE(curr.max_urut, 0) + ROW_NUMBER() OVER (
+						PARTITION BY DATE(t.start_detailing), t.siteid, t.salesmanid, t.customerid 
+						ORDER BY t.start_detailing, t.created_date
+					) AS next_nourut 
+				FROM trx_visit_detailing t 
+				LEFT JOIN (
+					SELECT 
+						v.periode, 
+						v.siteid, 
+						v.salesmanid, 
+						v.customerid, 
+						MAX(v.nourut) AS max_urut 
+					FROM trx_visit_detailing v 
+					JOIN (
+						SELECT DISTINCT DATE(start_detailing) AS dt, siteid, salesmanid, customerid 
+						FROM trx_visit_detailing 
+						WHERE periode != DATE(start_detailing) AND start_detailing IS NOT NULL
+					) f ON v.periode = f.dt AND v.siteid = f.siteid AND v.salesmanid = f.salesmanid AND v.customerid = f.customerid 
+					GROUP BY v.periode, v.siteid, v.salesmanid, v.customerid
+				) curr ON curr.periode = DATE(t.start_detailing) AND curr.siteid = t.siteid AND curr.salesmanid = t.salesmanid AND curr.customerid = t.customerid 
+				WHERE t.periode != DATE(t.start_detailing) AND t.start_detailing IS NOT NULL
+			) src ON target.periode = src.old_periode 
+				AND target.siteid = src.siteid 
+				AND target.salesmanid = src.salesmanid 
+				AND target.customerid = src.customerid 
+				AND target.nourut = src.old_nourut 
+			SET target.periode = src.target_date, target.nourut = src.next_nourut";
+		$this->db->query($queryDetailing);
+		$affectedDetailing = $this->db->affected_rows();
+
+		$queryTrans = "UPDATE IGNORE t_sales_rrk_trans SET periode = DATE(check_in) WHERE periode != DATE(check_in)";
+		$this->db->query($queryTrans);
+		$affectedTrans = $this->db->affected_rows();
+
+		$totalAffected = $affectedOutlet + $affectedDetailing + $affectedTrans;
+
+		return [
+			'm_customer' => $affectedOutlet,
+			'trx_visit_detailing' => $affectedDetailing,
+			't_sales_rrk_trans' => $affectedTrans,
+			'total' => $totalAffected
+		];
+	}
 }

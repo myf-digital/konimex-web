@@ -322,6 +322,7 @@ class Scheduler extends BaseController
     }
 
     public function run_daily_target($cli_date = NULL) {
+        $start_time = microtime(true);
         $periode = $this->input->get('periode');
         if (empty($periode) && !empty($cli_date)) {
             $periode = $cli_date;
@@ -350,16 +351,60 @@ class Scheduler extends BaseController
 
         try {
             $this->scheduler->run_daily_target($formatted_date);
+            $duration = round(microtime(true) - $start_time, 2);
+
+            $this->notif_telegram_daily_target($formatted_date, true, $duration);
+
             responseJSON([
                 'status' => true,
                 'message' => "Proses rekap cut-off data untuk tanggal {$formatted_date} berhasil dijalankan."
             ]);
         } catch (Exception $e) {
+            $duration = round(microtime(true) - $start_time, 2);
+            $this->notif_telegram_daily_target($formatted_date, false, $duration, $e->getMessage());
+
             responseJSON([
                 'status' => false,
                 'message' => "Terjadi kesalahan saat memproses rekap harian: " . $e->getMessage()
             ]);
         }
+    }
+
+    private function notif_telegram_daily_target($formatted_date, $status, $duration, $errorMessage = null)
+    {
+        $status_badge = $status ? "✅ OK" : "❌ Gagal";
+
+        $total_dub_visit = $this->db->where('tanggal', $formatted_date)->count_all_results('rekap_dub_visit');
+        $salesman_row = $this->db->select('count(distinct salesmanid) as total')->where('tanggal', $formatted_date)->get('rekap_dub_visit')->row();
+        $total_salesman = $salesman_row ? $salesman_row->total : 0;
+
+        $total_spesialis_visit = $this->db->where('tanggal', $formatted_date)->count_all_results('rekap_spesialis_visit');
+        $total_produk_visit = $this->db->where('tanggal', $formatted_date)->count_all_results('rekap_produk_visit');
+
+        $title = "<b>CRON: DAILY TARGET REPORT</b>";
+        $msg_lines = [
+            "📅 <b>Target Tanggal (Cut-Off):</b> <code>{$formatted_date}</code>",
+            "⏱️ <b>Durasi Eksekusi:</b> {$duration}s",
+            "",
+            "📊 <b>Status Eksekusi:</b> {$status_badge}",
+        ];
+
+        if (!$status && !empty($errorMessage)) {
+            $msg_lines[] = "⚠️ <b>Error:</b> <i>" . htmlspecialchars($errorMessage) . "</i>";
+        }
+
+        $msg_lines = array_merge($msg_lines, [
+            "",
+            "📦 <b>Ringkasan Jumlah Rekap [{$formatted_date}]:</b>",
+            "• Rekap DUB Visit: <b>" . number_format($total_dub_visit) . "</b> baris (" . number_format($total_salesman) . " Salesman)",
+            "• Rekap Spesialis Visit: <b>" . number_format($total_spesialis_visit) . "</b> baris",
+            "• Rekap Produk Visit: <b>" . number_format($total_produk_visit) . "</b> baris",
+            "",
+            "🕐 <i>Selesai: " . date('Y-m-d H:i:s') . "</i>"
+        ]);
+
+        $message = implode("\n", $msg_lines);
+        send_telegram($title, $message);
     }
 
     public function populate_history() {
@@ -403,5 +448,65 @@ class Scheduler extends BaseController
             'count' => count($processed),
             'range' => $start . ' s/d ' . $end
         ]);
+    }
+
+    public function rekonsiliasi_outlet_visit() {
+        $start_time = microtime(true);
+
+        try {
+            $affected = $this->scheduler->rekonsiliasi_outlet_visit();
+            $duration = round(microtime(true) - $start_time, 2);
+
+            $totalAffected = $affected['total'] ?? 0;
+            $affectedOutlet = $affected['m_customer'] ?? 0;
+            $affectedDetailing = $affected['trx_visit_detailing'] ?? 0;
+            $affectedTrans = $affected['t_sales_rrk_trans'] ?? 0;
+
+            if ($totalAffected > 0 || $this->input->get('force_notif')) {
+                $this->notif_telegram_rekonsiliasi($affectedOutlet, $affectedDetailing, $affectedTrans, $totalAffected, $duration);
+            }
+
+            responseJSON([
+                'status' => true,
+                'message' => 'Proses rekonsiliasi outlet & visit selesai.',
+                'affected_rows' => $affected,
+                'duration' => $duration . 's'
+            ]);
+        } catch (Exception $e) {
+            $duration = round(microtime(true) - $start_time, 2);
+            responseJSON([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat rekonsiliasi: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    private function notif_telegram_rekonsiliasi($affectedOutlet, $affectedDetailing, $affectedTrans, $totalAffected, $duration)
+    {
+        $title = "<b>CRON: REKONSILIASI OUTLET & VISIT</b>";
+        $msg_lines = [
+            "⚡ <b>Ditemukan Perubahan Data (Auto-Fixed)</b>",
+            "⏱️ <b>Durasi Eksekusi:</b> {$duration}s",
+            "",
+            "📊 <b>Ringkasan Baris Ter-Update:</b>",
+        ];
+        if ($affectedOutlet) {
+            $msg_lines[] = "• m_customer (Reset Customer ID M): <b>" . number_format($affectedOutlet) . "</b> baris";
+        }
+        if ($affectedDetailing) {
+            $msg_lines[] = "• trx_visit_detailing (Sync Periode/NoUrut): <b>" . number_format($affectedDetailing) . "</b> baris";
+        }
+        if ($affectedTrans) {
+            $msg_lines[] = "• t_sales_rrk_trans (Sync Periode Check-in): <b>" . number_format($affectedTrans) . "</b> baris";
+        }
+        $msg_lines = array_merge($msg_lines, [
+            "",
+            "🎯 <b>Total Data Diperbaiki:</b> <b>" . number_format($totalAffected) . "</b> baris",
+            "",
+            "🕐 <i>Waktu: " . date('Y-m-d H:i:s') . "</i>"
+        ]);
+
+        $message = implode("\n", $msg_lines);
+        send_telegram($title, $message);
     }
 }
