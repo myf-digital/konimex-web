@@ -94,8 +94,8 @@ class Rep_kunjungan extends BaseController
                 coalesce(nullif(area.nama_subarea, ''), nullif(area.nama_area, ''), nullif(area.nama_regional, ''), '') as wilayah,
                 $hari_kerja AS hari_kerja,
                 case
-                    when s.tipe_sales = 'MEDREP' then 12
-                    when s.tipe_sales = 'ASM' then 6
+                    when s.tipe_sales = 'MEDREP' then ($hari_kerja * 12)
+                    when s.tipe_sales = 'ASM' then ($hari_kerja * 6)
                     else coalesce(pjp.target_hari, 0)
                 end as target_hari,
                 coalesce(v.visit_dokter, 0) as visit_dokter,
@@ -471,8 +471,8 @@ class Rep_kunjungan extends BaseController
                 coalesce(nullif(area.nama_subarea, ''), nullif(area.nama_area, ''), nullif(area.nama_regional, ''), '') as wilayah,
                 $hari_kerja AS hari_kerja, 
                 case
-                    when s.tipe_sales = 'MEDREP' then 12
-                    when s.tipe_sales = 'ASM' then 6
+                    when s.tipe_sales = 'MEDREP' then ($hari_kerja * 12)
+                    when s.tipe_sales = 'ASM' then  ($hari_kerja * 6)
                     else coalesce(pjp.target_hari, 0)
                 end as target_hari,
                 coalesce(v.visit_dokter, 0) as visit_dokter,
