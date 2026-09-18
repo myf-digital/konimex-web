@@ -53,6 +53,106 @@
     scrollbar-width: none;
     overflow-y: hidden;
   }
+
+  .btn-preview-absensi i {
+    margin-left: 2px;
+    opacity: 0.85;
+  }
+
+  /* Modal Preview Styling */
+  #modal-preview-absensi .modal-content {
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border: none;
+  }
+
+  #modal-preview-absensi .modal-header {
+    background-color: #3c8dbc;
+    color: #ffffff;
+    padding: 12px 15px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+
+  #modal-preview-absensi .modal-header .close {
+    color: #ffffff;
+    opacity: 0.9;
+    text-shadow: none;
+  }
+
+  #modal-preview-absensi .modal-header .close:hover {
+    opacity: 1;
+  }
+
+  #modal-preview-absensi .modal-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  #modal-preview-absensi .modal-body {
+    padding: 15px;
+  }
+
+  #modal-absensi-info {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left;
+    background-color: #f7f7f7;
+    border-left: 3px solid #3c8dbc;
+    padding: 8px 12px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+    color: #495057;
+  }
+
+  .modal-absensi-img-wrapper {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 4px;
+    display: inline-block;
+    max-width: 100%;
+    border: 1px solid #e9ecef;
+  }
+
+  #modal-absensi-img {
+    max-height: 400px;
+    max-width: 100%;
+    margin: 0 auto;
+    object-fit: contain;
+    cursor: pointer;
+  }
+
+  .modal-absensi-ket-box {
+    margin-top: 15px;
+    margin-bottom: 0;
+    text-align: left;
+    background-color: #fdfdfd;
+    border: 1px solid #e3e3e3;
+    padding: 9px 12px;
+    border-radius: 3px;
+  }
+
+  .modal-absensi-ket-title {
+    color: #333333;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  #modal-absensi-ket {
+    margin: 0;
+    color: #444444;
+    word-break: break-word;
+    font-size: 13px;
+    font-style: normal;
+    white-space: pre-wrap;
+  }
+
+  #modal-preview-absensi .modal-footer {
+    padding: 10px 15px;
+    background-color: #fafafa;
+    border-top: 1px solid #eee;
+  }
 </style>
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -127,4 +227,35 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/rep_gffaktif/rep-gffaktif-form.js' ?>"></script>
+
+<!-- Modal Preview Image & Keterangan Absensi -->
+<div class="modal fade" id="modal-preview-absensi" tabindex="-1" role="dialog" aria-labelledby="modalPreviewAbsensiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalPreviewAbsensiLabel"><i class="fa fa-picture-o"></i> Detail Absensi</h4>
+            </div>
+            <div class="modal-body text-center">
+                <div id="modal-absensi-info" class="text-muted"></div>
+                <div class="modal-absensi-img-wrapper">
+                    <a id="modal-absensi-link" href="#" target="_blank" title="Klik untuk memperbesar gambar">
+                        <img id="modal-absensi-img" src="" alt="Foto Absensi" class="img-responsive img-thumbnail">
+                    </a>
+                </div>
+                <div class="modal-absensi-ket-box">
+                    <strong class="modal-absensi-ket-title"><i class="fa fa-info-circle text-primary"></i> Keterangan:</strong>
+                    <p id="modal-absensi-ket">-</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="modal-absensi-btn-full" href="#" target="_blank" class="btn btn-default btn-sm pull-left"><i class="fa fa-external-link"></i> Buka Gambar Penuh</a>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="<?php echo base_url() . 'assets/modules/rep_gffaktif/rep-gffaktif-form.js' ?>?v=1.0"></script>
