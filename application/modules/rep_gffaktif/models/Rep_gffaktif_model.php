@@ -127,9 +127,16 @@ class Rep_gffaktif_model extends CI_Model
 	function get_salesman_aktif($salesmanid,$date) {
 
 		$query = $this->db->query("
-			select periode, salesmanid, status, case when status='H' then 1 else 0 end aktif from t_sales_absensi
+			select
+                periode,
+                salesmanid,
+                status,
+                keterangan,
+                image,
+                case when status='H' then 1 else 0 end aktif 
+            from t_sales_absensi
 			where salesmanid='".$salesmanid."' and DATE_FORMAT(periode,'%Y-%m-%d') = '".$date."';
-				   ");
+		");
 		return $query->result_array();
 	}
 
