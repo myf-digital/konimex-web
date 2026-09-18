@@ -176,11 +176,17 @@ class Dashboard_chart_model extends CI_Model
                 b.salesmanid,
                 b.nama_salesman,
                 b.tipe_sales,
-                c.nama_area AS city,
-				date_format('$end','%d')-FLOOR(date_format('$end','%d')/7)-(
-                    CASE WHEN date_format('$end','%d') > 15 
-                    then (SELECT jml_libur FROM setup_jumlah_harilibur WHERE tahun='$year' AND bulan='$month') else 0 end
-                ) AS 'aktif', 
+                c.nama_area AS city,                 
+                (
+                    DAY('$end') 
+                    - FLOOR((DAY('$end') + DAYOFWEEK('$start') - 2) / 7)
+                    - COALESCE((
+                        SELECT jml_libur 
+                        FROM setup_jumlah_harilibur 
+                        WHERE tahun = DATE_FORMAT('$end', '%Y') 
+                        AND bulan = DATE_FORMAT('$end', '%m')
+                    ), 0)
+                ) AS `aktif`
                 (
                     SELECT count(1)
                     FROM t_sales_absensi

@@ -267,6 +267,28 @@ class Rep_productivity_model extends CI_Model
         $year = date('Y', strtotime($end));
         $month = date('m', strtotime($end));
 
+        $startDate = new DateTime($start);
+        $endDate = new DateTime($end);
+        $endDate->modify('+1 day');
+
+        $workdays = 0;
+        $period = new DatePeriod($startDate, new DateInterval('P1D'), $endDate);
+        foreach ($period as $dt) {
+            if ($dt->format('N') < 6) {
+                $workdays++;
+            }
+        }
+
+        $q_libur = $this->db->query("
+            SELECT COALESCE(SUM(jml_libur), 0) AS total_libur 
+            FROM setup_jumlah_harilibur 
+            WHERE (tahun = DATE_FORMAT('$start', '%Y') AND bulan = DATE_FORMAT('$start', '%m'))
+               OR (tahun = DATE_FORMAT('$end', '%Y') AND bulan = DATE_FORMAT('$end', '%m'))
+        ")->row_array();
+
+        $total_libur = (int)($q_libur['total_libur'] ?? 0);
+        $hari_kerja = max(0, $workdays - $total_libur);
+
         $sqlTargets = "
             SELECT
                 ar.role_name AS tipe_sales,
@@ -292,17 +314,8 @@ class Rep_productivity_model extends CI_Model
                 area.nama_area,
                 b.salesmanid,
                 b.nama_salesman,
-                b.tipe_sales, 
-                DATE_FORMAT('$end', '%d') - FLOOR(DATE_FORMAT('$end', '%d') / 7) - (
-                    CASE 
-                        WHEN DATE_FORMAT('$end', '%d') > 15 THEN (
-                            SELECT jml_libur 
-                            FROM setup_jumlah_harilibur 
-                            WHERE tahun = '$year' AND bulan = '$month'
-                        ) 
-                        ELSE 0 
-                    END
-                ) AS 'MEDREP Aktif', 
+                b.tipe_sales,
+                $hari_kerja AS `MEDREP Aktif`, 
                 (
                     SELECT COUNT(1) 
                     FROM t_sales_absensi 
@@ -317,21 +330,14 @@ class Rep_productivity_model extends CI_Model
                     SELECT COUNT(1) 
                     FROM t_sales_absensi 
                     WHERE status = 'S' AND salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
-                ) AS sakit, 
+                ) AS sakit,
                 ROUND(
                     (
-                        COUNT(1) / (
-                            DATE_FORMAT('$end', '%d') - FLOOR(DATE_FORMAT('$end', '%d') / 7) - (
-                                CASE 
-                                     WHEN DATE_FORMAT('$end', '%d') > 25 THEN (
-                                        SELECT jml_libur 
-                                        FROM setup_jumlah_harilibur 
-                                        WHERE tahun = '$year' AND bulan = '$month'
-                                    ) 
-                                    ELSE 0 
-                                END
-                            )
-                        )
+                        (
+                            SELECT COUNT(1) 
+                            FROM t_sales_absensi 
+                            WHERE status = 'H' AND salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
+                        ) / NULLIF($hari_kerja, 0)
                     ) * 100, 
                     2
                 ) AS '%Kehadiran',
