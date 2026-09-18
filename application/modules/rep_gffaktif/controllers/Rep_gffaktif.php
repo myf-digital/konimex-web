@@ -98,24 +98,18 @@ class Rep_gffaktif extends BaseController
 		$html .= '<table id="activity_table" border="1" class="table table-bordered table-condensed fixed-table">';
 		$html .= '<tbody>';
 		$html .= '<tr>';
-		$html .='<th rowspan="2" style="text-align:center;width: 80px">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;width: 200px">TPE</th>';
-		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama TPE</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Area</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Sub Area</th>';
+		$html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 80px">No.</th>';
+		$html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 200px">MEDREP</th>';
+		$html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 300px">Nama MEDREP</th>';
+        $html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 200px">Position</th>';
+        $html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 200px">Area</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
 		while($start <= $end)
 		{
 			$namahari=date_format($start,"D");
-			if ($namahari=='Sun'){
-			$html .='<th style="text-align:center;width: 50px;color:white;background-color:red;">'.date_format($start,"d").'</th>';
-			}else{
-			$html .='<th style="text-align:center;width: 50px;">'.date_format($start,"d").'</th>';
-			}
+			$html .='<th style="text-align:center;width: 50px;'.($namahari=='Sun' ? 'color:white;background-color:red;' : '').'">'.date_format($start,"d").'</th>';
 			$start->modify('+1 day');
 		}
 		$html .='<th colspan="4" style="text-align:center;width: 215px">Total</th>';
@@ -125,18 +119,14 @@ class Rep_gffaktif extends BaseController
 		while($start <= $end)
 		{
 			$namahari=date_format($start,"D");
-			if ($namahari=='Sun'){
-			$html .='<th style="text-align:center;color:white;background-color:red;width: 50px">'.$namahari.'</th>';
-			}else{
-			$html .='<th style="text-align:center;width: 50px">'.$namahari.'</th>';
-			}
+			$html .='<th style="text-align:center;width: 50px;'.($namahari=='Sun' ? 'color:white;background-color:red;' : '').'">'.$namahari.'</th>';
 			$start->modify('+1 day');
 		}
 
-		$html .= '	<th style="text-align:left;width: 50px">H</th>
-					<th style="text-align:left;width: 50px">HF</th>
-					<th style="text-align:left;width: 50px">S</th>
-					<th style="text-align:left;width: 65px">C</th>
+		$html .= '	<th style="text-align:center;width: 50px">H</th>
+					<th style="text-align:center;width: 50px">HF</th>
+					<th style="text-align:center;width: 50px">S</th>
+					<th style="text-align:center;width: 65px">C</th>
 					</tr>
 					</tbody></table></div>';
 
@@ -155,9 +145,7 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:center;width: 200px">'.$v_salesman['salesmanid'].'</td>';
 			$html .='<td style="text-align:left;width: 300px">'.$v_salesman['nama_salesman'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['tipe_sales'].'</td>';
-			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_regional'].'</td>';
-			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_area'].'</td>';
-			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_subarea'].'</td>';
+			$html .='<td style="text-align:left;width: 200px">'.($v_salesman['nama_subarea'] ?? $v_salesman['nama_area']).'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -169,20 +157,31 @@ class Rep_gffaktif extends BaseController
 				$get_salesman_aktif = $this->report_gffaktif->get_salesman_aktif($vsalesmanid,$vdate);
 				if (!empty($get_salesman_aktif)){
 					foreach ($get_salesman_aktif as $val_aktif) {
-						$namahari=date_format($start,"D");
-						if ($namahari=='Sun'){
-						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">'.$val_aktif['status'].'</td>';
-						}else{
-						$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_aktif['status'].'</td>';
-                        }
+						$namahari = date_format($start,"D");
+						$status = !empty($val_aktif['status']) ? ($val_aktif['status'] == 'HF' ? 'I' : $val_aktif['status']) : '';
+						
+						$has_image = !empty($val_aktif['image']);
+						if ($has_image) {
+							$img_raw = trim($val_aktif['image']);
+							if (strpos($img_raw, 'http://') === 0 || strpos($img_raw, 'https://') === 0) {
+								$img_url = $img_raw;
+							} else {
+								$img_url = URL_IMAGE . 'absence/' . ltrim($img_raw, '/');
+							}
+							$ket = !empty($val_aktif['keterangan']) ? $val_aktif['keterangan'] : '-';
+							$sales_info = $v_salesman['salesmanid'] . ' - ' . $v_salesman['nama_salesman'];
+							$status_title = 'Status: ' . $status . ' | Klik untuk melihat foto & keterangan';
+							
+							$html .='<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red;' : '').'">';
+							$html .='<a href="javascript:void(0)" class="btn-preview-absensi" data-sales="'.htmlspecialchars($sales_info, ENT_QUOTES).'" data-date="'.htmlspecialchars($vdate, ENT_QUOTES).'" data-img="'.htmlspecialchars($img_url, ENT_QUOTES).'" data-ket="'.htmlspecialchars($ket, ENT_QUOTES).'" data-status="'.htmlspecialchars($status, ENT_QUOTES).'" title="'.htmlspecialchars($status_title, ENT_QUOTES).'" style="cursor:pointer;font-weight:bold;text-decoration:underline;'.($namahari == 'Sun' ? 'color:red;' : 'color:#337ab7;').'">'.$status.' <i class="fa fa-file-o" style="font-size:9px;"></i></a>';
+							$html .='</td>';
+						} else {
+							$html .='<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">'.$status.'</td>';
+						}
 					}
-				}else{
-					$namahari=date_format($start,"D");
-					if ($namahari=='Sun'){
-					$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">-</td>';
-					}else{
-					$html .='<td style="text-align:center;font-size:11px;width: 50px">-</td>';
-					}
+				} else {
+					$namahari = date_format($start,"D");
+					$html .= '<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">-</td>';
 				}
 
 				$start->modify('+1 day');
@@ -196,7 +195,7 @@ class Rep_gffaktif extends BaseController
 					$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sums'].'</td>';
 					$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sumc'].'</td>';
 				}
-			}else{
+			} else {
 				$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
 				$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
 				$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
@@ -208,7 +207,7 @@ class Rep_gffaktif extends BaseController
 		}
 		$html .='</tr>';
 		$html .='<tr>';
-		$html .='<td colspan="7" style="text-align:right;font-size:13px;">TOTAL</td>';
+		$html .='<td colspan="5" style="text-align:right;font-size:13px;">TOTAL</td>';
 				$start = date_create($periode);
 				$end = date_create($until);
 				while($start <= $end)
@@ -217,12 +216,8 @@ class Rep_gffaktif extends BaseController
 					$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily($vdate,$position,$restrictlevel,$usersession);
 					if (!empty($get_salesman_aktif)){
 						foreach ($get_salesman_aktif as $val_aktif) {
-							$namahari=date_format($start,"D");
-							if ($namahari=='Sun'){
-								$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">'.$val_aktif['sumaktif'].'</td>';
-							}else{
-								$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_aktif['sumaktif'].'</td>';
-							}
+							$namahari = date_format($start,"D");
+							$html .= '<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">'.$val_aktif['sumaktif'].'</td>';
 						}
 					}
 
@@ -236,7 +231,7 @@ class Rep_gffaktif extends BaseController
 						$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sums'].'</td>';
 						$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sumc'].'</td>';
 					}
-				}else{
+				} else {
 						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
 						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
 						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
@@ -307,9 +302,7 @@ class Rep_gffaktif extends BaseController
 		$html .='<th rowspan="2" style="text-align:center;white-space:nowrap;">TPE</th>';
 		$html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Nama TPE</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Position</th>';
-        $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Regional</th>';
         $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Area</th>';
-        $html .='<th rowspan="2" style="text-align:left;white-space:nowrap;">Sub Area</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -317,11 +310,7 @@ class Rep_gffaktif extends BaseController
 		while($start <= $end)
 		{
 			$namahari=date_format($start,"D");
-			if ($namahari=='Sun'){
-			$html .='<th style="text-align:center;white-space:nowrap;color:red;">'.date_format($start,"d").'</th>';
-			}else{
-			$html .='<th style="text-align:center;white-space:nowrap;">'.date_format($start,"d").'</th>';
-			}
+			$html .='<th style="text-align:center;white-space:nowrap;'.($namahari=='Sun' ? 'color:red;' : '').'">'.date_format($start,"d").'</th>';
 			$start->modify('+1 day');
 		}
 		$html .='<th colspan="4" style="text-align:center;white-space:nowrap;">Total</th>';
@@ -331,18 +320,14 @@ class Rep_gffaktif extends BaseController
 		while($start <= $end)
 		{
 			$namahari=date_format($start,"D");
-			if ($namahari=='Sun'){
-			$html .='<th style="text-align:center;color:red;">'.$namahari.'</th>';
-			}else{
-			$html .='<th style="text-align:center;">'.$namahari.'</th>';
-			}
+			$html .='<th style="text-align:center;'.($namahari=='Sun' ? 'color:red;' : '').'">'.$namahari.'</th>';
 			$start->modify('+1 day');
 		}
 
-		$html .= '	<th style="text-align:left;white-space:nowrap;">H</th>
-					<th style="text-align:left;white-space:nowrap;">HF</th>
-					<th style="text-align:left;white-space:nowrap;">S</th>
-					<th style="text-align:left;white-space:nowrap;">C</th>
+		$html .= '	<th style="text-align:center;white-space:nowrap;">H</th>
+					<th style="text-align:center;white-space:nowrap;">HF</th>
+					<th style="text-align:center;white-space:nowrap;">S</th>
+					<th style="text-align:center;white-space:nowrap;">C</th>
 					</tr>
 					</thead>';
 
@@ -359,9 +344,7 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:center;white-space:nowrap;">'.$v_salesman['salesmanid'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_salesman'].'</td>';
 			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['tipe_sales'].'</td>';
-			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_regional'].'</td>';
-			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_area'].'</td>';
-			$html .='<td style="text-align:left;white-space:nowrap;">'.$v_salesman['nama_subarea'].'</td>';
+			$html .='<td style="text-align:left;white-space:nowrap;">'.($v_salesman['nama_subarea'] ?? $v_salesman['nama_area']).'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -373,20 +356,13 @@ class Rep_gffaktif extends BaseController
 				$get_salesman_aktif = $this->report_gffaktif->get_salesman_aktif($vsalesmanid,$vdate);
 				if (!empty($get_salesman_aktif)){
 					foreach ($get_salesman_aktif as $val_aktif) {
-						$namahari=date_format($start,"D");
-						if ($namahari=='Sun'){
-						$html .='<th style="text-align:center;color:red;font-size:11px;">'.$val_aktif['status'].'</th>';
-						}else{
-						$html .='<th style="text-align:center;font-size:11px;">'.$val_aktif['status'].'</th>';
-                        }
+						$namahari = date_format($start,"D");
+						$status = !empty($val_aktif['status']) ? ($val_aktif['status'] == 'HF' ? 'I' : $val_aktif['status']) : '';
+						$html .= '<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">'.$status.'</td>';
 					}
 				}else{
 					$namahari=date_format($start,"D");
-					if ($namahari=='Sun'){
-					$html .='<th style="text-align:center;color:red;font-size:11px;">-</th>';
-					}else{
-					$html .='<th style="text-align:center;font-size:11px;">-</th>';
-					}
+					$html .='<th style="text-align:center;'.($namahari=='Sun' ? 'color:red;' : '').'">-</th>';
 				}
 
 				$start->modify('+1 day');
@@ -412,7 +388,7 @@ class Rep_gffaktif extends BaseController
 		}
 		$html .='</tr>';
 		$html .='<tr>';
-		$html .='<th colspan="7" style="text-align:right;font-size:13px;">TOTAL</th>';
+		$html .='<th colspan="5" style="text-align:right;font-size:13px;">TOTAL</th>';
 				$start = date_create($periode);
 				$end = date_create($until);
 				while($start <= $end)
@@ -421,12 +397,8 @@ class Rep_gffaktif extends BaseController
 					$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily($vdate,$position,$restrictlevel,$usersession);
 					if (!empty($get_salesman_aktif)){
 						foreach ($get_salesman_aktif as $val_aktif) {
-							$namahari=date_format($start,"D");
-							if ($namahari=='Sun'){
-								$html .='<th style="text-align:center;color:red;font-size:11px;">'.$val_aktif['sumaktif'].'</th>';
-							}else{
-								$html .='<th style="text-align:center;font-size:11px;">'.$val_aktif['sumaktif'].'</th>';
-							}
+							$namahari = date_format($start,"D");
+							$html .= '<th style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">'.$val_aktif['sumaktif'].'</th>';
 						}
 					}
 
@@ -442,11 +414,11 @@ class Rep_gffaktif extends BaseController
 				$html .='<th style="text-align:center;font-size:11px;">'.$val_sumaktif['sums'].'</th>';
 				$html .='<th style="text-align:center;font-size:11px;">'.$val_sumaktif['sumc'].'</th>';
 			}
-		}else{
-				$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
-				$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
-				$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
-				$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
+		} else {
+			$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
+			$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
+			$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
+			$html .='<th style="text-align:center;color:red;font-size:11px;">0</th>';
 		}
 
 		$html .='</tr>';
@@ -494,11 +466,11 @@ class Rep_gffaktif extends BaseController
 
         $start = date_create($periode);
 		$end = date_create($until);
-    	$filename = "Report_attendance_parma_".date_format($start,"M-Y");
+    	$filename = "Report_attendance_".date_format($start,"M-Y");
 
 		$spreadsheet = new Spreadsheet();
 		$nb = ['Keterangan : H -> Hadir , HF -> Hari Off, S -> Sakit, C -> Izin Cuti'];
-		$header = ['No', 'TPE', 'TPE Name', 'Area', 'Sub Area'];
+		$header = ['No', 'TPE', 'TPE Name', 'Position', 'Area'];
 
 		$headerDate = [];
 		$headerDay = [];
@@ -541,8 +513,8 @@ class Rep_gffaktif extends BaseController
                 $no, 
                 $value['salesmanid'], 
                 $value['nama_salesman'],
-                $value['nama_area'],
-                $value['nama_subarea']
+                $value['tipe_sales'],
+                ($value['nama_subarea'] ?? $value['nama_area'])
             ];
 
             $sheet->fromArray($content,NULL,'A'.$row);
@@ -558,7 +530,8 @@ class Rep_gffaktif extends BaseController
 				$get_salesman_aktif = $this->report_gffaktif->get_salesman_aktif_new($vsalesmanid,$vdate);
 
 				if (!empty($get_salesman_aktif)){
-					$status[] = $get_salesman_aktif->status;
+					$sts = !empty($get_salesman_aktif->status) ? ($get_salesman_aktif->status == 'HF' ? 'I' : $get_salesman_aktif->status) : '-';
+					$status[] = $sts;
 				}else{
 					$status[] = '-';
 				}
@@ -606,33 +579,35 @@ class Rep_gffaktif extends BaseController
 		$i = 1;
         $row = 3;
         foreach ($gff_nonaktif as $value) {
-
+			$sts = !empty($value['status']) ? ($value['status'] == 'HF' ? 'I' : $value['status']) : '-';
             $content = [
                 $i, 
                 $value['periode'], 
                 $value['salesmanid'],
                 $value['nama_salesman'],
-                $value['status'],
+                $sts,
                 $value['keterangan']
             ];
 
             $sheet->fromArray($content,NULL,'A'.$row);
 
             if (!empty($value['image'])) {
-                if (file_exists(DIR_IMAGE_PATH_ABSENCE.$value['image'])) {
-                    $drawing = new Drawing();
-                    $drawing->setPath(DIR_IMAGE_PATH_ABSENCE.$value['image']);
-                    $drawing->setWidth(100); 
-                    $drawing->setHeight(100);
-                    $drawing->setCoordinates('H'.$row);                                                                      
-                    $drawing->setWorksheet($sheet);
-                    $sheet->getColumnDimension('H')->setWidth(20);
-                    $sheet->getRowDimension($row)->setRowHeight(100);
+                $img_raw = trim($value['image']);
+                if (strpos($img_raw, 'http://') === 0 || strpos($img_raw, 'https://') === 0) {
+                    $img_url = $img_raw;
                 } else {
-                    $sheet->setCellValue('H'.$row, '-');
+                    $img_url = URL_IMAGE . 'absence/' . ltrim($img_raw, '/');
                 }
+                $sheet->setCellValue('G'.$row, 'Image');
+                $sheet->getCell('G'.$row)->getHyperlink()->setUrl($img_url);
+                $sheet->getStyle('G'.$row)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => '0000FF'],
+                        'underline' => 'single'
+                    ]
+                ]);
             } else {
-                $sheet->setCellValue('H'.$row, '-');
+                $sheet->setCellValue('G'.$row, '-');
             }
 
             $i++;

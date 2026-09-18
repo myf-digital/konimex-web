@@ -269,23 +269,30 @@
         "/" +
         subareaid,
     );
-    /*
-        $.ajax({
-            type:"POST",
-            dataType: "html",
-            beforeSend : function() {
-                //$("#map-content").html('Populating data, please wait..');
-            },
-            url: common.baseURL("rep_promo/savetoxls"),
-            data : "idpromo="+idpromo+"&start="+start+"&end="+end+"&idjabatan="+idjabatan+"&usersession="+usersession,
-            success:function(res){
-                response = res;
-                $('#tbl-content').html(response);
-            },
-            error:function(){
-                alert("Load failed");
-            }
-        });
-        */
   }
+
+  $(document).on("click", ".btn-preview-absensi", function (e) {
+    e.preventDefault();
+    var sales = $(this).attr("data-sales") || "-";
+    var date = $(this).attr("data-date") || "-";
+    var img = $(this).attr("data-img") || "";
+    var ket = $(this).attr("data-ket") || "-";
+    var status = $(this).attr("data-status") || "";
+
+    $("#modal-absensi-info").html(
+      '<span><i class="fa fa-user"></i> MEDREP: <b>' +
+        sales +
+        '</b></span><span class="pull-right"><i class="fa fa-calendar"></i> ' +
+        date +
+        " (Status: <b>" +
+        status +
+        "</b>)</span>"
+    );
+    $("#modal-absensi-img").attr("src", img);
+    $("#modal-absensi-link").attr("href", img);
+    $("#modal-absensi-btn-full").attr("href", img);
+    $("#modal-absensi-ket").text(ket);
+    $("#modal-preview-absensi").modal("show");
+  });
 })();
+

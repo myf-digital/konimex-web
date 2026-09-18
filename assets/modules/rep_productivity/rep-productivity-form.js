@@ -12,6 +12,7 @@
   let uiSelectRegional = $("#regional-id");
   let uiSelectArea = $("#area-id");
   let uiSelectSubArea = $("#subarea-id");
+  let uiSelectMedrep = $("#salesmanid-id");
 
   let paramsession = common.getCookie("session");
 
@@ -24,11 +25,12 @@
 
     $.when(
       $.post(common.baseURL("rep_productivity/load_regional"), filter.build()),
+      $.post(common.baseURL("rep_productivity/load_parma"), filter.build())
     )
       .done(function (data, textStatus, jqXHR) {})
-      .then(function (r1) {
+      .then(function (r1, r2) {
         common.loadingClose();
-        setupForm(r1);
+        setupForm(r1[0], r2[0]);
       })
       .fail(resolver.fail);
 
@@ -90,7 +92,7 @@
       format: "yyyy-mm-dd",
       autoclose: true,
       todayHighlight: true,
-    });
+    }).datepicker("setDate", new Date());
 
     uiSelectRegional.on("select2:select", function (e) {
       regional = e.params.data;
@@ -116,7 +118,7 @@
     });
   }
 
-  function setupForm(r1) {
+  function setupForm(r1, r2) {
     let rows1 = r1.rows;
 
     uiSelectRegional.select2({
@@ -139,6 +141,23 @@
       allowClear: true,
     });
 
+    if (r2 && r2.rows) {
+      let rows2 = r2.rows;
+      let options = [
+        { id: "all", text: "Semua Medrep" },
+        ...(rows2.map((o) => ({
+          id: o.salesmanid,
+          text: o.salesmanid + " - " + o.nama_salesman,
+        }))),
+      ];
+      uiSelectMedrep.select2({
+        placeholder: "Select User Medrep",
+        allowClear: true,
+        data: options,
+      });
+      uiSelectMedrep.val("all").trigger("change");
+    }
+
     uiSelectRegional.val(null).trigger("change");
   }
 
@@ -148,6 +167,7 @@
     let regionalid = uiSelectRegional.val();
     let areaid = uiSelectArea.val();
     let subareaid = uiSelectSubArea.val();
+    let salesmanid = uiSelectMedrep.val() || "all";
 
     let idjabatan = paramsession.idjabatan;
     let usersession = paramsession.username;
@@ -174,7 +194,9 @@
         "&restrict_level=" +
         restrict_level +
         "&subareaid=" +
-        subareaid,
+        subareaid +
+        "&salesmanid=" +
+        salesmanid,
       success: function (res) {
         response = res;
         $("#tbl-content").html(response);
@@ -235,6 +257,7 @@
     let regionalid = uiSelectRegional.val();
     let areaid = uiSelectArea.val();
     let subareaid = uiSelectSubArea.val();
+    let salesmanid = uiSelectMedrep.val() || "all";
 
     let idjabatan = paramsession.idjabatan;
     let usersession = paramsession.username;
@@ -256,7 +279,9 @@
         "/" +
         restrict_level +
         "/" +
-        idjabatan,
+        idjabatan +
+        "/" +
+        salesmanid,
     );
   }
 
@@ -266,6 +291,7 @@
     let regionalid = uiSelectRegional.val();
     let areaid = uiSelectArea.val();
     let subareaid = uiSelectSubArea.val();
+    let salesmanid = uiSelectMedrep.val() || "all";
 
     let idjabatan = paramsession.idjabatan;
     let usersession = paramsession.username;
@@ -287,7 +313,9 @@
         "/" +
         restrict_level +
         "/" +
-        idjabatan,
+        idjabatan +
+        "/" +
+        salesmanid,
     );
   }
 })();

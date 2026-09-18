@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class Rep_productivity extends BaseController
 {
@@ -37,6 +38,12 @@ class Rep_productivity extends BaseController
         responseJSON($this->report_productivity->get_subarea($data));
     }
 
+    public function load_parma()
+    {
+        $data = param_input();
+        responseJSON($this->report_productivity->load_parma($data));
+    }
+
     function open_detail() {
 		$start = $this->input->post("start_period");
 		$end = $this->input->post("end_period");
@@ -48,6 +55,7 @@ class Rep_productivity extends BaseController
         $regionalid = $this->input->post("regionalid");
         $areaid = $this->input->post("areaid");
         $subareaid = $this->input->post("subareaid");
+        $salesmanid = $this->input->post("salesmanid");
 
         $params = [
         	'start_period' => $start,
@@ -58,6 +66,7 @@ class Rep_productivity extends BaseController
         	'regionalid' => $regionalid,
         	'areaid' => $areaid,
         	'subareaid' => $subareaid,
+            'salesmanid' => $salesmanid,
         ];
 
         $data = $this->report_productivity->getProductivity($params);
@@ -103,8 +112,8 @@ class Rep_productivity extends BaseController
 			$html .= '<td style="width:300px;">'.$value['nama_salesman'].'</td>';
 			$html .= '<td style="width:150px;">'.$value['tipe_sales'].'</td>';
 
-			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['TPE Aktif'], 0, '.', ',').' </td>';
-			$html .= '<td style="text-align:center;width: 200px">'.number_format($value['TPE Hadir'], 0, '.', ',').' </td>';
+			$html .= '<td style="text-align:center;width: 200px">'.number_format(($value['TPE Aktif'] ?? 0), 0, '.', ',').' </td>';
+			$html .= '<td style="text-align:center;width: 200px">'.number_format(($value['TPE Hadir'] ?? 0), 0, '.', ',').' </td>';
 			$kehadiran_pct = $value['TPE Aktif'] > 0 ? ($value['TPE Hadir'] / $value['TPE Aktif'] * 100) : 0;
 			$html .= '<td style="text-align:center;width: 200px">'.number_format($kehadiran_pct, 2, '.', ',').' %</td>';
 			$html .= '<td style="text-align:center;width: 200px">Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').') </td>';
@@ -147,6 +156,7 @@ class Rep_productivity extends BaseController
         $usersession = $this->uri->segment('8');
         $restrict_level = $this->uri->segment('9');
         $idjabatan = $this->uri->segment('10');
+        $salesmanid = $this->uri->segment('11');
 
         $params = [
         	'start_period' => $start,
@@ -157,6 +167,7 @@ class Rep_productivity extends BaseController
         	'regionalid' => $regionalid,
         	'areaid' => $areaid,
         	'subareaid' => $subareaid,
+            'salesmanid' => $salesmanid,
         ];
 
         $data = $this->report_productivity->getProductivity($params);
@@ -224,6 +235,7 @@ class Rep_productivity extends BaseController
         $usersession = $this->uri->segment('8');
         $restrict_level = $this->uri->segment('9');
         $idjabatan = $this->uri->segment('10');
+        $salesmanid = $this->uri->segment('11');
 
         $params = [
         	'start_period' => $start,
@@ -234,272 +246,22 @@ class Rep_productivity extends BaseController
         	'regionalid' => $regionalid,
         	'areaid' => $areaid,
         	'subareaid' => $subareaid,
+            'salesmanid' => $salesmanid,
         ];
         
         $filename = "Report-Productivity-".$start."_".$end.".xlsx";
 
         $this->load->library('excel');
     
-        $objPHPExcel = new PHPExcel();
-		$styleArray = array(
-            'borders' => array(
-                'allborders' => array(
-                'style' => PHPExcel_Style_Border::BORDER_THIN
-                )
-            )
-        );
-
-        // Productivity
-        $objPHPExcel->createSheet(0);
-        $sheetProductivity = $objPHPExcel->setActiveSheetIndex(0);
-        $sheetProductivity->setTitle('Productivity');
-        $sheetProductivity
-            ->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Area')
-            ->setCellValue('C1', 'TPE')
-            ->setCellValue('D1', 'TPE Name')
-            ->setCellValue('E1', 'Position')
-            ->setCellValue('F1', 'HK')
-            ->setCellValue('G1', 'Absensi')
-            ->setCellValue('H1', '%Kehadiran')
-            ->setCellValue('I1', 'Keterangan Absensi')
-            ->setCellValue('J1', 'Call DUB')
-            ->setCellValue('K1', 'Target DUB')
-            ->setCellValue('L1', 'Efektif Call')
-            ->setCellValue('M1', 'Call Visit')
-            ->setCellValue('N1', 'Target Visit')
-            ->setCellValue('O1', 'Rata-Rata Visit')
-            ->setCellValue('P1', 'Outlet Order')
-            ->setCellValue('Q1', 'Total Order')
-            ->setCellValue('R1', 'Keterangan')
-            ->setCellValue('S1', 'Detailing');
-		
-        $data = $this->report_productivity->getProductivity($params);
-        $i = 1;
-        $row = 2;
-        foreach ($data as $value) {
-			$sheetProductivity->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $value['nama_subarea'] ?? $value['nama_area'] ?? '')
-                ->setCellValue('C'.$row, $value['salesmanid'] ?? '')
-                ->setCellValue('D'.$row, $value['nama_salesman'] ?? '')
-                ->setCellValue('E'.$row, $value['tipe_sales'] ?? '')
-                ->setCellValue('F'.$row, $value['TPE Aktif'] ?? '')
-                ->setCellValue('G'.$row, $value['TPE Hadir'] ?? '')
-                ->setCellValue('H'.$row, '=IF(F'.$row.'>0, G'.$row.'/F'.$row.', 0)')
-                ->setCellValue('I'.$row, 'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')')
-                ->setCellValue('J'.$row, $value['call_dub'] ?? '')
-                ->setCellValue('K'.$row, $value['target_dub'] ?? '')
-                ->setCellValue('L'.$row, $value['efektif_dub'] ?? '')
-                ->setCellValue('M'.$row, $value['call_visit'] ?? '')
-                ->setCellValue('N'.$row, $value['target_visit'] ?? '')
-                ->setCellValue('O'.$row, $value['rata_rata_visit'] ?? '')
-                ->setCellValue('P'.$row, $value['jumlah_customer'] ?? '')
-                ->setCellValue('Q'.$row, $value['total_penjualan'] ?? '')
-                ->setCellValue('R'.$row, $value['rrk_keterangan'] ?? '')
-                ->setCellValue('S'.$row, $value['rrk_detailing'] ?? '');
-			
-			$objPHPExcel->getActiveSheet()->getStyle('H'.$row)->getNumberFormat()->applyFromArray(array('code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE));
-			$objPHPExcel->getActiveSheet()->getStyle('Q'.$row)->getNumberFormat()->setFormatCode('"Rp. "#,##0.00');
-			$i++;
-            $row++;
-        }
-		
-        // Visit TPE
-        $objPHPExcel->createSheet(1);
-        $sheetVisit = $objPHPExcel->setActiveSheetIndex(1);
-        $sheetVisit->setTitle('Visit TPE');
-        $sheetVisit->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Period')
-            ->setCellValue('C1', 'TPE')
-            ->setCellValue('D1', 'TPE Name')
-            ->setCellValue('E1', 'TPE ID Outlet')
-            ->setCellValue('F1', 'TPE Nama Outlet')
-            ->setCellValue('G1', 'Channel')
-            ->setCellValue('H1', 'Regional')
-            ->setCellValue('I1', 'Area')
-            ->setCellValue('J1', 'Sub Area')
-            ->setCellValue('K1', 'CheckIn')
-            ->setCellValue('L1', 'CheckOut')
-            ->setCellValue('M1', 'Time Visit')
-            ->setCellValue('N1', 'Reason')
-            ->setCellValue('O1', 'Description')
-            ->setCellValue('P1', 'Flag');
-
-        $datavisit = $this->report_productivity->getVisit_salesman($params);
-        $i = 1;
-        $row = 2;
-        foreach ($datavisit as $valuevisit) {
-            $sheetVisit->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
-                ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
-                ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
-                ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
-                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
-                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
-                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
-                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
-                ->setCellValue('K'.$row, $valuevisit['check_in'] ?? '')
-                ->setCellValue('L'.$row, $valuevisit['check_out'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['alasan'] ?? '')
-                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '')
-                ->setCellValue('P'.$row, $valuevisit['flag'] ?? '');
-			$i++;
-            $row++;
-        }
-		
-        // Order TPE
-        $objPHPExcel->createSheet(2);
-        $sheetOrder = $objPHPExcel->setActiveSheetIndex(2);
-        $sheetOrder->setTitle('Order TPE');
-		$sheetOrder->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Tanggal')
-            ->setCellValue('C1', 'User TPE')
-            ->setCellValue('D1', 'TPE ID Outlet')
-            ->setCellValue('E1', 'ID Outlet Distributor')
-            ->setCellValue('F1', 'TPE Nama Outlet')
-            ->setCellValue('G1', 'Channel')
-            ->setCellValue('H1', 'No SP')
-            ->setCellValue('I1', 'No Sales Order')
-            ->setCellValue('J1', 'ProductID')
-            ->setCellValue('K1', 'Product Name')
-            ->setCellValue('L1', 'Qty (TPE Apps)')
-            ->setCellValue('M1', 'Price')
-            ->setCellValue('N1', 'Total GTS (TPE Apps)')
-            ->setCellValue('O1', 'Status')
-            ->setCellValue('P1', 'JJID + Product Name')
-            ->setCellValue('Q1', 'Qty Actual (Tableau Konimex)')
-            ->setCellValue('R1', 'Total GTS (Tableau Konimex)')
-            ->setCellValue('S1', 'Gap Qty')
-            ->setCellValue('T1', 'Gap Total GTS');
-
-        $dataorder = $this->report_productivity->getOrder_salesman($params);
-        $i = 1;
-        $row = 2;
-        foreach ($dataorder as $valueorder) {
-            $sheetOrder->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $valueorder['period'] ?? '')
-                ->setCellValue('C'.$row, $valueorder['nama_salesman']." (".$valueorder['salesmanid'].")")
-                ->setCellValue('D'.$row, $valueorder['customerid'] ?? '')
-                ->setCellValue('E'.$row, $valueorder['cust_id_map'] ?? '')
-                ->setCellValue('F'.$row, $valueorder['nama_customer'] ?? '')
-                ->setCellValue('G'.$row, $valueorder['typeid'] ?? '')
-                ->setCellValue('H'.$row, $valueorder['no_po'] ?? '')
-                ->setCellValue('I'.$row, $valueorder['no_sales'] ?? '')
-                ->setCellValue('J'.$row, $valueorder['productid'] ?? '')
-                ->setCellValue('K'.$row, $valueorder['nama_invoice'] ?? '')
-                ->setCellValue('L'.$row, $valueorder['qty_jual_in_pcs'] ?? '')
-                ->setCellValue('M'.$row, $valueorder['h_jual'] ?? '')
-                ->setCellValue('N'.$row, '=L'.$row.'*M'.$row)
-                ->setCellValue('O'.$row, $valueorder['status'] ?? '')
-                ->setCellValue('P'.$row, ($valueorder['nama_invoice'] ?? ''))
-                ->setCellValue('Q'.$row, '')
-                ->setCellValue('R'.$row, '')
-                ->setCellValue('S'.$row, '=L'.$row.'-Q'.$row)
-                ->setCellValue('T'.$row, '=N'.$row.'-R'.$row);
-			$i++;
-            $row++;
-        }
-
-        // Detailing
-        $objPHPExcel->createSheet(3);
-        $sheetDetailing = $objPHPExcel->setActiveSheetIndex(3);
-		$sheetDetailing->setTitle('Detailing');
-        $sheetDetailing->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Period')
-            ->setCellValue('C1', 'TPE')
-            ->setCellValue('D1', 'TPE Name')
-            ->setCellValue('E1', 'TPE ID Outlet')
-            ->setCellValue('F1', 'TPE Nama Outlet')
-            ->setCellValue('G1', 'Channel')
-            ->setCellValue('H1', 'Regional')
-            ->setCellValue('I1', 'Area')
-            ->setCellValue('J1', 'Sub Area')
-            ->setCellValue('K1', 'Specialist')
-            ->setCellValue('L1', 'Spesialisasi')
-            ->setCellValue('M1', 'Product Detailing')
-            ->setCellValue('N1', 'Reason')
-            ->setCellValue('O1', 'Description');
-
-        $datavisit = $this->report_productivity->get_detailing_parma($params);
-        $i = 1;
-        $row = 2;
-        foreach ($datavisit as $valuevisit) {
-            $sheetDetailing->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
-                ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
-                ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
-                ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
-                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
-                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
-                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
-                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
-                ->setCellValue('K'.$row, $valuevisit['professional_name'] ?? '')
-                ->setCellValue('L'.$row, $valuevisit['spesialisasi'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['products'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['reason'] ?? '')
-                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '');
-			$i++;
-            $row++;
-        }
-        
-        // Progress Listing
-        $objPHPExcel->createSheet(4);
-        $sheetProgressListing = $objPHPExcel->setActiveSheetIndex(4);
-		$sheetProgressListing->setTitle('Progress Listing');
-        $sheetProgressListing->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Periode')
-            ->setCellValue('C1', 'TPE')
-            ->setCellValue('D1', 'TPE Name')
-            ->setCellValue('E1', 'TPE ID Outlet')
-            ->setCellValue('F1', 'TPE Nama Outlet')
-            ->setCellValue('G1', 'Brand ID')
-            ->setCellValue('H1', 'Brand Name')
-            ->setCellValue('I1', 'Progress')
-            ->setCellValue('J1', 'Ambil Dokumen Register')
-            ->setCellValue('K1', 'Melengkapi Dokumen Register')
-            ->setCellValue('L1', 'Sign Dokter 1')
-            ->setCellValue('M1', 'Sign Dokter 2')
-            ->setCellValue('N1', 'Sign Dokter 3')
-            ->setCellValue('O1', 'Sign Dokter 4')
-            ->setCellValue('P1', 'Sign Dokter 5')
-            ->setCellValue('Q1', 'Dokumen Registrasi Lengkap');
-
-        $progressListing = $this->report_productivity->get_progress_listing($params);
-        $i = 1;
-        $row = 2;
-        foreach ($progressListing as $value) {
-            $sheetProgressListing->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $value['periode'] ?? '')
-                ->setCellValue('C'.$row, $value['salesmanid'] ?? '')
-                ->setCellValue('D'.$row, $value['nama_salesman'] ?? '')
-                ->setCellValue('E'.$row, $value['customerid'] ?? '')
-                ->setCellValue('F'.$row, $value['nama_customer'] ?? '')
-                ->setCellValue('G'.$row, $value['brandid'] ?? '')
-                ->setCellValue('H'.$row, $value['brand'] ?? '')
-                ->setCellValue('I'.$row, $value['progress'] ?? '')
-                ->setCellValue('J'.$row, $this->signFormat($value['ambil_dok_registrasi']))
-                ->setCellValue('K'.$row, $this->signFormat($value['melengkapi_dok_registrasi']))
-                ->setCellValue('L'.$row, $this->signFormat($value['sign_dokter_1']))
-                ->setCellValue('M'.$row, $this->signFormat($value['sign_dokter_2']))
-                ->setCellValue('N'.$row, $this->signFormat($value['sign_dokter_3']))
-                ->setCellValue('O'.$row, $this->signFormat($value['sign_dokter_4']))
-                ->setCellValue('P'.$row, $this->signFormat($value['sign_dokter_5']))
-                ->setCellValue('Q'.$row, $this->signFormat($value['dok_registrasi_lengkap']));
-			$i++;
-            $row++;
-        }
+        $spreadsheet = new Spreadsheet();
 
         // Attendance
         $date_interval = date_interval($params['start_period'], $params['end_period']);
-        $objPHPExcel->createSheet(0);
-        $sheetAttendance = $objPHPExcel->setActiveSheetIndex(0);
+        $sheetAttendance = $spreadsheet->getActiveSheet();
 		$sheetAttendance->setTitle('Attendance');
         $sheetAttendance->setCellValue('A1', 'No.')
-            ->setCellValue('B1', 'TPE')
-            ->setCellValue('C1', 'TPE Name')
+            ->setCellValue('B1', 'Medrep')
+            ->setCellValue('C1', 'Medrep Name')
             ->setCellValue('D1', 'Area');
         $sheetAttendance->mergeCells('A1:A2');
         $sheetAttendance->mergeCells('B1:B2');
@@ -588,13 +350,22 @@ class Rep_productivity extends BaseController
 				if($inimg!=null && $inimg!=''){$inimg='=HYPERLINK("'.$urlimage.$inimg.'", "Show Foto Check-In")';}else{$inimg='';}
 				if($outimg!=null && $outimg!=''){$outimg='=HYPERLINK("'.$urlimage.$outimg.'", "Show Foto Check-Out")';}else{$outimg='';}
 				$sheetAttendance->setCellValue(number_to_alphabet($colIdx+2) . $row, $inimg);
-                $sheetAttendance->getStyle(number_to_alphabet($colIdx+2) . $row)
-                                ->getFont()
-                                ->setSize(11)                             // Mengatur ukuran font menjadi 12
-                                ->setItalic(true)
-                                ->setUnderline(Font::UNDERLINE_SINGLE);
+                if($inimg != '') {
+                    $sheetAttendance->getStyle(number_to_alphabet($colIdx+2) . $row)
+                                    ->getFont()
+                                    ->setSize(11)
+                                    ->setItalic(true)
+                                    ->setUnderline(Font::UNDERLINE_SINGLE);
+                }
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+3) . $row, $out);
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+4) . $row, $outimg);
+                if($outimg != '') {
+                    $sheetAttendance->getStyle(number_to_alphabet($colIdx+4) . $row)
+                                    ->getFont()
+                                    ->setSize(11)
+                                    ->setItalic(true)
+                                    ->setUnderline(Font::UNDERLINE_SINGLE);
+                }
                 $sheetAttendance->setCellValue(number_to_alphabet($colIdx+5) . $row, $duration);
 
                 $colIdx += 6;
@@ -602,11 +373,248 @@ class Rep_productivity extends BaseController
 			$i++;
             $row++;
         }
+
+        // Productivity
+        $sheetProductivity = $spreadsheet->createSheet();
+        $sheetProductivity->setTitle('Productivity');
+        $sheetProductivity
+            ->setCellValue('A1', 'No')
+            ->setCellValue('B1', 'Area')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
+            ->setCellValue('E1', 'Position')
+            ->setCellValue('F1', 'HK')
+            ->setCellValue('G1', 'Absensi')
+            ->setCellValue('H1', '%Kehadiran')
+            ->setCellValue('I1', 'Keterangan Absensi')
+            ->setCellValue('J1', 'Call DUB')
+            ->setCellValue('K1', 'Target DUB')
+            ->setCellValue('L1', 'Efektif Call')
+            ->setCellValue('M1', 'Call Visit')
+            ->setCellValue('N1', 'Target Visit')
+            ->setCellValue('O1', 'Rata-Rata Visit')
+            ->setCellValue('P1', 'Outlet Order')
+            ->setCellValue('Q1', 'Total Order')
+            ->setCellValue('R1', 'Keterangan')
+            ->setCellValue('S1', 'Detailing');
+		
+        $data = $this->report_productivity->getProductivity($params);
+        $i = 1;
+        $row = 2;
+        foreach ($data as $value) {
+			$sheetProductivity->setCellValue('A'.$row, $i)
+                ->setCellValue('B'.$row, $value['nama_subarea'] ?? $value['nama_area'] ?? '')
+                ->setCellValue('C'.$row, $value['salesmanid'] ?? '')
+                ->setCellValue('D'.$row, $value['nama_salesman'] ?? '')
+                ->setCellValue('E'.$row, $value['tipe_sales'] ?? '')
+                ->setCellValue('F'.$row, $value['TPE Aktif'] ?? '')
+                ->setCellValue('G'.$row, $value['TPE Hadir'] ?? '')
+                ->setCellValue('H'.$row, '=IF(F'.$row.'>0, G'.$row.'/F'.$row.', 0)')
+                ->setCellValue('I'.$row, 'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')')
+                ->setCellValue('J'.$row, $value['call_dub'] ?? '')
+                ->setCellValue('K'.$row, $value['target_dub'] ?? '')
+                ->setCellValue('L'.$row, $value['efektif_dub'] ?? '')
+                ->setCellValue('M'.$row, $value['call_visit'] ?? '')
+                ->setCellValue('N'.$row, $value['target_visit'] ?? '')
+                ->setCellValue('O'.$row, $value['rata_rata_visit'] ?? '')
+                ->setCellValue('P'.$row, $value['jumlah_customer'] ?? '')
+                ->setCellValue('Q'.$row, $value['total_penjualan'] ?? '')
+                ->setCellValue('R'.$row, $value['rrk_keterangan'] ?? '')
+                ->setCellValue('S'.$row, $value['rrk_detailing'] ?? '');
+			
+			$sheetProductivity->getStyle('H'.$row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE);
+			$sheetProductivity->getStyle('Q'.$row)->getNumberFormat()->setFormatCode('"Rp. "#,##0.00');
+			$i++;
+            $row++;
+        }
+		
+        // Visit TPE
+        $sheetVisit = $spreadsheet->createSheet();
+        $sheetVisit->setTitle('Visit TPE');
+        $sheetVisit->setCellValue('A1', 'No')
+            ->setCellValue('B1', 'Period')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
+            ->setCellValue('E1', 'TPE ID Outlet')
+            ->setCellValue('F1', 'TPE Nama Outlet')
+            ->setCellValue('G1', 'Channel')
+            ->setCellValue('H1', 'Regional')
+            ->setCellValue('I1', 'Area')
+            ->setCellValue('J1', 'Sub Area')
+            ->setCellValue('K1', 'CheckIn')
+            ->setCellValue('L1', 'CheckOut')
+            ->setCellValue('M1', 'Time Visit')
+            ->setCellValue('N1', 'Reason')
+            ->setCellValue('O1', 'Description')
+            ->setCellValue('P1', 'Flag');
+
+        $datavisit = $this->report_productivity->getVisit_salesman($params);
+        $i = 1;
+        $row = 2;
+        foreach ($datavisit as $valuevisit) {
+            $sheetVisit->setCellValue('A'.$row, $i)
+                ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
+                ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
+                ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
+                ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
+                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
+                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
+                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
+                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
+                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
+                ->setCellValue('K'.$row, $valuevisit['check_in'] ?? '')
+                ->setCellValue('L'.$row, $valuevisit['check_out'] ?? '')
+                ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'] ?? '')
+                ->setCellValue('N'.$row, $valuevisit['alasan'] ?? '')
+                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '')
+                ->setCellValue('P'.$row, $valuevisit['flag'] ?? '');
+			$i++;
+            $row++;
+        }
+		
+        // Order TPE
+        $sheetOrder = $spreadsheet->createSheet();
+        $sheetOrder->setTitle('Order TPE');
+		$sheetOrder->setCellValue('A1', 'No')
+            ->setCellValue('B1', 'Tanggal')
+            ->setCellValue('C1', 'User TPE')
+            ->setCellValue('D1', 'TPE ID Outlet')
+            ->setCellValue('E1', 'ID Outlet Distributor')
+            ->setCellValue('F1', 'TPE Nama Outlet')
+            ->setCellValue('G1', 'Channel')
+            ->setCellValue('H1', 'No SP')
+            ->setCellValue('I1', 'No Sales Order')
+            ->setCellValue('J1', 'ProductID')
+            ->setCellValue('K1', 'Product Name')
+            ->setCellValue('L1', 'Qty (TPE Apps)')
+            ->setCellValue('M1', 'Price')
+            ->setCellValue('N1', 'Total GTS (TPE Apps)')
+            ->setCellValue('O1', 'Status')
+            ->setCellValue('P1', 'JJID + Product Name')
+            ->setCellValue('Q1', 'Qty Actual (Tableau Konimex)')
+            ->setCellValue('R1', 'Total GTS (Tableau Konimex)')
+            ->setCellValue('S1', 'Gap Qty')
+            ->setCellValue('T1', 'Gap Total GTS');
+
+        $dataorder = $this->report_productivity->getOrder_salesman($params);
+        $i = 1;
+        $row = 2;
+        foreach ($dataorder as $valueorder) {
+            $sheetOrder->setCellValue('A'.$row, $i)
+                ->setCellValue('B'.$row, $valueorder['period'] ?? '')
+                ->setCellValue('C'.$row, $valueorder['nama_salesman']." (".$valueorder['salesmanid'].")")
+                ->setCellValue('D'.$row, $valueorder['customerid'] ?? '')
+                ->setCellValue('E'.$row, $valueorder['cust_id_map'] ?? '')
+                ->setCellValue('F'.$row, $valueorder['nama_customer'] ?? '')
+                ->setCellValue('G'.$row, $valueorder['typeid'] ?? '')
+                ->setCellValue('H'.$row, $valueorder['no_po'] ?? '')
+                ->setCellValue('I'.$row, $valueorder['no_sales'] ?? '')
+                ->setCellValue('J'.$row, $valueorder['productid'] ?? '')
+                ->setCellValue('K'.$row, $valueorder['nama_invoice'] ?? '')
+                ->setCellValue('L'.$row, $valueorder['qty_jual_in_pcs'] ?? '')
+                ->setCellValue('M'.$row, $valueorder['h_jual'] ?? '')
+                ->setCellValue('N'.$row, '=L'.$row.'*M'.$row)
+                ->setCellValue('O'.$row, $valueorder['status'] ?? '')
+                ->setCellValue('P'.$row, ($valueorder['nama_invoice'] ?? ''))
+                ->setCellValue('Q'.$row, '')
+                ->setCellValue('R'.$row, '')
+                ->setCellValue('S'.$row, '=L'.$row.'-Q'.$row)
+                ->setCellValue('T'.$row, '=N'.$row.'-R'.$row);
+			$i++;
+            $row++;
+        }
+
+        // Detailing
+        $sheetDetailing = $spreadsheet->createSheet();
+		$sheetDetailing->setTitle('Detailing');
+        $sheetDetailing->setCellValue('A1', 'No')
+            ->setCellValue('B1', 'Period')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
+            ->setCellValue('E1', 'TPE ID Outlet')
+            ->setCellValue('F1', 'TPE Nama Outlet')
+            ->setCellValue('G1', 'Channel')
+            ->setCellValue('H1', 'Regional')
+            ->setCellValue('I1', 'Area')
+            ->setCellValue('J1', 'Sub Area')
+            ->setCellValue('K1', 'Specialist')
+            ->setCellValue('L1', 'Spesialisasi')
+            ->setCellValue('M1', 'Product Detailing')
+            ->setCellValue('N1', 'Reason')
+            ->setCellValue('O1', 'Description');
+
+        $datavisit = $this->report_productivity->get_detailing_parma($params);
+        $i = 1;
+        $row = 2;
+        foreach ($datavisit as $valuevisit) {
+            $sheetDetailing->setCellValue('A'.$row, $i)
+                ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
+                ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
+                ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
+                ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
+                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
+                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
+                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
+                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
+                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
+                ->setCellValue('K'.$row, $valuevisit['professional_name'] ?? '')
+                ->setCellValue('L'.$row, $valuevisit['spesialisasi'] ?? '')
+                ->setCellValue('M'.$row, $valuevisit['products'] ?? '')
+                ->setCellValue('N'.$row, $valuevisit['reason'] ?? '')
+                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '');
+			$i++;
+            $row++;
+        }
+        
+        // Progress Listing
+        $sheetProgressListing = $spreadsheet->createSheet();
+		$sheetProgressListing->setTitle('Progress Listing');
+        $sheetProgressListing->setCellValue('A1', 'No')
+            ->setCellValue('B1', 'Periode')
+            ->setCellValue('C1', 'TPE')
+            ->setCellValue('D1', 'TPE Name')
+            ->setCellValue('E1', 'TPE ID Outlet')
+            ->setCellValue('F1', 'TPE Nama Outlet')
+            ->setCellValue('G1', 'Brand ID')
+            ->setCellValue('H1', 'Brand Name')
+            ->setCellValue('I1', 'Progress')
+            ->setCellValue('J1', 'Ambil Dokumen Register')
+            ->setCellValue('K1', 'Melengkapi Dokumen Register')
+            ->setCellValue('L1', 'Sign Dokter 1')
+            ->setCellValue('M1', 'Sign Dokter 2')
+            ->setCellValue('N1', 'Sign Dokter 3')
+            ->setCellValue('O1', 'Sign Dokter 4')
+            ->setCellValue('P1', 'Sign Dokter 5')
+            ->setCellValue('Q1', 'Dokumen Registrasi Lengkap');
+
+        $progressListing = $this->report_productivity->get_progress_listing($params);
+        $i = 1;
+        $row = 2;
+        foreach ($progressListing as $value) {
+            $sheetProgressListing->setCellValue('A'.$row, $i)
+                ->setCellValue('B'.$row, $value['periode'] ?? '')
+                ->setCellValue('C'.$row, $value['salesmanid'] ?? '')
+                ->setCellValue('D'.$row, $value['nama_salesman'] ?? '')
+                ->setCellValue('E'.$row, $value['customerid'] ?? '')
+                ->setCellValue('F'.$row, $value['nama_customer'] ?? '')
+                ->setCellValue('G'.$row, $value['brandid'] ?? '')
+                ->setCellValue('H'.$row, $value['brand'] ?? '')
+                ->setCellValue('I'.$row, $value['progress'] ?? '')
+                ->setCellValue('J'.$row, $this->signFormat($value['ambil_dok_registrasi']))
+                ->setCellValue('K'.$row, $this->signFormat($value['melengkapi_dok_registrasi']))
+                ->setCellValue('L'.$row, $this->signFormat($value['sign_dokter_1']))
+                ->setCellValue('M'.$row, $this->signFormat($value['sign_dokter_2']))
+                ->setCellValue('N'.$row, $this->signFormat($value['sign_dokter_3']))
+                ->setCellValue('O'.$row, $this->signFormat($value['sign_dokter_4']))
+                ->setCellValue('P'.$row, $this->signFormat($value['sign_dokter_5']))
+                ->setCellValue('Q'.$row, $this->signFormat($value['dok_registrasi_lengkap']));
+			$i++;
+            $row++;
+        }
         
         // target call daily
         $date_interval = date_interval($params['start_period'], $params['end_period']);
-        $objPHPExcel->createSheet(6);
-        $sheetcall = $objPHPExcel->setActiveSheetIndex(6);
+        $sheetcall = $spreadsheet->createSheet();
 		$sheetcall->setTitle('Call Daily');
         $sheetcall->setCellValue('A1', 'No.')
             ->setCellValue('B1', 'TPE')
@@ -686,7 +694,7 @@ class Rep_productivity extends BaseController
         // Bersihkan buffer output
         if (ob_get_length()) ob_end_clean();
 
-		// Redirect output to a client's web browser (Excel2007)
+		// Redirect output to a client's web browser (Xlsx)
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
@@ -696,10 +704,8 @@ class Rep_productivity extends BaseController
         header('Cache-Control: cache, must-revalidate');
         header('Pragma: public');
 
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
-
-		unset($objPHPExcel);
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
 		exit;
 	}
 

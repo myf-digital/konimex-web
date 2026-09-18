@@ -106,6 +106,10 @@
                                 <label for="subarea">Sub Area</label>
                                 <select id="subarea-id" name="subarea" class="form-control" placeholder="Select Sub Area"></select>
                             </div>
+                            <div class="form-group col-md-2">
+                                <label for="salesmanid">Medrep</label>
+                                <select id="salesmanid-id" name="salesmanid" class="form-control" placeholder="Select Medrep"></select>
+                            </div>
                     </div>
 
                     <div class="box-footer">
@@ -123,4 +127,4 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/rep_productivity/rep-productivity-form.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/rep_productivity/rep-productivity-form.js' ?>?v=1.0"></script>
