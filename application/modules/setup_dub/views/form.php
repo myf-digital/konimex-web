@@ -38,10 +38,16 @@
 							<textarea id="keterangan" name="keterangan" class="form-control" placeholder="Keterangan" rows="1"></textarea>
 						</div>
 						<div class="form-group col-md-12" style="margin-top: 20px;">
-							<label>
-								User Binaan (DUB)
-								<span id="total-selected-badge" class="label label-success" style="margin-left: 5px;">0 terpilih</span>
-							</label>
+							<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+								<label style="margin-bottom: 0;">
+									User Binaan (DUB)
+									<span id="total-selected-badge" class="label label-success" style="margin-left: 5px;">0 terpilih</span>
+								</label>
+								<div class="btn-group btn-group-xs">
+									<button type="button" id="btn-select-all" class="btn btn-default" title="Pilih semua user pada outlet yang tampil"><i class="fa fa-check-square-o"></i> Pilih Semua</button>
+									<button type="button" id="btn-deselect-all" class="btn btn-default" title="Batal pilih semua user"><i class="fa fa-square-o"></i> Reset Pilihan</button>
+								</div>
+							</div>
 							<input type="text" id="search-outlet" class="form-control" placeholder="Cari Outlet atau User..." style="margin-bottom: 15px;">
 							<div id="outlet-accordion-container">
 							</div>
@@ -58,4 +64,4 @@
     </div>
 </section>
 
-<script src="<?php echo base_url() . 'assets/modules/setup_dub/form.js' ?>?v=1.2"></script>
+<script src="<?php echo base_url() . 'assets/modules/setup_dub/form.js' ?>?v=1.3"></script>

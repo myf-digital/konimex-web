@@ -227,28 +227,78 @@
       },
     );
 
-    $(document).on("change", ".professional-checkbox", function () {
-      // let totalChecked = $(".professional-checkbox:checked").length;
-      // if (totalChecked > maxLimit && maxLimit > 0) {
-      //   $(this).prop("checked", false);
-      //   Swal.fire({
-      //     title: "Batas Maksimum",
-      //     text: `Maksimal professional yang boleh dipilih adalah ${maxLimit}. Anda sudah memilih ${totalChecked}.`,
-      //     icon: "warning",
-      //   });
-      //   return;
-      // }
+    $(document).on("click", ".check-all-outlet", function (e) {
+      e.stopPropagation();
+    });
 
+    $(document).on("change", ".check-all-outlet", function () {
+      let isChecked = $(this).is(":checked");
       let parentPanel = $(this).closest(".outlet-accordion-item");
-      let count = parentPanel.find(".professional-checkbox:checked").length;
+      let checkboxes = parentPanel.find(".professional-checkbox");
+
+      checkboxes.prop("checked", isChecked);
+
+      let checkedBoxes = isChecked ? checkboxes.length : 0;
       let badge = parentPanel.find(".selected-count-badge");
-      badge.text(`${count} terpilih`);
-      if (count > 0) {
+      badge.text(`${checkedBoxes} terpilih`);
+      if (checkedBoxes > 0) {
         badge.removeClass("label-default").addClass("label-success");
       } else {
         badge.removeClass("label-success").addClass("label-default");
       }
 
+      updateTotalSelectedCount();
+    });
+
+    $(document).on("change", ".professional-checkbox", function () {
+      let parentPanel = $(this).closest(".outlet-accordion-item");
+      let totalBoxes = parentPanel.find(".professional-checkbox").length;
+      let checkedBoxes = parentPanel.find(".professional-checkbox:checked").length;
+      let checkAll = parentPanel.find(".check-all-outlet");
+
+      if (totalBoxes > 0) {
+        if (checkedBoxes === totalBoxes) {
+          checkAll.prop("checked", true).prop("indeterminate", false);
+        } else if (checkedBoxes > 0) {
+          checkAll.prop("checked", false).prop("indeterminate", true);
+        } else {
+          checkAll.prop("checked", false).prop("indeterminate", false);
+        }
+      }
+
+      let badge = parentPanel.find(".selected-count-badge");
+      badge.text(`${checkedBoxes} terpilih`);
+      if (checkedBoxes > 0) {
+        badge.removeClass("label-default").addClass("label-success");
+      } else {
+        badge.removeClass("label-success").addClass("label-default");
+      }
+
+      updateTotalSelectedCount();
+    });
+
+    $("#btn-select-all").on("click", function () {
+      $(".outlet-accordion-item:visible").each(function () {
+        let parent = $(this);
+        let profBoxes = parent.find(".professional-checkbox");
+        if (profBoxes.length > 0) {
+          profBoxes.prop("checked", true);
+          parent.find(".check-all-outlet").prop("checked", true).prop("indeterminate", false);
+          let badge = parent.find(".selected-count-badge");
+          badge.text(`${profBoxes.length} terpilih`).removeClass("label-default").addClass("label-success");
+        }
+      });
+      updateTotalSelectedCount();
+    });
+
+    $("#btn-deselect-all").on("click", function () {
+      $(".outlet-accordion-item:visible").each(function () {
+        let parent = $(this);
+        parent.find(".professional-checkbox").prop("checked", false);
+        parent.find(".check-all-outlet").prop("checked", false).prop("indeterminate", false);
+        let badge = parent.find(".selected-count-badge");
+        badge.text(`0 terpilih`).removeClass("label-success").addClass("label-default");
+      });
       updateTotalSelectedCount();
     });
 
@@ -403,9 +453,17 @@
       if (item.nama_customer) html += ` - ${item.nama_customer}`;
       if (item.typeid) html += ` - ${item.typeid}`;
 
+      let profs = listProfStr.trim() !== "" ? listProfStr.split("||").filter((p) => p.trim() !== "") : [];
+      let totalProf = profs.length;
+      let isAllChecked = totalProf > 0 && checkedCount === totalProf;
+      let isIndeterminate = totalProf > 0 && checkedCount > 0 && checkedCount < totalProf;
+
       let accordionItem = $(`
         <div class="panel panel-default outlet-accordion-item" data-id="${cid}">
           <div class="panel-heading">
+            <div class="outlet-checkbox-wrapper" style="display: flex; align-items: center; margin-right: 12px;">
+              <input type="checkbox" class="check-all-outlet" data-customerid="${cid}" title="Pilih Semua User pada Outlet ini" style="width: 17px; height: 17px; margin: 0; cursor: pointer;" ${isAllChecked ? "checked" : ""} ${totalProf === 0 ? "disabled" : ""}>
+            </div>
             <div class="panel-title-label">
               <h4 class="panel-title">
                 ${html}
@@ -427,6 +485,10 @@
           </div>
         </div>
       `);
+
+      if (isIndeterminate) {
+        accordionItem.find(".check-all-outlet").prop("indeterminate", true);
+      }
 
       let checkboxGroup = accordionItem.find(".professional-checkbox-group");
       if (listProfStr.trim() !== "") {
