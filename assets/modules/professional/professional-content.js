@@ -51,16 +51,8 @@
       columns: [
         [
           {
-            field: "id",
-            title: "ID USER",
-            halign: "center",
-            align: "center",
-            sortable: "true",
-            width: 150,
-          },
-          {
-            field: "nama_professional",
-            title: "NAMA USER",
+            field: "professional",
+            title: "USER",
             halign: "center",
             align: "left",
             sortable: "true",
@@ -108,6 +100,14 @@
             sortable: "true",
             width: 100,
             formatter: formatterStatus,
+          },
+          {
+            field: "created",
+            title: "CREATED",
+            halign: "center",
+            align: "left",
+            sortable: "true",
+            width: 200,
           },
           {
             field: "customer_list",
