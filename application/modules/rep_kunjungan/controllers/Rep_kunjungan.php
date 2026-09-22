@@ -64,33 +64,18 @@ class Rep_kunjungan extends BaseController
             $addquery_sales = " AND s.salesmanid in ('" . $salesmanid . "') ";
         }
 
-        $startDate = new DateTime($start);
-        $endDate = new DateTime($end);
-        $endDate->modify('+1 day');
-
-        $workdays = 0;
-        $period = new DatePeriod($startDate, new DateInterval('P1D'), $endDate);
-        foreach ($period as $dt) {
-            if ($dt->format('N') < 6) {
-                $workdays++;
-            }
-        }
-
-        $q_libur = $this->db->query("
-            SELECT COALESCE(SUM(jml_libur), 0) AS total_libur 
-            FROM setup_jumlah_harilibur 
-            WHERE (tahun = DATE_FORMAT('$start', '%Y') AND bulan = DATE_FORMAT('$start', '%m'))
-               OR (tahun = DATE_FORMAT('$end', '%Y') AND bulan = DATE_FORMAT('$end', '%m'))
-        ")->row_array();
-
-        $total_libur = (int)($q_libur['total_libur'] ?? 0);
-        $hari_kerja = max(0, $workdays - $total_libur);
+        $hari_kerja = get_hari_kerja($start, $end);
+        $role_row = $this->db->query("SELECT value FROM ref_param_global WHERE key_param = 'key_role_sales' LIMIT 1")->row_array();
+        $role_sales = !empty($role_row['value']) 
+            ? "'" . implode("','", explode('|', $role_row['value'])) . "'" 
+            : "''";
 
         $q_activity = $this->db->query("
             SELECT 
                 s.salesmanid,
                 s.nama_salesman,
                 s.tipe_sales,
+                CONCAT_WS(' - ', NULLIF(s.salesmanid, ''), NULLIF(s.nama_salesman, '')) as salesman,
                 coalesce(nullif(area.nama_subarea, ''), nullif(area.nama_area, ''), nullif(area.nama_regional, ''), '') as wilayah,
                 $hari_kerja AS hari_kerja,
                 case
@@ -154,6 +139,8 @@ class Rep_kunjungan extends BaseController
                 GROUP BY t.salesmanid
             ) v ON s.salesmanid = v.salesmanid
             WHERE (s.aktif = 1 OR v.salesmanid IS NOT NULL OR att.salesmanid IS NOT NULL OR pjp.salesmanid IS NOT NULL)
+                AND LOWER(TRIM(s.nama_salesman)) <> 'vacant'
+                AND s.tipe_sales IN ($role_sales)
               $strquery_sales
               $addquery_sales
             ORDER BY s.nama_salesman ASC
@@ -204,7 +191,10 @@ class Rep_kunjungan extends BaseController
                 LEFT JOIN m_area_regional r ON msa.regionalid = r.regionalid
                 GROUP BY msa.salesmanid
             ) c ON a.salesmanid = c.salesmanid 
-            LEFT JOIN m_customer_image d ON a.periode = d.periode AND a.salesmanid = d.salesmanid AND a.customerid = d.customerid AND d.image_type = 'IMG_CHECKIN'
+            LEFT JOIN m_customer_image d ON a.periode = d.periode
+                AND a.salesmanid = d.salesmanid
+                AND a.customerid = d.customerid
+                AND d.image_type = 'IMG_CHECKIN'
             WHERE a.periode BETWEEN '$start' AND '$end' $addquery $strquery
             ORDER BY a.periode DESC;
         ");
@@ -248,7 +238,7 @@ class Rep_kunjungan extends BaseController
         $html .= '<th style="width: 110px; text-align: center;">Actual Call</th>';
         $html .= '<th style="width: 130px; text-align: center;">Actual Extra Call</th>';
         $html .= '<th style="width: 110px; text-align: center;">Achievement</th>';
-        $html .= '<th style="width: 140px; text-align: center;">Remark</th>';
+        $html .= '<th style="width: 155px; text-align: center;">Remark</th>';
         $html .= '</tr>';
 		$html .= '</tbody>';
 		$html .= '</table>';
@@ -288,7 +278,7 @@ class Rep_kunjungan extends BaseController
 
                 $html .= '<tr>';
                 $html .= '<td style="width: 50px; text-align: center;">' . $i_act . '</td>';
-                $html .= '<td style="width: 200px; text-align: left;">' . ($act['nama_salesman'] ?? '') . '</td>';
+                $html .= '<td style="width: 200px; text-align: left;">' . ($act['salesman'] ?? '') . '</td>';
                 $html .= '<td style="width: 120px; text-align: center;">' . ($act['tipe_sales'] ?? '') . '</td>';
                 $html .= '<td style="width: 180px; text-align: left;">' . ($act['wilayah'] ?? '') . '</td>';
                 $html .= '<td style="width: 100px; text-align: center;">' . number_format((int)$act['hari_kerja'], 0, '.', ',') . '</td>';
@@ -441,33 +431,18 @@ class Rep_kunjungan extends BaseController
 		    $filename = "Report_Kunjungan_" . $salesmanid . "_" . $start . "-" . $end . ".xlsx";
         }
 
-        $startDate = new DateTime($start);
-        $endDate = new DateTime($end);
-        $endDate->modify('+1 day');
-
-        $workdays = 0;
-        $period = new DatePeriod($startDate, new DateInterval('P1D'), $endDate);
-        foreach ($period as $dt) {
-            if ($dt->format('N') < 6) {
-                $workdays++;
-            }
-        }
-
-        $q_libur = $this->db->query("
-            SELECT COALESCE(SUM(jml_libur), 0) AS total_libur 
-            FROM setup_jumlah_harilibur 
-            WHERE (tahun = DATE_FORMAT('$start', '%Y') AND bulan = DATE_FORMAT('$start', '%m'))
-               OR (tahun = DATE_FORMAT('$end', '%Y') AND bulan = DATE_FORMAT('$end', '%m'))
-        ")->row_array();
-
-        $total_libur = (int)($q_libur['total_libur'] ?? 0);
-        $hari_kerja = max(0, $workdays - $total_libur);
+        $hari_kerja = get_hari_kerja($start, $end);
+        $role_row = $this->db->query("SELECT value FROM ref_param_global WHERE key_param = 'key_role_sales' LIMIT 1")->row_array();
+        $role_sales = !empty($role_row['value']) 
+            ? "'" . implode("','", explode('|', $role_row['value'])) . "'" 
+            : "''";
 
         $q_activity = $this->db->query("
             SELECT 
                 s.salesmanid,
                 s.nama_salesman,
                 s.tipe_sales,
+                CONCAT_WS(' - ', NULLIF(s.salesmanid, ''), NULLIF(s.nama_salesman, '')) as salesman,
                 coalesce(nullif(area.nama_subarea, ''), nullif(area.nama_area, ''), nullif(area.nama_regional, ''), '') as wilayah,
                 $hari_kerja AS hari_kerja, 
                 case
@@ -531,8 +506,10 @@ class Rep_kunjungan extends BaseController
                 GROUP BY t.salesmanid
             ) v ON s.salesmanid = v.salesmanid
             WHERE (s.aktif = 1 OR v.salesmanid IS NOT NULL OR att.salesmanid IS NOT NULL OR pjp.salesmanid IS NOT NULL)
-              $strquery_sales
-              $addquery_sales
+                AND LOWER(TRIM(s.nama_salesman)) <> 'vacant'
+                AND s.tipe_sales IN ($role_sales)
+                $strquery_sales
+                $addquery_sales
             ORDER BY s.nama_salesman ASC
         ");
         $lovactivity = $q_activity->result_array();
@@ -760,7 +737,7 @@ class Rep_kunjungan extends BaseController
                 $remark_fg = '9C0006';
             }
 
-            $sheetAct->setCellValue('A' . $rowAct, $act['nama_salesman']);
+            $sheetAct->setCellValue('A' . $rowAct, $act['salesman']);
             $sheetAct->setCellValue('B' . $rowAct, $act['tipe_sales']);
             $sheetAct->setCellValue('C' . $rowAct, $act['wilayah']);
             $sheetAct->setCellValue('D' . $rowAct, (int)$act['hari_kerja']);
