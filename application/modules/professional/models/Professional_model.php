@@ -10,6 +10,7 @@ class Professional_model extends CI_Model
                     SELECT
                         a.id,
                         a.nama_professional,
+                        CONCAT_WS(' - ', NULLIF(a.id, ''), NULLIF(a.nama_professional, '')) as professional,
                         a.type,
                         a.tanggal_lahir,
                         a.tanggal_aniv_pernikahan,
@@ -24,11 +25,13 @@ class Professional_model extends CI_Model
                             SEPARATOR '||'
                         ) as customer_list,
                         a.status,
-                        a.reason
+                        a.reason,
+                        CONCAT_WS(' - ', NULLIF(a.created_by, ''), NULLIF(mss.nama_salesman, '')) as created
                     FROM ref_professional a
                     LEFT JOIN ref_spesialisasi rs ON rs.id = a.spesialisasi_id
                     LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
                     LEFT JOIN m_customer mc ON mc.customerid = rpm.customerid
+                    LEFT JOIN m_sales_salesman mss ON mss.salesmanid = a.created_by
                     GROUP BY a.id
                     ORDER BY CASE a.status
                         WHEN 1 THEN 1

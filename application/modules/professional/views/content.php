@@ -39,4 +39,4 @@
 </div>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/professional/professional-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/professional/professional-content.js' ?>?v=1.0"></script>

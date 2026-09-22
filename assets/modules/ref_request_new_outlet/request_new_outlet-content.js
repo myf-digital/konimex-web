@@ -50,16 +50,24 @@
       columns: [
         [
           {
-            field: "kode_outlet",
-            title: "Kode Outlet",
+            field: "outlet",
+            title: "Nama Outlet",
             halign: "center",
             align: "left",
             sortable: "true",
-            width: 150,
+            width: 200,
           },
           {
-            field: "nama_customer",
-            title: "Nama Outlet",
+            field: "typeid",
+            title: "Channel",
+            halign: "center",
+            align: "left",
+            sortable: "true",
+            width: 100,
+          },
+          {
+            field: "salesman",
+            title: "Created",
             halign: "center",
             align: "left",
             sortable: "true",
@@ -88,14 +96,6 @@
             align: "left",
             sortable: "true",
             width: 120,
-          },
-          {
-            field: "typeid",
-            title: "Channel",
-            halign: "center",
-            align: "left",
-            sortable: "true",
-            width: 100,
           },
           {
             field: "alamat",
