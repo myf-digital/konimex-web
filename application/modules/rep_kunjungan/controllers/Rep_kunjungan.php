@@ -48,17 +48,107 @@ class Rep_kunjungan extends BaseController
 		$usersession = $this->input->post("usersession");
 
         $strquery = "";
+        $strquery_sales = "";
         if (!empty($restrict_level)) {
             $restrict_query = get_salesman_restrict($usersession, $restrict_level);
             if ($restrict_query) {
                 $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+                $strquery_sales = " AND s.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
         $addquery = "";
+        $addquery_sales = "";
         if (!empty($salesmanid) && $salesmanid != 'all') {
             $addquery = " AND a.salesmanid in ('" . $salesmanid . "') ";
+            $addquery_sales = " AND s.salesmanid in ('" . $salesmanid . "') ";
         }
+
+        $hari_kerja = get_hari_kerja($start, $end);
+        $year = date('Y', strtotime($end));
+        $month = (int)date('m', strtotime($end));
+        $start_month = date('Y-m-01', strtotime($end));
+        $end_month = date('Y-m-t', strtotime($end));
+        $hk_bulan_ini = get_hari_kerja($start_month, $end_month);
+
+        $role_row = $this->db->query("SELECT value FROM ref_param_global WHERE key_param = 'key_role_sales' LIMIT 1")->row_array();
+        $role_sales = !empty($role_row['value']) 
+            ? "'" . implode("','", explode('|', $role_row['value'])) . "'" 
+            : "''";
+
+        $q_activity = $this->db->query("
+            SELECT 
+                s.salesmanid,
+                s.nama_salesman,
+                s.tipe_sales,
+                CONCAT_WS(' - ', NULLIF(s.salesmanid, ''), NULLIF(s.nama_salesman, '')) as salesman,
+                coalesce(nullif(area.nama_subarea, ''), nullif(area.nama_area, ''), nullif(area.nama_regional, ''), '') as wilayah,
+                $hari_kerja as hari_kerja,
+                coalesce(rmt.target_hari, 0) as target_hari,
+                coalesce(v.visit_dokter, 0) as visit_dokter,
+                coalesce(v.visit_apotek, 0) as visit_apotek,
+                coalesce(v.visit_others, 0) as visit_others,
+                coalesce(v.actual_call, 0) as actual_call,
+                coalesce(v.actual_extra_call, 0) as actual_extra_call
+            FROM m_sales_salesman s
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT sa.nama_area ORDER BY sa.nama_area ASC SEPARATOR '\\n') AS nama_subarea,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR '\\n') AS nama_area,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR '\\n') AS nama_regional
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_subarea sa ON msa.subareaid = sa.subareaid
+                LEFT JOIN m_area_areasite ar ON msa.areaid = ar.areaid
+                LEFT JOIN m_area_regional r ON msa.regionalid = r.regionalid
+                GROUP BY msa.salesmanid
+            ) area ON s.salesmanid = area.salesmanid
+            LEFT JOIN (
+                SELECT 
+                    salesmanid,
+                    COUNT(DISTINCT periode) AS hari_kerja
+                FROM attendance_parma
+                WHERE periode BETWEEN '$start' AND '$end'
+                GROUP BY salesmanid
+            ) att ON s.salesmanid = att.salesmanid
+            LEFT JOIN (
+                SELECT 
+                    ar.role_name,
+                    ROUND(((rmt.target_dub * rmt.target_call_visit) / NULLIF($hk_bulan_ini, 12)) * $hari_kerja) AS target_hari
+                FROM role_mapping_target rmt
+                JOIN app_role ar ON ar.role_id = rmt.role_id
+                WHERE rmt.tahun = '$year' AND rmt.bulan = '$month'
+            ) rmt ON LOWER(TRIM(s.tipe_sales)) = LOWER(TRIM(rmt.role_name))
+            LEFT JOIN (
+                SELECT 
+                    t.salesmanid,
+                    COUNT(CASE WHEN LOWER(TRIM(c.typeid)) IN ('rumah sakit', 'klinik', 'praktek pribadi') THEN 1 END) AS visit_dokter,
+                    COUNT(CASE WHEN LOWER(TRIM(c.typeid)) IN ('apotek', 'apotek panel') THEN 1 END) AS visit_apotek,
+                    COUNT(CASE WHEN c.typeid IS NULL OR LOWER(TRIM(c.typeid)) NOT IN ('rumah sakit', 'klinik', 'praktek pribadi', 'apotek', 'apotek panel') THEN 1 END) AS visit_others,
+                    COUNT(CASE WHEN rrk.user_id IS NOT NULL THEN 1 END) AS actual_call,
+                    COUNT(CASE WHEN rrk.user_id IS NULL THEN 1 END) AS actual_extra_call
+                FROM trx_visit_detailing t
+                LEFT JOIN m_customer c ON t.customerid = c.customerid
+                LEFT JOIN (
+                    SELECT DISTINCT periode, salesmanid, customerid, user_id
+                    FROM t_sales_rrk_user
+                    WHERE periode BETWEEN '$start' AND '$end'
+                ) rrk ON t.periode = rrk.periode 
+                     AND t.salesmanid = rrk.salesmanid 
+                     AND t.customerid = rrk.customerid 
+                     AND t.user_id = rrk.user_id
+                WHERE t.periode BETWEEN '$start' AND '$end'
+                GROUP BY t.salesmanid
+            ) v ON s.salesmanid = v.salesmanid
+            WHERE (s.aktif = 1 OR v.salesmanid IS NOT NULL OR att.salesmanid IS NOT NULL)
+              AND LOWER(TRIM(s.nama_salesman)) <> 'vacant'
+              AND s.tipe_sales IN ($role_sales)
+              $strquery_sales
+              $addquery_sales
+            ORDER BY s.nama_salesman ASC
+        ");
+        $lovactivity = $q_activity->result_array();
+
         $q = $this->db->query(" 
             SELECT
                 a.periode,
@@ -110,8 +200,107 @@ class Rep_kunjungan extends BaseController
 
 		$data = $q->result_array();
         $urlimage = URL_IMAGE;
+
+        $bulan_indo = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $t_start = strtotime($start);
+        $t_end = strtotime($end);
+        $str_start = date('j', $t_start) . ' ' . ($bulan_indo[(int)date('n', $t_start)] ?? date('F', $t_start)) . ' ' . date('Y', $t_start);
+        $str_end = date('j', $t_end) . ' ' . ($bulan_indo[(int)date('n', $t_end)] ?? date('F', $t_end)) . ' ' . date('Y', $t_end);
+        $periode_title = ($start == $end) ? "Periode : " . $str_start : "Periode : " . $str_start . " - " . $str_end;
 		
-		$html ='<div class="box-body"><h3>List Kunjungan</h3>';
+		        $html = '<div class="box-body" style="padding: 10px 0; white-space: normal;">';
+        $html .= '<div class="nav-tabs-custom" style="box-shadow: none; margin-bottom: 0;">';
+        $html .= '<ul class="nav nav-tabs">';
+        $html .= '<li class="active"><a href="#tab_activity_report" data-toggle="tab" style="font-weight: bold;"><i class="fa fa-bar-chart"></i> Activity Report</a></li>';
+        $html .= '<li><a href="#tab_list_kunjungan" data-toggle="tab" style="font-weight: bold;"><i class="fa fa-list"></i> List Kunjungan</a></li>';
+        $html .= '</ul>';
+        
+        $html .= '<div class="tab-content" style="padding: 15px 0;">';
+
+        $html .= '<div class="tab-pane active" id="tab_activity_report">';
+		$html .= '<div class="container-table">';
+        $html .= '<table class="table table-bordered table-condensed fixed-table">';
+		$html .= '<tbody>';
+		$html .= '<tr>';
+        $html .= '<th style="width: 50px; text-align: center;">No</th>';
+		$html .= '<th style="width: 200px; text-align: center;">Nama</th>';
+		$html .= '<th style="width: 120px; text-align: center;">Jabatan</th>';
+		$html .= '<th style="width: 180px; text-align: center;">Wilayah</th>';
+		$html .= '<th style="width: 100px; text-align: center;">Hari Kerja</th>';
+		$html .= '<th style="width: 100px; text-align: center;">Target/Hari</th>';
+		$html .= '<th style="width: 110px; text-align: center;">Visit Dokter</th>';
+		$html .= '<th style="width: 110px; text-align: center;">Visit Apotek</th>';
+		$html .= '<th style="width: 110px; text-align: center;">Visit Others</th>';
+        $html .= '<th style="width: 110px; text-align: center;">Actual Call</th>';
+        $html .= '<th style="width: 130px; text-align: center;">Actual Extra Call</th>';
+        $html .= '<th style="width: 110px; text-align: center;">Achievement</th>';
+        $html .= '<th style="width: 165px; text-align: center;">Remark</th>';
+        $html .= '</tr>';
+		$html .= '</tbody>';
+		$html .= '</table>';
+        $html .= '</div>';
+
+        $html .= '<div class="container-table-content">';
+        $html .= '<table class="table table-striped table-bordered table-condensed fixed-table">';
+        $html .= '<tbody>';
+
+        $i_act = 1;
+        if (!empty($lovactivity)) {
+            foreach ($lovactivity as $act) {
+                $total_actual = (int)$act['actual_call'] + (int)$act['actual_extra_call'];
+                $target = (int)$act['target_hari'];
+
+                if ($target > 0) {
+                    $ach_num = round(($total_actual / $target) * 100);
+                    $ach_str = $ach_num . '%';
+                } else {
+                    $ach_num = ($total_actual > 0) ? 100 : 0;
+                    $ach_str = ($total_actual > 0) ? '100%' : '0%';
+                }
+
+                if ($ach_num >= 100) {
+                    $remark = 'Target Tercapai';
+                    $remark_bg = '#C6EFCE';
+                    $remark_fg = '#006100';
+                } else if ($ach_num >= 90) {
+                    $remark = 'Hampir Tercapai';
+                    $remark_bg = '#FFEB9C';
+                    $remark_fg = '#9C6500';
+                } else {
+                    $remark = 'Perlu Follow Up';
+                    $remark_bg = '#FFC7CE';
+                    $remark_fg = '#9C0006';
+                }
+
+                $html .= '<tr>';
+                $html .= '<td style="width: 50px; text-align: center;">' . $i_act . '</td>';
+                $html .= '<td style="width: 200px; text-align: left;">' . ($act['salesman'] ?? '') . '</td>';
+                $html .= '<td style="width: 120px; text-align: center;">' . ($act['tipe_sales'] ?? '') . '</td>';
+                $html .= '<td style="width: 180px; text-align: left;">' . ($act['wilayah'] ?? '') . '</td>';
+                $html .= '<td style="width: 100px; text-align: center;">' . number_format((int)$act['hari_kerja'], 0, '.', ',') . '</td>';
+                $html .= '<td style="width: 100px; text-align: center;">' . number_format((int)$act['target_hari'], 0, '.', ',') . '</td>';
+                $html .= '<td style="width: 110px; text-align: center;">' . number_format((int)$act['visit_dokter'], 0, '.', ',') . '</td>';
+                $html .= '<td style="width: 110px; text-align: center;">' . number_format((int)$act['visit_apotek'], 0, '.', ',') . '</td>';
+                $html .= '<td style="width: 110px; text-align: center;">' . number_format((int)$act['visit_others'], 0, '.', ',') . '</td>';
+                $html .= '<td style="width: 110px; text-align: center;">' . number_format((int)$act['actual_call'], 0, '.', ',') . '</td>';
+                $html .= '<td style="width: 130px; text-align: center;">' . number_format((int)$act['actual_extra_call'], 0, '.', ',') . '</td>';
+                $html .= '<td style="width: 110px; text-align: center; font-weight: bold;">' . $ach_str . '</td>';
+                $html .= '<td style="width: 150px; text-align: center; background-color: ' . $remark_bg . '; color: ' . $remark_fg . '; font-weight: bold;">' . $remark . '</td>';
+                $html .= '</tr>';
+                $i_act++;
+            }
+        } else {
+            $html .= '<tr><td colspan="13" style="text-align: center; padding: 20px; color: #888;">Tidak ada data activity report untuk periode ini.</td></tr>';
+        }
+
+        $html .= '</tbody>';
+        $html .= '</table></div>';
+        $html .= '</div>';
+
+        $html .= '<div class="tab-pane" id="tab_list_kunjungan">';
 		$html .= '<div class="container-table">';
         $html .= '<table class="table table-bordered table-condensed fixed-table">';
 		$html .= '<tbody>';
@@ -119,7 +308,7 @@ class Rep_kunjungan extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
-		$html .= '<th style="width: 150px">TPE</th>';
+		$html .= '<th style="width: 150px">Medrep</th>';
 		$html .= '<th style="width: 150px">Outlet ID</th>';
 		$html .= '<th style="width: 200px">Outlet</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';
@@ -169,18 +358,32 @@ class Rep_kunjungan extends BaseController
 			$i++;
 		}
 		$html .= '</tbody>';
-		$html .= '</table></div></div>';
+		$html .= '</table></div>';
+        $html .= '</div>'; // End tab_list_kunjungan
+
+        $html .= '</div>'; // End tab-content
+        $html .= '</div>'; // End nav-tabs-custom
+        $html .= '</div>'; // End box-body
+
         $html .= '<script type="text/javascript">
-                $(".container-table-content").on("scroll", function() {
-                    $(".container-table").scrollLeft($(this).scrollLeft());
+                $("#tab_activity_report .container-table-content").on("scroll", function() {
+                    $("#tab_activity_report .container-table").scrollLeft($(this).scrollLeft());
                 });
-                $(".container-table").on("scroll", function() {
-                    $(".container-table-content").scrollLeft($(this).scrollLeft());
+                $("#tab_activity_report .container-table").on("scroll", function() {
+                    $("#tab_activity_report .container-table-content").scrollLeft($(this).scrollLeft());
                 });
+
+                $("#tab_list_kunjungan .container-table-content").on("scroll", function() {
+                    $("#tab_list_kunjungan .container-table").scrollLeft($(this).scrollLeft());
+                });
+                $("#tab_list_kunjungan .container-table").on("scroll", function() {
+                    $("#tab_list_kunjungan .container-table-content").scrollLeft($(this).scrollLeft());
+                });
+
                 function preview_image(parma,image,ket) {
                     let tempFile = [{
                         href: image,
-                        title: `TPE: ${parma} <br /> Keterangan: ${ket}`
+                        title: `MEDREP: ${parma} <br /> Keterangan: ${ket}`
                     }];
                     $.fancybox.open(tempFile, {
                         helpers: {
@@ -226,15 +429,28 @@ class Rep_kunjungan extends BaseController
             $addquery_sales = " AND s.salesmanid in ('" . $salesmanid . "') ";
 		    $filename = "Report_Kunjungan_" . $salesmanid . "_" . $start . "-" . $end . ".xlsx";
         }
+        
+        $hari_kerja = get_hari_kerja($start, $end);
+        $year = date('Y', strtotime($end));
+        $month = (int)date('m', strtotime($end));
+        $start_month = date('Y-m-01', strtotime($end));
+        $end_month = date('Y-m-t', strtotime($end));
+        $hk_bulan_ini = get_hari_kerja($start_month, $end_month);
+
+        $role_row = $this->db->query("SELECT value FROM ref_param_global WHERE key_param = 'key_role_sales' LIMIT 1")->row_array();
+        $role_sales = !empty($role_row['value']) 
+            ? "'" . implode("','", explode('|', $role_row['value'])) . "'" 
+            : "''";
 
         $q_activity = $this->db->query("
             SELECT 
                 s.salesmanid,
                 s.nama_salesman,
                 s.tipe_sales,
+                CONCAT_WS(' - ', NULLIF(s.salesmanid, ''), NULLIF(s.nama_salesman, '')) as salesman,
                 coalesce(nullif(area.nama_subarea, ''), nullif(area.nama_area, ''), nullif(area.nama_regional, ''), '') as wilayah,
-                coalesce(att.hari_kerja, 0) as hari_kerja,
-                coalesce(pjp.target_hari, 0) as target_hari,
+                $hari_kerja as hari_kerja,
+                coalesce(rmt.target_hari, 0) as target_hari,
                 coalesce(v.visit_dokter, 0) as visit_dokter,
                 coalesce(v.visit_apotek, 0) as visit_apotek,
                 coalesce(v.visit_others, 0) as visit_others,
@@ -244,9 +460,9 @@ class Rep_kunjungan extends BaseController
             LEFT JOIN (
                 SELECT 
                     msa.salesmanid,
-                    GROUP_CONCAT(DISTINCT sa.nama_area ORDER BY sa.nama_area ASC SEPARATOR '\n') AS nama_subarea,
-                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR '\n') AS nama_area,
-                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR '\n') AS nama_regional
+                    GROUP_CONCAT(DISTINCT sa.nama_area ORDER BY sa.nama_area ASC SEPARATOR '\\n') AS nama_subarea,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR '\\n') AS nama_area,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR '\\n') AS nama_regional
                 FROM m_salesman_area msa
                 LEFT JOIN m_area_subarea sa ON msa.subareaid = sa.subareaid
                 LEFT JOIN m_area_areasite ar ON msa.areaid = ar.areaid
@@ -263,12 +479,12 @@ class Rep_kunjungan extends BaseController
             ) att ON s.salesmanid = att.salesmanid
             LEFT JOIN (
                 SELECT 
-                    d.salesmanid,
-                    COUNT(1) AS target_hari
-                FROM req_pjp_daily_detail d
-                WHERE d.periode BETWEEN '$start' AND '$end'
-                GROUP BY d.salesmanid
-            ) pjp ON s.salesmanid = pjp.salesmanid
+                    ar.role_name,
+                    ROUND(((rmt.target_dub * rmt.target_call_visit) / NULLIF($hk_bulan_ini, 12)) * $hari_kerja) AS target_hari
+                FROM role_mapping_target rmt
+                JOIN app_role ar ON ar.role_id = rmt.role_id
+                WHERE rmt.tahun = '$year' AND rmt.bulan = '$month'
+            ) rmt ON LOWER(TRIM(s.tipe_sales)) = LOWER(TRIM(rmt.role_name))
             LEFT JOIN (
                 SELECT 
                     t.salesmanid,
@@ -290,8 +506,9 @@ class Rep_kunjungan extends BaseController
                 WHERE t.periode BETWEEN '$start' AND '$end'
                 GROUP BY t.salesmanid
             ) v ON s.salesmanid = v.salesmanid
-            WHERE (s.aktif = 1 OR v.salesmanid IS NOT NULL OR att.salesmanid IS NOT NULL OR pjp.salesmanid IS NOT NULL)
+            WHERE (s.aktif = 1 OR v.salesmanid IS NOT NULL OR att.salesmanid IS NOT NULL)
               AND LOWER(TRIM(s.nama_salesman)) <> 'vacant'
+              AND s.tipe_sales IN ($role_sales)
               $strquery_sales
               $addquery_sales
             ORDER BY s.nama_salesman ASC
@@ -521,7 +738,7 @@ class Rep_kunjungan extends BaseController
                 $remark_fg = '9C0006';
             }
 
-            $sheetAct->setCellValue('A' . $rowAct, $act['nama_salesman'] . ' (' . $act['salesmanid'] . ')');
+            $sheetAct->setCellValue('A' . $rowAct, $act['salesman']);
             $sheetAct->setCellValue('B' . $rowAct, $act['tipe_sales']);
             $sheetAct->setCellValue('C' . $rowAct, $act['wilayah']);
             $sheetAct->setCellValue('D' . $rowAct, (int)$act['hari_kerja']);

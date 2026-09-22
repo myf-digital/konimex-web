@@ -281,8 +281,10 @@ class Rep_productivity_model extends CI_Model
         $targetsResult = $this->db->query($sqlTargets, [$year, (int)$month])->result_array();
         $targetsMap = [];
         foreach ($targetsResult as $t) {
-        $targetsMap[strtolower($t['tipe_sales'])] = $t;
+            $targetsMap[strtolower($t['tipe_sales'])] = $t;
         }
+
+        $hari_kerja = get_hari_kerja($start, $end);
 
         $query = $this->db->query(" 
             SELECT 
@@ -293,16 +295,7 @@ class Rep_productivity_model extends CI_Model
                 b.salesmanid,
                 b.nama_salesman,
                 b.tipe_sales, 
-                DATE_FORMAT('$end', '%d') - FLOOR(DATE_FORMAT('$end', '%d') / 7) - (
-                    CASE 
-                        WHEN DATE_FORMAT('$end', '%d') > 15 THEN (
-                            SELECT jml_libur 
-                            FROM setup_jumlah_harilibur 
-                            WHERE tahun = '$year' AND bulan = '$month'
-                        ) 
-                        ELSE 0 
-                    END
-                ) AS 'TPE Aktif', 
+                $hari_kerja AS 'TPE Aktif', 
                 (
                     SELECT COUNT(1) 
                     FROM t_sales_absensi 
@@ -320,19 +313,12 @@ class Rep_productivity_model extends CI_Model
                 ) AS sakit, 
                 ROUND(
                     (
-                        COUNT(1) / (
-                            DATE_FORMAT('$end', '%d') - FLOOR(DATE_FORMAT('$end', '%d') / 7) - (
-                                CASE 
-                                     WHEN DATE_FORMAT('$end', '%d') > 25 THEN (
-                                        SELECT jml_libur 
-                                        FROM setup_jumlah_harilibur 
-                                        WHERE tahun = '$year' AND bulan = '$month'
-                                    ) 
-                                    ELSE 0 
-                                END
-                            )
-                        )
-                    ) * 100, 
+                        (
+                            SELECT COUNT(1) 
+                            FROM t_sales_absensi 
+                            WHERE status = 'H' AND salesmanid = a.salesmanid AND periode BETWEEN '$start' AND '$end'
+                        ) / NULLIF($hari_kerja, 0)
+                    ) * 100,
                     2
                 ) AS '%Kehadiran',
                 (

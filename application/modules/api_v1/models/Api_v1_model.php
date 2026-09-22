@@ -1819,16 +1819,9 @@ class Api_v1_model extends CI_Model
 		$tahun = (int) date('Y', $time);
 		$bulan = (int) date('n', $time);
 
-		$days_in_month = (int) date('t', $time);
-		$weekends = 0;
-		for ($d = 1; $d <= $days_in_month; $d++) {
-			$date_str = sprintf("%04d-%02d-%02d", $tahun, $bulan, $d);
-			$day_of_week = (int) date('w', strtotime($date_str));
-			if ($day_of_week == 0 || $day_of_week == 6) {
-				$weekends++;
-			}
-		}
-		$running_hk = $days_in_month - $weekends;
+		$start_month = date('Y-m-01', $time);
+		$end_month = date('Y-m-t', $time);
+		$running_hk = get_hari_kerja($start_month, $end_month);
 
 		$prev_time = strtotime("-1 month", $time);
 		$prev_tahun = (int) date('Y', $prev_time);

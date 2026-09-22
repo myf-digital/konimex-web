@@ -173,4 +173,32 @@ if (!function_exists('get_salesman_restrict')) {
         ";
     }
 }
+
+if (!function_exists('get_hari_kerja')) {
+    function get_hari_kerja($start, $end)
+    {
+        $startDate = new DateTime($start);
+        $endDate = new DateTime($end);
+        $endDate->modify('+1 day');
+
+        $workdays = 0;
+        $period = new DatePeriod($startDate, new DateInterval('P1D'), $endDate);
+        foreach ($period as $dt) {
+            if ($dt->format('N') < 6) { // Senin - Jumat
+                $workdays++;
+            }
+        }
+
+        $CI =& get_instance();
+        $q_libur = $CI->db->query("
+            SELECT COALESCE(SUM(jml_libur), 0) AS total_libur 
+            FROM setup_jumlah_harilibur 
+            WHERE (tahun = DATE_FORMAT(?, '%Y') AND bulan = DATE_FORMAT(?, '%m'))
+               OR (tahun = DATE_FORMAT(?, '%Y') AND bulan = DATE_FORMAT(?, '%m'))
+        ", [$start, $start, $end, $end])->row_array();
+
+        $total_libur = (int)($q_libur['total_libur'] ?? 0);
+        return max(0, $workdays - $total_libur);
+    }
+}
 ?>
