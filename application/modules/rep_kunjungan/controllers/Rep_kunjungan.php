@@ -278,7 +278,7 @@ class Rep_kunjungan extends BaseController
 
                 $html .= '<tr>';
                 $html .= '<td style="width: 50px; text-align: center;">' . $i_act . '</td>';
-                $html .= '<td style="width: 200px; text-align: left;">' . ($act['salesman'] ?? '') . '</td>';
+                $html .= '<td style="width: 200px; text-align: left;">' . ($act['nama_salesman'] ?? '') . '</td>';
                 $html .= '<td style="width: 120px; text-align: center;">' . ($act['tipe_sales'] ?? '') . '</td>';
                 $html .= '<td style="width: 180px; text-align: left;">' . ($act['wilayah'] ?? '') . '</td>';
                 $html .= '<td style="width: 100px; text-align: center;">' . number_format((int)$act['hari_kerja'], 0, '.', ',') . '</td>';
@@ -737,7 +737,7 @@ class Rep_kunjungan extends BaseController
                 $remark_fg = '9C0006';
             }
 
-            $sheetAct->setCellValue('A' . $rowAct, $act['salesman']);
+            $sheetAct->setCellValue('A' . $rowAct, $act['nama_salesman']);
             $sheetAct->setCellValue('B' . $rowAct, $act['tipe_sales']);
             $sheetAct->setCellValue('C' . $rowAct, $act['wilayah']);
             $sheetAct->setCellValue('D' . $rowAct, (int)$act['hari_kerja']);
