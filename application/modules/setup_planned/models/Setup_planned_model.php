@@ -543,7 +543,7 @@ class Setup_planned_model extends CI_Model
             ];
         }
 
-        $isAdmin = !empty($rolename) && strpos(strtolower($rolename), 'admin') !== false;
+        $isAdmin = true;
 
         $prepared = [];
         foreach ($grouped_data as $salesmanid => $rows) {
