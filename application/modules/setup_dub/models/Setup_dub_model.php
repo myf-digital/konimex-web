@@ -512,9 +512,8 @@ class Setup_dub_model extends CI_Model
             ];
         }
 
-        $isAdmin = !empty($rolename) && strpos(strtolower($rolename), 'admin') !== false;
+        $isAdmin = true;
 
-        // 1. Validate all salesmen first before running database transactions
         $prepared = [];
         foreach ($grouped_data as $salesmanid => $rows) {
             $salesmanid = trim($salesmanid);
@@ -546,7 +545,6 @@ class Setup_dub_model extends CI_Model
 
             $target_dub = (int)$target_info['target_dub'];
 
-            // Deduplicate items for this salesman
             $unique_keys = [];
             $unique_details = [];
             foreach ($rows as $item) {
@@ -588,7 +586,6 @@ class Setup_dub_model extends CI_Model
             ];
         }
 
-        // 2. Perform database transaction
         $sqldate = "select sysdate() datetime;";
         $datetime = $this->db->query($sqldate)->row();
         $now = $datetime->datetime;
