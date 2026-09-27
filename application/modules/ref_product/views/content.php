@@ -24,4 +24,4 @@
 </section>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/ref_product/product-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_product/product-content.js' ?>?v=1.0"></script>

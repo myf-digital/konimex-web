@@ -395,7 +395,7 @@ $(function () {
         function val(v) { return (v === null || v === undefined || v === 'null' || v === '') ? '-' : v; }
         function fmtDt(v) { return v ? v.replace('T', ' ').substring(0, 16) : '-'; }
 
-        function buildVisitTable(visits, label, headerColor) {
+        function buildVisitTable(visits, label, headerColor, tableId) {
             if (!visits || visits.length === 0) {
                 return '<p class="text-muted" style="margin:0;">Tidak ada data ' + label + '</p>';
             }
@@ -412,15 +412,15 @@ $(function () {
                     '<td><button class="btn btn-xs btn-info btn-visit-detail" data-key="' + key + '"><i class="fa fa-search"></i> Detail</button></td>' +
                     '</tr>';
             }).join('');
-            return '<table class="table table-bordered table-striped" style="margin-bottom:0;">' +
+            return '<table id="' + tableId + '" class="table table-bordered table-striped table-hover" style="width: 100%; margin-bottom:0;">' +
                 '<thead><tr>' +
-                '<th>#</th>' +
+                '<th style="width:40px;">#</th>' +
                 '<th style="background:' + headerColor + ';color:#fff;">Periode</th>' +
                 '<th style="background:' + headerColor + ';color:#fff;">Customer</th>' +
                 '<th style="background:' + headerColor + ';color:#fff;">Check In</th>' +
                 '<th style="background:' + headerColor + ';color:#fff;">Check Out</th>' +
                 '<th style="background:' + headerColor + ';color:#fff;">Keterangan</th>' +
-                '<th style="background:' + headerColor + ';color:#fff;">Action</th>' +
+                '<th style="background:' + headerColor + ';color:#fff;width:70px;">Action</th>' +
                 '</tr></thead>' +
                 '<tbody>' + rows + '</tbody>' +
                 '</table>';
@@ -430,13 +430,62 @@ $(function () {
             '<div style="padding-left:10px;padding-right:10px;">' +
             '<div class="dashboard-card">' +
             '<h5 style="margin:0 0 12px;font-weight:600;color:#00a65a;">Plan Outlet <span class="badge" style="background:#00a65a;">' + ((result.plan_outlet && result.plan_outlet.length) || 0) + '</span></h5>' +
-            '<div class="table-responsive" style="margin-bottom:24px;">' + buildVisitTable(result.plan_outlet, 'Plan Outlet', '#00a65a') + '</div>' +
+            '<div class="table-responsive" style="margin-bottom:24px;">' + buildVisitTable(result.plan_outlet, 'Plan Outlet', '#00a65a', "tbl-plan-outlet") + '</div>' +
             '<h5 style="margin:0 0 12px;font-weight:600;color:#dd4b39;">Unplan Outlet <span class="badge" style="background:#dd4b39;">' + ((result.unplan_outlet && result.unplan_outlet.length) || 0) + '</span></h5>' +
-            '<div class="table-responsive">' + buildVisitTable(result.unplan_outlet, 'Unplan Outlet', '#dd4b39') + '</div>' +
+            '<div class="table-responsive">' + buildVisitTable(result.unplan_outlet, 'Unplan Outlet', '#dd4b39', "tbl-unplan-outlet") + '</div>' +
             '</div></div>'
         );
 
-        $col.on('click', '.btn-visit-detail', function () {
+        function initTableDt(selector) {
+            if (typeof $.fn.dataTable !== "undefined" || typeof $.fn.DataTable !== "undefined") {
+                var $tbl = $(selector);
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable(selector)) {
+                $tbl.DataTable().destroy();
+                } else if ($.fn.dataTable && $.fn.dataTable.isDataTable && $.fn.dataTable.isDataTable(selector)) {
+                $tbl.dataTable().fnDestroy();
+                }
+
+                var dtOptions = {
+                bDestroy: true,
+                iDisplayLength: 10,
+                aLengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, "Semua"],
+                ],
+                aaSorting: [],
+                oLanguage: {
+                    sSearch: "<span>🔍 Cari:</span> ",
+                    sLengthMenu: "Tampilkan _MENU_ baris",
+                    sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                    sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+                    sInfoFiltered: "(difilter dari _MAX_ total data)",
+                    sZeroRecords: "Tidak ada data yang cocok",
+                    oPaginate: {
+                    sFirst: "Awal",
+                    sLast: "Akhir",
+                    sNext: "Berikutnya",
+                    sPrevious: "Sebelumnya",
+                    },
+                },
+                bAutoWidth: false,
+                };
+
+                if (typeof $tbl.DataTable === "function") {
+                $tbl.DataTable(dtOptions);
+                } else if (typeof $tbl.dataTable === "function") {
+                $tbl.dataTable(dtOptions);
+                }
+            }
+            }
+
+            if (result.plan_outlet && result.plan_outlet.length > 0) {
+            initTableDt("#tbl-plan-outlet");
+            }
+            if (result.unplan_outlet && result.unplan_outlet.length > 0) {
+            initTableDt("#tbl-unplan-outlet");
+            }
+
+            $col.off("click", ".btn-visit-detail").on("click", ".btn-visit-detail", function () {
             var r = visitStore[$(this).data('key')];
             showVisitModal(r);
         });

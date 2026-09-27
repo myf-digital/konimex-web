@@ -80,6 +80,70 @@ $(function () {
     `;
   }
 
+  function initDataTable(selector, customOptions) {
+    if (typeof $.fn.DataTable !== "undefined" || typeof $.fn.dataTable !== "undefined") {
+      let $tbl = $(selector);
+      if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable(selector)) {
+        $tbl.DataTable().destroy();
+      } else if ($.fn.dataTable && $.fn.dataTable.isDataTable && $.fn.dataTable.isDataTable(selector)) {
+        $tbl.dataTable().fnDestroy();
+      }
+
+      let dtOptions = $.extend({
+        bDestroy: true,
+        pageLength: 10,
+        iDisplayLength: 10,
+        lengthMenu: [
+          [10, 25, 50, -1],
+          [10, 25, 50, "Semua"],
+        ],
+        aLengthMenu: [
+          [10, 25, 50, -1],
+          [10, 25, 50, "Semua"],
+        ],
+        order: [],
+        aaSorting: [],
+        language: {
+          search: "<span>🔍 Cari:</span> ",
+          lengthMenu: "Tampilkan _MENU_ baris",
+          info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+          infoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+          infoFiltered: "(difilter dari _MAX_ total data)",
+          zeroRecords: "Tidak ada data yang cocok",
+          paginate: {
+            first: "Awal",
+            last: "Akhir",
+            next: "Berikutnya",
+            previous: "Sebelumnya",
+          },
+        },
+        oLanguage: {
+          sSearch: "<span>🔍 Cari:</span> ",
+          sLengthMenu: "Tampilkan _MENU_ baris",
+          sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+          sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+          sInfoFiltered: "(difilter dari _MAX_ total data)",
+          sZeroRecords: "Tidak ada data yang cocok",
+          oPaginate: {
+            sFirst: "Awal",
+            sLast: "Akhir",
+            sNext: "Berikutnya",
+            sPrevious: "Sebelumnya",
+          },
+        },
+        responsive: true,
+        autoWidth: false,
+        bAutoWidth: false,
+      }, customOptions || {});
+
+      if (typeof $tbl.DataTable === "function") {
+        $tbl.DataTable(dtOptions);
+      } else if (typeof $tbl.dataTable === "function") {
+        $tbl.dataTable(dtOptions);
+      }
+    }
+  }
+
   $periode
     .datepicker({
       format: "MM yyyy",
@@ -987,7 +1051,7 @@ $(function () {
       <div class="dashboard-col-padding">
         <div class="dashboard-card">
           <div class="table-responsive">
-            <table id="tbl-salesman" class="table table-bordered table-striped table-hover">
+            <table id="tbl-salesman" class="table table-bordered table-striped table-hover" style="width:100%;">
               <thead>
                 <tr>
                   <th>#</th>
@@ -1000,7 +1064,7 @@ $(function () {
                 </tr>
               </thead>
               <tbody>
-                ${rows || '<tr><td colspan="6" class="text-center">Tidak ada data</td></tr>'}
+                ${rows || '<tr><td colspan="7" class="text-center">Tidak ada data</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -1008,9 +1072,13 @@ $(function () {
       </div>
     `);
 
+    if (data && data.length > 0) {
+      initDataTable("#tbl-salesman");
+    }
+
     $colDetailSubarea
-      .find("#tbl-salesman tbody tr[data-salesmanid]")
-      .on("click", function () {
+      .off("click", "#tbl-salesman tbody tr[data-salesmanid]")
+      .on("click", "#tbl-salesman tbody tr[data-salesmanid]", function () {
         let salesmanid = $(this).data("salesmanid");
         let nama = $(this).data("nama");
         loadSalesmanDetail(salesmanid, nama);
@@ -1231,17 +1299,22 @@ $(function () {
       `;
     }
 
+    let visitStore = {};
+
     function buildVisitTable(visits, label, isPlanned) {
       let rowsHtml = "";
+      let prefix = isPlanned ? "planned" : "unplanned";
       if (!visits || visits.length === 0) {
         rowsHtml = `<tr><td colspan="8" class="text-center">Tidak ada data kunjungan</td></tr>`;
       } else {
         visits.forEach(function (v, idx) {
+          let key = prefix + "_" + idx;
+          visitStore[key] = v;
           let checkIn = formatDateTime(v.check_in, 16, "-");
           let checkOut = formatDateTime(v.check_out, 16, "-");
           let duration = calculateDuration(v.check_in, v.check_out);
           let customerStr = `<strong>${val(v.nama_customer)}</strong><br><small class="text-muted">${val(v.customerid)}</small>`;
-          let btnDetail = `<button class="btn btn-xs btn-primary btn-visit-detail" type="button"><i class="fa fa-info-circle"></i> Detail</button>`;
+          let btnDetail = `<button class="btn btn-xs btn-primary btn-visit-detail" type="button" data-key="${key}"><i class="fa fa-info-circle"></i> Detail</button>`;
 
           rowsHtml += `
             <tr>
@@ -1271,7 +1344,7 @@ $(function () {
             ${label} (${visits ? visits.length : 0})
           </h4>
           <div class="table-responsive">
-            <table id="${tableId}" class="table table-bordered table-striped table-hover">
+            <table id="${tableId}" class="table table-bordered table-striped table-hover" style="width:100%;">
               <thead>
                 <tr class="${theadClass}">
                   <th class="th-w-50">#</th>
@@ -1300,30 +1373,29 @@ $(function () {
     let $plannedContainer = $(plannedHtml);
     let $unplannedContainer = $(unplannedHtml);
 
-    if (r.planned && r.planned.length > 0) {
-      $plannedContainer.find(".btn-visit-detail").each(function (idx) {
-        $(this).data("visit", r.planned[idx]);
-      });
-    }
-    if (r.unplanned && r.unplanned.length > 0) {
-      $unplannedContainer.find(".btn-visit-detail").each(function (idx) {
-        $(this).data("visit", r.unplanned[idx]);
-      });
-    }
-
     $colDetailSalesman.append(buildSalesTargetHtml(r.sales_target));
     $colDetailSalesman.append(buildSpesialisTargetHtml(r.spesialis_target));
     $colDetailSalesman.append(buildProdukTargetHtml(r.produk_target));
     $colDetailSalesman.append($plannedContainer);
     $colDetailSalesman.append($unplannedContainer);
 
-    $colDetailSalesman.find(".btn-visit-detail").on("click", function (e) {
-      e.preventDefault();
-      let visitObj = $(this).data("visit");
-      if (visitObj) {
-        showVisitModal(visitObj);
-      }
-    });
+    if (r.planned && r.planned.length > 0) {
+      initDataTable("#tbl-planned-visit");
+    }
+    if (r.unplanned && r.unplanned.length > 0) {
+      initDataTable("#tbl-unplanned-visit");
+    }
+
+    $colDetailSalesman
+      .off("click", ".btn-visit-detail")
+      .on("click", ".btn-visit-detail", function (e) {
+        e.preventDefault();
+        let key = $(this).data("key");
+        let visitObj = visitStore[key];
+        if (visitObj) {
+          showVisitModal(visitObj);
+        }
+      });
   }
 
   function showVisitModal(r) {
