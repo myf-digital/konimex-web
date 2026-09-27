@@ -190,7 +190,7 @@
           </div>
           <div class="box-body" style="padding: 15px;">
             <div id="gallery-container" class="img-gallery-container"></div>
-            <div id="gallery-empty" class="alert alert-info" style="display: none; margin: 0; background-color: #f0f9ff !important; border-color: #bae6fd; color: #0369a1;">
+            <div id="gallery-empty" class="alert alert-info" style="display: none; margin: 0;">
               <i class="fa fa-info-circle"></i> Tidak ada foto dokumentasi.
             </div>
           </div>
