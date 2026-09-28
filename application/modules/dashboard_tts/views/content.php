@@ -66,6 +66,30 @@
         background: rgba(255, 255, 255, 0.45);
         border-radius: 3px;
     }
+    table.dataTable thead th.text-center,
+    table.dataTable thead td.text-center,
+    table.dataTable tbody td.text-center,
+    table.dataTable tfoot th.text-center,
+    table.dataTable tfoot td.text-center,
+    .table thead th.text-center {
+        text-align: center !important;
+    }
+    table.dataTable thead th.text-right,
+    table.dataTable thead td.text-right,
+    table.dataTable tbody td.text-right,
+    table.dataTable tfoot th.text-right,
+    table.dataTable tfoot td.text-right,
+    .table thead th.text-right {
+        text-align: right !important;
+    }
+    table.dataTable thead th.text-left,
+    table.dataTable thead td.text-left,
+    table.dataTable tbody td.text-left,
+    table.dataTable tfoot th.text-left,
+    table.dataTable tfoot td.text-left,
+    .table thead th.text-left {
+        text-align: left !important;
+    }
 </style>
 
 <section class="content-header">

@@ -638,7 +638,7 @@ let DashboardTTS = (function ($) {
                         html += '<td class="text-center">' + (i + 1) + '</td>';
                         html += '<td><code>' + row.salesmanid + '</code></td>';
                         html += '<td><strong>' + (row.nama_salesman || '-') + '</strong></td>';
-                        html += '<td>' + (row.nama_subarea || row.nama_area || '-') + '</td>';
+                        html += '<td style="max-width: 300px;">' + (row.nama_subarea || row.nama_area || '-') + '</td>';
                         html += '<td class="text-center"><strong>' + row.hari_kerja + '</strong> HK</td>';
                         html += '<td class="text-center">' + formatNumber(row.hadir) + '</td>';
                         html += '<td class="text-center">' + formatNumber(row.izin) + '</td>';
@@ -689,7 +689,7 @@ let DashboardTTS = (function ($) {
                         html += '<td class="text-center">' + (i + 1) + '</td>';
                         html += '<td><code>' + row.salesmanid + '</code></td>';
                         html += '<td><strong>' + (row.nama_salesman || '-') + '</strong></td>';
-                        html += '<td>' + (row.nama_subarea || row.nama_area || '-') + '</td>';
+                        html += '<td style="max-width: 300px;">' + (row.nama_subarea || row.nama_area || '-') + '</td>';
                         html += '<td class="text-center"><strong>' + formatNumber(row.target_visit) + '</strong></td>';
                         html += '<td class="text-center">' + formatNumber(row.call_act) + '</td>';
                         html += '<td class="text-center">' + formatNumber(row.extra_call) + '</td>';
@@ -983,7 +983,7 @@ let DashboardTTS = (function ($) {
                         html += '<td><code>' + row.salesmanid + '</code></td>';
                         html += '<td><strong>' + (row.nama_salesman || '-') + '</strong></td>';
                         html += '<td><span class="label label-primary">' + (row.tipe_sales || '-') + '</span></td>';
-                        html += '<td>' + (row.nama_subarea || row.nama_area || '-') + '</td>';
+                        html += '<td style="max-width: 300px;">' + (row.nama_subarea || row.nama_area || '-') + '</td>';
                         html += '<td><strong>' + (row.nama_supervisor || '-') + '</strong>' + (row.supervisorid ? ' <br><small class="text-muted">' + row.supervisorid + '</small>' : '') + '</td>';
                         html += '<td class="text-center"><button type="button" class="btn btn-xs btn-info btn-detail-tpe" data-sid="' + row.salesmanid + '" data-sname="' + row.nama_salesman + '" title="Lihat Detail Log Aktivitas TPE"><i class="fa fa-user"></i> Detail</button></td>';
                         html += '</tr>';
