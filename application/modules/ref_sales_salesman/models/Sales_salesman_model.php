@@ -432,7 +432,9 @@ class Sales_salesman_model extends CI_Model
                 rmt.target_hk,
                 rmt.target_dub,
                 rmt.target_call_dub,
-                rmt.target_call_visit
+                rmt.target_call_visit,
+				rmt.target_rerata_call,
+				rmt.target_join_activity
             FROM app_role r
             JOIN role_mapping_target rmt ON r.role_id = rmt.role_id
             WHERE r.role_name = ?

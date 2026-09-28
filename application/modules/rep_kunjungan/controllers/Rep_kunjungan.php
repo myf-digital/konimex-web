@@ -114,7 +114,7 @@ class Rep_kunjungan extends BaseController
             LEFT JOIN (
                 SELECT 
                     ar.role_name,
-                    ROUND(((rmt.target_dub * rmt.target_call_visit) / NULLIF($hk_bulan_ini, 12)) * $hari_kerja) AS target_hari
+                    ROUND((rmt.target_call_visit / NULLIF($hk_bulan_ini, 20)) * $hari_kerja) AS target_hari
                 FROM role_mapping_target rmt
                 JOIN app_role ar ON ar.role_id = rmt.role_id
                 WHERE rmt.tahun = '$year' AND rmt.bulan = '$month'
@@ -480,7 +480,7 @@ class Rep_kunjungan extends BaseController
             LEFT JOIN (
                 SELECT 
                     ar.role_name,
-                    ROUND(((rmt.target_dub * rmt.target_call_visit) / NULLIF($hk_bulan_ini, 12)) * $hari_kerja) AS target_hari
+                    ROUND((rmt.target_call_visit / NULLIF($hk_bulan_ini, 20)) * $hari_kerja) AS target_hari
                 FROM role_mapping_target rmt
                 JOIN app_role ar ON ar.role_id = rmt.role_id
                 WHERE rmt.tahun = '$year' AND rmt.bulan = '$month'

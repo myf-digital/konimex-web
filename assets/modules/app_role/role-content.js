@@ -221,7 +221,7 @@
           if (!detail || (detail && !detail.target_dub)) {
             body.append(
               `<tr>
-                <td colspan="5" style="text-align:center;color:#999;padding:12px;">
+                <td colspan="7" style="text-align:center;color:#999;padding:12px;">
                   Belum ada mapping target.
                 </td>
               </tr>`,
@@ -240,6 +240,8 @@
                 <td class="td-detail">${detail.target_dub || 0}</td>
                 <td class="td-detail">${detail.target_call_dub || 0}</td>
                 <td class="td-detail">${detail.target_call_visit || 0}</td>
+                <td class="td-detail">${detail.target_rerata_call || 0}</td>
+                <td class="td-detail">${detail.target_join_activity || 0}</td>
               </tr>
             `);
           }
@@ -251,7 +253,7 @@
           if (!history || (history && history.length == 0)) {
             bodyHistory.append(
               `<tr>
-                <td colspan="5" style="text-align:center;color:#999;padding:12px;">
+                <td colspan="7" style="text-align:center;color:#999;padding:12px;">
                   Belum ada history mapping target.
                 </td>
               </tr>`,
@@ -271,6 +273,8 @@
                   <td class="td-detail">${h.target_dub || 0}</td>
                   <td class="td-detail">${h.target_call_dub || 0}</td>
                   <td class="td-detail">${h.target_call_visit || 0}</td>
+                  <td class="td-detail">${h.target_rerata_call || 0}</td>
+                  <td class="td-detail">${h.target_join_activity || 0}</td>
                 </tr>
               `);
             });

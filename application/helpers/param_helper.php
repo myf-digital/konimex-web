@@ -177,6 +177,21 @@ if (!function_exists('get_salesman_restrict')) {
 if (!function_exists('get_hari_kerja')) {
     function get_hari_kerja($start, $end)
     {
+        $CI =& get_instance();
+
+        $role_mapping = $CI->db->query("
+            SELECT target_hk 
+            FROM role_mapping_target 
+            WHERE tahun = DATE_FORMAT(?, '%Y') 
+              AND (bulan = DATE_FORMAT(?, '%m') OR bulan = DATE_FORMAT(?, '%c'))
+              AND target_hk IS NOT NULL AND target_hk > 0
+            LIMIT 1
+        ", [$start, $start, $start])->row_array();
+
+        if (!empty($role_mapping) && !empty($role_mapping['target_hk'])) {
+            return (int) $role_mapping['target_hk'];
+        }
+
         $startDate = new DateTime($start);
         $endDate = new DateTime($end);
         $endDate->modify('+1 day');
@@ -189,7 +204,6 @@ if (!function_exists('get_hari_kerja')) {
             }
         }
 
-        $CI =& get_instance();
         $q_libur = $CI->db->query("
             SELECT COALESCE(SUM(jml_libur), 0) AS total_libur 
             FROM setup_jumlah_harilibur 

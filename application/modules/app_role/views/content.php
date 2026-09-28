@@ -44,7 +44,7 @@
 				
 				<ul class="nav nav-tabs" id="mappingTabs" role="tablist" style="margin-bottom: 15px;">
 					<li class="active">
-						<a id="role-tab" data-toggle="tab" href="#role-target" role="tab" aria-controls="role-target" aria-selected="true">Mapping Target DUB</a>
+						<a id="role-tab" data-toggle="tab" href="#role-target" role="tab" aria-controls="role-target" aria-selected="true">Mapping DUB Target</a>
 					</li>
 					<li>
 						<a id="spesialis-tab" data-toggle="tab" href="#spesialis-target" role="tab" aria-controls="spesialis-target" aria-selected="false">Mapping Spesialis Target</a>
@@ -63,10 +63,12 @@
 									<thead>
 										<tr class="bg-f5">
 											<th class="th-detail">Periode</th>
-											<th class="th-detail">Target HK (Hari Kerja)</th>
+											<th class="th-detail">HKE (Hari Kerja Efektif)</th>
 											<th class="th-detail">Target DUB</th>
-											<th class="th-detail">Target Call DUB</th>
-											<th class="th-detail">Target Call Visit</th>
+											<th class="th-detail">Rerata EF. CALL</th>
+											<th class="th-detail">Target Call</th>
+											<th class="th-detail">Rerata CALL</th>
+											<th class="th-detail">HV / JA</th>
 										</tr>
 									</thead>
 									<tbody id="detail-list-body">
@@ -82,10 +84,12 @@
 									<thead>
 										<tr class="bg-f5">
 											<th class="th-detail">Periode</th>
-											<th class="th-detail">Target HK (Hari Kerja)</th>
+											<th class="th-detail">HKE (Hari Kerja Efektif)</th>
 											<th class="th-detail">Target DUB</th>
-											<th class="th-detail">Target Call DUB</th>
-											<th class="th-detail">Target Call Visit</th>
+											<th class="th-detail">Rerata EF. CALL</th>
+											<th class="th-detail">Target Call</th>
+											<th class="th-detail">Rerata CALL</th>
+											<th class="th-detail">HV / JA</th>
 										</tr>
 									</thead>
 									<tbody id="history-list-body">
@@ -178,4 +182,4 @@
 </div>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/app_role/role-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/app_role/role-content.js' ?>?v=1.0"></script>

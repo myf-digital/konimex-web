@@ -40,8 +40,12 @@ class Rekap_dub_target_model extends CI_Model
                 rdv.tipe_sales,
                 SUM(rdv.actual_call_planned) AS actual_call_planned,
                 SUM(rdv.actual_call_visit) AS actual_call_visit,
-                IFNULL(t.target_dub * t.target_call_dub, 0) AS target_dub,
-                IFNULL(t.target_call_visit * t.target_hk, 0) AS target_call_visit
+                IFNULL(t.target_dub, 0) AS target_dub,
+                IFNULL(t.target_hk, 0) AS target_hk,
+                IFNULL(t.target_call_dub, 0) AS target_call_dub,
+                IFNULL(t.target_call_visit, 0) AS target_call_visit,
+                IFNULL(t.target_rerata_call, 0) AS target_rerata_call,
+                IFNULL(t.target_join_activity, 0) AS target_join_activity
             FROM rekap_dub_visit rdv
             LEFT JOIN (
                 SELECT 
@@ -49,7 +53,9 @@ class Rekap_dub_target_model extends CI_Model
                     SUM(rmt.target_dub) AS target_dub,
                     SUM(rmt.target_hk) AS target_hk,
                     SUM(rmt.target_call_dub) AS target_call_dub,
-                    SUM(rmt.target_call_visit) AS target_call_visit
+                    SUM(rmt.target_call_visit) AS target_call_visit,
+					SUM(target_rerata_call) AS target_rerata_call,
+					SUM(target_join_activity) AS target_join_activity
                 FROM role_mapping_target rmt
                 JOIN app_role ar ON ar.role_id = rmt.role_id
                 WHERE CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) BETWEEN ? AND ?

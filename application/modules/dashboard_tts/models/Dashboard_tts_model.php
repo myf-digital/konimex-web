@@ -145,7 +145,7 @@ class Dashboard_tts_model extends CI_Model
 
         $sql_target_call = "
             SELECT 
-                IFNULL(SUM(rmt.target_call_visit * IFNULL(NULLIF(rmt.target_hk, 0), {$hk})), 0) AS total_target
+                IFNULL(SUM(rmt.target_call_visit), 0) AS total_target
             FROM m_sales_salesman mss
             LEFT JOIN app_role ar ON ar.role_name = mss.tipe_sales
             LEFT JOIN role_mapping_target rmt ON rmt.role_id = ar.role_id
@@ -457,6 +457,23 @@ class Dashboard_tts_model extends CI_Model
         $total_sudah_detailing = (int)($res_join['total_sudah_detailing'] ?? 0);
         $total_reject          = (int)($res_join['total_reject'] ?? 0);
 
+        $sql_target_join = "
+            SELECT 
+                IFNULL(SUM(rmt.target_join_activity), 0) AS total_target
+            FROM m_sales_salesman mss
+            LEFT JOIN app_role ar ON ar.role_name = mss.tipe_sales
+            LEFT JOIN role_mapping_target rmt ON rmt.role_id = ar.role_id
+                AND CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) = ?
+            WHERE mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_mss}
+        ";
+        $res_target_join = $this->db->query($sql_target_join, ["{$year}-{$month}"])->row_array();
+        $target_join = (int)($res_target_join['total_target'] ?? 0);
+        if ($target_join == 0) {
+            $target_join = $total_salesman * 1;
+        }
+        $pct_join = $target_join > 0 ? round(($total_approved / $target_join) * 100, 1) : 0;
+
         // TPE Aktif
         $valid_roles = $this->get_role_sales();
         $filter_salesman_tpe = $this->build_salesman_filter($data, 's', 'salesmanid');
@@ -556,6 +573,9 @@ class Dashboard_tts_model extends CI_Model
                 'join_activity' => [
                     'title' => 'Total Supervisi Join Activity',
                     'actual' => $total_join,
+                    'actual_approved' => $total_approved,
+                    'target' => $target_join,
+                    'percentage' => $pct_join,
                     'pending' => $total_pending,
                     'approved' => $total_approved,
                     'sudah_detailing' => $total_sudah_detailing,
@@ -669,8 +689,7 @@ class Dashboard_tts_model extends CI_Model
         $sql_call_tgt = "
             SELECT 
                 LPAD(rmt.bulan, 2, '0') AS bulan,
-                SUM(rmt.target_call_visit * IFNULL(NULLIF(rmt.target_hk, 0), 0)) AS target_call_fixed,
-                SUM(rmt.target_call_visit) AS target_call_per_day
+                SUM(rmt.target_call_visit) AS target_call
             FROM m_sales_salesman mss
             JOIN app_role ar ON ar.role_name = mss.tipe_sales
             JOIN role_mapping_target rmt ON rmt.role_id = ar.role_id
@@ -683,13 +702,7 @@ class Dashboard_tts_model extends CI_Model
         $call_tgt_map = [];
         foreach ($res_call_tgt as $r) {
             $m = $r['bulan'];
-            $fixed = (float)$r['target_call_fixed'];
-            if ($fixed > 0) {
-                $call_tgt_map[$m] = (int)$fixed;
-            } else {
-                $per_day = (float)$r['target_call_per_day'];
-                $call_tgt_map[$m] = (int)round($per_day * ($hk_map[$m] ?? 20));
-            }
+            $call_tgt_map[$m] = (int)$r['target_call'];
         }
 
         // User Wajib
@@ -1061,7 +1074,7 @@ class Dashboard_tts_model extends CI_Model
             LEFT JOIN (
                 SELECT 
                     ar.role_name,
-                    SUM(rmt.target_call_visit * IFNULL(NULLIF(rmt.target_hk, 0), {$hk})) AS target_call
+                    SUM(rmt.target_call_visit) AS target_call
                 FROM role_mapping_target rmt
                 JOIN app_role ar ON ar.role_id = rmt.role_id
                 WHERE CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) = '{$year}-{$month}'
@@ -1112,7 +1125,6 @@ class Dashboard_tts_model extends CI_Model
         $filter_salesman_tvd = $this->build_salesman_filter($data, 'tvd', 'salesmanid');
         $filter_salesman_mss = $this->build_salesman_filter($data, 'mss', 'salesmanid');
 
-        // Actual Detailing per Spesialisasi & Tipe
         $sql_act = "
             SELECT 
                 rp.spesialisasi_id,
@@ -1141,7 +1153,6 @@ class Dashboard_tts_model extends CI_Model
             $act_map[$key]['actual'] += (int)$r['total_actual'];
         }
 
-        // Target Spesialisasi
         $sql_tgt = "
             SELECT 
                 mst.spesialisasi_id,

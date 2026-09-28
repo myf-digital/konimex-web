@@ -377,7 +377,9 @@ let DashboardTTS = (function ($) {
 
                     let jn = kpi.join_activity;
                     if (jn) {
-                        $('#kpi_join_act').text(formatNumber(jn.actual));
+                        $('#kpi_join_pct').text((jn.percentage || 0) + '%');
+                        $('#kpi_join_act').text(formatNumber(jn.actual_approved || jn.approved || jn.actual || 0));
+                        $('#kpi_join_tgt').text(formatNumber(jn.target || 0));
                         let rincianJoin = '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Pending: <b>' + formatNumber(jn.pending || 0) + '</b></span></div>' +
                                           '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Approved: <b>' + formatNumber(jn.approved || 0) + '</b></span></div>' +
                                           '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Sudah Detailing: <b>' + formatNumber(jn.sudah_detailing || 0) + '</b></span></div>' +

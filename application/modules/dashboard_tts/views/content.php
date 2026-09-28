@@ -272,8 +272,8 @@
             <div class="small-box bg-maroon">
                 <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div style="min-width: 80px; margin-right: 6px;">
-                        <h3 id="kpi_join_act">0</h3>
-                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Join Visit</p>
+                        <h3 id="kpi_join_pct">0%</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Join Visit: <span id="kpi_join_act">0</span> / <span id="kpi_join_tgt">0</span></p>
                     </div>
                     <div id="kpi_join_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
                         -

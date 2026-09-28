@@ -273,7 +273,9 @@ class Rep_productivity_model extends CI_Model
                 rmt.target_dub,
                 rmt.target_hk,
                 rmt.target_call_dub,
-                rmt.target_call_visit
+                rmt.target_call_visit,
+				rmt.target_rerata_call,
+				rmt.target_join_activity
             FROM role_mapping_target rmt
             JOIN app_role ar ON ar.role_id = rmt.role_id
             WHERE rmt.tahun = ? AND rmt.bulan = ?
@@ -447,19 +449,33 @@ class Rep_productivity_model extends CI_Model
         foreach ($result as $k => $row) {
             $role = strtolower($row['tipe_sales']);
 
-            $target_dub_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_dub'] : 0;
-            $target_hk_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_hk'] : 0;
-            $target_call_dub_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_call_dub'] : 0;
-            $target_call_visit_val = isset($targetsMap[$role]) ? (float)$targetsMap[$role]['target_call_visit'] : 0;
+            if (isset($targetsMap[$role])) {
+                $target_dub_val = (float)$targetsMap[$role]['target_dub'];
+                $target_hk_val = (float)$targetsMap[$role]['target_hk'];
+                $target_call_dub_val = (float)$targetsMap[$role]['target_call_dub'];
+                $target_call_visit_val = (float)$targetsMap[$role]['target_call_visit'];
+                $target_rerata_call_val = (float)$targetsMap[$role]['target_rerata_call'];
+                $target_join_activity_val = (float)$targetsMap[$role]['target_join_activity'];
 
-            $target_planned = $target_dub_val * $target_call_dub_val;
-            $target_visit = $target_hk_val * $target_call_visit_val;
+                $target_planned = $target_dub_val * $target_call_dub_val;
+                $target_visit = $target_call_visit_val;
+                if (empty($target_visit)) {
+                    $target_visit = $target_rerata_call_val * $target_hk_val;
+                }
 
-            $result[$k]['target_dub'] = $target_planned;
-            $result[$k]['target_visit'] = $target_visit;
+                $result[$k]['target_dub'] = $target_planned;
+                $result[$k]['target_visit'] = $target_visit;
 
-            $result[$k]['efektif_dub'] = $target_dub_val > 0 ? round($row['call_dub'] / $target_dub_val, 2) : 0;
-            $result[$k]['rata_rata_visit'] = $target_hk_val > 0 ? round($row['call_visit'] / $target_hk_val, 2) : 0;
+                $result[$k]['efektif_dub'] = $target_dub_val > 0 ? round($row['call_dub'] / $target_dub_val, 2) : 0;
+                $result[$k]['rata_rata_visit'] = $target_hk_val > 0 ? round($row['call_visit'] / $target_hk_val, 2) : 0;
+                $result[$k]['target_join_activity'] = $target_join_activity_val;
+            } else {
+				$result[$k]['target_dub'] = 0;
+				$result[$k]['target_visit'] = 0;
+				$result[$k]['efektif_dub'] = 0;
+				$result[$k]['rata_rata_visit'] = 0;
+                $result[$k]['target_join_activity'] = 0;
+            }
         }
 
         return $result;

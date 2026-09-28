@@ -46,13 +46,26 @@ class Role_model extends CI_Model
 
             if (!empty($target_data['periode'])) {
                 $periode = explode("-", $target_data['periode']);
+                $tahun = $periode[0] ?? date('Y');
+                $bulan = $periode[1] ?? date('m');
+                $start_m = "{$tahun}-{$bulan}-01";
+                $end_m   = date("Y-m-t", strtotime($start_m));
+                $hk_default = get_hari_kerja($start_m, $end_m);
+
                 $data_target['role_id'] = $roleId;
-                $data_target['tahun'] = $periode[0] ?? date('Y');
-                $data_target['bulan'] = $periode[1] ?? date('m');
-                $data_target['target_dub'] = $target_data['target_dub'];
-                $data_target['target_hk'] = $target_data['target_hk'];
-                $data_target['target_call_dub'] = $target_data['target_call_dub'];
-                $data_target['target_call_visit'] = $target_data['target_call_visit'];
+                $data_target['tahun'] = $tahun;
+                $data_target['bulan'] = $bulan;
+                $data_target['target_dub'] = !empty($target_data['target_dub']) ? $target_data['target_dub'] : 0;
+                $data_target['target_hk'] = !empty($target_data['target_hk']) ? $target_data['target_hk'] : $hk_default;
+                $data_target['target_call_dub'] = !empty($target_data['target_call_dub']) ? $target_data['target_call_dub'] : 0;
+                $data_target['target_call_visit'] = !empty($target_data['target_call_visit']) ? $target_data['target_call_visit'] : 0;
+                
+                $rerata_call = !empty($target_data['target_rerata_call']) ? $target_data['target_rerata_call'] : 0;
+                if (empty($rerata_call) && !empty($data_target['target_call_visit']) && !empty($data_target['target_hk'])) {
+                    $rerata_call = round($data_target['target_call_visit'] / $data_target['target_hk'], 2);
+                }
+                $data_target['target_rerata_call'] = $rerata_call;
+                $data_target['target_join_activity'] = !empty($target_data['target_join_activity']) ? (int)$target_data['target_join_activity'] : 1;
                 $insert_target = $this->db->insert('role_mapping_target', $data_target);
                 if (!$insert_target) {
                     $this->db->trans_rollback();
@@ -126,13 +139,26 @@ class Role_model extends CI_Model
 
         if (!empty($target_data['periode'])) {
             $periode = explode("-", $target_data['periode']);
+            $tahun = $periode[0] ?? date('Y');
+            $bulan = $periode[1] ?? date('m');
+            $start_m = "{$tahun}-{$bulan}-01";
+            $end_m   = date("Y-m-t", strtotime($start_m));
+            $hk_default = get_hari_kerja($start_m, $end_m);
+
             $data_target['role_id'] = $roleId;
-            $data_target['tahun'] = $periode[0] ?? date('Y');
-            $data_target['bulan'] = $periode[1] ?? date('m');
-            $data_target['target_dub'] = $target_data['target_dub'];
-            $data_target['target_hk'] = $target_data['target_hk'];
-            $data_target['target_call_dub'] = $target_data['target_call_dub'];
-            $data_target['target_call_visit'] = $target_data['target_call_visit'];
+            $data_target['tahun'] = $tahun;
+            $data_target['bulan'] = $bulan;
+            $data_target['target_dub'] = !empty($target_data['target_dub']) ? $target_data['target_dub'] : 0;
+            $data_target['target_hk'] = !empty($target_data['target_hk']) ? $target_data['target_hk'] : $hk_default;
+            $data_target['target_call_dub'] = !empty($target_data['target_call_dub']) ? $target_data['target_call_dub'] : 0;
+            $data_target['target_call_visit'] = !empty($target_data['target_call_visit']) ? $target_data['target_call_visit'] : 0;
+            
+            $rerata_call = !empty($target_data['target_rerata_call']) ? $target_data['target_rerata_call'] : 0;
+            if (empty($rerata_call) && !empty($data_target['target_call_visit']) && !empty($data_target['target_hk'])) {
+                $rerata_call = round($data_target['target_call_visit'] / $data_target['target_hk'], 2);
+            }
+            $data_target['target_rerata_call'] = $rerata_call;
+            $data_target['target_join_activity'] = !empty($target_data['target_join_activity']) ? (int)$target_data['target_join_activity'] : 1;
 
             $target = $this->db->query("
                 select *
@@ -215,7 +241,9 @@ class Role_model extends CI_Model
                 rmt.target_dub,
                 rmt.target_hk,
                 rmt.target_call_dub,
-                rmt.target_call_visit
+                rmt.target_call_visit,
+                rmt.target_rerata_call,
+                rmt.target_join_activity
             from app_role a
             left join role_mapping_target rmt on a.role_id = rmt.role_id
                 and rmt.tahun = ?
@@ -240,7 +268,9 @@ class Role_model extends CI_Model
                 rmt.target_dub,
                 rmt.target_hk,
                 rmt.target_call_dub,
-                rmt.target_call_visit
+                rmt.target_call_visit,
+                rmt.target_rerata_call,
+                rmt.target_join_activity
             from app_role a
             join role_mapping_target rmt on a.role_id = rmt.role_id
             where (rmt.tahun <> ? or rmt.bulan <> ?) and a.role_id = ?", [date('Y'), date('m'), $data['role_id']])->result();

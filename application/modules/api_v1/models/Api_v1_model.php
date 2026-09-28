@@ -1883,7 +1883,16 @@ class Api_v1_model extends CI_Model
 		$target_map = [];
 		if (!empty($role_ids)) {
 			$sql_targets = "
-				select role_id, tahun, bulan, target_dub, target_hk, target_call_dub, target_call_visit
+				select
+					role_id,
+					tahun,
+					bulan,
+					target_dub,
+					target_hk,
+					target_call_dub,
+					target_call_visit,
+					target_rerata_call,
+					target_join_activity
 				from role_mapping_target
 				where role_id in (" . implode(",", $role_ids) . ")
 				  and (
@@ -1909,6 +1918,8 @@ class Api_v1_model extends CI_Model
 			$target_dub = null;
 			$target_call_dub = null;
 			$target_call_visit = null;
+			$target_rerata_call = null;
+			$target_join_activity = null;
 			$is_new_target = false;
 			
 			if (!empty($target_map[$curr_key])) {
@@ -1916,6 +1927,8 @@ class Api_v1_model extends CI_Model
 				$target_dub = $t['target_dub'];
 				$target_call_dub = $t['target_call_dub'];
 				$target_call_visit = $t['target_call_visit'];
+				$target_rerata_call = $t['target_rerata_call'];
+				$target_join_activity = $t['target_join_activity'];
 			} else {
 				$is_new_target = true;
 				if (!empty($target_map[$prev_key])) {
@@ -1923,10 +1936,15 @@ class Api_v1_model extends CI_Model
 					$target_dub = $t['target_dub'];
 					$target_call_dub = $t['target_call_dub'];
 					$target_call_visit = $t['target_call_visit'];
+					$target_rerata_call = $t['target_rerata_call'];
+					$target_join_activity = $t['target_join_activity'];
 				} else {
+					$hk = get_hari_kerja($start_month, $end_month);
 					$target_dub = !empty($dataRoles[$role_name]['target_dub']) ? $dataRoles[$role_name]['target_dub'] : 0;
 					$target_call_dub = 2.5;
-					$target_call_visit = 8;
+					$target_call_visit = 8 * $hk;
+					$target_rerata_call = 8;
+					$target_join_activity = 1;
 				}
 			}
 			
@@ -1937,7 +1955,13 @@ class Api_v1_model extends CI_Model
 				$target_call_dub = 2.5;
 			}
 			if (empty($target_call_visit)) {
-				$target_call_visit = 8;
+				$target_call_visit = 8 * $hk;
+			}
+			if (empty($target_rerata_call)) {
+				$target_rerata_call = 8;
+			}
+			if (empty($target_join_activity)) {
+				$target_join_activity = 1;
 			}
 
 			if ($is_new_target) {
@@ -1949,6 +1973,8 @@ class Api_v1_model extends CI_Model
 					'target_hk' => $running_hk,
 					'target_call_dub' => $target_call_dub,
 					'target_call_visit' => $target_call_visit,
+					'target_rerata_call' => $target_rerata_call,
+					'target_join_activity' => $target_join_activity,
 					'created_by' => $createby,
 					'created_date' => date('Y-m-d H:i:s'),
 				];

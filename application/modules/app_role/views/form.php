@@ -52,31 +52,39 @@
                         <div id="mapping_target_group" style="display: none;">
                             <div class="row" style="margin-left: 0; margin-right: 0; margin-bottom: 20px;">
                                 <div class="col-md-6" style="border: 1px solid #eee; padding: 15px; border-radius: 4px;">
-                                    <h5 class="font-weight-bold h5-title" style="margin-top: 0; margin-bottom: 15px;">Mapping Target DUB</h5>
+                                    <h5 class="font-weight-bold h5-title" style="margin-top: 0; margin-bottom: 15px;">Mapping DUB  Target</h5>
                                     <input type="hidden" name="periode" id="periode" value="<?= date('Y-m') ?>">
                                     <div class="table-responsive table-detail">
                                         <table class="table table-striped table-hover" style="margin-bottom: 0;">
                                             <thead>
                                                 <tr class="bg-f5">
-                                                    <th class="th-detail">Target HK (Hari Kerja)</th>
+											        <th class="th-detail">HKE</th>
                                                     <th class="th-detail">Target DUB</th>
-                                                    <th class="th-detail">Target Call DUB</th>
-                                                    <th class="th-detail">Target Call Visit</th>
+                                                    <th class="th-detail">Rerata EF. CALL</th>
+                                                    <th class="th-detail">Target Call</th>
+                                                    <th class="th-detail">Rerata CALL</th>
+                                                    <th class="th-detail">HV / JA</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="form_body">
                                                 <tr>
                                                     <td>
-                                                        <input type="text" class="form-control" name="target_hk" id="target_hk" placeholder="Target HK">
+                                                        <input type="text" class="form-control" name="target_hk" id="target_hk" placeholder="Target HKE">
                                                     </td>
                                                     <td>
                                                         <input type="text" class="form-control" name="target_dub" id="target_dub" placeholder="Target DUB">
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control" name="target_call_dub" id="target_call_dub" placeholder="Target Call DUB">
+                                                        <input type="text" class="form-control" name="target_call_dub" id="target_call_dub" placeholder="Rerata EF. Call">
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control" name="target_call_visit" id="target_call_visit" placeholder="Target Call Visit">
+                                                        <input type="text" class="form-control" name="target_call_visit" id="target_call_visit" placeholder="Target Call">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="target_rerata_call" id="target_rerata_call" placeholder="Rerata CALL">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="target_join_activity" id="target_join_activity" placeholder="HA / JA">
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -146,7 +154,7 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/app_role/role-form.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/app_role/role-form.js' ?>?v=1.0"></script>
 <style>
     .select2-container--default .select2-selection--multiple .select2-selection__rendered li.select2-selection__choice:not(.select2-selection__choice-counter) {
         display: none !important;

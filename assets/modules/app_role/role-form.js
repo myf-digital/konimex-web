@@ -125,11 +125,37 @@
       checkMappingTargetVisibility();
     });
 
+    function calculateRerataCall() {
+      let hkVal = $("#target_hk").val().trim();
+      let callVisitVal = $("#target_call_visit").val().trim();
+
+      if (hkVal !== "" && callVisitVal !== "") {
+        let hk = parseFloat(hkVal);
+        let callVisit = parseFloat(callVisitVal);
+        if (!isNaN(hk) && hk > 0 && !isNaN(callVisit)) {
+          let rerata = callVisit / hk;
+          let formatted = Number.isInteger(rerata)
+            ? rerata
+            : parseFloat(rerata.toFixed(2));
+          $("#target_rerata_call").val(formatted);
+        } else {
+          $("#target_rerata_call").val("");
+        }
+      } else {
+        $("#target_rerata_call").val("");
+      }
+    }
+
     $("#target_hk, #target_dub").on("input", function () {
       this.value = this.value.replace(/[^0-9]/g, "");
+      if (this.id === "target_hk") {
+        calculateRerataCall();
+      }
     });
 
-    $("#target_call_dub, #target_call_visit").on("input", function () {
+    $(
+      "#target_call_dub, #target_call_visit, #target_rerata_call, #target_join_activity",
+    ).on("input", function () {
       let val = this.value;
       val = val.replace(/[^0-9.]/g, "");
       let parts = val.split(".");
@@ -137,6 +163,9 @@
         val = parts[0] + "." + parts.slice(1).join("");
       }
       this.value = val;
+      if (this.id === "target_call_visit") {
+        calculateRerataCall();
+      }
     });
 
     // Targets Initialization
@@ -258,6 +287,11 @@
             $("#target_dub").val(detail.target_dub || "");
             $("#target_call_dub").val(detail.target_call_dub || "");
             $("#target_call_visit").val(detail.target_call_visit || "");
+            $("#target_rerata_call").val(detail.target_rerata_call || "");
+            $("#target_join_activity").val(detail.target_join_activity || "");
+            if (!detail.target_rerata_call) {
+              calculateRerataCall();
+            }
           }
           // Load specific role targets
           loadSpesialisasiTargets();

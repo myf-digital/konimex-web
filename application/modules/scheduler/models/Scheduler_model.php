@@ -65,7 +65,9 @@ class Scheduler_model extends CI_Model
 				rmt.target_dub,
 				rmt.target_hk,
 				rmt.target_call_dub,
-				rmt.target_call_visit
+				rmt.target_call_visit,
+				rmt.target_rerata_call,
+				rmt.target_join_activity
 			FROM m_sales_salesman mss
 			LEFT JOIN app_role ar ON ar.role_name = mss.tipe_sales
 			LEFT JOIN role_mapping_target rmt ON rmt.role_id = ar.role_id
@@ -135,9 +137,13 @@ class Scheduler_model extends CI_Model
 				'target_dub' => (int)$sm['target_dub'],
 				'target_hk' => (int)$sm['target_hk'],
 				'target_call_dub' => (int)$sm['target_call_dub'] * (int)$sm['target_dub'],
-				'target_call_visit' => (int)$sm['target_call_visit'] * (int)$sm['target_hk'],
+				'target_call_visit' => (int)$sm['target_call_visit'],
+				'target_rerata_call' => (int)$sm['target_rerata_call'],
+				'target_join_activity' => (int)$sm['target_join_activity'],
 				'actual_call_planned' => 0,
-				'actual_call_visit' => 0
+				'actual_call_visit' => 0,
+				'actual_rerata_call' => 0,
+				'actual_join_activity' => 0
 			];
 			$this->db->replace('rekap_dub_visit', $targetRow);
 
