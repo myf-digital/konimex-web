@@ -6,6 +6,10 @@ class Dashboard_tts extends BaseController
     public function __construct()
     {
         parent::__construct();
+        $username = strtolower($_SESSION['user_login'] ?? $_SESSION['user_credential'] ?? '');
+        if ($username !== 'hartanto') {
+            return redirect('app_dashboard');
+        }
         $this->load->model('Dashboard_tts_model', 'dashboard_tts');
     }
 
