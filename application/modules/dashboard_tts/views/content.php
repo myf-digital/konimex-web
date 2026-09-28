@@ -1,3 +1,73 @@
+<style type="text/css">
+    #section_kpi_cards {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+    #section_kpi_cards > .col-lg-3 {
+        padding-left: 10px;
+        padding-right: 10px;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+    #section_kpi_cards .small-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        min-height: 125px;
+        margin-bottom: 0;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #section_kpi_cards .small-box .inner {
+        padding: 12px 15px 8px 15px;
+        flex: 1;
+    }
+    #section_kpi_cards .small-box .inner h3 {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+        white-space: nowrap;
+    }
+    #section_kpi_cards .small-box .inner p {
+        font-size: 13px;
+        margin-bottom: 3px;
+        font-weight: 500;
+    }
+    #section_kpi_cards .small-box .icon {
+        top: 10px;
+        right: 12px;
+        font-size: 55px;
+        opacity: 0.25;
+        transition: all .3s linear;
+    }
+    #section_kpi_cards .small-box:hover .icon {
+        font-size: 60px;
+        opacity: 0.35;
+    }
+    #section_kpi_cards .small-box .small-box-footer {
+        padding: 5px 0;
+        font-size: 12px;
+        background: rgba(0,0,0,0.12);
+    }
+    #section_kpi_cards .small-box .small-box-footer:hover {
+        background: rgba(0,0,0,0.22);
+    }
+    #kpi_kategori_rincian::-webkit-scrollbar,
+    #kpi_user_rincian::-webkit-scrollbar {
+        width: 3px;
+    }
+    #kpi_kategori_rincian::-webkit-scrollbar-thumb,
+    #kpi_user_rincian::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.45);
+        border-radius: 3px;
+    }
+</style>
+
 <section class="content-header">
     <h1>
         Dashboard TTS
@@ -25,9 +95,9 @@
                                 <label>Periode</label>
                                 <div class="input-group date">
                                     <div class="input-group-addon"><span class="glyphicon glyphicon-th"></span></div>
-                            <input id="periode" type="text" class="form-control datepicker" readonly>
-                        </div>
-                    </div>
+                                    <input id="periode" type="text" class="form-control datepicker" readonly>
+                                </div>
+                            </div>
                             <div class="form-group col-md-2 col-sm-6">
                                 <label>Regional</label>
                                 <select id="filter_regionalid" name="regionalid" class="form-control select2">
@@ -80,11 +150,16 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-green">
-                <div class="inner">
-                    <h3 id="kpi_absensi_pct">0%</h3>
-                    <p>Kehadiran TPE: <span id="kpi_absensi_hadir">0</span> / <span id="kpi_absensi_total">0</span> HK</p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_absensi_pct">0%</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Kehadiran: <span id="kpi_absensi_hadir">0</span> / <span id="kpi_absensi_total">0</span> HK</p>
+                    </div>
+                    <div id="kpi_absensi_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
+                <div class="icon" style="opacity: 0.12;">
                     <i class="fa fa-calendar-check-o"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="absensi">
@@ -95,11 +170,16 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-aqua">
-                <div class="inner">
-                    <h3 id="kpi_ec_pct">0%</h3>
-                    <p>EC: <span id="kpi_ec_act">0</span> / Call: <span id="kpi_call_act">0</span></p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_ec_pct">0%</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Performa: <span id="kpi_call_total">0</span> / <span id="kpi_call_plan">0</span></p>
+                    </div>
+                    <div id="kpi_call_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
+                <div class="icon" style="opacity: 0.12;">
                     <i class="fa fa-phone"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="call">
@@ -110,12 +190,17 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-purple">
-                <div class="inner">
-                    <h3 id="kpi_kata_pct">0%</h3>
-                    <p>Kat A: <span id="kpi_kata_act">0</span> / Tgt: <span id="kpi_kata_tgt">0</span></p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_kategori_total">0</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Ketercapaian Kategori</p>
+                    </div>
+                    <div id="kpi_kategori_rincian" style="flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 6px; font-size: 11px; line-height: 1.25; text-align: right; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
-                    <i class="fa fa-star"></i>
+                <div class="icon" style="opacity: 0.12;">
+                    <i class="fa fa-building-o"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="kat_a">
                     Lihat Breakdown <i class="fa fa-arrow-circle-right"></i>
@@ -125,11 +210,16 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-yellow">
-                <div class="inner">
-                    <h3 id="kpi_user_pct">0%</h3>
-                    <p>User Wajib: <span id="kpi_user_act">0</span> / Tgt: <span id="kpi_user_tgt">0</span></p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_user_pct">0%</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">User Wajib: <span id="kpi_user_act">0</span> / <span id="kpi_user_tgt">0</span></p>
+                    </div>
+                    <div id="kpi_user_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
+                <div class="icon" style="opacity: 0.12;">
                     <i class="fa fa-user-md"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="user_wajib">
@@ -140,11 +230,16 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-teal">
-                <div class="inner">
-                    <h3 id="kpi_detailing_pct">0%</h3>
-                    <p>Detailing: <span id="kpi_detailing_act">0</span> / Tgt: <span id="kpi_detailing_tgt">0</span></p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_detailing_pct">0%</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Detailing Produk: <span id="kpi_detailing_act">0</span> / <span id="kpi_detailing_tgt">0</span></p>
+                    </div>
+                    <div id="kpi_detailing_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
+                <div class="icon" style="opacity: 0.12;">
                     <i class="fa fa-medkit"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="detailing_produk">
@@ -155,11 +250,16 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-red">
-                <div class="inner">
-                    <h3 id="kpi_selling_pct">0%</h3>
-                    <p>Selling: <span id="kpi_selling_act">0</span> / Tgt: <span id="kpi_selling_tgt">0</span></p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_selling_pct">0%</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Selling Produk: <span id="kpi_selling_act">0</span> / <span id="kpi_selling_tgt">0</span></p>
+                    </div>
+                    <div id="kpi_selling_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
+                <div class="icon" style="opacity: 0.12;">
                     <i class="fa fa-shopping-cart"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="selling_produk">
@@ -170,11 +270,16 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-maroon">
-                <div class="inner">
-                    <h3 id="kpi_join_act">0</h3>
-                    <p>Total Supervisi Join Activity</p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_join_act">0</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Join Visit</p>
+                    </div>
+                    <div id="kpi_join_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
+                <div class="icon" style="opacity: 0.12;">
                     <i class="fa fa-users"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="join_activity">
@@ -185,12 +290,17 @@
 
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-navy">
-                <div class="inner">
-                    <h3>TTS</h3>
-                    <p>Drilldown Matriks & Report</p>
+                <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="min-width: 80px; margin-right: 6px;">
+                        <h3 id="kpi_tpe_act">0</h3>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">TPE Aktif</p>
+                    </div>
+                    <div id="kpi_tpe_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
+                        -
+                    </div>
                 </div>
-                <div class="icon">
-                    <i class="fa fa-pie-chart"></i>
+                <div class="icon" style="opacity: 0.12;">
+                    <i class="fa fa-users"></i>
                 </div>
                 <a href="javascript:void(0)" class="small-box-footer kpi-card-trigger" data-kpi="all">
                     Eksplorasi Data <i class="fa fa-arrow-circle-right"></i>

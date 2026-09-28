@@ -33,7 +33,8 @@ let DashboardTTS = (function ($) {
     function init() {
         if ($.fn.select2) {
             $('.select2').select2({
-                width: '100%'
+                width: '100%',
+                allowClear: true
             });
         }
 
@@ -48,14 +49,15 @@ let DashboardTTS = (function ($) {
             .datepicker("setDate", new Date());
 
         bindEvents();
+        loadSalesman();
         loadAllDashboardData();
     }
 
     function bindEvents() {
         $('#filter_regionalid').on('change', function () {
             let regionalid = $(this).val();
-            $('#filter_areaid').html('<option value="">Semua Area ASM</option>');
-            $('#filter_subareaid').html('<option value="">Semua ASS/MRC</option>');
+            $('#filter_areaid').html('<option value="">Semua Area</option>');
+            $('#filter_subareaid').html('<option value="">Semua Sub Area</option>');
             $('#filter_salesmanid').html('<option value="">Semua TPE</option>');
 
             if (regionalid) {
@@ -65,7 +67,7 @@ let DashboardTTS = (function ($) {
                     dataType: 'json',
                     data: { regionalid: regionalid },
                     success: function (res) {
-                        let options = '<option value="">Semua Area ASM --</option>';
+                        let options = '<option value="">Semua Area</option>';
                         if (res && res.length > 0) {
                             $.each(res, function (i, item) {
                                 options += '<option value="' + item.areaid + '">' + item.nama_area + '</option>';
@@ -79,8 +81,8 @@ let DashboardTTS = (function ($) {
 
         $('#filter_areaid').on('change', function () {
             let areaid = $(this).val();
-            $('#filter_subareaid').html('<option value="">Semua ASS/MRC --</option>');
-            $('#filter_salesmanid').html('<option value="">Semua TPE --</option>');
+            $('#filter_subareaid').html('<option value="">Semua Sub Area</option>');
+            $('#filter_salesmanid').html('<option value="">Semua TPE</option>');
 
             if (areaid) {
                 $.ajax({
@@ -89,7 +91,7 @@ let DashboardTTS = (function ($) {
                     dataType: 'json',
                     data: { areaid: areaid },
                     success: function (res) {
-                        let options = '<option value="">Semua ASS/MRC --</option>';
+                        let options = '<option value="">Semua Sub Area</option>';
                         if (res && res.length > 0) {
                             $.each(res, function (i, item) {
                                 options += '<option value="' + item.subareaid + '">' + item.nama_subarea + '</option>';
@@ -102,22 +104,7 @@ let DashboardTTS = (function ($) {
         });
 
         $('#filter_subareaid').on('change', function () {
-            let params = getFilterParams();
-            $.ajax({
-                url: common.baseURL("dashboard_tts/get_salesman_by_filter"),
-                type: 'POST',
-                dataType: 'json',
-                data: params,
-                success: function (res) {
-                    let options = '<option value="">Semua TPE --</option>';
-                    if (res && res.length > 0) {
-                        $.each(res, function (i, item) {
-                            options += '<option value="' + item.salesmanid + '">' + item.nama_salesman + ' (' + item.salesmanid + ')</option>';
-                        });
-                    }
-                    $('#filter_salesmanid').html(options).trigger('change.select2');
-                }
-            });
+            loadSalesman();
         });
 
         $('#btn_apply_filter').on('click', function () {
@@ -126,18 +113,12 @@ let DashboardTTS = (function ($) {
 
         $('#btn_reset_filter').on('click', function () {
             $('#form_filter_dashboard')[0].reset();
-            let d = new Date();
-            let curYear = d.getFullYear();
-            let curMonth = ('0' + (d.getMonth() + 1)).slice(-2);
-
-            $('#filter_tahun').val(curYear);
-            $('#filter_bulan').val(curMonth);
+            $('#periode').datepicker("setDate", new Date());
             $('#filter_regionalid').val('');
-            $('#filter_areaid').html('<option value="">Semua Area ASM --</option>');
-            $('#filter_subareaid').html('<option value="">Semua ASS/MRC --</option>');
-            $('#filter_salesmanid').html('<option value="">Semua TPE --</option>');
-
+            $('#filter_areaid').html('<option value="">Semua Area</option>');
+            $('#filter_subareaid').html('<option value="">Semua Sub Area</option>');
             $('.select2').trigger('change.select2');
+            loadSalesman();
             loadAllDashboardData();
         });
 
@@ -186,9 +167,13 @@ let DashboardTTS = (function ($) {
     }
 
     function getFilterParams() {
+        let dateObj = dtPeriode.datepicker('getDate') || new Date();
+        let tahun = dateObj.getFullYear();
+        let bulan = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+
         return {
-            tahun: $('#filter_tahun').val(),
-            bulan: $('#filter_bulan').val(),
+            tahun: tahun,
+            bulan: bulan,
             regionalid: $('#filter_regionalid').val(),
             areaid: $('#filter_areaid').val(),
             subareaid: $('#filter_subareaid').val(),
@@ -227,6 +212,25 @@ let DashboardTTS = (function ($) {
         return '<span class="label ' + cls + '" style="font-size: 11px;">' + pct + '%</span>';
     }
 
+    function loadSalesman() {
+        let params = getFilterParams();
+        $.ajax({
+            url: common.baseURL("dashboard_tts/get_salesman_by_filter"),
+            type: 'POST',
+            dataType: 'json',
+            data: params,
+            success: function (res) {
+                let options = '<option value="">Semua TPE</option>';
+                if (res && res.length > 0) {
+                    $.each(res, function (i, item) {
+                        options += '<option value="' + item.salesmanid + '">' + item.nama_salesman + ' (' + item.salesmanid + ')</option>';
+                    });
+                }
+                $('#filter_salesmanid').html(options).trigger('change.select2');
+            }
+        });
+    }
+
     function loadKpiSummary() {
         let params = getFilterParams();
         $('#loading_kpi').show();
@@ -242,61 +246,132 @@ let DashboardTTS = (function ($) {
                     let kpi = res.kpi;
 
                     let abs = kpi.absensi;
-                    $('#kpi_absensi_pct').text(abs.percentage + '%');
-                    $('#kpi_absensi_hadir').text(formatNumber(abs.actual));
-                    $('#kpi_absensi_total').text(formatNumber(abs.total));
-                    $('#prog_absensi').css('width', Math.min(abs.percentage, 100) + '%');
-                    $('#badge_absensi')
-                        .attr('class', 'badge-achievement ' + getBadgeClass(abs.percentage))
-                        .text(getBadgeText(abs.percentage));
+                    if (abs) {
+                        $('#kpi_absensi_pct').text(abs.percentage + '%');
+                        $('#kpi_absensi_hadir').text(formatNumber(abs.actual));
+                        $('#kpi_absensi_total').text(formatNumber(abs.total));
+                        
+                        let absHtml = '';
+                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Hadir: <b>' + formatNumber(abs.actual_fisik || 0) + '</b></div>';
+                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Izin: <b>' + formatNumber(abs.izin || abs.hf || 0) + '</b></div>';
+                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Sakit: <b>' + formatNumber(abs.sakit || 0) + '</b></div>';
+                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Cuti: <b>' + formatNumber(abs.cuti || 0) + '</b></div>';
+                        $('#kpi_absensi_rincian').html(absHtml);
+                    }
 
                     let cal = kpi.call;
-                    $('#kpi_ec_pct').text(cal.percentage_ec + '%');
-                    $('#kpi_ec_act').text(formatNumber(cal.actual_ec));
-                    $('#kpi_call_act').text(formatNumber(cal.actual_call));
-                    $('#prog_ec').css('width', Math.min(cal.percentage_ec, 100) + '%');
-                    $('#badge_ec')
-                        .attr('class', 'badge-achievement ' + getBadgeClass(cal.percentage_ec))
-                        .text(cal.percentage_ec + '% EC');
+                    if (cal) {
+                        let totalRealisasiCall = cal.actual !== undefined ? cal.actual : ((cal.actual_call || 0) + (cal.extra_call || 0));
+                        $('#kpi_ec_pct').text(cal.percentage_ec + '%');
+                        $('#kpi_call_total').text(formatNumber(totalRealisasiCall));
+                        $('#kpi_call_plan').text(formatNumber(cal.planned_call));
 
-                    let kata = kpi.kategori_a;
-                    $('#kpi_kata_pct').text(kata.percentage + '%');
-                    $('#kpi_kata_act').text(formatNumber(kata.actual));
-                    $('#kpi_kata_tgt').text(formatNumber(kata.target));
-                    $('#prog_kata').css('width', Math.min(kata.percentage, 100) + '%');
-                    $('#badge_kata')
-                        .attr('class', 'badge-achievement ' + getBadgeClass(kata.percentage))
-                        .text(getBadgeText(kata.percentage));
+                        let calHtml = '';
+                        calHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Call: <b>' + formatNumber(cal.actual_call || 0) + '</b></div>';
+                        calHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Extra Call: <b>' + formatNumber(cal.extra_call || cal.actual_ec || 0) + '</b></div>';
+                        $('#kpi_call_rincian').html(calHtml);
+                    }
+
+                    let kat = kpi.kategori;
+                    let totalOutletKat = kat.total_outlet !== undefined ? kat.total_outlet : (kat.actual || 0);
+                    $('#kpi_kategori_total').text(formatNumber(totalOutletKat));
+
+                    if (Array.isArray(kat.rincian) && kat.rincian.length > 0) {
+                        let rincianHtml = '';
+                        kat.rincian.forEach(function (item) {
+                            let typeName = item.typeid || 'Lainnya';
+                            let count = formatNumber(item.total_outlet);
+                            rincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' + typeName + ': ' + count + '">' + typeName + ': <b>' + count + '</b></div>';
+                        });
+                        $('#kpi_kategori_rincian').html(rincianHtml).attr('title', kat.rincian_text || '');
+                    } else {
+                        $('#kpi_kategori_rincian').html('<div>-</div>').attr('title', '');
+                    }
 
                     let usr = kpi.user_wajib;
                     $('#kpi_user_pct').text(usr.percentage + '%');
                     $('#kpi_user_act').text(formatNumber(usr.actual));
                     $('#kpi_user_tgt').text(formatNumber(usr.target));
-                    $('#prog_user').css('width', Math.min(usr.percentage, 100) + '%');
-                    $('#badge_user')
-                        .attr('class', 'badge-achievement ' + getBadgeClass(usr.percentage))
-                        .text(getBadgeText(usr.percentage));
+
+                    if (Array.isArray(usr.rincian) && usr.rincian.length > 0) {
+                        let userRincianHtml = '';
+                        let top4 = usr.rincian.slice(0, 4);
+                        top4.forEach(function (item) {
+                            let spName = item.nama_spesialisasi || 'Lainnya';
+                            let act = formatNumber(item.actual);
+                            let tgt = formatNumber(item.target);
+                            userRincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + spName + ': ' + act + ' / ' + tgt + '">' + spName + ': <b>' + act + '</b>/' + tgt + '</div>';
+                        });
+                        $('#kpi_user_rincian').html(userRincianHtml).attr('title', usr.rincian_text || '');
+                    } else {
+                        $('#kpi_user_rincian').html('<div>-</div>').attr('title', '');
+                    }
 
                     let det = kpi.detailing_produk;
                     $('#kpi_detailing_pct').text(det.percentage + '%');
                     $('#kpi_detailing_act').text(formatNumber(det.actual));
                     $('#kpi_detailing_tgt').text(formatNumber(det.target));
-                    $('#prog_detailing').css('width', Math.min(det.percentage, 100) + '%');
-                    $('#badge_detailing')
-                        .attr('class', 'badge-achievement ' + getBadgeClass(det.percentage))
-                        .text(getBadgeText(det.percentage));
+
+                    if (Array.isArray(det.rincian) && det.rincian.length > 0) {
+                        let detRincianHtml = '';
+                        let top4Det = det.rincian.slice(0, 4);
+                        top4Det.forEach(function (item) {
+                            let prdName = item.nama_produk || item.product_id || 'Produk';
+                            let act = formatNumber(item.actual);
+                            let tgt = formatNumber(item.target);
+                            detRincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + prdName + ': ' + act + ' / ' + tgt + '">' + prdName + ': <b>' + act + '</b>/' + tgt + '</div>';
+                        });
+                        $('#kpi_detailing_rincian').html(detRincianHtml).attr('title', det.rincian_text || '');
+                    } else {
+                        $('#kpi_detailing_rincian').html('<div>-</div>').attr('title', '');
+                    }
 
                     let sel = kpi.selling_produk;
                     $('#kpi_selling_pct').text(sel.percentage + '%');
                     $('#kpi_selling_act').text(formatNumber(sel.actual));
                     $('#kpi_selling_tgt').text(formatNumber(sel.target));
-                    $('#prog_selling').css('width', Math.min(sel.percentage, 100) + '%');
-                    $('#badge_selling')
-                        .attr('class', 'badge-achievement ' + getBadgeClass(sel.percentage))
-                        .text(getBadgeText(sel.percentage));
+
+                    if (Array.isArray(sel.rincian) && sel.rincian.length > 0) {
+                        let selRincianHtml = '';
+                        let top4Sel = sel.rincian.slice(0, 4);
+                        top4Sel.forEach(function (item) {
+                            let prdName = item.nama_produk || item.product_id || 'Produk';
+                            let act = formatNumber(item.actual);
+                            let tgt = formatNumber(item.target);
+                            selRincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + prdName + ': ' + act + ' / ' + tgt + '">' + prdName + ': <b>' + act + '</b>/' + tgt + '</div>';
+                        });
+                        $('#kpi_selling_rincian').html(selRincianHtml).attr('title', sel.rincian_text || '');
+                    } else {
+                        $('#kpi_selling_rincian').html('<div>-</div>').attr('title', '');
+                    }
 
                     let jn = kpi.join_activity;
-                    $('#kpi_join_act').text(formatNumber(jn.actual));
+                    if (jn) {
+                        $('#kpi_join_act').text(formatNumber(jn.actual));
+                        let joinHtml = '';
+                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Pending: <b>' + formatNumber(jn.pending || 0) + '</b></div>';
+                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Approved: <b>' + formatNumber(jn.approved || 0) + '</b></div>';
+                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Sudah Detailing: <b>' + formatNumber(jn.sudah_detailing || 0) + '</b></div>';
+                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Reject: <b>' + formatNumber(jn.reject || 0) + '</b></div>';
+                        $('#kpi_join_rincian').html(joinHtml);
+                    }
+
+                    let tpe = kpi.tpe;
+                    if (tpe) {
+                        $('#kpi_tpe_act').text(formatNumber(tpe.actual !== undefined ? tpe.actual : (tpe.total || 0)));
+                        if (Array.isArray(tpe.rincian) && tpe.rincian.length > 0) {
+                            let tpeHtml = '';
+                            let top4Tpe = tpe.rincian.slice(0, 4);
+                            top4Tpe.forEach(function (item) {
+                                let tName = item.tipe_sales || 'Lainnya';
+                                let count = formatNumber(item.total || 0);
+                                tpeHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + tName + ': ' + count + '">' + tName + ': <b>' + count + '</b></div>';
+                            });
+                            $('#kpi_tpe_rincian').html(tpeHtml);
+                        } else {
+                            $('#kpi_tpe_rincian').html('<div>-</div>');
+                        }
+                    }
                 }
             },
             error: function () {
@@ -621,7 +696,7 @@ let DashboardTTS = (function ($) {
                 if (res) {
                     if (res.salesman) {
                         let sls = res.salesman;
-                        $('#modal_tpe_area').text('• Regional: ' + (sls.nama_regional || '-') + ' | Area: ' + (sls.nama_area || '-') + ' | ASS/MRC: ' + (sls.nama_subarea || '-'));
+                        $('#modal_tpe_area').text('• Regional: ' + (sls.nama_regional || '-') + ' | Area: ' + (sls.nama_area || '-') + ' | Sub Area: ' + (sls.nama_subarea || '-'));
                     }
 
                     let htmlK = '';
@@ -672,7 +747,8 @@ let DashboardTTS = (function ($) {
                     if (res.absensi && res.absensi.length > 0) {
                         $('#count_log_absensi').text(res.absensi.length);
                         $.each(res.absensi, function (i, r) {
-                            let statusCls = r.status === 'H' ? 'label-success' : (r.status === 'S' ? 'label-warning' : 'label-danger');
+                            let st = r.status_computed || r.status;
+                            let statusCls = st === 'H' ? 'label-success' : (st === 'S' ? 'label-warning' : (st === 'C' ? 'label-info' : 'label-danger'));
                             let imgIn = r.foto_checkin ? '<a href="' + r.foto_checkin + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto In</a>' : '-';
                             let imgOut = r.foto_checkout ? '<a href="' + r.foto_checkout + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto Out</a>' : '-';
                             htmlA += '<tr>';
