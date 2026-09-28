@@ -17,6 +17,7 @@ class Dashboard_tts extends BaseController
 
     public function load_kpi()
     {
+        session_write_close();
         $data = param_input();
         $result = $this->dashboard_tts->load_summary_kpi($data);
         responseJSON($result);
@@ -24,6 +25,7 @@ class Dashboard_tts extends BaseController
 
     public function load_trend()
     {
+        session_write_close();
         $data = param_input();
         $result = $this->dashboard_tts->load_trend_monthly($data);
         responseJSON($result);
@@ -31,6 +33,7 @@ class Dashboard_tts extends BaseController
 
     public function get_area_by_regional()
     {
+        session_write_close();
         $regionalid = $this->input->post('regionalid');
         $result = $this->dashboard_tts->get_area_list($regionalid);
         responseJSON($result);
@@ -38,6 +41,7 @@ class Dashboard_tts extends BaseController
 
     public function get_subarea_by_area()
     {
+        session_write_close();
         $areaid = $this->input->post('areaid');
         $result = $this->dashboard_tts->get_subarea_list($areaid);
         responseJSON($result);
@@ -45,34 +49,111 @@ class Dashboard_tts extends BaseController
 
     public function get_salesman_by_filter()
     {
+        session_write_close();
         $data = param_input();
         $result = $this->dashboard_tts->get_salesman_list($data);
         responseJSON($result);
     }
 
+    public function load_breakdown_absensi()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_absensi($data);
+        responseJSON($result);
+    }
+
+    public function load_breakdown_call()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_call($data);
+        responseJSON($result);
+    }
+
+    public function load_breakdown_kategori()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_kategori($data);
+        responseJSON($result);
+    }
+
+    public function load_breakdown_user_wajib()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_user_wajib($data);
+        responseJSON($result);
+    }
+
+    public function load_breakdown_detailing()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_detailing($data);
+        responseJSON($result);
+    }
+
+    public function load_breakdown_selling()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_selling($data);
+        responseJSON($result);
+    }
+
+    public function load_breakdown_join_visit()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_join_visit($data);
+        responseJSON($result);
+    }
+
+    public function get_detail_join_visit()
+    {
+        session_write_close();
+        $req_no = $this->input->post('req_no') ?? $this->input->get('req_no');
+        $result = $this->dashboard_tts->get_detail_join_visit($req_no);
+        responseJSON($result);
+    }
+
+    public function load_breakdown_tpe_aktif()
+    {
+        session_write_close();
+        $data = param_input();
+        $result = $this->dashboard_tts->load_breakdown_tpe_aktif($data);
+        responseJSON($result);
+    }
+
     public function load_breakdown_area()
     {
+        session_write_close();
         $data = param_input();
-        $result = $this->dashboard_tts->load_breakdown_area($data);
+        $result = $this->dashboard_tts->load_breakdown_absensi($data);
         responseJSON($result);
     }
 
     public function load_breakdown_channel_spesialis()
     {
+        session_write_close();
         $data = param_input();
-        $result = $this->dashboard_tts->load_breakdown_channel_spesialis($data);
+        $result = $this->dashboard_tts->load_breakdown_user_wajib($data);
         responseJSON($result);
     }
 
     public function load_breakdown_produk()
     {
+        session_write_close();
         $data = param_input();
-        $result = $this->dashboard_tts->load_breakdown_produk($data);
+        $result = $this->dashboard_tts->load_breakdown_detailing($data);
         responseJSON($result);
     }
 
     public function load_detail_tpe()
     {
+        session_write_close();
         $data = param_input();
         $result = $this->dashboard_tts->load_detail_tpe_activity($data);
         responseJSON($result);

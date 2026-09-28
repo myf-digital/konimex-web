@@ -21,46 +21,6 @@ class Dashboard_tts_model extends CI_Model
         return array_values(array_unique($valid_roles));
     }
 
-    private function build_salesman_filter($data, $table_alias = 'a', $salesman_col = 'salesmanid', $include_role_check = true)
-    {
-        $where = "";
-        $col = !empty($table_alias) ? "{$table_alias}.{$salesman_col}" : $salesman_col;
-
-        if (!empty($data['salesmanid'])) {
-            if (is_array($data['salesmanid'])) {
-                $escaped = array_map([$this->db, 'escape_str'], $data['salesmanid']);
-                $where .= " AND {$col} IN ('" . implode("','", $escaped) . "')";
-            } else {
-                $where .= " AND {$col} = '" . $this->db->escape_str($data['salesmanid']) . "'";
-            }
-        } elseif (!empty($data['subareaid'])) {
-            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE subareaid = '" . $this->db->escape_str($data['subareaid']) . "')";
-        } elseif (!empty($data['areaid'])) {
-            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE areaid = '" . $this->db->escape_str($data['areaid']) . "')";
-        } elseif (!empty($data['regionalid'])) {
-            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE regionalid = '" . $this->db->escape_str($data['regionalid']) . "')";
-        } else {
-            if (!empty($data['restrict_level']) && !empty($data['usersession'])) {
-                $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
-                if ($restrict_query) {
-                    $where .= " AND {$col} IN ({$restrict_query})";
-                }
-            }
-        }
-
-        if ($include_role_check) {
-            $valid_roles = $this->get_role_sales();
-            $role_in = "";
-            if (!empty($valid_roles)) {
-                $escaped_roles = array_map([$this->db, 'escape_str'], $valid_roles);
-                $role_in = " AND tipe_sales IN ('" . implode("','", $escaped_roles) . "')";
-            }
-            $where .= " AND {$col} IN (SELECT salesmanid FROM m_sales_salesman WHERE aktif = 1 AND LOWER(nama_salesman) NOT LIKE '%vacant%' {$role_in})";
-        }
-
-        return $where;
-    }
-
     public function load_summary_kpi($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
@@ -71,10 +31,6 @@ class Dashboard_tts_model extends CI_Model
         $filter_salesman_ap  = $this->build_salesman_filter($data, 'ap', 'salesmanid');
         $filter_salesman_tsa = $this->build_salesman_filter($data, 'tsa', 'salesmanid');
         $filter_salesman_rrk = $this->build_salesman_filter($data, 'tr', 'salesmanid');
-        $filter_salesman_dub = $this->build_salesman_filter($data, 'rdv', 'salesmanid');
-        $filter_salesman_prd = $this->build_salesman_filter($data, 'rpv', 'salesmanid');
-        $filter_salesman_spc = $this->build_salesman_filter($data, 'rsv', 'salesmanid');
-        $filter_salesman_gen = $this->build_salesman_filter($data, 'a', 'salesmanid');
 
         // Kehadiran
         $sql_absensi = "
@@ -238,7 +194,7 @@ class Dashboard_tts_model extends CI_Model
         }
         $rincian_kategori_text = !empty($rincian_parts) ? implode(' | ', $rincian_parts) : '-';
 
-        // User Wajib (Target dari m_sales_spesialis_target, Actual dari trx_visit_detailing -> ref_professional -> ref_spesialisasi)
+        // User Wajib
         $filter_salesman_tvd = $this->build_salesman_filter($data, 'tvd', 'salesmanid');
 
         $sql_user_wajib_act = "
@@ -293,7 +249,6 @@ class Dashboard_tts_model extends CI_Model
             $total_tgt_user_wajib += (int)$r['total_target'];
         }
 
-        // Gabungkan semua spesialisasi unik
         $all_spec_ids = array_unique(array_merge(array_keys($act_spec_map), array_keys($tgt_spec_map)));
         $combined_specs = [];
         foreach ($all_spec_ids as $spId) {
@@ -310,7 +265,6 @@ class Dashboard_tts_model extends CI_Model
             ];
         }
 
-        // Urutkan berdasarkan actual terbanyak lalu target terbanyak
         usort($combined_specs, function ($a, $b) {
             if ($b['actual'] === $a['actual']) {
                 return $b['target'] <=> $a['target'];
@@ -318,7 +272,6 @@ class Dashboard_tts_model extends CI_Model
             return $b['actual'] <=> $a['actual'];
         });
 
-        // Ambil top 4 rincian saja untuk ditampilkan di card
         $top4_specs = array_slice($combined_specs, 0, 4);
 
         $top4_text_parts = [];
@@ -331,26 +284,7 @@ class Dashboard_tts_model extends CI_Model
         $tgt_user_wajib = $total_tgt_user_wajib;
         $pct_user_wajib = $tgt_user_wajib > 0 ? round(($act_user_wajib / $tgt_user_wajib) * 100, 1) : 0;
 
-        $sql_dub = "
-            SELECT 
-                IFNULL(SUM(rdv.actual_call_planned), 0) AS actual_kat,
-                IFNULL(SUM(t.target_dub), 0) AS target_kat
-            FROM rekap_dub_visit rdv
-            LEFT JOIN (
-                SELECT 
-                    ar.role_name,
-                    SUM(rmt.target_dub * rmt.target_call_dub) AS target_dub
-                FROM role_mapping_target rmt
-                JOIN app_role ar ON ar.role_id = rmt.role_id
-                WHERE CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) = ?
-                GROUP BY ar.role_name
-            ) t ON t.role_name = rdv.tipe_sales
-            WHERE rdv.tanggal BETWEEN ? AND ?
-            {$filter_salesman_dub}
-        ";
-        $res_dub = $this->db->query($sql_dub, ["{$year}-{$month}", $start_date, $end_date])->row_array();
-
-        // Produk (Detailing & Selling: Target dari m_sales_produk_target, Actual dari trx_visit_detailing.array_product = m_product.productid)
+        // Produk (Detailing & Selling)
         $sql_tvd_array = "
             SELECT tvd.array_product, COUNT(1) AS cnt
             FROM trx_visit_detailing tvd
@@ -362,7 +296,6 @@ class Dashboard_tts_model extends CI_Model
         ";
         $res_tvd_array = $this->db->query($sql_tvd_array, [$start_date, $end_date])->result_array();
 
-        // Master produk untuk nama invoice
         $sql_all_products = "SELECT productid, COALESCE(NULLIF(nama_invoice, ''), productid) AS nama_invoice FROM m_product";
         $all_prod_rows = $this->db->query($sql_all_products)->result_array();
         $prod_name_map = [];
@@ -410,7 +343,6 @@ class Dashboard_tts_model extends CI_Model
         ";
         $res_prd_tgt = $this->db->query($sql_produk_tgt, ["{$year}-{$month}"])->result_array();
         if (empty($res_prd_tgt)) {
-            // Fallback jika tidak ada join role_id di m_sales_produk_target
             $sql_fb_prd_tgt = "
                 SELECT 
                     mpt.product_id,
@@ -438,7 +370,6 @@ class Dashboard_tts_model extends CI_Model
             $total_tgt_selling += (float)$r['total_target_selling'];
         }
 
-        // Gabungkan semua produk unik
         $all_prd_ids = array_unique(array_merge(array_keys($act_prd_map), array_keys($tgt_prd_map)));
         $combined_detailing = [];
         $combined_selling = [];
@@ -470,7 +401,6 @@ class Dashboard_tts_model extends CI_Model
             ];
         }
 
-        // Urutkan Detailing berdasarkan actual terbanyak lalu target terbanyak
         usort($combined_detailing, function ($a, $b) {
             if ($b['actual'] === $a['actual']) {
                 return $b['target'] <=> $a['target'];
@@ -484,7 +414,6 @@ class Dashboard_tts_model extends CI_Model
         }
         $top4_detailing_text = !empty($top4_det_text_parts) ? implode(' | ', $top4_det_text_parts) : '-';
 
-        // Urutkan Selling berdasarkan actual terbanyak lalu target terbanyak
         usort($combined_selling, function ($a, $b) {
             if ($b['actual'] === $a['actual']) {
                 return $b['target'] <=> $a['target'];
@@ -506,7 +435,7 @@ class Dashboard_tts_model extends CI_Model
         $tgt_selling = $total_tgt_selling;
         $pct_selling = $tgt_selling > 0 ? round(($act_selling / $tgt_selling) * 100, 1) : 0;
 
-        // Join Activity (Supervisi) dari req_visit_professional
+        // Join Visit
         $filter_salesman_rvp = $this->build_salesman_filter($data, 'rvp', 'salesmanid');
 
         $sql_join = "
@@ -648,79 +577,276 @@ class Dashboard_tts_model extends CI_Model
         $months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         $month_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
-        $filter_salesman_dub = $this->build_salesman_filter($data, 'rdv', 'salesmanid');
-        $filter_salesman_prd = $this->build_salesman_filter($data, 'rpv', 'salesmanid');
-        $filter_salesman_rrk = $this->build_salesman_filter($data, 'tr', 'salesmanid');
+        $year_start = "{$year}-01-01";
+        $year_end   = "{$year}-12-31";
 
-        $sql_trend_dub = "
-            SELECT 
-                DATE_FORMAT(rdv.tanggal, '%m') AS bulan,
-                IFNULL(SUM(rdv.actual_call_planned), 0) AS act_kat,
-                IFNULL(SUM(rdv.actual_call_visit), 0) AS act_user_wajib
-            FROM rekap_dub_visit rdv
-            WHERE DATE_FORMAT(rdv.tanggal, '%Y') = ?
-            {$filter_salesman_dub}
-            GROUP BY DATE_FORMAT(rdv.tanggal, '%m')
+        $filter_salesman_s   = $this->build_salesman_filter($data, 's', 'salesmanid');
+        $filter_salesman_ap  = $this->build_salesman_filter($data, 'ap', 'salesmanid');
+        $filter_salesman_tsa = $this->build_salesman_filter($data, 'tsa', 'salesmanid');
+        $filter_salesman_mss = $this->build_salesman_filter($data, 'mss', 'salesmanid');
+
+        $sql_sales_count = "
+            SELECT COUNT(DISTINCT s.salesmanid) AS total_salesman
+            FROM m_sales_salesman s
+            LEFT JOIN m_salesman_area msa ON msa.salesmanid = s.salesmanid
+            WHERE s.aktif = 1 AND LOWER(s.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_s}
         ";
-        $res_trend_dub = $this->db->query($sql_trend_dub, [$year])->result_array();
-        $dub_map = [];
-        foreach ($res_trend_dub as $r) {
-            $dub_map[$r['bulan']] = $r;
+        $total_salesman = (int)($this->db->query($sql_sales_count)->row()->total_salesman ?? 1);
+        $total_salesman = max(1, $total_salesman);
+
+        $hk_map = [];
+        $total_hk_map = [];
+        foreach ($months as $m) {
+            $s_date = "{$year}-{$m}-01";
+            $e_date = date("Y-m-t", strtotime($s_date));
+            $hk = get_hari_kerja($s_date, $e_date);
+            $hk_map[$m] = $hk;
+            $total_hk_map[$m] = $hk * $total_salesman;
         }
 
-        $sql_trend_prd = "
+        // Kehadiran TPE
+        $sql_abs_fisik = "
             SELECT 
-                DATE_FORMAT(rpv.tanggal, '%m') AS bulan,
-                IFNULL(SUM(rpv.actual_visit), 0) AS act_detailing,
-                IFNULL(SUM(rpv.actual_qty), 0) AS act_selling
-            FROM rekap_produk_visit rpv
-            WHERE DATE_FORMAT(rpv.tanggal, '%Y') = ?
-            {$filter_salesman_prd}
-            GROUP BY DATE_FORMAT(rpv.tanggal, '%m')
+                DATE_FORMAT(ap.periode, '%m') AS bulan,
+                COUNT(DISTINCT ap.salesmanid, ap.periode) AS hadir_fisik
+            FROM attendance_parma ap
+            LEFT JOIN (
+                SELECT salesmanid, periode, COUNT(1) AS total_detailing
+                FROM trx_visit_detailing
+                WHERE periode BETWEEN ? AND ?
+                GROUP BY salesmanid, periode
+            ) vd ON vd.salesmanid = ap.salesmanid AND vd.periode = ap.periode
+            WHERE ap.periode BETWEEN ? AND ?
+              AND ap.start_time IS NOT NULL
+              AND (
+                  (DAYOFWEEK(ap.periode) BETWEEN 2 AND 6 AND IFNULL(vd.total_detailing, 0) >= 1)
+                  OR (DAYOFWEEK(ap.periode) = 7)
+              )
+              {$filter_salesman_ap}
+            GROUP BY DATE_FORMAT(ap.periode, '%m')
         ";
-        $res_trend_prd = $this->db->query($sql_trend_prd, [$year])->result_array();
-        $prd_map = [];
-        foreach ($res_trend_prd as $r) {
-            $prd_map[$r['bulan']] = $r;
+        $res_abs_fisik = $this->db->query($sql_abs_fisik, [$year_start, $year_end, $year_start, $year_end])->result_array();
+        $abs_fisik_map = [];
+        foreach ($res_abs_fisik as $r) {
+            $abs_fisik_map[$r['bulan']] = (int)$r['hadir_fisik'];
         }
 
-        $sql_trend_call = "
+        $sql_abs_leave = "
             SELECT 
-                DATE_FORMAT(tr.periode, '%m') AS bulan,
-                COUNT(1) AS act_call
-            FROM t_sales_rrk_trans tr
-            WHERE DATE_FORMAT(tr.periode, '%Y') = ?
-            {$filter_salesman_rrk}
-            GROUP BY DATE_FORMAT(tr.periode, '%m')
+                DATE_FORMAT(tsa.periode, '%m') AS bulan,
+                COUNT(1) AS total_leave
+            FROM t_sales_absensi tsa
+            WHERE tsa.periode BETWEEN ? AND ?
+              AND tsa.status IN ('S', 'C', 'HF')
+              {$filter_salesman_tsa}
+            GROUP BY DATE_FORMAT(tsa.periode, '%m')
         ";
-        $res_trend_call = $this->db->query($sql_trend_call, [$year])->result_array();
-        $call_map = [];
-        foreach ($res_trend_call as $r) {
-            $call_map[$r['bulan']] = $r;
+        $res_abs_leave = $this->db->query($sql_abs_leave, [$year_start, $year_end])->result_array();
+        $abs_leave_map = [];
+        foreach ($res_abs_leave as $r) {
+            $abs_leave_map[$r['bulan']] = (int)$r['total_leave'];
         }
 
-        $series_kat = [];
-        $series_user_wajib = [];
-        $series_detailing = [];
-        $series_selling = [];
-        $series_call = [];
+        // Performa TPE
+        $sql_call_act = "
+            SELECT 
+                DATE_FORMAT(tvd.periode, '%m') AS bulan,
+                COUNT(DISTINCT CONCAT(tvd.customerid, '-', tvd.periode, '-', tvd.nourut)) AS total_call
+            FROM trx_visit_detailing tvd
+            JOIN m_sales_salesman mss ON mss.salesmanid = tvd.salesmanid
+            WHERE tvd.periode BETWEEN ? AND ?
+              AND mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+              {$filter_salesman_mss}
+            GROUP BY DATE_FORMAT(tvd.periode, '%m')
+        ";
+        $res_call_act = $this->db->query($sql_call_act, [$year_start, $year_end])->result_array();
+        $call_act_map = [];
+        foreach ($res_call_act as $r) {
+            $call_act_map[$r['bulan']] = (int)$r['total_call'];
+        }
+
+        $sql_call_tgt = "
+            SELECT 
+                LPAD(rmt.bulan, 2, '0') AS bulan,
+                SUM(rmt.target_call_visit * IFNULL(NULLIF(rmt.target_hk, 0), 0)) AS target_call_fixed,
+                SUM(rmt.target_call_visit) AS target_call_per_day
+            FROM m_sales_salesman mss
+            JOIN app_role ar ON ar.role_name = mss.tipe_sales
+            JOIN role_mapping_target rmt ON rmt.role_id = ar.role_id
+                AND rmt.tahun = ?
+            WHERE mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_mss}
+            GROUP BY LPAD(rmt.bulan, 2, '0')
+        ";
+        $res_call_tgt = $this->db->query($sql_call_tgt, [$year])->result_array();
+        $call_tgt_map = [];
+        foreach ($res_call_tgt as $r) {
+            $m = $r['bulan'];
+            $fixed = (float)$r['target_call_fixed'];
+            if ($fixed > 0) {
+                $call_tgt_map[$m] = (int)$fixed;
+            } else {
+                $per_day = (float)$r['target_call_per_day'];
+                $call_tgt_map[$m] = (int)round($per_day * ($hk_map[$m] ?? 20));
+            }
+        }
+
+        // User Wajib
+        $sql_uw_act = "
+            SELECT 
+                DATE_FORMAT(tvd.periode, '%m') AS bulan,
+                COUNT(1) AS total_act
+            FROM trx_visit_detailing tvd
+            JOIN ref_professional rp ON rp.id = tvd.user_id
+            JOIN m_sales_salesman mss ON mss.salesmanid = tvd.salesmanid
+            WHERE tvd.periode BETWEEN ? AND ?
+              AND mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+              {$filter_salesman_mss}
+            GROUP BY DATE_FORMAT(tvd.periode, '%m')
+        ";
+        $res_uw_act = $this->db->query($sql_uw_act, [$year_start, $year_end])->result_array();
+        $uw_act_map = [];
+        foreach ($res_uw_act as $r) {
+            $uw_act_map[$r['bulan']] = (int)$r['total_act'];
+        }
+
+        $sql_uw_tgt = "
+            SELECT 
+                LPAD(mst.bulan, 2, '0') AS bulan,
+                SUM(mst.target) AS total_target
+            FROM m_sales_salesman mss
+            JOIN app_role ar ON ar.role_name = mss.tipe_sales
+            JOIN m_sales_spesialis_target mst ON mst.role_id = ar.role_id
+                AND mst.tahun = ?
+            WHERE mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_mss}
+            GROUP BY LPAD(mst.bulan, 2, '0')
+        ";
+        $res_uw_tgt = $this->db->query($sql_uw_tgt, [$year])->result_array();
+        $uw_tgt_map = [];
+        foreach ($res_uw_tgt as $r) {
+            $uw_tgt_map[$r['bulan']] = (int)$r['total_target'];
+        }
+
+        // Detailing & Selling Produk
+        $sql_prod_act = "
+            SELECT 
+                DATE_FORMAT(tvd.periode, '%m') AS bulan,
+                tvd.array_product, 
+                COUNT(1) AS cnt
+            FROM trx_visit_detailing tvd
+            JOIN m_sales_salesman mss ON mss.salesmanid = tvd.salesmanid
+            WHERE tvd.periode BETWEEN ? AND ?
+              AND tvd.array_product IS NOT NULL
+              AND TRIM(tvd.array_product) <> ''
+              AND mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+              {$filter_salesman_mss}
+            GROUP BY DATE_FORMAT(tvd.periode, '%m'), tvd.array_product
+        ";
+        $res_prod_act = $this->db->query($sql_prod_act, [$year_start, $year_end])->result_array();
+        $detailing_act_map = [];
+        $selling_act_map = [];
+        foreach ($res_prod_act as $row) {
+            $m = $row['bulan'];
+            $count = (int)$row['cnt'];
+            $rawList = explode(',', $row['array_product']);
+            $numProducts = 0;
+            foreach ($rawList as $p) {
+                if (trim($p) !== '') $numProducts++;
+            }
+            if ($numProducts > 0) {
+                $detailing_act_map[$m] = ($detailing_act_map[$m] ?? 0) + ($count * $numProducts);
+                $selling_act_map[$m]   = ($selling_act_map[$m] ?? 0) + ($count * $numProducts);
+            }
+        }
+
+        // Target Produk
+        $sql_prod_tgt = "
+            SELECT 
+                LPAD(mpt.bulan, 2, '0') AS bulan,
+                SUM(mpt.target) AS target_detailing,
+                SUM(mpt.target_qty) AS target_selling
+            FROM m_sales_salesman mss
+            JOIN app_role ar ON ar.role_name = mss.tipe_sales
+            JOIN m_sales_produk_target mpt ON mpt.role_id = ar.role_id
+                AND mpt.tahun = ?
+            WHERE mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_mss}
+            GROUP BY LPAD(mpt.bulan, 2, '0')
+        ";
+        $res_prod_tgt = $this->db->query($sql_prod_tgt, [$year])->result_array();
+        if (empty($res_prod_tgt)) {
+            $sql_fb_prod_tgt = "
+                SELECT 
+                    LPAD(mpt.bulan, 2, '0') AS bulan,
+                    SUM(mpt.target) AS target_detailing,
+                    SUM(mpt.target_qty) AS target_selling
+                FROM m_sales_produk_target mpt
+                WHERE mpt.tahun = ?
+                GROUP BY LPAD(mpt.bulan, 2, '0')
+            ";
+            $res_prod_tgt = $this->db->query($sql_fb_prod_tgt, [$year])->result_array();
+        }
+        $detailing_tgt_map = [];
+        $selling_tgt_map = [];
+        foreach ($res_prod_tgt as $r) {
+            $m = $r['bulan'];
+            $detailing_tgt_map[$m] = (int)$r['target_detailing'];
+            $selling_tgt_map[$m]   = (int)$r['target_selling'];
+        }
+
+        $series_absensi    = ['actual' => [], 'target' => [], 'pct' => []];
+        $series_call       = ['actual' => [], 'target' => [], 'pct' => []];
+        $series_user_wajib = ['actual' => [], 'target' => [], 'pct' => []];
+        $series_detailing  = ['actual' => [], 'target' => [], 'pct' => []];
+        $series_selling    = ['actual' => [], 'target' => [], 'pct' => []];
 
         foreach ($months as $m) {
-            $series_kat[] = (int)($dub_map[$m]['act_kat'] ?? 0);
-            $series_user_wajib[] = (int)($dub_map[$m]['act_user_wajib'] ?? 0);
-            $series_detailing[] = (int)($prd_map[$m]['act_detailing'] ?? 0);
-            $series_selling[] = (int)($prd_map[$m]['act_selling'] ?? 0);
-            $series_call[] = (int)($call_map[$m]['act_call'] ?? 0);
+            $act_abs = ($abs_fisik_map[$m] ?? 0) + ($abs_leave_map[$m] ?? 0);
+            $tgt_abs = $total_hk_map[$m] ?? 0;
+            $pct_abs = $tgt_abs > 0 ? round(($act_abs / $tgt_abs) * 100, 1) : 0;
+            $series_absensi['actual'][] = $act_abs;
+            $series_absensi['target'][] = $tgt_abs;
+            $series_absensi['pct'][]    = $pct_abs;
+
+            $act_call = $call_act_map[$m] ?? 0;
+            $tgt_call = $call_tgt_map[$m] ?? 0;
+            $pct_call = $tgt_call > 0 ? round(($act_call / $tgt_call) * 100, 1) : 0;
+            $series_call['actual'][] = $act_call;
+            $series_call['target'][] = $tgt_call;
+            $series_call['pct'][]    = $pct_call;
+
+            $act_uw = $uw_act_map[$m] ?? 0;
+            $tgt_uw = $uw_tgt_map[$m] ?? 0;
+            $pct_uw = $tgt_uw > 0 ? round(($act_uw / $tgt_uw) * 100, 1) : 0;
+            $series_user_wajib['actual'][] = $act_uw;
+            $series_user_wajib['target'][] = $tgt_uw;
+            $series_user_wajib['pct'][]    = $pct_uw;
+
+            $act_det = $detailing_act_map[$m] ?? 0;
+            $tgt_det = $detailing_tgt_map[$m] ?? 0;
+            $pct_det = $tgt_det > 0 ? round(($act_det / $tgt_det) * 100, 1) : 0;
+            $series_detailing['actual'][] = $act_det;
+            $series_detailing['target'][] = $tgt_det;
+            $series_detailing['pct'][]    = $pct_det;
+
+            $act_sel = $selling_act_map[$m] ?? 0;
+            $tgt_sel = $selling_tgt_map[$m] ?? 0;
+            $pct_sel = $tgt_sel > 0 ? round(($act_sel / $tgt_sel) * 100, 1) : 0;
+            $series_selling['actual'][] = $act_sel;
+            $series_selling['target'][] = $tgt_sel;
+            $series_selling['pct'][]    = $pct_sel;
         }
 
         return [
             'labels' => $month_labels,
             'series' => [
-                'kat' => $series_kat,
+                'absensi'    => $series_absensi,
+                'call'       => $series_call,
                 'user_wajib' => $series_user_wajib,
-                'detailing' => $series_detailing,
-                'selling' => $series_selling,
-                'call' => $series_call,
+                'detailing'  => $series_detailing,
+                'selling'    => $series_selling,
             ]
         ];
     }
@@ -775,63 +901,57 @@ class Dashboard_tts_model extends CI_Model
         return $this->db->order_by('s.nama_salesman', 'ASC')->get()->result_array();
     }
 
-    public function load_breakdown_area($data)
+    public function load_breakdown_absensi($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
         $month = !empty($data['bulan']) ? str_pad($data['bulan'], 2, '0', STR_PAD_LEFT) : date('m');
         $start_date = "{$year}-{$month}-01";
         $end_date = date("Y-m-t", strtotime($start_date));
-
         $hk = get_hari_kerja($start_date, $end_date);
 
         $filter_salesman = $this->build_salesman_filter($data, 's', 'salesmanid');
 
         $sql = "
             SELECT 
-                r.nama_regional,
-                ar.nama_area,
-                sub.nama_area AS nama_subarea,
                 s.salesmanid,
                 s.nama_salesman,
-                s.tipe_sales,
-                -- Absensi
-                IFNULL(abs.total_hadir, 0) AS total_hadir,
-                {$hk} AS total_hari,
-                ROUND(CASE WHEN {$hk} > 0 THEN (IFNULL(abs.total_hadir, 0) / {$hk}) * 100 ELSE 0 END, 1) AS pct_absensi,
-                -- Call & Extra Call
-                IFNULL(cl.total_call, 0) AS total_call,
-                IFNULL(cl.total_ec, 0) AS total_ec,
-                IFNULL(cl_tgt.target_call, 0) AS total_planned,
-                ROUND(CASE WHEN IFNULL(cl_tgt.target_call, 0) > 0 THEN ((IFNULL(cl.total_call, 0) + IFNULL(cl.total_ec, 0)) / cl_tgt.target_call) * 100 ELSE 0 END, 1) AS pct_ec,
-                -- Kat A & User Wajib
-                IFNULL(dub.act_kat, 0) AS act_kat,
-                IFNULL(dub_tgt.target_kat, 0) AS tgt_kat,
-                ROUND(CASE WHEN IFNULL(dub_tgt.target_kat, 0) > 0 THEN (dub.act_kat / dub_tgt.target_kat) * 100 ELSE 0 END, 1) AS pct_kat,
-                -- User Wajib
-                IFNULL(uw.act_user_wajib, 0) AS act_user_wajib,
-                IFNULL(uw_tgt.target_user_wajib, 0) AS tgt_user_wajib,
-                ROUND(CASE WHEN IFNULL(uw_tgt.target_user_wajib, 0) > 0 THEN (IFNULL(uw.act_user_wajib, 0) / uw_tgt.target_user_wajib) * 100 ELSE 0 END, 1) AS pct_user_wajib,
-                -- Detailing
-                IFNULL(dtl.total_detailing, 0) AS total_detailing,
-                -- Selling
-                IFNULL(prd.act_selling, 0) AS act_selling,
-                IFNULL(prd_tgt.target_selling, 0) AS tgt_selling,
-                ROUND(CASE WHEN IFNULL(prd_tgt.target_selling, 0) > 0 THEN (prd.act_selling / prd_tgt.target_selling) * 100 ELSE 0 END, 1) AS pct_selling
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea,
+                {$hk} AS hari_kerja,
+                IFNULL(abs.hadir_fisik, 0) AS hadir,
+                IFNULL(abs.total_izin, 0) AS izin,
+                IFNULL(abs.total_sakit, 0) AS sakit,
+                IFNULL(abs.total_cuti, 0) AS cuti,
+                (IFNULL(abs.hadir_fisik, 0) + IFNULL(abs.total_izin, 0) + IFNULL(abs.total_sakit, 0) + IFNULL(abs.total_cuti, 0)) AS total_kehadiran,
+                ROUND(CASE WHEN {$hk} > 0 THEN ((IFNULL(abs.hadir_fisik, 0) + IFNULL(abs.total_izin, 0) + IFNULL(abs.total_sakit, 0) + IFNULL(abs.total_cuti, 0)) / {$hk}) * 100 ELSE 0 END, 1) AS percentage
             FROM m_sales_salesman s
-            LEFT JOIN m_salesman_area msa ON msa.salesmanid = s.salesmanid
-            LEFT JOIN m_area_regional r ON r.regionalid = msa.regionalid
-            LEFT JOIN m_area_areasite ar ON ar.areaid = msa.areaid
-            LEFT JOIN m_area_subarea sub ON sub.subareaid = msa.subareaid
-            -- Subquery Absensi (Hadir Fisik + Sakit + Cuti + Izin)
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT sub.nama_area ORDER BY sub.nama_area ASC SEPARATOR ', ') AS nama_subarea
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_regional r ON r.regionalid = msa.regionalid
+                LEFT JOIN m_area_areasite ar ON ar.areaid = msa.areaid
+                LEFT JOIN m_area_subarea sub ON sub.subareaid = msa.subareaid
+                GROUP BY msa.salesmanid
+            ) area ON s.salesmanid = area.salesmanid
             LEFT JOIN (
                 SELECT 
                     s_id AS salesmanid,
-                    SUM(hadir_count) AS total_hadir
+                    SUM(hadir_fisik) AS hadir_fisik,
+                    SUM(izin) AS total_izin,
+                    SUM(sakit) AS total_sakit,
+                    SUM(cuti) AS total_cuti
                 FROM (
-                    -- Hadir Fisik
                     SELECT 
                         ap.salesmanid AS s_id,
-                        COUNT(DISTINCT ap.periode) AS hadir_count
+                        COUNT(DISTINCT ap.periode) AS hadir_fisik,
+                        0 AS izin,
+                        0 AS sakit,
+                        0 AS cuti
                     FROM attendance_parma ap
                     LEFT JOIN (
                         SELECT salesmanid, periode, COUNT(1) AS total_detailing
@@ -849,18 +969,61 @@ class Dashboard_tts_model extends CI_Model
 
                     UNION ALL
 
-                    -- Sakit, Cuti, Izin (Paid Leave)
                     SELECT 
                         tsa.salesmanid AS s_id,
-                        COUNT(1) AS hadir_count
+                        0 AS hadir_fisik,
+                        COUNT(CASE WHEN tsa.status = 'HF' THEN 1 END) AS izin,
+                        COUNT(CASE WHEN tsa.status = 'S' THEN 1 END) AS sakit,
+                        COUNT(CASE WHEN tsa.status = 'C' THEN 1 END) AS cuti
                     FROM t_sales_absensi tsa
                     WHERE tsa.periode BETWEEN '{$start_date}' AND '{$end_date}'
-                      AND tsa.status IN ('S', 'C', 'HF')
                     GROUP BY tsa.salesmanid
-                ) abs_union
+                ) abs_u
                 GROUP BY s_id
             ) abs ON abs.salesmanid = s.salesmanid
-            -- Subquery Call (Call & Extra Call dari trx_visit_detailing & req_pjp_daily_detail)
+            WHERE s.aktif = 1
+            {$filter_salesman}
+            ORDER BY area.nama_regional ASC, area.nama_area ASC, s.nama_salesman ASC
+        ";
+
+        return $this->db->query($sql)->result_array();
+    }
+
+    public function load_breakdown_call($data)
+    {
+        $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
+        $month = !empty($data['bulan']) ? str_pad($data['bulan'], 2, '0', STR_PAD_LEFT) : date('m');
+        $start_date = "{$year}-{$month}-01";
+        $end_date = date("Y-m-t", strtotime($start_date));
+        $hk = get_hari_kerja($start_date, $end_date);
+
+        $filter_salesman = $this->build_salesman_filter($data, 's', 'salesmanid');
+
+        $sql = "
+            SELECT 
+                s.salesmanid,
+                s.nama_salesman,
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea,
+                IFNULL(cl_tgt.target_call, 0) AS target_visit,
+                IFNULL(cl.total_call, 0) AS call_act,
+                IFNULL(cl.total_ec, 0) AS extra_call,
+                (IFNULL(cl.total_call, 0) + IFNULL(cl.total_ec, 0)) AS total_call_all,
+                ROUND(CASE WHEN IFNULL(cl_tgt.target_call, 0) > 0 THEN ((IFNULL(cl.total_call, 0) + IFNULL(cl.total_ec, 0)) / cl_tgt.target_call) * 100 ELSE 0 END, 1) AS percentage
+            FROM m_sales_salesman s
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT sub.nama_area ORDER BY sub.nama_area ASC SEPARATOR ', ') AS nama_subarea
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_regional r ON r.regionalid = msa.regionalid
+                LEFT JOIN m_area_areasite ar ON ar.areaid = msa.areaid
+                LEFT JOIN m_area_subarea sub ON sub.subareaid = msa.subareaid
+                GROUP BY msa.salesmanid
+            ) area ON s.salesmanid = area.salesmanid
             LEFT JOIN (
                 SELECT 
                     tsrt.salesmanid,
@@ -895,7 +1058,6 @@ class Dashboard_tts_model extends CI_Model
                 WHERE tsrt.periode BETWEEN '{$start_date}' AND '{$end_date}'
                 GROUP BY tsrt.salesmanid
             ) cl ON cl.salesmanid = s.salesmanid
-            -- Subquery Call Target
             LEFT JOIN (
                 SELECT 
                     ar.role_name,
@@ -905,145 +1067,480 @@ class Dashboard_tts_model extends CI_Model
                 WHERE CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) = '{$year}-{$month}'
                 GROUP BY ar.role_name
             ) cl_tgt ON cl_tgt.role_name = s.tipe_sales
-            -- Subquery DUB Actual
-            LEFT JOIN (
-                SELECT 
-                    salesmanid,
-                    SUM(actual_call_planned) AS act_kat,
-                    SUM(actual_call_visit) AS act_user_wajib
-                FROM rekap_dub_visit
-                WHERE tanggal BETWEEN '{$start_date}' AND '{$end_date}'
-                GROUP BY salesmanid
-            ) dub ON dub.salesmanid = s.salesmanid
-            -- Subquery DUB Target
-            LEFT JOIN (
-                SELECT 
-                    ar.role_name,
-                    SUM(rmt.target_dub * rmt.target_call_dub) AS target_kat
-                FROM role_mapping_target rmt
-                JOIN app_role ar ON ar.role_id = rmt.role_id
-                WHERE CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) = '{$year}-{$month}'
-                GROUP BY ar.role_name
-            ) dub_tgt ON dub_tgt.role_name = s.tipe_sales
-            -- Subquery User Wajib Actual
-            LEFT JOIN (
-                SELECT 
-                    tvd.salesmanid,
-                    COUNT(1) AS act_user_wajib
-                FROM trx_visit_detailing tvd
-                JOIN ref_professional rp ON rp.id = tvd.user_id
-                WHERE tvd.periode BETWEEN '{$start_date}' AND '{$end_date}'
-                GROUP BY tvd.salesmanid
-            ) uw ON uw.salesmanid = s.salesmanid
-            -- Subquery User Wajib Target
-            LEFT JOIN (
-                SELECT 
-                    ar.role_name,
-                    SUM(mst.target) AS target_user_wajib
-                FROM m_sales_spesialis_target mst
-                JOIN app_role ar ON ar.role_id = mst.role_id
-                WHERE CONCAT(mst.tahun, '-', LPAD(mst.bulan, 2, '0')) = '{$year}-{$month}'
-                GROUP BY ar.role_name
-            ) uw_tgt ON uw_tgt.role_name = s.tipe_sales
-            -- Subquery Detailing
-            LEFT JOIN (
-                SELECT 
-                    salesmanid,
-                    COUNT(1) AS total_detailing
-                FROM trx_visit_detailing
-                WHERE periode BETWEEN '{$start_date}' AND '{$end_date}'
-                GROUP BY salesmanid
-            ) dtl ON dtl.salesmanid = s.salesmanid
-            -- Subquery Produk Actual
-            LEFT JOIN (
-                SELECT 
-                    salesmanid,
-                    SUM(actual_qty) AS act_selling
-                FROM rekap_produk_visit
-                WHERE tanggal BETWEEN '{$start_date}' AND '{$end_date}'
-                GROUP BY salesmanid
-            ) prd ON prd.salesmanid = s.salesmanid
-            -- Subquery Produk Target
-            LEFT JOIN (
-                SELECT 
-                    SUM(target_qty) AS target_selling
-                FROM m_sales_produk_target
-                WHERE CONCAT(tahun, '-', LPAD(bulan, 2, '0')) = '{$year}-{$month}'
-            ) prd_tgt ON 1=1
             WHERE s.aktif = 1
             {$filter_salesman}
-            ORDER BY r.nama_regional ASC, ar.nama_area ASC, s.nama_salesman ASC
+            ORDER BY s.nama_salesman ASC
         ";
 
         return $this->db->query($sql)->result_array();
     }
 
-    public function load_breakdown_channel_spesialis($data)
+    public function load_breakdown_kategori($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
         $month = !empty($data['bulan']) ? str_pad($data['bulan'], 2, '0', STR_PAD_LEFT) : date('m');
         $start_date = "{$year}-{$month}-01";
         $end_date = date("Y-m-t", strtotime($start_date));
 
-        $filter_salesman_dtl = $this->build_salesman_filter($data, 'tvd', 'salesmanid');
+        $filter_salesman_tr = $this->build_salesman_filter($data, 'tr', 'salesmanid');
 
         $sql = "
             SELECT 
-                COALESCE(NULLIF(TRIM(rs.name), ''), 'Lain-lain / Belum Diisi') AS nama_spesialisasi,
-                COALESCE(NULLIF(TRIM(c.typeid), ''), 'Umum / Lainnya') AS jenis_channel,
-                COUNT(DISTINCT tvd.user_id) AS total_user,
-                COUNT(1) AS total_kunjungan_detailing
-            FROM trx_visit_detailing tvd
-            LEFT JOIN ref_professional rp ON rp.id = tvd.user_id
-            LEFT JOIN ref_spesialisasi rs ON rs.id = rp.spesialisasi_id
-            LEFT JOIN m_customer c ON c.customerid = tvd.customerid
-            WHERE tvd.periode BETWEEN ? AND ?
-            {$filter_salesman_dtl}
-            GROUP BY 
-                COALESCE(NULLIF(TRIM(rs.name), ''), 'Lain-lain / Belum Diisi'),
-                COALESCE(NULLIF(TRIM(c.typeid), ''), 'Umum / Lainnya')
-            ORDER BY total_kunjungan_detailing DESC, nama_spesialisasi ASC
+                COALESCE(NULLIF(TRIM(c.typeid), ''), 'Lainnya') AS typeid,
+                COALESCE(mct.nama_type, NULLIF(TRIM(c.typeid), ''), 'Lainnya') AS nama_type,
+                COUNT(DISTINCT tr.customerid) AS jumlah_outlet,
+                COUNT(1) AS jumlah_visit
+            FROM t_sales_rrk_trans tr
+            LEFT JOIN m_customer c ON c.customerid = tr.customerid
+            LEFT JOIN m_customer_type mct ON mct.typeid = c.typeid
+            WHERE tr.periode BETWEEN ? AND ?
+            {$filter_salesman_tr}
+            GROUP BY COALESCE(NULLIF(TRIM(c.typeid), ''), 'Lainnya'), COALESCE(mct.nama_type, NULLIF(TRIM(c.typeid), ''), 'Lainnya')
+            ORDER BY jumlah_outlet DESC, jumlah_visit DESC
         ";
 
         return $this->db->query($sql, [$start_date, $end_date])->result_array();
     }
 
-    public function load_breakdown_produk($data)
+    public function load_breakdown_user_wajib($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
         $month = !empty($data['bulan']) ? str_pad($data['bulan'], 2, '0', STR_PAD_LEFT) : date('m');
         $start_date = "{$year}-{$month}-01";
         $end_date = date("Y-m-t", strtotime($start_date));
 
-        $filter_salesman_prd = $this->build_salesman_filter($data, 'rpv', 'salesmanid');
+        $filter_salesman_tvd = $this->build_salesman_filter($data, 'tvd', 'salesmanid');
+        $filter_salesman_mss = $this->build_salesman_filter($data, 'mss', 'salesmanid');
+
+        // Actual Detailing per Spesialisasi & Tipe
+        $sql_act = "
+            SELECT 
+                rp.spesialisasi_id,
+                COALESCE(NULLIF(TRIM(rs.name), ''), 'Lainnya') AS nama_spesialisasi,
+                COALESCE(NULLIF(TRIM(rp.type), ''), 'Dokter') AS tipe_spesialis,
+                COUNT(1) AS total_actual
+            FROM trx_visit_detailing tvd
+            JOIN ref_professional rp ON rp.id = tvd.user_id
+            LEFT JOIN ref_spesialisasi rs ON rs.id = rp.spesialisasi_id
+            WHERE tvd.periode BETWEEN ? AND ?
+            {$filter_salesman_tvd}
+            GROUP BY rp.spesialisasi_id, COALESCE(NULLIF(TRIM(rs.name), ''), 'Lainnya'), COALESCE(NULLIF(TRIM(rp.type), ''), 'Dokter')
+        ";
+        $res_act = $this->db->query($sql_act, [$start_date, $end_date])->result_array();
+
+        $act_map = [];
+        foreach ($res_act as $r) {
+            $key = $r['spesialisasi_id'] ?? 0;
+            if (!isset($act_map[$key])) {
+                $act_map[$key] = [
+                    'nama_spesialisasi' => $r['nama_spesialisasi'],
+                    'tipe_spesialis' => $r['tipe_spesialis'],
+                    'actual' => 0
+                ];
+            }
+            $act_map[$key]['actual'] += (int)$r['total_actual'];
+        }
+
+        // Target Spesialisasi
+        $sql_tgt = "
+            SELECT 
+                mst.spesialisasi_id,
+                COALESCE(NULLIF(TRIM(mst.nama_spesialisasi), ''), rs.name, 'Lainnya') AS nama_spesialisasi,
+                SUM(mst.target) AS total_target
+            FROM m_sales_salesman mss
+            JOIN app_role ar ON ar.role_name = mss.tipe_sales
+            JOIN m_sales_spesialis_target mst ON mst.role_id = ar.role_id
+                AND CONCAT(mst.tahun, '-', LPAD(mst.bulan, 2, '0')) = ?
+            LEFT JOIN ref_spesialisasi rs ON rs.id = mst.spesialisasi_id
+            WHERE mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_mss}
+            GROUP BY mst.spesialisasi_id, COALESCE(NULLIF(TRIM(mst.nama_spesialisasi), ''), rs.name, 'Lainnya')
+        ";
+        $res_tgt = $this->db->query($sql_tgt, ["{$year}-{$month}"])->result_array();
+
+        $tgt_map = [];
+        foreach ($res_tgt as $r) {
+            $key = $r['spesialisasi_id'] ?? 0;
+            $tgt_map[$key] = [
+                'nama_spesialisasi' => $r['nama_spesialisasi'],
+                'target' => (int)$r['total_target']
+            ];
+        }
+
+        $all_ids = array_unique(array_merge(array_keys($act_map), array_keys($tgt_map)));
+        $list = [];
+        foreach ($all_ids as $spId) {
+            $nama = $act_map[$spId]['nama_spesialisasi'] ?? $tgt_map[$spId]['nama_spesialisasi'] ?? 'Lainnya';
+            $tipe = $act_map[$spId]['tipe_spesialis'] ?? 'Dokter';
+            $act = $act_map[$spId]['actual'] ?? 0;
+            $tgt = $tgt_map[$spId]['target'] ?? 0;
+            $pct = $tgt > 0 ? round(($act / $tgt) * 100, 1) : 0;
+
+            $list[] = [
+                'spesialisasi_id' => $spId,
+                'nama_spesialisasi' => $nama,
+                'tipe_spesialis' => $tipe,
+                'target_spesialis' => $tgt,
+                'aktual' => $act,
+                'percentage' => $pct
+            ];
+        }
+
+        usort($list, function ($a, $b) {
+            if ($b['aktual'] === $a['aktual']) {
+                return $b['target_spesialis'] <=> $a['target_spesialis'];
+            }
+            return $b['aktual'] <=> $a['aktual'];
+        });
+
+        return $list;
+    }
+
+    public function load_breakdown_detailing($data)
+    {
+        $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
+        $month = !empty($data['bulan']) ? str_pad($data['bulan'], 2, '0', STR_PAD_LEFT) : date('m');
+        $start_date = "{$year}-{$month}-01";
+        $end_date = date("Y-m-t", strtotime($start_date));
+
+        $filter_salesman_tvd = $this->build_salesman_filter($data, 'tvd', 'salesmanid');
+        $filter_salesman_mss = $this->build_salesman_filter($data, 'mss', 'salesmanid');
+
+        $sql_tvd_array = "
+            SELECT tvd.array_product, COUNT(1) AS cnt
+            FROM trx_visit_detailing tvd
+            WHERE tvd.periode BETWEEN ? AND ?
+              AND tvd.array_product IS NOT NULL
+              AND TRIM(tvd.array_product) <> ''
+            {$filter_salesman_tvd}
+            GROUP BY tvd.array_product
+        ";
+        $res_tvd_array = $this->db->query($sql_tvd_array, [$start_date, $end_date])->result_array();
+
+        $sql_all_products = "SELECT productid, COALESCE(NULLIF(nama_invoice, ''), productid) AS nama_invoice FROM m_product";
+        $all_prod_rows = $this->db->query($sql_all_products)->result_array();
+        $prod_name_map = [];
+        foreach ($all_prod_rows as $pr) {
+            $prod_name_map[trim($pr['productid'])] = $pr['nama_invoice'];
+        }
+
+        $act_prd_map = [];
+        foreach ($res_tvd_array as $row) {
+            $rawList = explode(',', $row['array_product']);
+            $count = (int)$row['cnt'];
+            foreach ($rawList as $pId) {
+                $pId = trim($pId);
+                if (empty($pId)) continue;
+                if (!isset($act_prd_map[$pId])) {
+                    $act_prd_map[$pId] = [
+                        'nama_invoice' => $prod_name_map[$pId] ?? $pId,
+                        'aktual' => 0
+                    ];
+                }
+                $act_prd_map[$pId]['aktual'] += $count;
+            }
+        }
+
+        $sql_produk_tgt = "
+            SELECT 
+                mpt.product_id,
+                COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id) AS nama_invoice,
+                SUM(mpt.target) AS total_target
+            FROM m_sales_salesman mss
+            JOIN app_role ar ON ar.role_name = mss.tipe_sales
+            JOIN m_sales_produk_target mpt ON mpt.role_id = ar.role_id
+                AND CONCAT(mpt.tahun, '-', LPAD(mpt.bulan, 2, '0')) = ?
+            WHERE mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_mss}
+            GROUP BY mpt.product_id, COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id)
+        ";
+        $res_prd_tgt = $this->db->query($sql_produk_tgt, ["{$year}-{$month}"])->result_array();
+        if (empty($res_prd_tgt)) {
+            $sql_fb = "
+                SELECT 
+                    mpt.product_id,
+                    COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id) AS nama_invoice,
+                    SUM(mpt.target) AS total_target
+                FROM m_sales_produk_target mpt
+                WHERE CONCAT(mpt.tahun, '-', LPAD(mpt.bulan, 2, '0')) = ?
+                GROUP BY mpt.product_id, COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id)
+            ";
+            $res_prd_tgt = $this->db->query($sql_fb, ["{$year}-{$month}"])->result_array();
+        }
+
+        $tgt_prd_map = [];
+        foreach ($res_prd_tgt as $r) {
+            $pId = $r['product_id'];
+            $tgt_prd_map[$pId] = [
+                'nama_invoice' => $r['nama_invoice'],
+                'target' => (float)$r['total_target']
+            ];
+        }
+
+        $all_ids = array_unique(array_merge(array_keys($act_prd_map), array_keys($tgt_prd_map)));
+        $list = [];
+        foreach ($all_ids as $pId) {
+            $nama = $act_prd_map[$pId]['nama_invoice'] ?? $tgt_prd_map[$pId]['nama_invoice'] ?? ($prod_name_map[$pId] ?? $pId);
+            $act = $act_prd_map[$pId]['aktual'] ?? 0;
+            $tgt = $tgt_prd_map[$pId]['target'] ?? 0;
+            $pct = $tgt > 0 ? round(($act / $tgt) * 100, 1) : 0;
+
+            $list[] = [
+                'productid' => $pId,
+                'nama_invoice' => $nama,
+                'target' => $tgt,
+                'aktual' => $act,
+                'percentage' => $pct
+            ];
+        }
+
+        usort($list, function ($a, $b) {
+            if ($b['aktual'] === $a['aktual']) {
+                return $b['target'] <=> $a['target'];
+            }
+            return $b['aktual'] <=> $a['aktual'];
+        });
+
+        return $list;
+    }
+
+    public function load_breakdown_selling($data)
+    {
+        $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
+        $month = !empty($data['bulan']) ? str_pad($data['bulan'], 2, '0', STR_PAD_LEFT) : date('m');
+        $start_date = "{$year}-{$month}-01";
+        $end_date = date("Y-m-t", strtotime($start_date));
+
+        $filter_salesman_tvd = $this->build_salesman_filter($data, 'tvd', 'salesmanid');
+        $filter_salesman_mss = $this->build_salesman_filter($data, 'mss', 'salesmanid');
+
+        $sql_tvd_array = "
+            SELECT tvd.array_product, COUNT(1) AS cnt
+            FROM trx_visit_detailing tvd
+            WHERE tvd.periode BETWEEN ? AND ?
+              AND tvd.array_product IS NOT NULL
+              AND TRIM(tvd.array_product) <> ''
+            {$filter_salesman_tvd}
+            GROUP BY tvd.array_product
+        ";
+        $res_tvd_array = $this->db->query($sql_tvd_array, [$start_date, $end_date])->result_array();
+
+        $sql_all_products = "SELECT productid, COALESCE(NULLIF(nama_invoice, ''), productid) AS nama_invoice FROM m_product";
+        $all_prod_rows = $this->db->query($sql_all_products)->result_array();
+        $prod_name_map = [];
+        foreach ($all_prod_rows as $pr) {
+            $prod_name_map[trim($pr['productid'])] = $pr['nama_invoice'];
+        }
+
+        $act_prd_map = [];
+        foreach ($res_tvd_array as $row) {
+            $rawList = explode(',', $row['array_product']);
+            $count = (int)$row['cnt'];
+            foreach ($rawList as $pId) {
+                $pId = trim($pId);
+                if (empty($pId)) continue;
+                if (!isset($act_prd_map[$pId])) {
+                    $act_prd_map[$pId] = [
+                        'nama_invoice' => $prod_name_map[$pId] ?? $pId,
+                        'aktual' => 0
+                    ];
+                }
+                $act_prd_map[$pId]['aktual'] += $count;
+            }
+        }
+
+        $sql_produk_tgt = "
+            SELECT 
+                mpt.product_id,
+                COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id) AS nama_invoice,
+                SUM(mpt.target_qty) AS total_target_qty
+            FROM m_sales_salesman mss
+            JOIN app_role ar ON ar.role_name = mss.tipe_sales
+            JOIN m_sales_produk_target mpt ON mpt.role_id = ar.role_id
+                AND CONCAT(mpt.tahun, '-', LPAD(mpt.bulan, 2, '0')) = ?
+            WHERE mss.aktif = 1 AND LOWER(mss.nama_salesman) NOT LIKE '%vacant%'
+            {$filter_salesman_mss}
+            GROUP BY mpt.product_id, COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id)
+        ";
+        $res_prd_tgt = $this->db->query($sql_produk_tgt, ["{$year}-{$month}"])->result_array();
+        if (empty($res_prd_tgt)) {
+            $sql_fb = "
+                SELECT 
+                    mpt.product_id,
+                    COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id) AS nama_invoice,
+                    SUM(mpt.target_qty) AS total_target_qty
+                FROM m_sales_produk_target mpt
+                WHERE CONCAT(mpt.tahun, '-', LPAD(mpt.bulan, 2, '0')) = ?
+                GROUP BY mpt.product_id, COALESCE(NULLIF(mpt.nama_invoice, ''), mpt.product_id)
+            ";
+            $res_prd_tgt = $this->db->query($sql_fb, ["{$year}-{$month}"])->result_array();
+        }
+
+        $tgt_prd_map = [];
+        foreach ($res_prd_tgt as $r) {
+            $pId = $r['product_id'];
+            $tgt_prd_map[$pId] = [
+                'nama_invoice' => $r['nama_invoice'],
+                'target_qty' => (float)$r['total_target_qty']
+            ];
+        }
+
+        $all_ids = array_unique(array_merge(array_keys($act_prd_map), array_keys($tgt_prd_map)));
+        $list = [];
+        foreach ($all_ids as $pId) {
+            $nama = $act_prd_map[$pId]['nama_invoice'] ?? $tgt_prd_map[$pId]['nama_invoice'] ?? ($prod_name_map[$pId] ?? $pId);
+            $act = $act_prd_map[$pId]['aktual'] ?? 0;
+            $tgt = $tgt_prd_map[$pId]['target_qty'] ?? 0;
+            $pct = $tgt > 0 ? round(($act / $tgt) * 100, 1) : 0;
+
+            $list[] = [
+                'productid' => $pId,
+                'nama_invoice' => $nama,
+                'target_qty' => $tgt,
+                'aktual' => $act,
+                'percentage' => $pct
+            ];
+        }
+
+        usort($list, function ($a, $b) {
+            if ($b['aktual'] === $a['aktual']) {
+                return $b['target_qty'] <=> $a['target_qty'];
+            }
+            return $b['aktual'] <=> $a['aktual'];
+        });
+
+        return $list;
+    }
+
+    public function load_breakdown_join_visit($data)
+    {
+        $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
+        $month = !empty($data['bulan']) ? str_pad($data['bulan'], 2, '0', STR_PAD_LEFT) : date('m');
+        $start_date = "{$year}-{$month}-01";
+        $end_date = date("Y-m-t", strtotime($start_date));
+
+        $filter_salesman_rvp = $this->build_salesman_filter($data, 'rvp', 'salesmanid');
 
         $sql = "
             SELECT 
-                rpv.product_id,
-                COALESCE(NULLIF(rpv.nama_invoice, ''), rpv.product_id) AS nama_produk,
-                IFNULL(SUM(rpv.actual_visit), 0) AS actual_detailing,
-                IFNULL(t.target_detailing, 0) AS target_detailing,
-                ROUND(CASE WHEN IFNULL(t.target_detailing, 0) > 0 THEN (SUM(rpv.actual_visit) / t.target_detailing) * 100 ELSE 0 END, 1) AS pct_detailing,
-                IFNULL(SUM(rpv.actual_qty), 0) AS actual_selling_qty,
-                IFNULL(t.target_selling_qty, 0) AS target_selling_qty,
-                ROUND(CASE WHEN IFNULL(t.target_selling_qty, 0) > 0 THEN (SUM(rpv.actual_qty) / t.target_selling_qty) * 100 ELSE 0 END, 1) AS pct_selling
-            FROM rekap_produk_visit rpv
-            LEFT JOIN (
-                SELECT 
-                    mpt.product_id,
-                    SUM(mpt.target) AS target_detailing,
-                    SUM(mpt.target_qty) AS target_selling_qty
-                FROM m_sales_produk_target mpt
-                WHERE CONCAT(mpt.tahun, '-', LPAD(mpt.bulan, 2, '0')) = ?
-                GROUP BY mpt.product_id
-            ) t ON t.product_id COLLATE utf8mb4_general_ci = rpv.product_id COLLATE utf8mb4_general_ci
-            WHERE rpv.tanggal BETWEEN ? AND ?
-            {$filter_salesman_prd}
-            GROUP BY rpv.product_id, rpv.nama_invoice, t.target_detailing, t.target_selling_qty
-            ORDER BY actual_detailing DESC, rpv.nama_invoice ASC
+                rvp.req_no,
+                rvp.periode,
+                rvp.salesmanid,
+                COALESCE(NULLIF(rvp.nama_salesman, ''), s.nama_salesman, rvp.salesmanid) AS nama_salesman,
+                rvp.customerid,
+                COALESCE(NULLIF(rvp.nama_customer, ''), c.nama_customer, rvp.customerid) AS nama_outlet,
+                rvp.user_id,
+                rvp.nama_professional AS nama_user,
+                rvp.status,
+                CASE 
+                    WHEN rvp.status = '1' THEN 'Pending'
+                    WHEN rvp.status = '3' THEN 'Disetujui'
+                    ELSE 'Reject'
+                END AS status_desc,
+                rvp.keterangan,
+                rvp.visit_keterangan,
+                rvp.reason,
+                rvp.approved_by,
+                rvp.approved_date,
+                rvp.visit_doc
+            FROM req_visit_professional rvp
+            LEFT JOIN m_sales_salesman s ON s.salesmanid = rvp.salesmanid
+            LEFT JOIN m_customer c ON c.customerid = rvp.customerid
+            WHERE rvp.periode BETWEEN ? AND ?
+            {$filter_salesman_rvp}
+            ORDER BY rvp.periode DESC, rvp.req_no DESC
         ";
 
-        return $this->db->query($sql, ["{$year}-{$month}", $start_date, $end_date])->result_array();
+        return $this->db->query($sql, [$start_date, $end_date])->result_array();
+    }
+
+    public function get_detail_join_visit($req_no)
+    {
+        $sql = "
+            SELECT 
+                a.req_no,
+                a.siteid,
+                a.periode,
+                a.salesmanid,
+                COALESCE(NULLIF(a.nama_salesman, ''), b.nama_salesman, a.salesmanid) AS nama_salesman,
+                a.customerid,
+                COALESCE(NULLIF(a.nama_customer, ''), c.nama_customer, a.customerid) AS nama_customer,
+                a.user_id,
+                a.nama_professional,
+                a.keterangan,
+                a.status,
+                CASE
+                    WHEN a.status = '1' THEN 'Pending'
+                    WHEN a.status = '3' THEN 'Disetujui'
+                    ELSE 'Reject'
+                END AS status_desc,
+                a.reason,
+                a.visit_keterangan,
+                a.visit_doc,
+                a.approved_by,
+                a.approved_date,
+                a.created_by,
+                a.created_date,
+                a.modified_by,
+                a.modified_date
+            FROM req_visit_professional a
+            LEFT JOIN m_sales_salesman b ON a.salesmanid = b.salesmanid
+            LEFT JOIN m_customer c ON a.customerid = c.customerid
+            WHERE a.req_no = ?
+            LIMIT 1
+        ";
+        return $this->db->query($sql, [$req_no])->row_array();
+    }
+
+    public function load_breakdown_tpe_aktif($data)
+    {
+        $valid_roles = $this->get_role_sales();
+        $filter_salesman_tpe = $this->build_salesman_filter($data, 's', 'salesmanid');
+        $role_where = '';
+        if (!empty($valid_roles)) {
+            $escaped_roles = array_map(function($r) {
+                return "'" . $this->db->escape_str($r) . "'";
+            }, $valid_roles);
+            $role_where = " AND s.tipe_sales IN (" . implode(',', $escaped_roles) . ") ";
+        }
+
+        $sql = "
+            SELECT 
+                s.salesmanid,
+                s.nama_salesman,
+                s.tipe_sales,
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea,
+                s.supervisorid,
+                COALESCE(spv.nama_salesman, s.supervisorid, '-') AS nama_supervisor
+            FROM m_sales_salesman s
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT sub.nama_area ORDER BY sub.nama_area ASC SEPARATOR ', ') AS nama_subarea
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_regional r ON r.regionalid = msa.regionalid
+                LEFT JOIN m_area_areasite ar ON ar.areaid = msa.areaid
+                LEFT JOIN m_area_subarea sub ON sub.subareaid = msa.subareaid
+                GROUP BY msa.salesmanid
+            ) area ON s.salesmanid = area.salesmanid
+            LEFT JOIN m_sales_salesman spv ON spv.salesmanid = s.supervisorid
+            WHERE s.aktif = 1 
+              AND LOWER(s.nama_salesman) NOT LIKE '%vacant%'
+              {$role_where}
+              {$filter_salesman_tpe}
+            ORDER BY area.nama_regional ASC, area.nama_area ASC, s.nama_salesman ASC
+        ";
+
+        return $this->db->query($sql)->result_array();
+    }
+
+    public function load_breakdown_area($data)
+    {
+        return $this->load_breakdown_absensi($data);
     }
 
     public function load_detail_tpe_activity($data)
@@ -1068,18 +1565,27 @@ class Dashboard_tts_model extends CI_Model
                 s.salesmanid,
                 s.nama_salesman,
                 s.tipe_sales,
-                r.nama_regional,
-                ar.nama_area,
-                sub.nama_area AS nama_subarea
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea
             FROM m_sales_salesman s
-            LEFT JOIN m_salesman_area msa ON msa.salesmanid = s.salesmanid
-            LEFT JOIN m_area_regional r ON r.regionalid = msa.regionalid
-            LEFT JOIN m_area_areasite ar ON ar.areaid = msa.areaid
-            LEFT JOIN m_area_subarea sub ON sub.subareaid = msa.subareaid
+            LEFT JOIN (
+                SELECT 
+                    msa.salesmanid,
+                    GROUP_CONCAT(DISTINCT r.nama_regional ORDER BY r.nama_regional ASC SEPARATOR ', ') AS nama_regional,
+                    GROUP_CONCAT(DISTINCT ar.nama_area ORDER BY ar.nama_area ASC SEPARATOR ', ') AS nama_area,
+                    GROUP_CONCAT(DISTINCT sub.nama_area ORDER BY sub.nama_area ASC SEPARATOR ', ') AS nama_subarea
+                FROM m_salesman_area msa
+                LEFT JOIN m_area_regional r ON r.regionalid = msa.regionalid
+                LEFT JOIN m_area_areasite ar ON ar.areaid = msa.areaid
+                LEFT JOIN m_area_subarea sub ON sub.subareaid = msa.subareaid
+                WHERE msa.salesmanid = ?
+                GROUP BY msa.salesmanid
+            ) area ON s.salesmanid = area.salesmanid
             WHERE s.salesmanid = ?
             LIMIT 1
         ";
-        $salesman_info = $this->db->query($sql_salesman, [$salesmanid])->row_array();
+        $salesman_info = $this->db->query($sql_salesman, [$salesmanid, $salesmanid])->row_array();
 
         $sql_kunjungan = "
             SELECT 
@@ -1200,5 +1706,46 @@ class Dashboard_tts_model extends CI_Model
             'detailing' => $detailing_list,
             'absensi' => $absensi_list
         ];
+    }
+
+    // helper
+    private function build_salesman_filter($data, $table_alias = 'a', $salesman_col = 'salesmanid', $include_role_check = true)
+    {
+        $where = "";
+        $col = !empty($table_alias) ? "{$table_alias}.{$salesman_col}" : $salesman_col;
+
+        if (!empty($data['salesmanid'])) {
+            if (is_array($data['salesmanid'])) {
+                $escaped = array_map([$this->db, 'escape_str'], $data['salesmanid']);
+                $where .= " AND {$col} IN ('" . implode("','", $escaped) . "')";
+            } else {
+                $where .= " AND {$col} = '" . $this->db->escape_str($data['salesmanid']) . "'";
+            }
+        } elseif (!empty($data['subareaid'])) {
+            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE subareaid = '" . $this->db->escape_str($data['subareaid']) . "')";
+        } elseif (!empty($data['areaid'])) {
+            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE areaid = '" . $this->db->escape_str($data['areaid']) . "')";
+        } elseif (!empty($data['regionalid'])) {
+            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE regionalid = '" . $this->db->escape_str($data['regionalid']) . "')";
+        } else {
+            if (!empty($data['restrict_level']) && !empty($data['usersession'])) {
+                $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
+                if ($restrict_query) {
+                    $where .= " AND {$col} IN ({$restrict_query})";
+                }
+            }
+        }
+
+        if ($include_role_check) {
+            $valid_roles = $this->get_role_sales();
+            $role_in = "";
+            if (!empty($valid_roles)) {
+                $escaped_roles = array_map([$this->db, 'escape_str'], $valid_roles);
+                $role_in = " AND tipe_sales IN ('" . implode("','", $escaped_roles) . "')";
+            }
+            $where .= " AND {$col} IN (SELECT salesmanid FROM m_sales_salesman WHERE aktif = 1 AND LOWER(nama_salesman) NOT LIKE '%vacant%' {$role_in})";
+        }
+
+        return $where;
     }
 }

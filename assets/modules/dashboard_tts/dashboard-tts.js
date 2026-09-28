@@ -8,9 +8,15 @@ let DashboardTTS = (function ($) {
     let rawTrendData = null;
 
     let dtPeriode = $('#periode');
-    let dtArea = null;
-    let dtChannel = null;
-    let dtProduk = null;
+    let dtAbsensi = null;
+    let dtCall = null;
+    let dtKategori = null;
+    let dtUserWajib = null;
+    let dtDetailing = null;
+    let dtSelling = null;
+    let dtJoinVisit = null;
+    let dtTpeAktif = null;
+
     let dtModalKunjungan = null;
     let dtModalDetailing = null;
     let dtModalAbsensi = null;
@@ -132,12 +138,38 @@ let DashboardTTS = (function ($) {
         $(document).on('click', '.kpi-card-trigger, .small-box', function () {
             let kpi = $(this).data('kpi') || $(this).find('.kpi-card-trigger').data('kpi');
             if (kpi) {
-                if (kpi === 'detailing_produk' || kpi === 'selling_produk') {
-                    $('#tab_link_produk').tab('show');
-                } else if (kpi === 'join_activity') {
-                    $('#tab_link_channel').tab('show');
-                } else {
-                    $('#tab_link_area').tab('show');
+                switch (kpi) {
+                    case 'absensi':
+                        $('#tab_link_absensi').tab('show');
+                        break;
+                    case 'call':
+                        $('#tab_link_call').tab('show');
+                        break;
+                    case 'kategori':
+                    case 'kat_a':
+                        $('#tab_link_kategori').tab('show');
+                        break;
+                    case 'user_wajib':
+                        $('#tab_link_user_wajib').tab('show');
+                        break;
+                    case 'detailing_produk':
+                        $('#tab_link_detailing').tab('show');
+                        break;
+                    case 'selling_produk':
+                        $('#tab_link_selling').tab('show');
+                        break;
+                    case 'join_visit':
+                    case 'join_activity':
+                        $('#tab_link_join_visit').tab('show');
+                        break;
+                    case 'tpe_aktif':
+                    case 'all':
+                    case 'tpe':
+                        $('#tab_link_tpe_aktif').tab('show');
+                        break;
+                    default:
+                        $('#tab_link_absensi').tab('show');
+                        break;
                 }
 
                 $('html, body').animate({
@@ -160,9 +192,19 @@ let DashboardTTS = (function ($) {
             openDetailReportModal(sid, sname);
         });
 
-        $('#btn_export_area_excel').on('click', function () {
-            let params = getFilterParams();
-            window.location.href = common.baseURL("dashboard_tts/export_excel_area?" + $.param(params));
+        $(document).on('click', '.btn-detail-join-visit', function (e) {
+            e.stopPropagation();
+            let reqNo = $(this).data('reqno');
+            openDetailJoinVisitModal(reqNo);
+        });
+
+        $(document).on('click', '.img-gallery-thumb', function () {
+            let src = $(this).attr('src');
+            let title = $(this).data('title') || 'Preview Foto';
+            $('#preview_img_element').attr('src', src);
+            $('#preview_image_title').text(title);
+            $('#preview_img_download_link').attr('href', src);
+            $('#modal_preview_image').modal('show');
         });
     }
 
@@ -184,21 +226,14 @@ let DashboardTTS = (function ($) {
     function loadAllDashboardData() {
         loadKpiSummary();
         loadMonthlyTrend();
-        loadBreakdownArea();
-        loadBreakdownChannel();
-        loadBreakdownProduk();
-    }
-
-    function getBadgeClass(pct) {
-        if (pct >= 100) return 'badge-success-custom';
-        if (pct >= 80) return 'badge-warning-custom';
-        return 'badge-danger-custom';
-    }
-
-    function getBadgeText(pct) {
-        if (pct >= 100) return 'Tercapai (' + pct + '%)';
-        if (pct >= 80) return 'Mendekati (' + pct + '%)';
-        return 'Kurang (' + pct + '%)';
+        loadBreakdownAbsensi();
+        loadBreakdownCall();
+        loadBreakdownKategori();
+        loadBreakdownUserWajib();
+        loadBreakdownDetailing();
+        loadBreakdownSelling();
+        loadBreakdownJoinVisit();
+        loadBreakdownTpeAktif();
     }
 
     function formatNumber(num) {
@@ -248,128 +283,119 @@ let DashboardTTS = (function ($) {
                     let abs = kpi.absensi;
                     if (abs) {
                         $('#kpi_absensi_pct').text(abs.percentage + '%');
-                        $('#kpi_absensi_hadir').text(formatNumber(abs.actual));
-                        $('#kpi_absensi_total').text(formatNumber(abs.total));
-                        
-                        let absHtml = '';
-                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Hadir: <b>' + formatNumber(abs.actual_fisik || 0) + '</b></div>';
-                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Izin: <b>' + formatNumber(abs.izin || abs.hf || 0) + '</b></div>';
-                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Sakit: <b>' + formatNumber(abs.sakit || 0) + '</b></div>';
-                        absHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Cuti: <b>' + formatNumber(abs.cuti || 0) + '</b></div>';
-                        $('#kpi_absensi_rincian').html(absHtml);
+                        $('#kpi_absensi_act').text(formatNumber(abs.actual));
+                        $('#kpi_absensi_tgt').text(formatNumber(abs.total));
+                        $('#kpi_absensi_hk').text(abs.hari_kerja || 0);
+
+                        let rincianAbs = '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Hadir: <b>' + formatNumber(abs.actual_fisik || abs.actual) + '</b></span></div>' +
+                                         '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Izin: <b>' + formatNumber(abs.izin || 0) + '</b></span></div>' +
+                                         '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Sakit: <b>' + formatNumber(abs.sakit || 0) + '</b></span></div>' +
+                                         '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Cuti: <b>' + formatNumber(abs.cuti || 0) + '</b></span></div>';
+                        $('#kpi_absensi_rincian').html(rincianAbs);
                     }
 
-                    let cal = kpi.call;
-                    if (cal) {
-                        let totalRealisasiCall = cal.actual !== undefined ? cal.actual : ((cal.actual_call || 0) + (cal.extra_call || 0));
-                        $('#kpi_ec_pct').text(cal.percentage_ec + '%');
-                        $('#kpi_call_total').text(formatNumber(totalRealisasiCall));
-                        $('#kpi_call_plan').text(formatNumber(cal.planned_call));
+                    let call = kpi.call;
+                    if (call) {
+                        $('#kpi_call_pct').text(call.percentage_ec + '%');
+                        $('#kpi_call_act').text(formatNumber(call.actual));
+                        $('#kpi_call_tgt').text(formatNumber(call.planned_call));
 
-                        let calHtml = '';
-                        calHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Call: <b>' + formatNumber(cal.actual_call || 0) + '</b></div>';
-                        calHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Extra Call: <b>' + formatNumber(cal.extra_call || cal.actual_ec || 0) + '</b></div>';
-                        $('#kpi_call_rincian').html(calHtml);
+                        let rincianCall = '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Call: <b>' + formatNumber(call.actual_call || 0) + '</b></span></div>' +
+                                          '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Extra Call: <b>' + formatNumber(call.extra_call || call.actual_ec || 0) + '</b></span></div>';
+                        $('#kpi_call_rincian').html(rincianCall);
                     }
 
                     let kat = kpi.kategori;
-                    let totalOutletKat = kat.total_outlet !== undefined ? kat.total_outlet : (kat.actual || 0);
-                    $('#kpi_kategori_total').text(formatNumber(totalOutletKat));
-
-                    if (Array.isArray(kat.rincian) && kat.rincian.length > 0) {
-                        let rincianHtml = '';
-                        kat.rincian.forEach(function (item) {
-                            let typeName = item.typeid || 'Lainnya';
-                            let count = formatNumber(item.total_outlet);
-                            rincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' + typeName + ': ' + count + '">' + typeName + ': <b>' + count + '</b></div>';
-                        });
-                        $('#kpi_kategori_rincian').html(rincianHtml).attr('title', kat.rincian_text || '');
-                    } else {
-                        $('#kpi_kategori_rincian').html('<div>-</div>').attr('title', '');
+                    if (kat) {
+                        $('#kpi_kategori_total').text(formatNumber(kat.total_outlet));
+                        if (kat.rincian && kat.rincian.length > 0) {
+                            let rincianHtml = '';
+                            $.each(kat.rincian.slice(0, 6), function (i, item) {
+                                rincianHtml += '<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' +
+                                    item.typeid + ': <b>' + formatNumber(item.total_outlet) + '</b>' +
+                                    '</div>';
+                            });
+                            $('#kpi_kategori_rincian').html(rincianHtml);
+                        } else {
+                            $('#kpi_kategori_rincian').html('-');
+                        }
                     }
 
-                    let usr = kpi.user_wajib;
-                    $('#kpi_user_pct').text(usr.percentage + '%');
-                    $('#kpi_user_act').text(formatNumber(usr.actual));
-                    $('#kpi_user_tgt').text(formatNumber(usr.target));
-
-                    if (Array.isArray(usr.rincian) && usr.rincian.length > 0) {
-                        let userRincianHtml = '';
-                        let top4 = usr.rincian.slice(0, 4);
-                        top4.forEach(function (item) {
-                            let spName = item.nama_spesialisasi || 'Lainnya';
-                            let act = formatNumber(item.actual);
-                            let tgt = formatNumber(item.target);
-                            userRincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + spName + ': ' + act + ' / ' + tgt + '">' + spName + ': <b>' + act + '</b>/' + tgt + '</div>';
-                        });
-                        $('#kpi_user_rincian').html(userRincianHtml).attr('title', usr.rincian_text || '');
-                    } else {
-                        $('#kpi_user_rincian').html('<div>-</div>').attr('title', '');
+                    let uw = kpi.user_wajib;
+                    if (uw) {
+                        $('#kpi_user_pct').text(uw.percentage + '%');
+                        $('#kpi_user_act').text(formatNumber(uw.actual));
+                        $('#kpi_user_tgt').text(formatNumber(uw.target));
+                        if (uw.rincian && uw.rincian.length > 0) {
+                            let rincianHtml = '';
+                            $.each(uw.rincian.slice(0, 4), function (i, item) {
+                                rincianHtml += '<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' +
+                                    item.nama_spesialisasi + ': <b>' + formatNumber(item.actual) + '/' + formatNumber(item.target) + '</b>' +
+                                    '</div>';
+                            });
+                            $('#kpi_user_rincian').html(rincianHtml);
+                        } else {
+                            $('#kpi_user_rincian').html('-');
+                        }
                     }
 
                     let det = kpi.detailing_produk;
-                    $('#kpi_detailing_pct').text(det.percentage + '%');
-                    $('#kpi_detailing_act').text(formatNumber(det.actual));
-                    $('#kpi_detailing_tgt').text(formatNumber(det.target));
-
-                    if (Array.isArray(det.rincian) && det.rincian.length > 0) {
-                        let detRincianHtml = '';
-                        let top4Det = det.rincian.slice(0, 4);
-                        top4Det.forEach(function (item) {
-                            let prdName = item.nama_produk || item.product_id || 'Produk';
-                            let act = formatNumber(item.actual);
-                            let tgt = formatNumber(item.target);
-                            detRincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + prdName + ': ' + act + ' / ' + tgt + '">' + prdName + ': <b>' + act + '</b>/' + tgt + '</div>';
-                        });
-                        $('#kpi_detailing_rincian').html(detRincianHtml).attr('title', det.rincian_text || '');
-                    } else {
-                        $('#kpi_detailing_rincian').html('<div>-</div>').attr('title', '');
+                    if (det) {
+                        $('#kpi_detailing_pct').text(det.percentage + '%');
+                        $('#kpi_detailing_act').text(formatNumber(det.actual));
+                        $('#kpi_detailing_tgt').text(formatNumber(det.target));
+                        if (det.rincian && det.rincian.length > 0) {
+                            let rincianHtml = '';
+                            $.each(det.rincian.slice(0, 4), function (i, item) {
+                                rincianHtml += '<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' +
+                                    item.nama_produk + ' ' + item.percentage + '%: <b>' + formatNumber(item.actual) + '/' + formatNumber(item.target) + '</b>' +
+                                    '</div>';
+                            });
+                            $('#kpi_detailing_rincian').html(rincianHtml);
+                        } else {
+                            $('#kpi_detailing_rincian').html('-');
+                        }
                     }
 
                     let sel = kpi.selling_produk;
-                    $('#kpi_selling_pct').text(sel.percentage + '%');
-                    $('#kpi_selling_act').text(formatNumber(sel.actual));
-                    $('#kpi_selling_tgt').text(formatNumber(sel.target));
-
-                    if (Array.isArray(sel.rincian) && sel.rincian.length > 0) {
-                        let selRincianHtml = '';
-                        let top4Sel = sel.rincian.slice(0, 4);
-                        top4Sel.forEach(function (item) {
-                            let prdName = item.nama_produk || item.product_id || 'Produk';
-                            let act = formatNumber(item.actual);
-                            let tgt = formatNumber(item.target);
-                            selRincianHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + prdName + ': ' + act + ' / ' + tgt + '">' + prdName + ': <b>' + act + '</b>/' + tgt + '</div>';
-                        });
-                        $('#kpi_selling_rincian').html(selRincianHtml).attr('title', sel.rincian_text || '');
-                    } else {
-                        $('#kpi_selling_rincian').html('<div>-</div>').attr('title', '');
+                    if (sel) {
+                        $('#kpi_selling_pct').text(sel.percentage + '%');
+                        $('#kpi_selling_act').text(formatNumber(sel.actual));
+                        $('#kpi_selling_tgt').text(formatNumber(sel.target));
+                        if (sel.rincian && sel.rincian.length > 0) {
+                            let rincianHtml = '';
+                            $.each(sel.rincian.slice(0, 4), function (i, item) {
+                                rincianHtml += '<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' +
+                                    item.nama_produk + ' ' + item.percentage + '%: <b>' + formatNumber(item.actual) + '/' + formatNumber(item.target) + '</b>' +
+                                    '</div>';
+                            });
+                            $('#kpi_selling_rincian').html(rincianHtml);
+                        } else {
+                            $('#kpi_selling_rincian').html('-');
+                        }
                     }
 
                     let jn = kpi.join_activity;
                     if (jn) {
                         $('#kpi_join_act').text(formatNumber(jn.actual));
-                        let joinHtml = '';
-                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Pending: <b>' + formatNumber(jn.pending || 0) + '</b></div>';
-                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Approved: <b>' + formatNumber(jn.approved || 0) + '</b></div>';
-                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Sudah Detailing: <b>' + formatNumber(jn.sudah_detailing || 0) + '</b></div>';
-                        joinHtml += '<div style="white-space: nowrap; margin-bottom: 1px;">Reject: <b>' + formatNumber(jn.reject || 0) + '</b></div>';
-                        $('#kpi_join_rincian').html(joinHtml);
+                        let rincianJoin = '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Pending: <b>' + formatNumber(jn.pending || 0) + '</b></span></div>' +
+                                          '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Approved: <b>' + formatNumber(jn.approved || 0) + '</b></span></div>' +
+                                          '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Sudah Detailing: <b>' + formatNumber(jn.sudah_detailing || 0) + '</b></span></div>' +
+                                          '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>Reject: <b>' + formatNumber(jn.reject || 0) + '</b></span></div>';
+                        $('#kpi_join_rincian').html(rincianJoin);
                     }
 
-                    let tpe = kpi.tpe;
-                    if (tpe) {
-                        $('#kpi_tpe_act').text(formatNumber(tpe.actual !== undefined ? tpe.actual : (tpe.total || 0)));
-                        if (Array.isArray(tpe.rincian) && tpe.rincian.length > 0) {
-                            let tpeHtml = '';
-                            let top4Tpe = tpe.rincian.slice(0, 4);
-                            top4Tpe.forEach(function (item) {
-                                let tName = item.tipe_sales || 'Lainnya';
-                                let count = formatNumber(item.total || 0);
-                                tpeHtml += '<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;" title="' + tName + ': ' + count + '">' + tName + ': <b>' + count + '</b></div>';
+                    let tp = kpi.tpe;
+                    if (tp) {
+                        $('#kpi_tpe_act').text(formatNumber(tp.actual));
+                        if (tp.rincian && tp.rincian.length > 0) {
+                            let rincianTpe = '';
+                            $.each(tp.rincian.slice(0, 4), function (i, item) {
+                                rincianTpe += '<div style="display: flex; justify-content: flex-end; gap: 8px;"><span>' + item.tipe_sales + ': <b>' + formatNumber(item.total) + '</b></span></div>';
                             });
-                            $('#kpi_tpe_rincian').html(tpeHtml);
+                            $('#kpi_tpe_rincian').html(rincianTpe);
                         } else {
-                            $('#kpi_tpe_rincian').html('<div>-</div>');
+                            $('#kpi_tpe_rincian').html('-');
                         }
                     }
                 }
@@ -382,8 +408,8 @@ let DashboardTTS = (function ($) {
 
     function loadMonthlyTrend() {
         let params = getFilterParams();
-        $('#loading_trend').show();
         $('#label_trend_year').text('(' + params.tahun + ')');
+        $('#loading_trend').show();
 
         $.ajax({
             url: common.baseURL("dashboard_tts/load_trend"),
@@ -392,9 +418,11 @@ let DashboardTTS = (function ($) {
             data: params,
             success: function (res) {
                 $('#loading_trend').hide();
-                rawTrendData = res;
-                let activeMetric = $('#btn_toggle_metrics button.active').data('metric') || 'all';
-                renderTrendChart(activeMetric);
+                if (res && res.series) {
+                    rawTrendData = res;
+                    let currentMetric = $('#btn_toggle_metrics button.active').data('metric') || 'all';
+                    renderTrendChart(currentMetric);
+                }
             },
             error: function () {
                 $('#loading_trend').hide();
@@ -412,150 +440,216 @@ let DashboardTTS = (function ($) {
             chartTrendInstance.destroy();
         }
 
-        let allDatasets = [
-            {
-                label: 'Ketercapaian Kat A',
-                data: rawTrendData.series.kat_a,
-                borderColor: '#7b1fa2',
-                backgroundColor: 'rgba(123, 31, 162, 0.1)',
-                borderWidth: 2.5,
-                tension: 0.35,
-                fill: true,
-                metricKey: 'kat_a'
-            },
-            {
-                label: 'User Wajib',
-                data: rawTrendData.series.user_wajib,
-                borderColor: '#e65100',
-                backgroundColor: 'rgba(230, 81, 0, 0.1)',
-                borderWidth: 2.5,
-                tension: 0.35,
-                fill: true,
-                metricKey: 'user_wajib'
-            },
-            {
-                label: 'Detailing Produk',
-                data: rawTrendData.series.detailing,
-                borderColor: '#00897b',
-                backgroundColor: 'rgba(0, 137, 123, 0.1)',
-                borderWidth: 2.5,
-                tension: 0.35,
-                fill: true,
-                metricKey: 'detailing'
-            },
-            {
-                label: 'Selling Produk',
-                data: rawTrendData.series.selling,
-                borderColor: '#e53935',
-                backgroundColor: 'rgba(229, 57, 53, 0.1)',
-                borderWidth: 2.5,
-                tension: 0.35,
-                fill: true,
-                metricKey: 'selling'
-            },
-            {
-                label: 'Call Kunjungan',
-                data: rawTrendData.series.call,
-                borderColor: '#1976d2',
-                backgroundColor: 'rgba(25, 118, 210, 0.1)',
-                borderWidth: 2.5,
-                tension: 0.35,
-                fill: true,
-                metricKey: 'call'
-            }
-        ];
+        let metricConfigs = {
+            absensi: { label: 'Kehadiran TPE', color: '#2e7d32', bg: 'rgba(46, 125, 50, 0.12)', unit: 'HK' },
+            call: { label: 'Performa TPE', color: '#00acc1', bg: 'rgba(0, 172, 193, 0.12)', unit: 'Call' },
+            user_wajib: { label: 'User Wajib', color: '#f39c12', bg: 'rgba(243, 156, 18, 0.12)', unit: 'User' },
+            detailing: { label: 'Detailing Produk', color: '#00897b', bg: 'rgba(0, 137, 123, 0.12)', unit: 'Detailing' },
+            selling: { label: 'Selling Produk', color: '#e53935', bg: 'rgba(229, 57, 53, 0.12)', unit: 'Qty' }
+        };
 
-        let visibleDatasets = allDatasets;
-        if (metricFilter && metricFilter !== 'all') {
-            visibleDatasets = allDatasets.filter(function (d) {
-                return d.metricKey === metricFilter;
+        if (!metricFilter || metricFilter === 'all') {
+            let datasets = [];
+            Object.keys(metricConfigs).forEach(function (key) {
+                let cfg = metricConfigs[key];
+                let sData = rawTrendData.series[key];
+                if (sData && sData.pct) {
+                    datasets.push({
+                        label: cfg.label + ' (%)',
+                        data: sData.pct,
+                        borderColor: cfg.color,
+                        backgroundColor: cfg.bg,
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.35,
+                        fill: false,
+                        metricKey: key
+                    });
+                }
             });
-        }
 
-        chartTrendInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: rawTrendData.labels,
-                datasets: visibleDatasets
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
+            chartTrendInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: rawTrendData.labels,
+                    datasets: datasets
                 },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            font: { size: 12, weight: '600' }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                font: { size: 12, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                            titleFont: { size: 13, weight: '700' },
+                            bodyFont: { size: 12 },
+                            padding: 10,
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: function (context) {
+                                    let mKey = context.dataset.metricKey;
+                                    let idx = context.dataIndex;
+                                    let pct = context.parsed.y;
+                                    let sData = rawTrendData.series[mKey];
+                                    let act = sData && sData.actual ? sData.actual[idx] : 0;
+                                    let tgt = sData && sData.target ? sData.target[idx] : 0;
+                                    let label = metricConfigs[mKey] ? metricConfigs[mKey].label : (context.dataset.label || '');
+                                    return label + ': ' + pct + '% (Realisasi: ' + formatNumber(act) + ' / Target: ' + formatNumber(tgt) + ')';
+                                }
+                            }
                         }
                     },
-                    tooltip: {
-                        backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                        titleFont: { size: 13, weight: '700' },
-                        bodyFont: { size: 12 },
-                        padding: 10,
-                        cornerRadius: 6
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#f0f2f5' },
-                        ticks: { font: { size: 11 } }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 11 } }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f0f2f5' },
+                            ticks: {
+                                font: { size: 11 },
+                                callback: function (val) {
+                                    return val + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11 } }
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            let cfg = metricConfigs[metricFilter] || { label: 'Metrik', color: '#3c8dbc', bg: 'rgba(60, 141, 188, 0.2)', unit: '' };
+            let sData = rawTrendData.series[metricFilter] || { actual: [], target: [], pct: [] };
+
+            let datasets = [
+                {
+                    label: 'Target ' + cfg.label,
+                    data: sData.target,
+                    backgroundColor: 'rgba(243, 156, 18, 0.75)',
+                    borderColor: '#e67e22',
+                    borderWidth: 1,
+                    borderRadius: 4
+                },
+                {
+                    label: 'Realisasi ' + cfg.label,
+                    data: sData.actual,
+                    backgroundColor: metricFilter === 'user_wajib' ? '#3c8dbc' : cfg.color,
+                    borderColor: metricFilter === 'user_wajib' ? '#367fa9' : cfg.color,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }
+            ];
+
+            chartTrendInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: rawTrendData.labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                font: { size: 12, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                            titleFont: { size: 13, weight: '700' },
+                            bodyFont: { size: 12 },
+                            padding: 10,
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: function (context) {
+                                    let idx = context.dataIndex;
+                                    let val = context.parsed.y;
+                                    let pct = sData.pct && sData.pct[idx] !== undefined ? sData.pct[idx] : 0;
+                                    let label = context.dataset.label || '';
+                                    if (context.datasetIndex === 1) {
+                                        return label + ': ' + formatNumber(val) + ' ' + (cfg.unit || '') + ' (' + pct + '% tercapai)';
+                                    }
+                                    return label + ': ' + formatNumber(val) + ' ' + (cfg.unit || '');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f0f2f5' },
+                            ticks: {
+                                font: { size: 11 },
+                                callback: function (val) {
+                                    return formatNumber(val);
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
     }
 
-    function loadBreakdownArea() {
+    function loadBreakdownAbsensi() {
         let params = getFilterParams();
-        $('#loading_breakdown_area').show();
+        $('#loading_breakdown_absensi').show();
 
-        if (dtArea) {
-            dtArea.destroy();
-            dtArea = null;
+        if (dtAbsensi) {
+            dtAbsensi.destroy();
+            dtAbsensi = null;
         }
 
         $.ajax({
-            url: common.baseURL("dashboard_tts/load_breakdown_area"),
+            url: common.baseURL("dashboard_tts/load_breakdown_absensi"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
-                $('#loading_breakdown_area').hide();
+                $('#loading_breakdown_absensi').hide();
                 let html = '';
                 if (res && res.length > 0) {
                     $.each(res, function (i, row) {
                         html += '<tr>';
                         html += '<td class="text-center">' + (i + 1) + '</td>';
-                        html += '<td>' + (row.nama_regional || '-') + '</td>';
-                        html += '<td>' + (row.nama_area || '-') + '</td>';
-                        html += '<td>' + (row.nama_subarea || '-') + '</td>';
-                        html += '<td><strong>' + (row.nama_salesman || '-') + '</strong> <br><small class="text-muted">' + row.salesmanid + ' (' + (row.tipe_sales || '-') + ')</small></td>';
-                        html += '<td class="text-center">' + formatPctBadge(row.pct_absensi) + '<br><small>' + row.total_hadir + '/' + row.total_hari + ' HK</small></td>';
-                        html += '<td class="text-center">' + formatNumber(row.total_call) + '</td>';
-                        html += '<td class="text-center">' + formatPctBadge(row.pct_ec) + '<br><small>' + row.total_ec + ' EC</small></td>';
-                        html += '<td class="text-center">' + formatPctBadge(row.pct_kat_a) + '<br><small>' + row.act_kat_a + '/' + row.tgt_kat_a + '</small></td>';
-                        html += '<td class="text-center">' + formatPctBadge(row.pct_user_wajib) + '<br><small>' + row.act_user_wajib + '/' + row.tgt_user_wajib + '</small></td>';
-                        html += '<td class="text-center">' + formatNumber(row.total_detailing) + '</td>';
-                        html += '<td class="text-center">' + formatPctBadge(row.pct_selling) + '<br><small>' + row.act_selling + '/' + row.tgt_selling + '</small></td>';
-                        html += '<td class="text-center"><button type="button" class="btn btn-xs btn-primary btn-detail-tpe" data-sid="' + row.salesmanid + '" data-sname="' + row.nama_salesman + '" title="Lihat Detail Log Transaksi"><i class="fa fa-search"></i> Detail</button></td>';
+                        html += '<td><code>' + row.salesmanid + '</code></td>';
+                        html += '<td><strong>' + (row.nama_salesman || '-') + '</strong></td>';
+                        html += '<td>' + (row.nama_subarea || row.nama_area || '-') + '</td>';
+                        html += '<td class="text-center"><strong>' + row.hari_kerja + '</strong> HK</td>';
+                        html += '<td class="text-center">' + formatNumber(row.hadir) + '</td>';
+                        html += '<td class="text-center">' + formatNumber(row.izin) + '</td>';
+                        html += '<td class="text-center">' + formatNumber(row.sakit) + '</td>';
+                        html += '<td class="text-center">' + formatNumber(row.cuti) + '</td>';
+                        html += '<td class="text-center">' + formatPctBadge(row.percentage) + '</td>';
                         html += '</tr>';
                     });
                 }
-                $('#table_breakdown_area tbody').html(html);
+                $('#table_breakdown_absensi tbody').html(html);
 
                 if ($.fn.DataTable) {
-                    dtArea = $('#table_breakdown_area').DataTable({
+                    dtAbsensi = $('#table_breakdown_absensi').DataTable({
                         pageLength: 10,
                         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
                         language: dtLanguageIndo,
@@ -565,96 +659,92 @@ let DashboardTTS = (function ($) {
                 }
             },
             error: function () {
-                $('#loading_breakdown_area').hide();
+                $('#loading_breakdown_absensi').hide();
             }
         });
     }
 
-    function loadBreakdownChannel() {
+    function loadBreakdownCall() {
         let params = getFilterParams();
-        $('#loading_breakdown_channel').show();
+        $('#loading_breakdown_call').show();
 
-        if (dtChannel) {
-            dtChannel.destroy();
-            dtChannel = null;
+        if (dtCall) {
+            dtCall.destroy();
+            dtCall = null;
         }
 
         $.ajax({
-            url: common.baseURL("dashboard_tts/load_breakdown_channel_spesialis"),
+            url: common.baseURL("dashboard_tts/load_breakdown_call"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
-                $('#loading_breakdown_channel').hide();
+                $('#loading_breakdown_call').hide();
                 let html = '';
                 if (res && res.length > 0) {
                     $.each(res, function (i, row) {
-                        let avg = (row.total_user > 0) ? (row.total_kunjungan_detailing / row.total_user).toFixed(1) : 0;
                         html += '<tr>';
                         html += '<td class="text-center">' + (i + 1) + '</td>';
-                        html += '<td><i class="fa fa-stethoscope text-success"></i> <strong>' + (row.nama_spesialisasi || '-') + '</strong></td>';
-                        html += '<td><span class="label label-default" style="font-size: 11px;">' + (row.jenis_channel || '-') + '</span></td>';
-                        html += '<td class="text-center"><strong>' + formatNumber(row.total_user) + '</strong> User</td>';
-                        html += '<td class="text-center"><strong>' + formatNumber(row.total_kunjungan_detailing) + '</strong> Kunjungan</td>';
-                        html += '<td class="text-center">' + avg + ' visit / user</td>';
+                        html += '<td><code>' + row.salesmanid + '</code></td>';
+                        html += '<td><strong>' + (row.nama_salesman || '-') + '</strong></td>';
+                        html += '<td>' + (row.nama_subarea || row.nama_area || '-') + '</td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.target_visit) + '</strong></td>';
+                        html += '<td class="text-center">' + formatNumber(row.call_act) + '</td>';
+                        html += '<td class="text-center">' + formatNumber(row.extra_call) + '</td>';
+                        html += '<td class="text-center">' + formatPctBadge(row.percentage) + '</td>';
                         html += '</tr>';
                     });
                 }
-                $('#table_breakdown_channel tbody').html(html);
+                $('#table_breakdown_call tbody').html(html);
 
-                // Inisialisasi DataTables
                 if ($.fn.DataTable) {
-                    dtChannel = $('#table_breakdown_channel').DataTable({
+                    dtCall = $('#table_breakdown_call').DataTable({
                         pageLength: 10,
                         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
                         language: dtLanguageIndo,
-                        order: [[4, 'desc']],
+                        order: [[0, 'asc']],
                         responsive: true
                     });
                 }
             },
             error: function () {
-                $('#loading_breakdown_channel').hide();
+                $('#loading_breakdown_call').hide();
             }
         });
     }
 
-    function loadBreakdownProduk() {
+    function loadBreakdownKategori() {
         let params = getFilterParams();
-        $('#loading_breakdown_produk').show();
+        $('#loading_breakdown_kategori').show();
 
-        if (dtProduk) {
-            dtProduk.destroy();
-            dtProduk = null;
+        if (dtKategori) {
+            dtKategori.destroy();
+            dtKategori = null;
         }
 
         $.ajax({
-            url: common.baseURL("dashboard_tts/load_breakdown_produk"),
+            url: common.baseURL("dashboard_tts/load_breakdown_kategori"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
-                $('#loading_breakdown_produk').hide();
+                $('#loading_breakdown_kategori').hide();
                 let html = '';
                 if (res && res.length > 0) {
                     $.each(res, function (i, row) {
                         html += '<tr>';
                         html += '<td class="text-center">' + (i + 1) + '</td>';
-                        html += '<td><code>' + row.product_id + '</code></td>';
-                        html += '<td><strong>' + (row.nama_produk || row.product_id) + '</strong></td>';
-                        html += '<td class="text-center">' + formatNumber(row.actual_detailing) + '</td>';
-                        html += '<td class="text-center">' + formatNumber(row.target_detailing) + '</td>';
-                        html += '<td class="text-center">' + formatPctBadge(row.pct_detailing) + '</td>';
-                        html += '<td class="text-center">' + formatNumber(row.actual_selling_qty) + '</td>';
-                        html += '<td class="text-center">' + formatNumber(row.target_selling_qty) + '</td>';
-                        html += '<td class="text-center">' + formatPctBadge(row.pct_selling) + '</td>';
+                        html += '<td><code>' + row.typeid + '</code></td>';
+                        html += '<td><strong>' + (row.nama_type || row.typeid) + '</strong></td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.jumlah_outlet) + '</strong> Outlet</td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.jumlah_visit) + '</strong> Visit</td>';
                         html += '</tr>';
                     });
                 }
-                $('#table_breakdown_produk tbody').html(html);
+                $('#table_breakdown_kategori tbody').html(html);
 
                 if ($.fn.DataTable) {
-                    dtProduk = $('#table_breakdown_produk').DataTable({
+                    dtKategori = $('#table_breakdown_kategori').DataTable({
                         pageLength: 10,
                         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
                         language: dtLanguageIndo,
@@ -664,7 +754,364 @@ let DashboardTTS = (function ($) {
                 }
             },
             error: function () {
-                $('#loading_breakdown_produk').hide();
+                $('#loading_breakdown_kategori').hide();
+            }
+        });
+    }
+
+    function loadBreakdownUserWajib() {
+        let params = getFilterParams();
+        $('#loading_breakdown_user_wajib').show();
+
+        if (dtUserWajib) {
+            dtUserWajib.destroy();
+            dtUserWajib = null;
+        }
+
+        $.ajax({
+            url: common.baseURL("dashboard_tts/load_breakdown_user_wajib"),
+            type: 'POST',
+            dataType: 'json',
+            data: params,
+            success: function (res) {
+                $('#loading_breakdown_user_wajib').hide();
+                let html = '';
+                if (res && res.length > 0) {
+                    $.each(res, function (i, row) {
+                        html += '<tr>';
+                        html += '<td class="text-center">' + (i + 1) + '</td>';
+                        html += '<td><i class="fa fa-user-md text-warning"></i> <strong>' + (row.nama_spesialisasi || '-') + '</strong></td>';
+                        html += '<td><span class="label label-default">' + (row.tipe_spesialis || 'Dokter') + '</span></td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.target_spesialis) + '</strong></td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.aktual) + '</strong></td>';
+                        html += '<td class="text-center">' + formatPctBadge(row.percentage) + '</td>';
+                        html += '</tr>';
+                    });
+                }
+                $('#table_breakdown_user_wajib tbody').html(html);
+
+                if ($.fn.DataTable) {
+                    dtUserWajib = $('#table_breakdown_user_wajib').DataTable({
+                        pageLength: 10,
+                        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                        language: dtLanguageIndo,
+                        order: [[4, 'desc']],
+                        responsive: true
+                    });
+                }
+            },
+            error: function () {
+                $('#loading_breakdown_user_wajib').hide();
+            }
+        });
+    }
+
+    function loadBreakdownDetailing() {
+        let params = getFilterParams();
+        $('#loading_breakdown_detailing').show();
+
+        if (dtDetailing) {
+            dtDetailing.destroy();
+            dtDetailing = null;
+        }
+
+        $.ajax({
+            url: common.baseURL("dashboard_tts/load_breakdown_detailing"),
+            type: 'POST',
+            dataType: 'json',
+            data: params,
+            success: function (res) {
+                $('#loading_breakdown_detailing').hide();
+                let html = '';
+                if (res && res.length > 0) {
+                    $.each(res, function (i, row) {
+                        html += '<tr>';
+                        html += '<td class="text-center">' + (i + 1) + '</td>';
+                        html += '<td><code>' + row.productid + '</code></td>';
+                        html += '<td><strong>' + (row.nama_invoice || row.productid) + '</strong></td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.target) + '</strong></td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.aktual) + '</strong></td>';
+                        html += '<td class="text-center">' + formatPctBadge(row.percentage) + '</td>';
+                        html += '</tr>';
+                    });
+                }
+                $('#table_breakdown_detailing tbody').html(html);
+
+                if ($.fn.DataTable) {
+                    dtDetailing = $('#table_breakdown_detailing').DataTable({
+                        pageLength: 10,
+                        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                        language: dtLanguageIndo,
+                        order: [[4, 'desc']],
+                        responsive: true
+                    });
+                }
+            },
+            error: function () {
+                $('#loading_breakdown_detailing').hide();
+            }
+        });
+    }
+
+    function loadBreakdownSelling() {
+        let params = getFilterParams();
+        $('#loading_breakdown_selling').show();
+
+        if (dtSelling) {
+            dtSelling.destroy();
+            dtSelling = null;
+        }
+
+        $.ajax({
+            url: common.baseURL("dashboard_tts/load_breakdown_selling"),
+            type: 'POST',
+            dataType: 'json',
+            data: params,
+            success: function (res) {
+                $('#loading_breakdown_selling').hide();
+                let html = '';
+                if (res && res.length > 0) {
+                    $.each(res, function (i, row) {
+                        html += '<tr>';
+                        html += '<td class="text-center">' + (i + 1) + '</td>';
+                        html += '<td><code>' + row.productid + '</code></td>';
+                        html += '<td><strong>' + (row.nama_invoice || row.productid) + '</strong></td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.target_qty) + '</strong></td>';
+                        html += '<td class="text-center"><strong>' + formatNumber(row.aktual) + '</strong></td>';
+                        html += '<td class="text-center">' + formatPctBadge(row.percentage) + '</td>';
+                        html += '</tr>';
+                    });
+                }
+                $('#table_breakdown_selling tbody').html(html);
+
+                if ($.fn.DataTable) {
+                    dtSelling = $('#table_breakdown_selling').DataTable({
+                        pageLength: 10,
+                        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                        language: dtLanguageIndo,
+                        order: [[4, 'desc']],
+                        responsive: true
+                    });
+                }
+            },
+            error: function () {
+                $('#loading_breakdown_selling').hide();
+            }
+        });
+    }
+
+    function loadBreakdownJoinVisit() {
+        let params = getFilterParams();
+        $('#loading_breakdown_join_visit').show();
+
+        if (dtJoinVisit) {
+            dtJoinVisit.destroy();
+            dtJoinVisit = null;
+        }
+
+        $.ajax({
+            url: common.baseURL("dashboard_tts/load_breakdown_join_visit"),
+            type: 'POST',
+            dataType: 'json',
+            data: params,
+            success: function (res) {
+                $('#loading_breakdown_join_visit').hide();
+                let html = '';
+                if (res && res.length > 0) {
+                    $.each(res, function (i, row) {
+                        let statusBadge = '<span class="label label-danger">Reject</span>';
+                        if (row.status == '1') {
+                            statusBadge = '<span class="label label-warning">Pending</span>';
+                        } else if (row.status == '3') {
+                            let isDetailing = (row.visit_keterangan && row.visit_keterangan.indexOf('Sudah Detailing') !== -1) ||
+                                              (row.keterangan && row.keterangan.indexOf('Sudah Detailing') !== -1);
+                            statusBadge = '<span class="label label-success">Disetujui</span>' + (isDetailing ? ' <span class="label label-info" style="font-size: 10px;">Sudah Detailing</span>' : '');
+                        }
+
+                        html += '<tr>';
+                        html += '<td class="text-center">' + (i + 1) + '</td>';
+                        html += '<td class="text-center">' + (row.periode || '-') + '</td>';
+                        html += '<td><strong>' + (row.nama_salesman || '-') + '</strong><br><small class="text-muted">' + row.salesmanid + '</small></td>';
+                        html += '<td><strong>' + (row.nama_outlet || '-') + '</strong><br><small class="text-muted">' + (row.customerid || '-') + '</small></td>';
+                        html += '<td><i class="fa fa-user-md text-maroon"></i> <strong>' + (row.nama_user || '-') + '</strong></td>';
+                        html += '<td class="text-center">' + statusBadge + '</td>';
+                        html += '<td class="text-center"><button type="button" class="btn btn-xs btn-primary btn-detail-join-visit" data-reqno="' + row.req_no + '" title="Lihat Detail Join Visit"><i class="fa fa-search"></i> Detail</button></td>';
+                        html += '</tr>';
+                    });
+                }
+                $('#table_breakdown_join_visit tbody').html(html);
+
+                if ($.fn.DataTable) {
+                    dtJoinVisit = $('#table_breakdown_join_visit').DataTable({
+                        pageLength: 10,
+                        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                        language: dtLanguageIndo,
+                        order: [[1, 'desc']],
+                        responsive: true
+                    });
+                }
+            },
+            error: function () {
+                $('#loading_breakdown_join_visit').hide();
+            }
+        });
+    }
+
+    function loadBreakdownTpeAktif() {
+        let params = getFilterParams();
+        $('#loading_breakdown_tpe_aktif').show();
+
+        if (dtTpeAktif) {
+            dtTpeAktif.destroy();
+            dtTpeAktif = null;
+        }
+
+        $.ajax({
+            url: common.baseURL("dashboard_tts/load_breakdown_tpe_aktif"),
+            type: 'POST',
+            dataType: 'json',
+            data: params,
+            success: function (res) {
+                $('#loading_breakdown_tpe_aktif').hide();
+                let html = '';
+                if (res && res.length > 0) {
+                    $.each(res, function (i, row) {
+                        html += '<tr>';
+                        html += '<td class="text-center">' + (i + 1) + '</td>';
+                        html += '<td><code>' + row.salesmanid + '</code></td>';
+                        html += '<td><strong>' + (row.nama_salesman || '-') + '</strong></td>';
+                        html += '<td><span class="label label-primary">' + (row.tipe_sales || '-') + '</span></td>';
+                        html += '<td>' + (row.nama_subarea || row.nama_area || '-') + '</td>';
+                        html += '<td><strong>' + (row.nama_supervisor || '-') + '</strong>' + (row.supervisorid ? ' <br><small class="text-muted">' + row.supervisorid + '</small>' : '') + '</td>';
+                        html += '<td class="text-center"><button type="button" class="btn btn-xs btn-info btn-detail-tpe" data-sid="' + row.salesmanid + '" data-sname="' + row.nama_salesman + '" title="Lihat Detail Log Aktivitas TPE"><i class="fa fa-user"></i> Detail</button></td>';
+                        html += '</tr>';
+                    });
+                }
+                $('#table_breakdown_tpe_aktif tbody').html(html);
+
+                if ($.fn.DataTable) {
+                    dtTpeAktif = $('#table_breakdown_tpe_aktif').DataTable({
+                        pageLength: 10,
+                        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                        language: dtLanguageIndo,
+                        order: [[0, 'asc']],
+                        responsive: true
+                    });
+                }
+            },
+            error: function () {
+                $('#loading_breakdown_tpe_aktif').hide();
+            }
+        });
+    }
+
+    function openDetailJoinVisitModal(reqNo) {
+        if (!reqNo) return;
+
+        $('#detail_visit_periode').text('-');
+        $('#detail_visit_salesman_name').text('-');
+        $('#detail_visit_salesman_id').text('(-)');
+        $('#detail_visit_customer_name').text('-');
+        $('#detail_visit_customer_id').text('(-)');
+        $('#detail_visit_prof_name').text('-');
+        $('#detail_visit_prof_id').text('(-)');
+        $('#detail_visit_status').html('-');
+        $('#detail_visit_keterangan').text('-');
+        $('#detail_visit_keterangan_visit').text('-');
+        $('#row_detail_visit_reason').hide();
+        $('#row_detail_visit_approval').hide();
+        $('#detail_visit_gallery').html('');
+        $('#detail_visit_gallery_empty').hide();
+        $('#detail_visit_doc_count').text('0');
+
+        $('#modal_detail_visit').modal('show');
+
+        $.ajax({
+            url: common.baseURL("dashboard_tts/get_detail_join_visit"),
+            type: 'POST',
+            dataType: 'json',
+            data: { req_no: reqNo },
+            success: function (res) {
+                if (res) {
+                    $('#detail_visit_periode').text(res.periode || '-');
+                    $('#detail_visit_salesman_name').text(res.nama_salesman || '-');
+                    $('#detail_visit_salesman_id').text('(' + (res.salesmanid || '-') + ')');
+                    $('#detail_visit_customer_name').text(res.nama_customer || '-');
+                    $('#detail_visit_customer_id').text('(' + (res.customerid || '-') + ')');
+                    $('#detail_visit_prof_name').text(res.nama_professional || '-');
+                    $('#detail_visit_prof_id').text('(' + (res.user_id || '-') + ')');
+
+                    let statusBadge = '<span class="label label-danger">Reject</span>';
+                    if (res.status == '1') {
+                        statusBadge = '<span class="label label-warning">Pending</span>';
+                    } else if (res.status == '3') {
+                        statusBadge = '<span class="label label-success">Disetujui</span>';
+                    }
+                    $('#detail_visit_status').html(statusBadge);
+
+                    $('#detail_visit_keterangan').text(res.keterangan || '-');
+                    $('#detail_visit_keterangan_visit').text(res.visit_keterangan || '-');
+
+                    if (res.status != '1' && res.status != '3' && res.reason) {
+                        $('#detail_visit_reason').text(res.reason);
+                        $('#row_detail_visit_reason').show();
+                    }
+
+                    if (res.approved_by) {
+                        $('#detail_visit_approved_by').text(res.approved_by);
+                        $('#detail_visit_approved_date').text(res.approved_date || '-');
+                        $('#row_detail_visit_approval').show();
+                    }
+
+                    // Render Foto Dokumentasi
+                    let docs = [];
+                    if (res.visit_doc) {
+                        try {
+                            if (typeof res.visit_doc === 'string') {
+                                if (res.visit_doc.startsWith('[') || res.visit_doc.startsWith('{')) {
+                                    docs = JSON.parse(res.visit_doc);
+                                } else {
+                                    docs = res.visit_doc.split(',');
+                                }
+                            } else if (Array.isArray(res.visit_doc)) {
+                                docs = res.visit_doc;
+                            }
+                        } catch (e) {
+                            docs = res.visit_doc ? [res.visit_doc] : [];
+                        }
+                    }
+
+                    if (docs && docs.length > 0) {
+                        let validDocs = [];
+                        $.each(docs, function (idx, item) {
+                            let docUrl = typeof item === 'object' && item !== null ? (item.url || item.path || item.file) : item;
+                            if (docUrl && typeof docUrl === 'string' && docUrl.trim() !== '') {
+                                validDocs.push(docUrl.trim());
+                            }
+                        });
+
+                        $('#detail_visit_doc_count').text(validDocs.length);
+
+                        if (validDocs.length > 0) {
+                            let galleryHtml = '';
+                            $.each(validDocs, function (idx, url) {
+                                let fullUrl = url.startsWith('http') ? url : (common.baseURL() + url.replace(/^\//, ''));
+                                galleryHtml += '<div class="img-gallery-card" style="border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; background: #fff; width: calc(33.333% - 10px); min-width: 180px; display: flex; flex-direction: column;">' +
+                                    '<img src="' + fullUrl + '" class="img-gallery-thumb" data-title="Foto ' + (idx + 1) + ' - ' + (res.nama_professional || 'Join Visit') + '" style="width: 100%; height: 160px; object-fit: cover; cursor: pointer;" alt="Foto Dokumentasi">' +
+                                    '<div class="card-footer-info" style="padding: 8px 10px; font-size: 11px; color: #6b7280; background: #f9fafb; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between;">' +
+                                    '<span>Foto ' + (idx + 1) + '</span>' +
+                                    '<a href="' + fullUrl + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-external-link"></i></a>' +
+                                    '</div>' +
+                                    '</div>';
+                            });
+                            $('#detail_visit_gallery').html(galleryHtml);
+                        } else {
+                            $('#detail_visit_gallery_empty').show();
+                        }
+                    } else {
+                        $('#detail_visit_gallery_empty').show();
+                    }
+                }
             }
         });
     }
@@ -806,6 +1253,7 @@ let DashboardTTS = (function ($) {
 
     return {
         reload: loadAllDashboardData,
-        openDetail: openDetailReportModal
+        openDetail: openDetailReportModal,
+        openJoinDetail: openDetailJoinVisitModal
     };
 })(jQuery);
