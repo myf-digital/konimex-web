@@ -93,6 +93,70 @@ $(function () {
     `;
   }
 
+  function initDataTable(selector, customOptions) {
+    if (typeof $.fn.DataTable !== "undefined" || typeof $.fn.dataTable !== "undefined") {
+      let $tbl = $(selector);
+      if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable(selector)) {
+        $tbl.DataTable().destroy();
+      } else if ($.fn.dataTable && $.fn.dataTable.isDataTable && $.fn.dataTable.isDataTable(selector)) {
+        $tbl.dataTable().fnDestroy();
+      }
+
+      let dtOptions = $.extend({
+        bDestroy: true,
+        pageLength: 10,
+        iDisplayLength: 10,
+        lengthMenu: [
+          [10, 25, 50, -1],
+          [10, 25, 50, "Semua"],
+        ],
+        aLengthMenu: [
+          [10, 25, 50, -1],
+          [10, 25, 50, "Semua"],
+        ],
+        order: [],
+        aaSorting: [],
+        language: {
+          search: "<span>🔍 Cari:</span> ",
+          lengthMenu: "Tampilkan _MENU_ baris",
+          info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+          infoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+          infoFiltered: "(difilter dari _MAX_ total data)",
+          zeroRecords: "Tidak ada data yang cocok",
+          paginate: {
+            first: "Awal",
+            last: "Akhir",
+            next: "Berikutnya",
+            previous: "Sebelumnya",
+          },
+        },
+        oLanguage: {
+          sSearch: "<span>🔍 Cari:</span> ",
+          sLengthMenu: "Tampilkan _MENU_ baris",
+          sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+          sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+          sInfoFiltered: "(difilter dari _MAX_ total data)",
+          sZeroRecords: "Tidak ada data yang cocok",
+          oPaginate: {
+            sFirst: "Awal",
+            sLast: "Akhir",
+            sNext: "Berikutnya",
+            sPrevious: "Sebelumnya",
+          },
+        },
+        responsive: true,
+        autoWidth: false,
+        bAutoWidth: false,
+      }, customOptions || {});
+
+      if (typeof $tbl.DataTable === "function") {
+        $tbl.DataTable(dtOptions);
+      } else if (typeof $tbl.dataTable === "function") {
+        $tbl.dataTable(dtOptions);
+      }
+    }
+  }
+
   $periode
     .datepicker({
       format: "MM yyyy",
@@ -609,7 +673,7 @@ $(function () {
       <div class="dashboard-col-padding">
         <div class="dashboard-card">
           <div class="table-responsive">
-            <table id="tbl-spesialisasi" class="table table-bordered table-striped table-hover">
+            <table id="tbl-spesialisasi" class="table table-bordered table-striped table-hover" style="width:100%;">
               <thead>
                 <tr>
                   <th>#</th>
@@ -628,9 +692,13 @@ $(function () {
       </div>
     `);
 
+    if (data && data.length > 0) {
+      initDataTable("#tbl-spesialisasi");
+    }
+
     $colDetailSubarea
-      .find("#tbl-spesialisasi tbody tr[data-spesialisasi-id]")
-      .on("click", function () {
+      .off("click", "#tbl-spesialisasi tbody tr[data-spesialisasi-id]")
+      .on("click", "#tbl-spesialisasi tbody tr[data-spesialisasi-id]", function () {
         let spesialisasiId = $(this).data("spesialisasi-id");
         let nama = $(this).data("nama");
         loadSpecializationDetail(spesialisasiId, nama);
@@ -679,7 +747,7 @@ $(function () {
     let tableHtml = `
       <div class="dashboard-card">
         <div class="table-responsive">
-          <table id="tbl-salesman-sp" class="table table-bordered table-striped table-hover">
+          <table id="tbl-salesman-sp" class="table table-bordered table-striped table-hover" style="width:100%;">
             <thead>
               <tr>
                 <th class="th-w-50">#</th>
@@ -702,13 +770,17 @@ $(function () {
     let $tableContainer = $(tableHtml);
     $colDetailSalesman.append($tableContainer);
 
+    if (result && result.length > 0) {
+      initDataTable("#tbl-salesman-sp");
+    }
+
     $colDetailSalesman
-      .find(".btn-salesman-sp-detail")
-      .on("click", function (e) {
+      .off("click", ".btn-salesman-sp-detail")
+      .on("click", ".btn-salesman-sp-detail", function (e) {
         e.preventDefault();
         let salesmanid = $(this).attr("data-salesmanid");
         let salesman = listSalesmanVisit.find(
-          (sm) => sm.salesmanid === salesmanid,
+          (sm) => String(sm.salesmanid) === String(salesmanid),
         );
         if (salesman) {
           showSpecializationVisitsModal(salesman);
@@ -749,7 +821,7 @@ $(function () {
     );
     $modalVisitBody.html(`
       <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table id="tbl-modal-visit-sp" class="table table-bordered table-striped" style="width:100%;">
           <thead class="modal-thead-blue">
             <tr>
               <th>#</th>
@@ -768,6 +840,11 @@ $(function () {
         </table>
       </div>
     `);
+
+    if (visits && visits.length > 0) {
+      initDataTable("#tbl-modal-visit-sp");
+    }
+
     $modalVisitDetail.modal("show");
   }
 

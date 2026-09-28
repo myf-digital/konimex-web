@@ -612,7 +612,7 @@ $(function () {
       return v ? v.replace("T", " ").substring(0, 16) : "-";
     }
 
-    function buildVisitTable(visits, label, headerColor) {
+    function buildVisitTable(visits, label, headerColor, tableId) {
       if (!visits || visits.length === 0) {
         return (
           '<p class="text-muted" style="margin:0;">Tidak ada data ' +
@@ -654,9 +654,11 @@ $(function () {
         })
         .join("");
       return (
-        '<table class="table table-bordered table-striped" style="margin-bottom:0;">' +
+        '<table id="' +
+        tableId +
+        '" class="table table-bordered table-striped table-hover" style="width:100%;margin-bottom:0;">' +
         "<thead><tr>" +
-        "<th>#</th>" +
+        '<th style="width:40px;">#</th>' +
         '<th style="background:' +
         headerColor +
         ';color:#fff;">Periode</th>' +
@@ -672,7 +674,7 @@ $(function () {
         '<th style="background:' +
         headerColor +
         ';color:#fff;">Keterangan</th>' +
-        '<th style="background:' +
+        '<th style="width:70px;background:' +
         headerColor +
         ';color:#fff;">Action</th>' +
         "</tr></thead>" +
@@ -690,18 +692,67 @@ $(function () {
         ((result.plan_outlet && result.plan_outlet.length) || 0) +
         "</span></h5>" +
         '<div class="table-responsive" style="margin-bottom:24px;">' +
-        buildVisitTable(result.plan_outlet, "Plan Outlet", "#00a65a") +
+        buildVisitTable(result.plan_outlet, "Plan Outlet", "#00a65a", "tbl-plan-outlet") +
         "</div>" +
         '<h5 style="margin:0 0 12px;font-weight:600;color:#dd4b39;">Unplan Outlet <span class="badge" style="background:#dd4b39;">' +
         ((result.unplan_outlet && result.unplan_outlet.length) || 0) +
         "</span></h5>" +
         '<div class="table-responsive">' +
-        buildVisitTable(result.unplan_outlet, "Unplan Outlet", "#dd4b39") +
+        buildVisitTable(result.unplan_outlet, "Unplan Outlet", "#dd4b39", "tbl-unplan-outlet") +
         "</div>" +
         "</div></div>",
     );
 
-    $col.on("click", ".btn-visit-detail", function () {
+    function initTableDt(selector) {
+      if (typeof $.fn.dataTable !== "undefined" || typeof $.fn.DataTable !== "undefined") {
+        var $tbl = $(selector);
+        if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable(selector)) {
+          $tbl.DataTable().destroy();
+        } else if ($.fn.dataTable && $.fn.dataTable.isDataTable && $.fn.dataTable.isDataTable(selector)) {
+          $tbl.dataTable().fnDestroy();
+        }
+
+        var dtOptions = {
+          bDestroy: true,
+          iDisplayLength: 10,
+          aLengthMenu: [
+            [10, 25, 50, -1],
+            [10, 25, 50, "Semua"],
+          ],
+          aaSorting: [],
+          oLanguage: {
+            sSearch: "<span>🔍 Cari:</span> ",
+            sLengthMenu: "Tampilkan _MENU_ baris",
+            sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+            sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+            sInfoFiltered: "(difilter dari _MAX_ total data)",
+            sZeroRecords: "Tidak ada data yang cocok",
+            oPaginate: {
+              sFirst: "Awal",
+              sLast: "Akhir",
+              sNext: "Berikutnya",
+              sPrevious: "Sebelumnya",
+            },
+          },
+          bAutoWidth: false,
+        };
+
+        if (typeof $tbl.DataTable === "function") {
+          $tbl.DataTable(dtOptions);
+        } else if (typeof $tbl.dataTable === "function") {
+          $tbl.dataTable(dtOptions);
+        }
+      }
+    }
+
+    if (result.plan_outlet && result.plan_outlet.length > 0) {
+      initTableDt("#tbl-plan-outlet");
+    }
+    if (result.unplan_outlet && result.unplan_outlet.length > 0) {
+      initTableDt("#tbl-unplan-outlet");
+    }
+
+    $col.off("click", ".btn-visit-detail").on("click", ".btn-visit-detail", function () {
       var r = visitStore[$(this).data("key")];
       showVisitModal(r);
     });

@@ -94,6 +94,70 @@ $(function () {
     `;
   }
 
+  function initDataTable(selector, customOptions) {
+    if (typeof $.fn.DataTable !== "undefined" || typeof $.fn.dataTable !== "undefined") {
+      let $tbl = $(selector);
+      if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable(selector)) {
+        $tbl.DataTable().destroy();
+      } else if ($.fn.dataTable && $.fn.dataTable.isDataTable && $.fn.dataTable.isDataTable(selector)) {
+        $tbl.dataTable().fnDestroy();
+      }
+
+      let dtOptions = $.extend({
+        bDestroy: true,
+        pageLength: 10,
+        iDisplayLength: 10,
+        lengthMenu: [
+          [10, 25, 50, -1],
+          [10, 25, 50, "Semua"],
+        ],
+        aLengthMenu: [
+          [10, 25, 50, -1],
+          [10, 25, 50, "Semua"],
+        ],
+        order: [],
+        aaSorting: [],
+        language: {
+          search: "<span>🔍 Cari:</span> ",
+          lengthMenu: "Tampilkan _MENU_ baris",
+          info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+          infoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+          infoFiltered: "(difilter dari _MAX_ total data)",
+          zeroRecords: "Tidak ada data yang cocok",
+          paginate: {
+            first: "Awal",
+            last: "Akhir",
+            next: "Berikutnya",
+            previous: "Sebelumnya",
+          },
+        },
+        oLanguage: {
+          sSearch: "<span>🔍 Cari:</span> ",
+          sLengthMenu: "Tampilkan _MENU_ baris",
+          sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+          sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+          sInfoFiltered: "(difilter dari _MAX_ total data)",
+          sZeroRecords: "Tidak ada data yang cocok",
+          oPaginate: {
+            sFirst: "Awal",
+            sLast: "Akhir",
+            sNext: "Berikutnya",
+            sPrevious: "Sebelumnya",
+          },
+        },
+        responsive: true,
+        autoWidth: false,
+        bAutoWidth: false,
+      }, customOptions || {});
+
+      if (typeof $tbl.DataTable === "function") {
+        $tbl.DataTable(dtOptions);
+      } else if (typeof $tbl.dataTable === "function") {
+        $tbl.dataTable(dtOptions);
+      }
+    }
+  }
+
   $periode
     .datepicker({
       format: "MM yyyy",
@@ -681,7 +745,7 @@ $(function () {
       <div class="dashboard-col-padding">
         <div class="dashboard-card">
           <div class="table-responsive">
-            <table id="tbl-produk" class="table table-bordered table-striped table-hover">
+            <table id="tbl-produk" class="table table-bordered table-striped table-hover" style="width:100%;">
               <thead>
                 <tr>
                   <th>#</th>
@@ -699,9 +763,13 @@ $(function () {
       </div>
     `);
 
+    if (data && data.length > 0) {
+      initDataTable("#tbl-produk");
+    }
+
     $colDetailSubarea
-      .find("#tbl-produk tbody tr[data-product-id]")
-      .on("click", function () {
+      .off("click", "#tbl-produk tbody tr[data-product-id]")
+      .on("click", "#tbl-produk tbody tr[data-product-id]", function () {
         let productId = $(this).data("product-id");
         let nama = $(this).data("nama");
         loadProductDetail(productId, nama);
@@ -751,7 +819,7 @@ $(function () {
     let tableHtml = `
       <div class="dashboard-card">
         <div class="table-responsive">
-          <table id="tbl-salesman-prod" class="table table-bordered table-striped table-hover">
+          <table id="tbl-salesman-prod" class="table table-bordered table-striped table-hover" style="width:100%;">
             <thead>
               <tr>
                 <th class="th-w-50">#</th>
@@ -772,13 +840,17 @@ $(function () {
 
     $colDetailSalesman.append(tableHtml);
 
+    if (result && result.length > 0) {
+      initDataTable("#tbl-salesman-prod");
+    }
+
     $colDetailSalesman
-      .find(".btn-salesman-prod-detail")
-      .on("click", function (e) {
+      .off("click", ".btn-salesman-prod-detail")
+      .on("click", ".btn-salesman-prod-detail", function (e) {
         e.preventDefault();
         let salesmanid = $(this).attr("data-salesmanid");
         let salesman = listSalesmanVisit.find(
-          (sm) => sm.salesmanid === salesmanid,
+          (sm) => String(sm.salesmanid) === String(salesmanid),
         );
         if (salesman) {
           showProductDetailModal(salesman);
@@ -812,7 +884,7 @@ $(function () {
     }
     let visitTableHtml = `
       <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table id="tbl-modal-prod-visits" class="table table-bordered table-striped" style="width:100%;">
           <thead class="modal-thead-blue">
             <tr>
               <th>#</th>
@@ -850,7 +922,7 @@ $(function () {
     }
     let salesTableHtml = `
       <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table id="tbl-modal-prod-sales" class="table table-bordered table-striped" style="width:100%;">
           <thead class="modal-thead-blue">
             <tr>
               <th>#</th>
@@ -872,11 +944,24 @@ $(function () {
     $("#tab-detail-visits").html(visitTableHtml);
     $("#tab-detail-sales").html(salesTableHtml);
 
+    if (visits && visits.length > 0) {
+      initDataTable("#tbl-modal-prod-visits");
+    }
+    if (sales && sales.length > 0) {
+      initDataTable("#tbl-modal-prod-sales");
+    }
+
     // Switch to first tab as default active
     $modalVisitDetail
       .find('.nav-tabs a[href="#tab-detail-visits"]')
       .tab("show");
     $modalVisitDetail.modal("show");
+
+    $modalVisitDetail.off("shown.bs.tab", 'a[data-toggle="tab"]').on("shown.bs.tab", 'a[data-toggle="tab"]', function () {
+      if ($.fn.DataTable) {
+        $($.fn.DataTable.tables(true)).DataTable().columns.adjust();
+      }
+    });
   }
 
   function exportExcel() {
