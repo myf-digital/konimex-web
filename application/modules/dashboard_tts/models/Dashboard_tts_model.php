@@ -1,11 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Dashboard_konimex_model extends CI_Model
+class Dashboard_tts_model extends CI_Model
 {
-    /**
-     * Membangun klausa WHERE untuk hierarki wilayah & salesman
-     */
     private function build_salesman_filter($data, $table_alias = 'a', $salesman_col = 'salesmanid')
     {
         $where = "";
@@ -25,7 +22,6 @@ class Dashboard_konimex_model extends CI_Model
         } elseif (!empty($data['regionalid'])) {
             $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE regionalid = '" . $this->db->escape_str($data['regionalid']) . "')";
         } else {
-            // Restrict level session jika ada
             if (!empty($data['restrict_level']) && !empty($data['usersession'])) {
                 $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);
                 if ($restrict_query) {
@@ -37,9 +33,6 @@ class Dashboard_konimex_model extends CI_Model
         return $where;
     }
 
-    /**
-     * 1. LOAD SUMMARY 7 KPI UTAMA (LEVEL 1)
-     */
     public function load_summary_kpi($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
@@ -54,9 +47,6 @@ class Dashboard_konimex_model extends CI_Model
         $filter_salesman_spc = $this->build_salesman_filter($data, 'rsv', 'salesmanid');
         $filter_salesman_gen = $this->build_salesman_filter($data, 'a', 'salesmanid');
 
-        // -------------------------------------------------------------
-        // A. ABSENSI & KEHADIRAN
-        // -------------------------------------------------------------
         $sql_absensi = "
             SELECT 
                 COUNT(CASE WHEN tsa.status = 'H' THEN 1 END) AS total_hadir,
@@ -70,9 +60,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $res_absensi = $this->db->query($sql_absensi, [$start_date, $end_date])->row_array();
 
-        // -------------------------------------------------------------
-        // B. CALL & EFFECTIVE CALL (EC)
-        // -------------------------------------------------------------
         $sql_call = "
             SELECT 
                 COUNT(1) AS total_call,
@@ -85,9 +72,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $res_call = $this->db->query($sql_call, [$start_date, $end_date])->row_array();
 
-        // -------------------------------------------------------------
-        // C. KETERCAPAIAN KAT A & USER WAJIB (DUB)
-        // -------------------------------------------------------------
         $sql_dub = "
             SELECT 
                 IFNULL(SUM(rdv.actual_call_planned), 0) AS actual_kat_a,
@@ -110,9 +94,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $res_dub = $this->db->query($sql_dub, ["{$year}-{$month}", $start_date, $end_date])->row_array();
 
-        // -------------------------------------------------------------
-        // D. KETERCAPAIAN DETAILING & SELLING PRODUK
-        // -------------------------------------------------------------
         $sql_produk = "
             SELECT 
                 IFNULL(SUM(rpv.actual_visit), 0) AS actual_detailing,
@@ -134,9 +115,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $res_produk = $this->db->query($sql_produk, ["{$year}-{$month}", $start_date, $end_date])->row_array();
 
-        // -------------------------------------------------------------
-        // E. JUMLAH JOIN ACTIVITY (SUPERVISI)
-        // -------------------------------------------------------------
         $sql_join = "
             SELECT COUNT(1) AS total_detailing
             FROM trx_visit_detailing a
@@ -145,7 +123,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $res_join = $this->db->query($sql_join, [$start_date, $end_date])->row_array();
 
-        // Kalkulasi Persentase
         $total_hadir = (int)($res_absensi['total_hadir'] ?? 0);
         $total_absen_rec = (int)($res_absensi['total_record'] ?? 0);
         $pct_absensi = $total_absen_rec > 0 ? round(($total_hadir / $total_absen_rec) * 100, 1) : 0;
@@ -227,9 +204,6 @@ class Dashboard_konimex_model extends CI_Model
         ];
     }
 
-    /**
-     * 2. LOAD TREND BULANAN (JAN - DES)
-     */
     public function load_trend_monthly($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
@@ -240,7 +214,6 @@ class Dashboard_konimex_model extends CI_Model
         $filter_salesman_prd = $this->build_salesman_filter($data, 'rpv', 'salesmanid');
         $filter_salesman_rrk = $this->build_salesman_filter($data, 'tr', 'salesmanid');
 
-        // Query Trend Kunjungan DUB per bulan
         $sql_trend_dub = "
             SELECT 
                 DATE_FORMAT(rdv.tanggal, '%m') AS bulan,
@@ -257,7 +230,6 @@ class Dashboard_konimex_model extends CI_Model
             $dub_map[$r['bulan']] = $r;
         }
 
-        // Query Trend Detailing & Selling per bulan
         $sql_trend_prd = "
             SELECT 
                 DATE_FORMAT(rpv.tanggal, '%m') AS bulan,
@@ -274,7 +246,6 @@ class Dashboard_konimex_model extends CI_Model
             $prd_map[$r['bulan']] = $r;
         }
 
-        // Query Trend Call & EC per bulan
         $sql_trend_call = "
             SELECT 
                 DATE_FORMAT(tr.periode, '%m') AS bulan,
@@ -316,9 +287,6 @@ class Dashboard_konimex_model extends CI_Model
         ];
     }
 
-    /**
-     * 3. FILTER OPTIONS (CASCADING DROPDOWN)
-     */
     public function get_regional_list($data = [])
     {
         return $this->db->select('regionalid, nama_regional')
@@ -362,9 +330,6 @@ class Dashboard_konimex_model extends CI_Model
         return $this->db->order_by('s.nama_salesman', 'ASC')->get()->result_array();
     }
 
-    /**
-     * 4. LEVEL 2: BREAKDOWN AREA & TPE
-     */
     public function load_breakdown_area($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
@@ -484,9 +449,6 @@ class Dashboard_konimex_model extends CI_Model
         return $this->db->query($sql)->result_array();
     }
 
-    /**
-     * 5. LEVEL 2: BREAKDOWN CHANNEL & SPESIALISASI USER
-     */
     public function load_breakdown_channel_spesialis($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
@@ -517,9 +479,6 @@ class Dashboard_konimex_model extends CI_Model
         return $this->db->query($sql, [$start_date, $end_date])->result_array();
     }
 
-    /**
-     * 6. LEVEL 2: BREAKDOWN TARGET & REALISASI PRODUK
-     */
     public function load_breakdown_produk($data)
     {
         $year = !empty($data['tahun']) ? $data['tahun'] : date('Y');
@@ -558,9 +517,6 @@ class Dashboard_konimex_model extends CI_Model
         return $this->db->query($sql, ["{$year}-{$month}", $start_date, $end_date])->result_array();
     }
 
-    /**
-     * 7. LEVEL 3: DETAIL AKTIVITAS HARIAN TPE (DRILLDOWN LOGS)
-     */
     public function load_detail_tpe_activity($data)
     {
         $salesmanid = !empty($data['salesmanid']) ? $data['salesmanid'] : '';
@@ -578,7 +534,6 @@ class Dashboard_konimex_model extends CI_Model
             ];
         }
 
-        // Info Profil Salesman & Wilayah
         $sql_salesman = "
             SELECT 
                 s.salesmanid,
@@ -597,7 +552,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $salesman_info = $this->db->query($sql_salesman, [$salesmanid])->row_array();
 
-        // A. Log Kunjungan / Call Harian
         $sql_kunjungan = "
             SELECT 
                 tr.periode AS tanggal,
@@ -621,7 +575,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $kunjungan_list = $this->db->query($sql_kunjungan, [$salesmanid, $start_date, $end_date])->result_array();
 
-        // B. Log Detailing Dokter / User
         $sql_detailing = "
             SELECT 
                 tvd.periode AS tanggal,
@@ -659,7 +612,6 @@ class Dashboard_konimex_model extends CI_Model
         ";
         $detailing_list = $this->db->query($sql_detailing, [$salesmanid, $start_date, $end_date])->result_array();
 
-        // C. Log Presensi Parma & Absensi
         $sql_absensi = "
             SELECT 
                 tsa.periode AS tanggal,

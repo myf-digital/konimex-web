@@ -1,28 +1,21 @@
-/**
- * Dashboard Konimex - Executive Overview, Breakdown & Drilldown (Level 1, 2, 3)
- * With DataTables Pagination & Sorting
- * Controller: Dashboard_konimex
- */
-
-var DashboardKonimex = (function ($) {
+let DashboardTTS = (function ($) {
     'use strict';
 
-    // import commons
     const common = new Common();
     const commonGrid = new CommonGrid();
 
-    var chartTrendInstance = null;
-    var rawTrendData = null;
+    let chartTrendInstance = null;
+    let rawTrendData = null;
 
-    // DataTable Instances
-    var dtArea = null;
-    var dtChannel = null;
-    var dtProduk = null;
-    var dtModalKunjungan = null;
-    var dtModalDetailing = null;
-    var dtModalAbsensi = null;
+    let dtPeriode = $('#periode');
+    let dtArea = null;
+    let dtChannel = null;
+    let dtProduk = null;
+    let dtModalKunjungan = null;
+    let dtModalDetailing = null;
+    let dtModalAbsensi = null;
 
-    var dtLanguageIndo = {
+    let dtLanguageIndo = {
         search: "🔍 Cari Data:",
         lengthMenu: "Tampilkan _MENU_ baris",
         info: "Menampilkan _START_ s/d _END_ dari total _TOTAL_ data",
@@ -44,26 +37,35 @@ var DashboardKonimex = (function ($) {
             });
         }
 
+        dtPeriode
+            .datepicker({
+            format: "MM yyyy",
+            viewMode: "months",
+            minViewMode: "months",
+            autoclose: true,
+            language: "id",
+            })
+            .datepicker("setDate", new Date());
+
         bindEvents();
         loadAllDashboardData();
     }
 
     function bindEvents() {
-        // Cascading Filter: Regional (SM) -> Area (ASM)
         $('#filter_regionalid').on('change', function () {
-            var regionalid = $(this).val();
-            $('#filter_areaid').html('<option value="">-- Semua Area ASM --</option>');
-            $('#filter_subareaid').html('<option value="">-- Semua ASS/MRC --</option>');
-            $('#filter_salesmanid').html('<option value="">-- Semua TPE --</option>');
+            let regionalid = $(this).val();
+            $('#filter_areaid').html('<option value="">Semua Area ASM</option>');
+            $('#filter_subareaid').html('<option value="">Semua ASS/MRC</option>');
+            $('#filter_salesmanid').html('<option value="">Semua TPE</option>');
 
             if (regionalid) {
                 $.ajax({
-                    url: common.baseURL("dashboard_konimex/get_area_by_regional"),
+                    url: common.baseURL("dashboard_tts/get_area_by_regional"),
                     type: 'POST',
                     dataType: 'json',
                     data: { regionalid: regionalid },
                     success: function (res) {
-                        var options = '<option value="">-- Semua Area ASM --</option>';
+                        let options = '<option value="">Semua Area ASM --</option>';
                         if (res && res.length > 0) {
                             $.each(res, function (i, item) {
                                 options += '<option value="' + item.areaid + '">' + item.nama_area + '</option>';
@@ -75,20 +77,19 @@ var DashboardKonimex = (function ($) {
             }
         });
 
-        // Cascading Filter: Area (ASM) -> Subarea (ASS/MRC)
         $('#filter_areaid').on('change', function () {
-            var areaid = $(this).val();
-            $('#filter_subareaid').html('<option value="">-- Semua ASS/MRC --</option>');
-            $('#filter_salesmanid').html('<option value="">-- Semua TPE --</option>');
+            let areaid = $(this).val();
+            $('#filter_subareaid').html('<option value="">Semua ASS/MRC --</option>');
+            $('#filter_salesmanid').html('<option value="">Semua TPE --</option>');
 
             if (areaid) {
                 $.ajax({
-                    url: common.baseURL("dashboard_konimex/get_subarea_by_area"),
+                    url: common.baseURL("dashboard_tts/get_subarea_by_area"),
                     type: 'POST',
                     dataType: 'json',
                     data: { areaid: areaid },
                     success: function (res) {
-                        var options = '<option value="">-- Semua ASS/MRC --</option>';
+                        let options = '<option value="">Semua ASS/MRC --</option>';
                         if (res && res.length > 0) {
                             $.each(res, function (i, item) {
                                 options += '<option value="' + item.subareaid + '">' + item.nama_subarea + '</option>';
@@ -100,16 +101,15 @@ var DashboardKonimex = (function ($) {
             }
         });
 
-        // Cascading Filter: Subarea (ASS/MRC) -> Salesman (TPE)
         $('#filter_subareaid').on('change', function () {
-            var params = getFilterParams();
+            let params = getFilterParams();
             $.ajax({
-                url: common.baseURL("dashboard_konimex/get_salesman_by_filter"),
+                url: common.baseURL("dashboard_tts/get_salesman_by_filter"),
                 type: 'POST',
                 dataType: 'json',
                 data: params,
                 success: function (res) {
-                    var options = '<option value="">-- Semua TPE --</option>';
+                    let options = '<option value="">Semua TPE --</option>';
                     if (res && res.length > 0) {
                         $.each(res, function (i, item) {
                             options += '<option value="' + item.salesmanid + '">' + item.nama_salesman + ' (' + item.salesmanid + ')</option>';
@@ -120,40 +120,36 @@ var DashboardKonimex = (function ($) {
             });
         });
 
-        // Apply Filter Button
         $('#btn_apply_filter').on('click', function () {
             loadAllDashboardData();
         });
 
-        // Reset Filter Button
         $('#btn_reset_filter').on('click', function () {
             $('#form_filter_dashboard')[0].reset();
-            var d = new Date();
-            var curYear = d.getFullYear();
-            var curMonth = ('0' + (d.getMonth() + 1)).slice(-2);
+            let d = new Date();
+            let curYear = d.getFullYear();
+            let curMonth = ('0' + (d.getMonth() + 1)).slice(-2);
 
             $('#filter_tahun').val(curYear);
             $('#filter_bulan').val(curMonth);
             $('#filter_regionalid').val('');
-            $('#filter_areaid').html('<option value="">-- Semua Area ASM --</option>');
-            $('#filter_subareaid').html('<option value="">-- Semua ASS/MRC --</option>');
-            $('#filter_salesmanid').html('<option value="">-- Semua TPE --</option>');
+            $('#filter_areaid').html('<option value="">Semua Area ASM --</option>');
+            $('#filter_subareaid').html('<option value="">Semua ASS/MRC --</option>');
+            $('#filter_salesmanid').html('<option value="">Semua TPE --</option>');
 
             $('.select2').trigger('change.select2');
             loadAllDashboardData();
         });
 
-        // Toggle Trend Metrics
         $('#btn_toggle_metrics button').on('click', function () {
             $('#btn_toggle_metrics button').removeClass('active btn-primary').addClass('btn-default');
             $(this).addClass('active btn-primary').removeClass('btn-default');
-            var metric = $(this).data('metric');
+            let metric = $(this).data('metric');
             renderTrendChart(metric);
         });
 
-        // Click KPI Card -> Drilldown ke Level 2 Tab yang relevan
         $(document).on('click', '.kpi-card-trigger, .small-box', function () {
-            var kpi = $(this).data('kpi') || $(this).find('.kpi-card-trigger').data('kpi');
+            let kpi = $(this).data('kpi') || $(this).find('.kpi-card-trigger').data('kpi');
             if (kpi) {
                 if (kpi === 'detailing_produk' || kpi === 'selling_produk') {
                     $('#tab_link_produk').tab('show');
@@ -163,7 +159,6 @@ var DashboardKonimex = (function ($) {
                     $('#tab_link_area').tab('show');
                 }
 
-                // Scroll halus ke section breakdown
                 $('html, body').animate({
                     scrollTop: $('#section_breakdown').offset().top - 20
                 }, 400);
@@ -177,18 +172,16 @@ var DashboardKonimex = (function ($) {
             }
         });
 
-        // Delegasi Klik Tombol Detail TPE (Level 3 Drilldown Modal)
         $(document).on('click', '.btn-detail-tpe', function (e) {
             e.stopPropagation();
-            var sid = $(this).data('sid');
-            var sname = $(this).data('sname');
+            let sid = $(this).data('sid');
+            let sname = $(this).data('sname');
             openDetailReportModal(sid, sname);
         });
 
-        // Export Excel Button
         $('#btn_export_area_excel').on('click', function () {
-            var params = getFilterParams();
-            window.location.href = common.baseURL("dashboard_konimex/export_excel_area?" + $.param(params));
+            let params = getFilterParams();
+            window.location.href = common.baseURL("dashboard_tts/export_excel_area?" + $.param(params));
         });
     }
 
@@ -228,31 +221,27 @@ var DashboardKonimex = (function ($) {
     }
 
     function formatPctBadge(pct) {
-        var cls = 'label-danger';
+        let cls = 'label-danger';
         if (pct >= 100) cls = 'label-success';
         else if (pct >= 80) cls = 'label-warning';
         return '<span class="label ' + cls + '" style="font-size: 11px;">' + pct + '%</span>';
     }
 
-    // -------------------------------------------------------------
-    // LEVEL 1: KPI SUMMARY
-    // -------------------------------------------------------------
     function loadKpiSummary() {
-        var params = getFilterParams();
+        let params = getFilterParams();
         $('#loading_kpi').show();
 
         $.ajax({
-            url: common.baseURL("dashboard_konimex/load_kpi"),
+            url: common.baseURL("dashboard_tts/load_kpi"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
                 $('#loading_kpi').hide();
                 if (res && res.kpi) {
-                    var kpi = res.kpi;
+                    let kpi = res.kpi;
 
-                    // 1. Absensi
-                    var abs = kpi.absensi;
+                    let abs = kpi.absensi;
                     $('#kpi_absensi_pct').text(abs.percentage + '%');
                     $('#kpi_absensi_hadir').text(formatNumber(abs.actual));
                     $('#kpi_absensi_total').text(formatNumber(abs.total));
@@ -261,8 +250,7 @@ var DashboardKonimex = (function ($) {
                         .attr('class', 'badge-achievement ' + getBadgeClass(abs.percentage))
                         .text(getBadgeText(abs.percentage));
 
-                    // 2. Call & EC
-                    var cal = kpi.call;
+                    let cal = kpi.call;
                     $('#kpi_ec_pct').text(cal.percentage_ec + '%');
                     $('#kpi_ec_act').text(formatNumber(cal.actual_ec));
                     $('#kpi_call_act').text(formatNumber(cal.actual_call));
@@ -271,8 +259,7 @@ var DashboardKonimex = (function ($) {
                         .attr('class', 'badge-achievement ' + getBadgeClass(cal.percentage_ec))
                         .text(cal.percentage_ec + '% EC');
 
-                    // 3. Kat A
-                    var kata = kpi.kategori_a;
+                    let kata = kpi.kategori_a;
                     $('#kpi_kata_pct').text(kata.percentage + '%');
                     $('#kpi_kata_act').text(formatNumber(kata.actual));
                     $('#kpi_kata_tgt').text(formatNumber(kata.target));
@@ -281,8 +268,7 @@ var DashboardKonimex = (function ($) {
                         .attr('class', 'badge-achievement ' + getBadgeClass(kata.percentage))
                         .text(getBadgeText(kata.percentage));
 
-                    // 4. User Wajib
-                    var usr = kpi.user_wajib;
+                    let usr = kpi.user_wajib;
                     $('#kpi_user_pct').text(usr.percentage + '%');
                     $('#kpi_user_act').text(formatNumber(usr.actual));
                     $('#kpi_user_tgt').text(formatNumber(usr.target));
@@ -291,8 +277,7 @@ var DashboardKonimex = (function ($) {
                         .attr('class', 'badge-achievement ' + getBadgeClass(usr.percentage))
                         .text(getBadgeText(usr.percentage));
 
-                    // 5. Detailing Produk
-                    var det = kpi.detailing_produk;
+                    let det = kpi.detailing_produk;
                     $('#kpi_detailing_pct').text(det.percentage + '%');
                     $('#kpi_detailing_act').text(formatNumber(det.actual));
                     $('#kpi_detailing_tgt').text(formatNumber(det.target));
@@ -301,8 +286,7 @@ var DashboardKonimex = (function ($) {
                         .attr('class', 'badge-achievement ' + getBadgeClass(det.percentage))
                         .text(getBadgeText(det.percentage));
 
-                    // 6. Selling Produk
-                    var sel = kpi.selling_produk;
+                    let sel = kpi.selling_produk;
                     $('#kpi_selling_pct').text(sel.percentage + '%');
                     $('#kpi_selling_act').text(formatNumber(sel.actual));
                     $('#kpi_selling_tgt').text(formatNumber(sel.target));
@@ -311,8 +295,7 @@ var DashboardKonimex = (function ($) {
                         .attr('class', 'badge-achievement ' + getBadgeClass(sel.percentage))
                         .text(getBadgeText(sel.percentage));
 
-                    // 7. Join Activity
-                    var jn = kpi.join_activity;
+                    let jn = kpi.join_activity;
                     $('#kpi_join_act').text(formatNumber(jn.actual));
                 }
             },
@@ -322,23 +305,20 @@ var DashboardKonimex = (function ($) {
         });
     }
 
-    // -------------------------------------------------------------
-    // LEVEL 1: MONTHLY TREND
-    // -------------------------------------------------------------
     function loadMonthlyTrend() {
-        var params = getFilterParams();
+        let params = getFilterParams();
         $('#loading_trend').show();
         $('#label_trend_year').text('(' + params.tahun + ')');
 
         $.ajax({
-            url: common.baseURL("dashboard_konimex/load_trend"),
+            url: common.baseURL("dashboard_tts/load_trend"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
                 $('#loading_trend').hide();
                 rawTrendData = res;
-                var activeMetric = $('#btn_toggle_metrics button.active').data('metric') || 'all';
+                let activeMetric = $('#btn_toggle_metrics button.active').data('metric') || 'all';
                 renderTrendChart(activeMetric);
             },
             error: function () {
@@ -350,14 +330,14 @@ var DashboardKonimex = (function ($) {
     function renderTrendChart(metricFilter) {
         if (!rawTrendData || !rawTrendData.series) return;
 
-        var ctx = document.getElementById('chart_monthly_trend');
+        let ctx = document.getElementById('chart_monthly_trend');
         if (!ctx) return;
 
         if (chartTrendInstance) {
             chartTrendInstance.destroy();
         }
 
-        var allDatasets = [
+        let allDatasets = [
             {
                 label: 'Ketercapaian Kat A',
                 data: rawTrendData.series.kat_a,
@@ -410,7 +390,7 @@ var DashboardKonimex = (function ($) {
             }
         ];
 
-        var visibleDatasets = allDatasets;
+        let visibleDatasets = allDatasets;
         if (metricFilter && metricFilter !== 'all') {
             visibleDatasets = allDatasets.filter(function (d) {
                 return d.metricKey === metricFilter;
@@ -461,11 +441,8 @@ var DashboardKonimex = (function ($) {
         });
     }
 
-    // -------------------------------------------------------------
-    // LEVEL 2: BREAKDOWN AREA & TPE (WITH DATATABLES)
-    // -------------------------------------------------------------
     function loadBreakdownArea() {
-        var params = getFilterParams();
+        let params = getFilterParams();
         $('#loading_breakdown_area').show();
 
         if (dtArea) {
@@ -474,13 +451,13 @@ var DashboardKonimex = (function ($) {
         }
 
         $.ajax({
-            url: common.baseURL("dashboard_konimex/load_breakdown_area"),
+            url: common.baseURL("dashboard_tts/load_breakdown_area"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
                 $('#loading_breakdown_area').hide();
-                var html = '';
+                let html = '';
                 if (res && res.length > 0) {
                     $.each(res, function (i, row) {
                         html += '<tr>';
@@ -502,7 +479,6 @@ var DashboardKonimex = (function ($) {
                 }
                 $('#table_breakdown_area tbody').html(html);
 
-                // Inisialisasi DataTables
                 if ($.fn.DataTable) {
                     dtArea = $('#table_breakdown_area').DataTable({
                         pageLength: 10,
@@ -519,11 +495,8 @@ var DashboardKonimex = (function ($) {
         });
     }
 
-    // -------------------------------------------------------------
-    // LEVEL 2: BREAKDOWN CHANNEL & SPESIALISASI (WITH DATATABLES)
-    // -------------------------------------------------------------
     function loadBreakdownChannel() {
-        var params = getFilterParams();
+        let params = getFilterParams();
         $('#loading_breakdown_channel').show();
 
         if (dtChannel) {
@@ -532,16 +505,16 @@ var DashboardKonimex = (function ($) {
         }
 
         $.ajax({
-            url: common.baseURL("dashboard_konimex/load_breakdown_channel_spesialis"),
+            url: common.baseURL("dashboard_tts/load_breakdown_channel_spesialis"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
                 $('#loading_breakdown_channel').hide();
-                var html = '';
+                let html = '';
                 if (res && res.length > 0) {
                     $.each(res, function (i, row) {
-                        var avg = (row.total_user > 0) ? (row.total_kunjungan_detailing / row.total_user).toFixed(1) : 0;
+                        let avg = (row.total_user > 0) ? (row.total_kunjungan_detailing / row.total_user).toFixed(1) : 0;
                         html += '<tr>';
                         html += '<td class="text-center">' + (i + 1) + '</td>';
                         html += '<td><i class="fa fa-stethoscope text-success"></i> <strong>' + (row.nama_spesialisasi || '-') + '</strong></td>';
@@ -571,11 +544,8 @@ var DashboardKonimex = (function ($) {
         });
     }
 
-    // -------------------------------------------------------------
-    // LEVEL 2: BREAKDOWN PRODUK (WITH DATATABLES)
-    // -------------------------------------------------------------
     function loadBreakdownProduk() {
-        var params = getFilterParams();
+        let params = getFilterParams();
         $('#loading_breakdown_produk').show();
 
         if (dtProduk) {
@@ -584,13 +554,13 @@ var DashboardKonimex = (function ($) {
         }
 
         $.ajax({
-            url: common.baseURL("dashboard_konimex/load_breakdown_produk"),
+            url: common.baseURL("dashboard_tts/load_breakdown_produk"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
                 $('#loading_breakdown_produk').hide();
-                var html = '';
+                let html = '';
                 if (res && res.length > 0) {
                     $.each(res, function (i, row) {
                         html += '<tr>';
@@ -608,7 +578,6 @@ var DashboardKonimex = (function ($) {
                 }
                 $('#table_breakdown_produk tbody').html(html);
 
-                // Inisialisasi DataTables
                 if ($.fn.DataTable) {
                     dtProduk = $('#table_breakdown_produk').DataTable({
                         pageLength: 10,
@@ -625,11 +594,8 @@ var DashboardKonimex = (function ($) {
         });
     }
 
-    // -------------------------------------------------------------
-    // LEVEL 3: MODAL DETAIL AKTIVITAS HARIAN TPE (DRILLDOWN WITH DATATABLES)
-    // -------------------------------------------------------------
     function openDetailReportModal(salesmanid, salesmanName) {
-        var params = getFilterParams();
+        let params = getFilterParams();
         params.salesmanid = salesmanid;
 
         $('#modal_tpe_name').text(salesmanName + ' (' + salesmanid + ')');
@@ -646,25 +612,23 @@ var DashboardKonimex = (function ($) {
         $('#loading_modal_detail').show();
 
         $.ajax({
-            url: common.baseURL("dashboard_konimex/load_detail_tpe"),
+            url: common.baseURL("dashboard_tts/load_detail_tpe"),
             type: 'POST',
             dataType: 'json',
             data: params,
             success: function (res) {
                 $('#loading_modal_detail').hide();
                 if (res) {
-                    // Update header info
                     if (res.salesman) {
-                        var sls = res.salesman;
+                        let sls = res.salesman;
                         $('#modal_tpe_area').text('• Regional: ' + (sls.nama_regional || '-') + ' | Area: ' + (sls.nama_area || '-') + ' | ASS/MRC: ' + (sls.nama_subarea || '-'));
                     }
 
-                    // A. Kunjungan
-                    var htmlK = '';
+                    let htmlK = '';
                     if (res.kunjungan && res.kunjungan.length > 0) {
                         $('#count_log_kunjungan').text(res.kunjungan.length);
                         $.each(res.kunjungan, function (i, r) {
-                            var ecBadge = r.is_effective_call == 1 ? '<span class="label label-success">Ya (Order)</span>' : '<span class="label label-default">Tidak</span>';
+                            let ecBadge = r.is_effective_call == 1 ? '<span class="label label-success">Ya (Order)</span>' : '<span class="label label-default">Tidak</span>';
                             htmlK += '<tr>';
                             htmlK += '<td class="text-center">' + (i + 1) + '</td>';
                             htmlK += '<td>' + r.tanggal + '</td>';
@@ -684,8 +648,7 @@ var DashboardKonimex = (function ($) {
                     }
                     $('#table_modal_kunjungan tbody').html(htmlK);
 
-                    // B. Detailing
-                    var htmlD = '';
+                    let htmlD = '';
                     if (res.detailing && res.detailing.length > 0) {
                         $('#count_log_detailing').text(res.detailing.length);
                         $.each(res.detailing, function (i, r) {
@@ -705,14 +668,13 @@ var DashboardKonimex = (function ($) {
                     }
                     $('#table_modal_detailing tbody').html(htmlD);
 
-                    // C. Absensi
-                    var htmlA = '';
+                    let htmlA = '';
                     if (res.absensi && res.absensi.length > 0) {
                         $('#count_log_absensi').text(res.absensi.length);
                         $.each(res.absensi, function (i, r) {
-                            var statusCls = r.status === 'H' ? 'label-success' : (r.status === 'S' ? 'label-warning' : 'label-danger');
-                            var imgIn = r.foto_checkin ? '<a href="' + r.foto_checkin + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto In</a>' : '-';
-                            var imgOut = r.foto_checkout ? '<a href="' + r.foto_checkout + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto Out</a>' : '-';
+                            let statusCls = r.status === 'H' ? 'label-success' : (r.status === 'S' ? 'label-warning' : 'label-danger');
+                            let imgIn = r.foto_checkin ? '<a href="' + r.foto_checkin + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto In</a>' : '-';
+                            let imgOut = r.foto_checkout ? '<a href="' + r.foto_checkout + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto Out</a>' : '-';
                             htmlA += '<tr>';
                             htmlA += '<td class="text-center">' + (i + 1) + '</td>';
                             htmlA += '<td>' + r.tanggal + '</td>';
@@ -729,7 +691,6 @@ var DashboardKonimex = (function ($) {
                     }
                     $('#table_modal_absensi tbody').html(htmlA);
 
-                    // Inisialisasi DataTables pada Modal
                     if ($.fn.DataTable) {
                         dtModalKunjungan = $('#table_modal_kunjungan').DataTable({
                             pageLength: 10,

@@ -1,113 +1,83 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Dashboard_konimex extends BaseController
+class Dashboard_tts extends BaseController
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Dashboard_konimex_model', 'dashboard_konimex');
+        $this->load->model('Dashboard_tts_model', 'dashboard_tts');
     }
 
     public function index()
     {
-        $data['regional_list'] = $this->dashboard_konimex->get_regional_list();
-        $this->template->show($this, 'v_dashboard_main', $data);
+        $data['regional_list'] = $this->dashboard_tts->get_regional_list();
+        $this->template->show($this, 'content', $data);
     }
 
-    /**
-     * Endpoint JSON: Summary 7 KPI Utama
-     */
     public function load_kpi()
     {
         $data = param_input();
-        $result = $this->dashboard_konimex->load_summary_kpi($data);
+        $result = $this->dashboard_tts->load_summary_kpi($data);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint JSON: Trend Bulanan (Jan - Des)
-     */
     public function load_trend()
     {
         $data = param_input();
-        $result = $this->dashboard_konimex->load_trend_monthly($data);
+        $result = $this->dashboard_tts->load_trend_monthly($data);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint Cascading Filter: Get Area (ASM) by Regional (SM)
-     */
     public function get_area_by_regional()
     {
         $regionalid = $this->input->post('regionalid');
-        $result = $this->dashboard_konimex->get_area_list($regionalid);
+        $result = $this->dashboard_tts->get_area_list($regionalid);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint Cascading Filter: Get Subarea (ASS/MRC) by Area (ASM)
-     */
     public function get_subarea_by_area()
     {
         $areaid = $this->input->post('areaid');
-        $result = $this->dashboard_konimex->get_subarea_list($areaid);
+        $result = $this->dashboard_tts->get_subarea_list($areaid);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint Cascading Filter: Get Salesman (TPE)
-     */
     public function get_salesman_by_filter()
     {
         $data = param_input();
-        $result = $this->dashboard_konimex->get_salesman_list($data);
+        $result = $this->dashboard_tts->get_salesman_list($data);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint JSON: Level 2 Breakdown Area & Performa TPE
-     */
     public function load_breakdown_area()
     {
         $data = param_input();
-        $result = $this->dashboard_konimex->load_breakdown_area($data);
+        $result = $this->dashboard_tts->load_breakdown_area($data);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint JSON: Level 2 Breakdown Channel & Spesialisasi
-     */
     public function load_breakdown_channel_spesialis()
     {
         $data = param_input();
-        $result = $this->dashboard_konimex->load_breakdown_channel_spesialis($data);
+        $result = $this->dashboard_tts->load_breakdown_channel_spesialis($data);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint JSON: Level 2 Breakdown Target & Realisasi Produk Wajib
-     */
     public function load_breakdown_produk()
     {
         $data = param_input();
-        $result = $this->dashboard_konimex->load_breakdown_produk($data);
+        $result = $this->dashboard_tts->load_breakdown_produk($data);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint JSON: Level 3 Detail Aktivitas Harian TPE (Log Kunjungan, Detailing, Presensi)
-     */
     public function load_detail_tpe()
     {
         $data = param_input();
-        $result = $this->dashboard_konimex->load_detail_tpe_activity($data);
+        $result = $this->dashboard_tts->load_detail_tpe_activity($data);
         responseJSON($result);
     }
 
-    /**
-     * Endpoint Export Excel: Breakdown Area & Performa TPE
-     */
     public function export_excel_area()
     {
         $tahun = $this->input->get('tahun') ?? date('Y');
@@ -121,7 +91,7 @@ class Dashboard_konimex extends BaseController
             'salesmanid' => $this->input->get('salesmanid')
         ];
 
-        $rows = $this->dashboard_konimex->load_breakdown_area($data);
+        $rows = $this->dashboard_tts->load_breakdown_area($data);
 
         $filename = "Breakdown_Performa_TPE_{$tahun}_{$bulan}.xls";
         header("Content-Type: application/vnd.ms-excel");
@@ -132,11 +102,11 @@ class Dashboard_konimex extends BaseController
         echo '<table border="1">';
         echo '<tr style="background-color: #2c3e50; color: #fff;">
                 <th>No</th>
-                <th>Area SM (Regional)</th>
-                <th>Area ASM</th>
-                <th>ASS / MRC</th>
-                <th>NIK / Salesman ID</th>
-                <th>Nama Salesman</th>
+                <th>Regional</th>
+                <th>Area</th>
+                <th>Sub Area</th>
+                <th>Salesman ID</th>
+                <th>Salesman</th>
                 <th>Tipe</th>
                 <th>Hadir</th>
                 <th>Total HK</th>

@@ -1,24 +1,19 @@
-<!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Dashboard TTS - Konimex
-        <small>Executive Overview & Performa Karyawan</small>
+        Dashboard TTS
     </h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Konimex</li>
+        <li class="active">TTS</li>
     </ol>
 </section>
 
-<!-- Main content -->
 <section id="content-main" class="content dashboard">
-
-    <!-- 1. FILTER BOX (AdminLTE Theme) -->
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-filter"></i> Filter Periode & Hierarki Wilayah</h3>
+                    <h3 class="box-title"><i class="fa fa-filter"></i> Filter</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                     </div>
@@ -26,43 +21,17 @@
                 <div class="box-body">
                     <form id="form_filter_dashboard">
                         <div class="row">
-                            <!-- Periode Tahun -->
+                            <div class="form-group col-md-2">
+                                <label>Periode</label>
+                                <div class="input-group date">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-th"></span></div>
+                            <input id="periode" type="text" class="form-control datepicker" readonly>
+                        </div>
+                    </div>
                             <div class="form-group col-md-2 col-sm-6">
-                                <label><i class="fa fa-calendar"></i> Tahun</label>
-                                <select id="filter_tahun" name="tahun" class="form-control select2">
-                                    <?php 
-                                        $current_year = date('Y');
-                                        for ($y = $current_year; $y >= $current_year - 3; $y--): 
-                                    ?>
-                                        <option value="<?= $y ?>" <?= ($y == $current_year) ? 'selected' : '' ?>><?= $y ?></option>
-                                    <?php endfor; ?>
-                                </select>
-                            </div>
-
-                            <!-- Periode Bulan -->
-                            <div class="form-group col-md-2 col-sm-6">
-                                <label><i class="fa fa-calendar-o"></i> Bulan</label>
-                                <select id="filter_bulan" name="bulan" class="form-control select2">
-                                    <?php 
-                                        $months = [
-                                            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-                                            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-                                            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-                                            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                                        ];
-                                        $current_month = date('m');
-                                        foreach ($months as $k => $v): 
-                                    ?>
-                                        <option value="<?= $k ?>" <?= ($k == $current_month) ? 'selected' : '' ?>><?= $v ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <!-- Area SM (Regional) -->
-                            <div class="form-group col-md-2 col-sm-6">
-                                <label><i class="fa fa-globe"></i> Area SM (Regional)</label>
+                                <label>Regional</label>
                                 <select id="filter_regionalid" name="regionalid" class="form-control select2">
-                                    <option value="">-- Semua Area SM --</option>
+                                    <option value="">Semua Regional</option>
                                     <?php if (!empty($regional_list)): ?>
                                         <?php foreach ($regional_list as $reg): ?>
                                             <option value="<?= $reg['regionalid'] ?>"><?= $reg['nama_regional'] ?></option>
@@ -70,38 +39,32 @@
                                     <?php endif; ?>
                                 </select>
                             </div>
-
-                            <!-- Area ASM (Site) -->
                             <div class="form-group col-md-2 col-sm-6">
-                                <label><i class="fa fa-map-marker"></i> Area ASM</label>
+                                <label>Area</label>
                                 <select id="filter_areaid" name="areaid" class="form-control select2">
-                                    <option value="">-- Semua Area ASM --</option>
+                                    <option value="">Semua Area</option>
                                 </select>
                             </div>
-
-                            <!-- Area ASS / MRC -->
                             <div class="form-group col-md-2 col-sm-6">
-                                <label><i class="fa fa-sitemap"></i> Area ASS / MRC</label>
+                                <label>Sub Area</label>
                                 <select id="filter_subareaid" name="subareaid" class="form-control select2">
-                                    <option value="">-- Semua ASS/MRC --</option>
+                                    <option value="">Semua Sub Area</option>
                                 </select>
                             </div>
-
-                            <!-- TPE (Salesman) -->
                             <div class="form-group col-md-2 col-sm-6">
-                                <label><i class="fa fa-user"></i> TPE</label>
+                                <label>TPE</label>
                                 <select id="filter_salesmanid" name="salesmanid" class="form-control select2">
-                                    <option value="">-- Semua TPE --</option>
+                                    <option value="">Semua TPE</option>
                                 </select>
                             </div>
                         </div>
                     </form>
                 </div>
-                <div class="box-footer text-right">
-                    <button type="button" id="btn_reset_filter" class="btn btn-default">
+                <div class="box-footer">
+                    <button type="button" id="btn_reset_filter" class="btn btn-warning">
                         <i class="fa fa-undo"></i> Reset Filter
                     </button>
-                    <button type="button" id="btn_apply_filter" class="btn btn-warning" style="margin-left: 6px;">
+                    <button type="button" id="btn_apply_filter" class="btn btn-success" style="margin-left: 6px;">
                         <i class="fa fa-refresh"></i> Load Data
                     </button>
                 </div>
@@ -109,15 +72,12 @@
         </div>
     </div>
 
-    <!-- 2. SUMMARY KPI CARDS (AdminLTE Small Box Theme) -->
     <div class="row" id="section_kpi_cards" style="position: relative;">
-        <!-- Loading spinner -->
         <div id="loading_kpi" class="overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index:10; display:none; text-align:center; padding-top:40px;">
             <i class="fa fa-refresh fa-spin" style="font-size: 30px; color: #3c8dbc;"></i>
             <p style="font-weight: 600; color: #333; margin-top: 10px;">Memuat Data KPI...</p>
         </div>
 
-        <!-- Card 1: Absensi & Kehadiran (Green) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-green">
                 <div class="inner">
@@ -133,7 +93,6 @@
             </div>
         </div>
 
-        <!-- Card 2: Call & Effective Call (Aqua) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-aqua">
                 <div class="inner">
@@ -149,7 +108,6 @@
             </div>
         </div>
 
-        <!-- Card 3: Ketercapaian Kat A (Purple) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-purple">
                 <div class="inner">
@@ -165,7 +123,6 @@
             </div>
         </div>
 
-        <!-- Card 4: Ketercapaian User Wajib (Yellow) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-yellow">
                 <div class="inner">
@@ -181,7 +138,6 @@
             </div>
         </div>
 
-        <!-- Card 5: Detailing Produk Wajib (Teal) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-teal">
                 <div class="inner">
@@ -197,7 +153,6 @@
             </div>
         </div>
 
-        <!-- Card 6: Selling Produk Wajib (Red) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-red">
                 <div class="inner">
@@ -213,7 +168,6 @@
             </div>
         </div>
 
-        <!-- Card 7: Join Activity (Maroon) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-maroon">
                 <div class="inner">
@@ -229,7 +183,6 @@
             </div>
         </div>
 
-        <!-- Card 8: Quick Action / Overview (Navy) -->
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-navy">
                 <div class="inner">
@@ -246,7 +199,6 @@
         </div>
     </div>
 
-    <!-- 3. TREND CHART BOX (AdminLTE Box Theme) -->
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
@@ -277,7 +229,6 @@
         </div>
     </div>
 
-    <!-- 4. LEVEL 2: MATRIKS BREAKDOWN TABS (AdminLTE nav-tabs-custom) -->
     <div class="row" id="section_breakdown">
         <div class="col-xs-12">
             <div class="nav-tabs-custom">
@@ -300,7 +251,6 @@
                 </ul>
 
                 <div class="tab-content" style="padding: 15px;">
-                    <!-- TAB 1: BREAKDOWN AREA & TPE -->
                     <div class="tab-pane active" id="tab_breakdown_area" style="position: relative;">
                         <div id="loading_breakdown_area" class="overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index:10; display:none; text-align:center; padding-top:40px;">
                             <i class="fa fa-refresh fa-spin" style="font-size: 28px; color: #3c8dbc;"></i>
@@ -324,10 +274,10 @@
                                 <thead style="background: #2c3e50; color: #fff;">
                                     <tr>
                                         <th class="text-center" style="width: 40px;">No</th>
-                                        <th>Area SM (Regional)</th>
-                                        <th>Area ASM</th>
-                                        <th>ASS / MRC</th>
-                                        <th>TPE / Medrep</th>
+                                        <th>Regional</th>
+                                        <th>Area</th>
+                                        <th>Sub Area</th>
+                                        <th>TPE</th>
                                         <th class="text-center">Kehadiran</th>
                                         <th class="text-center">Call</th>
                                         <th class="text-center">EC (%)</th>
@@ -345,7 +295,6 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: BREAKDOWN CHANNEL & SPESIALISASI -->
                     <div class="tab-pane" id="tab_breakdown_channel" style="position: relative;">
                         <div id="loading_breakdown_channel" class="overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index:10; display:none; text-align:center; padding-top:40px;">
                             <i class="fa fa-refresh fa-spin" style="font-size: 28px; color: #00a65a;"></i>
@@ -378,7 +327,6 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: BREAKDOWN PRODUK WAJIB -->
                     <div class="tab-pane" id="tab_breakdown_produk" style="position: relative;">
                         <div id="loading_breakdown_produk" class="overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index:10; display:none; text-align:center; padding-top:40px;">
                             <i class="fa fa-refresh fa-spin" style="font-size: 28px; color: #f39c12;"></i>
@@ -418,7 +366,6 @@
         </div>
     </div>
 
-    <!-- LEVEL 3: MODAL DETAIL AKTIVITAS HARIAN TPE (AdminLTE Theme matching dashboard_pjp_daily) -->
     <div class="modal fade" id="modal_detail_tpe" tabindex="-1" role="dialog" aria-labelledby="modal_detail_tpe_label">
         <div class="modal-dialog modal-lg" role="document" style="width: 90%;">
             <div class="modal-content">
@@ -444,7 +391,6 @@
                             <li><a href="#tab_sub_absensi" data-toggle="tab"><i class="fa fa-calendar-check-o text-purple"></i> C. Log Presensi Parma & Kehadiran (<span id="count_log_absensi">0</span>)</a></li>
                         </ul>
                         <div class="tab-content" style="padding: 15px 0;">
-                            <!-- SUB-TAB A: KUNJUNGAN -->
                             <div class="tab-pane active" id="tab_sub_kunjungan">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped table-hover fixed-table" id="table_modal_kunjungan" style="font-size: 12px; width: 100%;">
@@ -468,7 +414,6 @@
                                 </div>
                             </div>
 
-                            <!-- SUB-TAB B: DETAILING -->
                             <div class="tab-pane" id="tab_sub_detailing">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped table-hover fixed-table" id="table_modal_detailing" style="font-size: 12px; width: 100%;">
@@ -489,7 +434,6 @@
                                 </div>
                             </div>
 
-                            <!-- SUB-TAB C: PRESENSI -->
                             <div class="tab-pane" id="tab_sub_absensi">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped table-hover fixed-table" id="table_modal_absensi" style="font-size: 12px; width: 100%;">
@@ -521,12 +465,9 @@
 
 </section>
 
-<!-- DataTables CSS & JS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap.min.css">
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap.min.js"></script>
 
-<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- Module JS -->
-<script src="<?= base_url() . 'assets/modules/dashboard_konimex/dashboard-konimex.js' ?>?v=1.4"></script>
+<script src="<?= base_url() . 'assets/modules/dashboard_tts/dashboard-tts.js' ?>?v=1.0"></script>
