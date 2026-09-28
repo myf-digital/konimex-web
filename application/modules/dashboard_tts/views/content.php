@@ -153,7 +153,7 @@
                 <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div style="min-width: 80px; margin-right: 6px;">
                         <h3 id="kpi_absensi_pct">0%</h3>
-                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Kehadiran TPE: <span id="kpi_absensi_hadir">0</span> / <span id="kpi_absensi_total">0</span> HK</p>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Kehadiran TPE: <span id="kpi_absensi_act">0</span> / <span id="kpi_absensi_tgt">0</span> HK</p>
                     </div>
                     <div id="kpi_absensi_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
                         -
