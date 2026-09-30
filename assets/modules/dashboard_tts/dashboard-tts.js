@@ -3,6 +3,14 @@ let DashboardTTS = (function ($) {
 
     const common = new Common();
     const commonGrid = new CommonGrid();
+    let paramsession = common.getCookie("session");
+    if (typeof paramsession === 'string') {
+        try {
+            paramsession = JSON.parse(paramsession);
+        } catch (e) {
+            paramsession = {};
+        }
+    }
 
     let chartTrendInstance = null;
     let rawTrendData = null;
@@ -36,6 +44,100 @@ let DashboardTTS = (function ($) {
         }
     };
 
+    function getAllowedRegionalIds() {
+        if (!paramsession || !Array.isArray(paramsession.restrict_location) || paramsession.restrict_location.length === 0) {
+            return [];
+        }
+        let allowed = [];
+        paramsession.restrict_location.forEach(function (loc) {
+            if (loc.regionalid && loc.regionalid !== 'null' && loc.regionalid !== '') {
+                let idStr = String(loc.regionalid);
+                if (!allowed.includes(idStr)) {
+                    allowed.push(idStr);
+                }
+            }
+        });
+        return allowed;
+    }
+
+    function applyLocationRestrictions() {
+        let allowedRegIds = getAllowedRegionalIds();
+        if (allowedRegIds.length > 0) {
+            $('#filter_regionalid option').each(function () {
+                let val = $(this).val();
+                if (val !== '' && !allowedRegIds.includes(String(val))) {
+                    $(this).remove();
+                }
+            });
+
+            if (allowedRegIds.length === 1) {
+                $('#filter_regionalid').val(allowedRegIds[0]).trigger('change');
+            } else {
+                $('#filter_regionalid').trigger('change.select2');
+            }
+        }
+    }
+
+    function filterAreaByRestriction(areaList, regionalid) {
+        if (!paramsession || !Array.isArray(paramsession.restrict_location) || paramsession.restrict_location.length === 0) {
+            return areaList;
+        }
+
+        let rLoc = paramsession.restrict_location;
+        let matchingLocs = rLoc.filter(function (loc) {
+            if (!loc.regionalid || loc.regionalid === 'null' || !regionalid) return true;
+            return String(loc.regionalid) === String(regionalid);
+        });
+
+        let allowedAreaIds = [];
+        matchingLocs.forEach(function (loc) {
+            if (loc.areaid && loc.areaid !== 'null' && loc.areaid !== '') {
+                let idStr = String(loc.areaid);
+                if (!allowedAreaIds.includes(idStr)) {
+                    allowedAreaIds.push(idStr);
+                }
+            }
+        });
+
+        if (allowedAreaIds.length === 0) {
+            return areaList;
+        }
+
+        return areaList.filter(function (item) {
+            return allowedAreaIds.includes(String(item.areaid));
+        });
+    }
+
+    function filterSubareaByRestriction(subareaList, areaid) {
+        if (!paramsession || !Array.isArray(paramsession.restrict_location) || paramsession.restrict_location.length === 0) {
+            return subareaList;
+        }
+
+        let rLoc = paramsession.restrict_location;
+        let matchingLocs = rLoc.filter(function (loc) {
+            if (!loc.areaid || loc.areaid === 'null' || !areaid) return true;
+            return String(loc.areaid) === String(areaid);
+        });
+
+        let allowedSubareaIds = [];
+        matchingLocs.forEach(function (loc) {
+            if (loc.subareaid && loc.subareaid !== 'null' && loc.subareaid !== '') {
+                let idStr = String(loc.subareaid);
+                if (!allowedSubareaIds.includes(idStr)) {
+                    allowedSubareaIds.push(idStr);
+                }
+            }
+        });
+
+        if (allowedSubareaIds.length === 0) {
+            return subareaList;
+        }
+
+        return subareaList.filter(function (item) {
+            return allowedSubareaIds.includes(String(item.subareaid));
+        });
+    }
+
     function init() {
         if ($.fn.select2) {
             $('.select2').select2({
@@ -55,6 +157,7 @@ let DashboardTTS = (function ($) {
             .datepicker("setDate", new Date());
 
         bindEvents();
+        applyLocationRestrictions();
         loadSalesman();
         loadAllDashboardData();
     }
@@ -75,7 +178,8 @@ let DashboardTTS = (function ($) {
                     success: function (res) {
                         let options = '<option value="">Semua Area</option>';
                         if (res && res.length > 0) {
-                            $.each(res, function (i, item) {
+                            let filtered = filterAreaByRestriction(res, regionalid);
+                            $.each(filtered, function (i, item) {
                                 options += '<option value="' + item.areaid + '">' + item.nama_area + '</option>';
                             });
                         }
@@ -83,6 +187,7 @@ let DashboardTTS = (function ($) {
                     }
                 });
             }
+            loadSalesman();
         });
 
         $('#filter_areaid').on('change', function () {
@@ -99,7 +204,8 @@ let DashboardTTS = (function ($) {
                     success: function (res) {
                         let options = '<option value="">Semua Sub Area</option>';
                         if (res && res.length > 0) {
-                            $.each(res, function (i, item) {
+                            let filtered = filterSubareaByRestriction(res, areaid);
+                            $.each(filtered, function (i, item) {
                                 options += '<option value="' + item.subareaid + '">' + item.nama_subarea + '</option>';
                             });
                         }
@@ -107,6 +213,7 @@ let DashboardTTS = (function ($) {
                     }
                 });
             }
+            loadSalesman();
         });
 
         $('#filter_subareaid').on('change', function () {
@@ -120,9 +227,16 @@ let DashboardTTS = (function ($) {
         $('#btn_reset_filter').on('click', function () {
             $('#form_filter_dashboard')[0].reset();
             $('#periode').datepicker("setDate", new Date());
-            $('#filter_regionalid').val('');
-            $('#filter_areaid').html('<option value="">Semua Area</option>');
-            $('#filter_subareaid').html('<option value="">Semua Sub Area</option>');
+            
+            let allowedRegIds = getAllowedRegionalIds();
+            if (allowedRegIds.length === 1) {
+                $('#filter_regionalid').val(allowedRegIds[0]).trigger('change');
+            } else {
+                $('#filter_regionalid').val('').trigger('change.select2');
+                $('#filter_areaid').html('<option value="">Semua Area</option>').trigger('change.select2');
+                $('#filter_subareaid').html('<option value="">Semua Sub Area</option>').trigger('change.select2');
+            }
+
             $('.select2').trigger('change.select2');
             loadSalesman();
             loadAllDashboardData();
@@ -213,13 +327,70 @@ let DashboardTTS = (function ($) {
         let tahun = dateObj.getFullYear();
         let bulan = ('0' + (dateObj.getMonth() + 1)).slice(-2);
 
+        let regionalid = $('#filter_regionalid').val() || '';
+        let areaid = $('#filter_areaid').val() || '';
+        let subareaid = $('#filter_subareaid').val() || '';
+        let salesmanid = $('#filter_salesmanid').val() || '';
+
+        if (paramsession && Array.isArray(paramsession.restrict_location) && paramsession.restrict_location.length > 0) {
+            let rLoc = paramsession.restrict_location;
+
+            let scopedLocs = rLoc.filter(function (loc) {
+                if (regionalid && loc.regionalid && String(loc.regionalid) !== String(regionalid)) return false;
+                if (areaid && loc.areaid && String(loc.areaid) !== String(areaid)) return false;
+                if (subareaid && loc.subareaid && String(loc.subareaid) !== String(subareaid)) return false;
+                return true;
+            });
+            if (scopedLocs.length === 0) scopedLocs = rLoc;
+
+            if (!subareaid) {
+                let subareas = [];
+                scopedLocs.forEach(function (loc) {
+                    if (loc.subareaid && loc.subareaid !== 'null' && loc.subareaid !== '') {
+                        let idStr = String(loc.subareaid);
+                        if (!subareas.includes(idStr)) subareas.push(idStr);
+                    }
+                });
+
+                if (subareas.length > 0) {
+                    subareaid = subareas.join(',');
+                } else if (!areaid) {
+                    let areas = [];
+                    scopedLocs.forEach(function (loc) {
+                        if (loc.areaid && loc.areaid !== 'null' && loc.areaid !== '') {
+                            let idStr = String(loc.areaid);
+                            if (!areas.includes(idStr)) areas.push(idStr);
+                        }
+                    });
+
+                    if (areas.length > 0) {
+                        areaid = areas.join(',');
+                    } else if (!regionalid) {
+                        let regionals = [];
+                        scopedLocs.forEach(function (loc) {
+                            if (loc.regionalid && loc.regionalid !== 'null' && loc.regionalid !== '') {
+                                let idStr = String(loc.regionalid);
+                                if (!regionals.includes(idStr)) regionals.push(idStr);
+                            }
+                        });
+
+                        if (regionals.length > 0) {
+                            regionalid = regionals.join(',');
+                        }
+                    }
+                }
+            }
+        }
+
         return {
             tahun: tahun,
             bulan: bulan,
-            regionalid: $('#filter_regionalid').val(),
-            areaid: $('#filter_areaid').val(),
-            subareaid: $('#filter_subareaid').val(),
-            salesmanid: $('#filter_salesmanid').val()
+            regionalid: regionalid,
+            areaid: areaid,
+            subareaid: subareaid,
+            salesmanid: salesmanid,
+            usersession: paramsession ? (paramsession.username || '') : '',
+            restrict_level: paramsession ? (paramsession.restrict_level || '') : ''
         };
     }
 

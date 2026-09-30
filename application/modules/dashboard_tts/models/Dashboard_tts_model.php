@@ -904,11 +904,23 @@ class Dashboard_tts_model extends CI_Model
         }
 
         if (!empty($data['subareaid'])) {
-            $this->db->where("s.salesmanid IN (SELECT salesmanid FROM m_salesman_area WHERE subareaid = '" . $this->db->escape_str($data['subareaid']) . "')", NULL, FALSE);
+            $subareas = is_array($data['subareaid']) ? $data['subareaid'] : explode(',', $data['subareaid']);
+            $escaped = array_map([$this->db, 'escape_str'], array_filter($subareas));
+            if (!empty($escaped)) {
+                $this->db->where("s.salesmanid IN (SELECT salesmanid FROM m_salesman_area WHERE subareaid IN ('" . implode("','", $escaped) . "'))", NULL, FALSE);
+            }
         } elseif (!empty($data['areaid'])) {
-            $this->db->where("s.salesmanid IN (SELECT salesmanid FROM m_salesman_area WHERE areaid = '" . $this->db->escape_str($data['areaid']) . "')", NULL, FALSE);
+            $areas = is_array($data['areaid']) ? $data['areaid'] : explode(',', $data['areaid']);
+            $escaped = array_map([$this->db, 'escape_str'], array_filter($areas));
+            if (!empty($escaped)) {
+                $this->db->where("s.salesmanid IN (SELECT salesmanid FROM m_salesman_area WHERE areaid IN ('" . implode("','", $escaped) . "'))", NULL, FALSE);
+            }
         } elseif (!empty($data['regionalid'])) {
-            $this->db->where("s.salesmanid IN (SELECT salesmanid FROM m_salesman_area WHERE regionalid = '" . $this->db->escape_str($data['regionalid']) . "')", NULL, FALSE);
+            $regionals = is_array($data['regionalid']) ? $data['regionalid'] : explode(',', $data['regionalid']);
+            $escaped = array_map([$this->db, 'escape_str'], array_filter($regionals));
+            if (!empty($escaped)) {
+                $this->db->where("s.salesmanid IN (SELECT salesmanid FROM m_salesman_area WHERE regionalid IN ('" . implode("','", $escaped) . "'))", NULL, FALSE);
+            }
         }
 
         return $this->db->order_by('s.nama_salesman', 'ASC')->get()->result_array();
@@ -1747,11 +1759,23 @@ class Dashboard_tts_model extends CI_Model
                 $where .= " AND {$col} = '" . $this->db->escape_str($data['salesmanid']) . "'";
             }
         } elseif (!empty($data['subareaid'])) {
-            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE subareaid = '" . $this->db->escape_str($data['subareaid']) . "')";
+            $subareas = is_array($data['subareaid']) ? $data['subareaid'] : explode(',', $data['subareaid']);
+            $escaped = array_map([$this->db, 'escape_str'], array_filter($subareas));
+            if (!empty($escaped)) {
+                $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE subareaid IN ('" . implode("','", $escaped) . "'))";
+            }
         } elseif (!empty($data['areaid'])) {
-            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE areaid = '" . $this->db->escape_str($data['areaid']) . "')";
+            $areas = is_array($data['areaid']) ? $data['areaid'] : explode(',', $data['areaid']);
+            $escaped = array_map([$this->db, 'escape_str'], array_filter($areas));
+            if (!empty($escaped)) {
+                $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE areaid IN ('" . implode("','", $escaped) . "'))";
+            }
         } elseif (!empty($data['regionalid'])) {
-            $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE regionalid = '" . $this->db->escape_str($data['regionalid']) . "')";
+            $regionals = is_array($data['regionalid']) ? $data['regionalid'] : explode(',', $data['regionalid']);
+            $escaped = array_map([$this->db, 'escape_str'], array_filter($regionals));
+            if (!empty($escaped)) {
+                $where .= " AND {$col} IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE regionalid IN ('" . implode("','", $escaped) . "'))";
+            }
         } else {
             if (!empty($data['restrict_level']) && !empty($data['usersession'])) {
                 $restrict_query = get_salesman_restrict($data['usersession'], $data['restrict_level']);

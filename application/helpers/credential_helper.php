@@ -220,12 +220,13 @@ function find_menu($role_id)
 {
     $ci =& get_instance();
     $values = array($role_id);
-    $username = strtolower($_SESSION['user_login'] ?? $_SESSION['user_credential'] ?? '');
+    // $username = strtolower($_SESSION['user_login'] ?? $_SESSION['user_credential'] ?? '');
     
-    $where = ' AND b.module_name <> "dashboard_tts" ';
-    if ($username && $username == 'hartanto') {
-        $where = '';
-    }
+    $where = '';
+    // $where = ' AND b.module_name <> "dashboard_tts" ';
+    // if ($username && $username == 'hartanto') {
+    //     $where = '';
+    // }
     $sql = "SELECT a.*, b.* FROM app_role_menu a JOIN app_menu b ON a.menu_id = b.menu_id WHERE a.role_id = ? AND b.status IS NULL  $where  ORDER BY b.seq_number";
     return $ci->db->query($sql, $values)->result_array();
 }
