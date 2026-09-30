@@ -120,6 +120,27 @@ class Dashboard_tts extends BaseController
         session_write_close();
         $req_no = $this->input->post('req_no') ?? $this->input->get('req_no');
         $result = $this->dashboard_tts->get_detail_join_visit($req_no);
+
+        // Parse visit_doc
+        $images = [];
+        $rawDoc = $result['visit_doc'] ?? '';
+        if (!empty($rawDoc)) {
+            $parsed = is_string($rawDoc) ? json_decode($rawDoc, true) : $rawDoc;
+            if (is_array($parsed)) {
+                foreach ($parsed as $img) {
+                    if (empty($img)) continue;
+                    $url = (strpos($img, 'http://') === 0 || strpos($img, 'https://') === 0) 
+                        ? $img 
+                        : rtrim(URL_IMAGE, '/') . '/' . ltrim($img, '/');
+                    $images[] = [
+                        'path' => $img,
+                        'url'  => $url
+                    ];
+                }
+            }
+        }
+        $result['images'] = $images;
+
         responseJSON($result);
     }
 

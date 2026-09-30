@@ -731,6 +731,8 @@
                                                 <th>Channel</th>
                                                 <th>Produk Didetailkan</th>
                                                 <th class="text-center">Status Detailing</th>
+                                                <th class="text-center">Foto</th>
+                                                <th class="text-center">TTD</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -873,4 +875,4 @@
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="<?= base_url() . 'assets/modules/dashboard_tts/dashboard-tts.js' ?>?v=1.1"></script>
+<script src="<?= base_url() . 'assets/modules/dashboard_tts/dashboard-tts.js' ?>?v=1.2"></script>

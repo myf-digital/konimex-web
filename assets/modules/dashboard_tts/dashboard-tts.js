@@ -1067,7 +1067,17 @@ let DashboardTTS = (function ($) {
 
                     // Render Foto Dokumentasi
                     let docs = [];
-                    if (res.visit_doc) {
+                    if (res.images) {
+                        if (Array.isArray(res.images)) {
+                            docs = res.images;
+                        } else if (typeof res.images === 'string') {
+                            try {
+                                docs = JSON.parse(res.images);
+                            } catch (e) {
+                                docs = [];
+                            }
+                        }
+                    } else if (res.visit_doc) {
                         try {
                             if (typeof res.visit_doc === 'string') {
                                 if (res.visit_doc.startsWith('[') || res.visit_doc.startsWith('{')) {
@@ -1083,34 +1093,35 @@ let DashboardTTS = (function ($) {
                         }
                     }
 
+                    let validDocs = [];
                     if (docs && docs.length > 0) {
-                        let validDocs = [];
                         $.each(docs, function (idx, item) {
                             let docUrl = typeof item === 'object' && item !== null ? (item.url || item.path || item.file) : item;
                             if (docUrl && typeof docUrl === 'string' && docUrl.trim() !== '') {
                                 validDocs.push(docUrl.trim());
                             }
                         });
+                    }
 
-                        $('#detail_visit_doc_count').text(validDocs.length);
+                    $('#detail_visit_doc_count').text(validDocs.length);
 
-                        if (validDocs.length > 0) {
-                            let galleryHtml = '';
-                            $.each(validDocs, function (idx, url) {
-                                let fullUrl = url.startsWith('http') ? url : (common.baseURL() + url.replace(/^\//, ''));
-                                galleryHtml += '<div class="img-gallery-card" style="border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; background: #fff; width: calc(33.333% - 10px); min-width: 180px; display: flex; flex-direction: column;">' +
-                                    '<img src="' + fullUrl + '" class="img-gallery-thumb" data-title="Foto ' + (idx + 1) + ' - ' + (res.nama_professional || 'Join Visit') + '" style="width: 100%; height: 160px; object-fit: cover; cursor: pointer;" alt="Foto Dokumentasi">' +
-                                    '<div class="card-footer-info" style="padding: 8px 10px; font-size: 11px; color: #6b7280; background: #f9fafb; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between;">' +
-                                    '<span>Foto ' + (idx + 1) + '</span>' +
-                                    '<a href="' + fullUrl + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-external-link"></i></a>' +
-                                    '</div>' +
-                                    '</div>';
-                            });
-                            $('#detail_visit_gallery').html(galleryHtml);
-                        } else {
-                            $('#detail_visit_gallery_empty').show();
-                        }
+                    if (validDocs.length > 0) {
+                        $('#detail_visit_gallery_empty').hide();
+                        let galleryHtml = '';
+                        $.each(validDocs, function (idx, url) {
+                            let fullUrl = url.startsWith('http') ? url : (common.baseURL() + url.replace(/^\//, ''));
+                            let filename = fullUrl.split('/').pop() || ('Foto ' + (idx + 1));
+                            galleryHtml += '<div class="img-gallery-card" style="border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; background: #fff; width: calc(33.333% - 10px); min-width: 180px; display: flex; flex-direction: column;">' +
+                                '<img src="' + fullUrl + '" class="img-gallery-thumb" data-title="Foto ' + (idx + 1) + ' - ' + (res.nama_professional || 'Join Visit') + '" onerror="this.onerror=null; this.src=\'https://placehold.co/400x300?text=No+Image\';" style="width: 100%; height: 160px; object-fit: cover; cursor: pointer;" alt="Foto Dokumentasi">' +
+                                '<div class="card-footer-info" style="padding: 8px 10px; font-size: 11px; color: #6b7280; background: #f9fafb; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">' +
+                                '<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px;" title="' + filename + '"><i class="fa fa-image"></i> Foto #' + (idx + 1) + '</span>' +
+                                '<a href="' + fullUrl + '" target="_blank" class="btn btn-xs btn-default" title="Buka Gambar"><i class="fa fa-external-link"></i></a>' +
+                                '</div>' +
+                                '</div>';
+                        });
+                        $('#detail_visit_gallery').html(galleryHtml);
                     } else {
+                        $('#detail_visit_gallery').html('');
                         $('#detail_visit_gallery_empty').show();
                     }
                 }
@@ -1185,6 +1196,10 @@ let DashboardTTS = (function ($) {
                             htmlD += '<td>' + r.jenis_channel + '</td>';
                             htmlD += '<td><strong>' + r.nama_produk + '</strong></td>';
                             htmlD += '<td class="text-center"><span class="label label-info">' + r.status_detailing + '</span></td>';
+                            let imgIn = r.url_img_detailing ? '<a href="' + r.url_img_detailing + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto</a>' : '-';
+                            let imgOut = r.url_file_signature ? '<a href="' + r.url_file_signature + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-check"></i> TTD</a>' : '-';
+                            htmlD += '<td class="text-center">' + imgIn + '</td>';
+                            htmlD += '<td class="text-center">' + imgOut + '</td>';
                             htmlD += '</tr>';
                         });
                     } else {

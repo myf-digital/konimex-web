@@ -1647,7 +1647,15 @@ class Dashboard_tts_model extends CI_Model
                     WHEN tvd.status = 3 THEN 'Valid'
                     WHEN tvd.status = 5 THEN 'Tidak Valid'
                     ELSE 'Tercatat'
-                END AS status_detailing
+                END AS status_detailing,
+                CASE 
+                    WHEN tvd.url_img_detailing IS NOT NULL AND tvd.url_img_detailing != '' THEN CONCAT('".URL_IMAGE."', tvd.url_img_detailing)
+                    ELSE ''
+                END AS url_img_detailing,
+                CASE 
+                    WHEN tvd.url_file_signature IS NOT NULL AND tvd.url_file_signature != '' THEN CONCAT('".URL_IMAGE."', tvd.url_file_signature)
+                    ELSE ''
+                END AS url_file_signature
             FROM trx_visit_detailing tvd
             LEFT JOIN ref_professional rp ON rp.id = tvd.user_id
             LEFT JOIN ref_spesialisasi rs ON rs.id = rp.spesialisasi_id
@@ -1685,8 +1693,14 @@ class Dashboard_tts_model extends CI_Model
                 COALESCE(tsa.keterangan, ap.start_keterangan, '-') AS keterangan,
                 ap.start_time AS parma_checkin,
                 ap.end_time AS parma_checkout,
-                ap.start_image AS foto_checkin,
-                ap.end_image AS foto_checkout
+                CASE 
+                    WHEN ap.start_image IS NOT NULL AND ap.start_image != '' THEN CONCAT('".URL_IMAGE."', ap.start_image)
+                    ELSE ''
+                END AS foto_checkin,
+                CASE 
+                    WHEN ap.end_image IS NOT NULL AND ap.end_image != '' THEN CONCAT('".URL_IMAGE."', ap.end_image)
+                    ELSE ''
+                END AS foto_checkout
             FROM (
                 SELECT periode AS tanggal FROM attendance_parma WHERE salesmanid = ? AND periode BETWEEN ? AND ?
                 UNION
