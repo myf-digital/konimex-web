@@ -230,7 +230,7 @@ class Rep_kunjungan extends BaseController
 		$html .= '<th style="width: 120px; text-align: center;">Jabatan</th>';
 		$html .= '<th style="width: 180px; text-align: center;">Wilayah</th>';
 		$html .= '<th style="width: 100px; text-align: center;">Hari Kerja</th>';
-		$html .= '<th style="width: 100px; text-align: center;">Target/Hari</th>';
+		$html .= '<th style="width: 100px; text-align: center;">Target Visit</th>';
 		$html .= '<th style="width: 110px; text-align: center;">Visit Dokter</th>';
 		$html .= '<th style="width: 110px; text-align: center;">Visit Apotek</th>';
 		$html .= '<th style="width: 110px; text-align: center;">Visit Others</th>';
@@ -683,7 +683,7 @@ class Rep_kunjungan extends BaseController
             'B3' => 'Jabatan',
             'C3' => 'Wilayah',
             'D3' => 'Hari Kerja',
-            'E3' => 'Target/Hari',
+            'E3' => 'Target Visit',
             'F3' => 'Visit Dokter',
             'G3' => 'Visit Apotek',
             'H3' => 'Visit Others',
