@@ -62,4 +62,4 @@
 </section>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/ref_sales_salesman/sales-salesman-org.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_sales_salesman/sales-salesman-org.js' ?>?v=1.1"></script>

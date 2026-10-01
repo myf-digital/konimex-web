@@ -218,4 +218,4 @@
 </div>
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/ref_sales_salesman/sales-salesman-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_sales_salesman/sales-salesman-content.js' ?>?v=1.1"></script>

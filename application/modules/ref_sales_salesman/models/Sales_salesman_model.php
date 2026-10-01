@@ -114,6 +114,18 @@ class Sales_salesman_model extends CI_Model
 
     public function load($data)
     {
+        $restrict_query = get_salesman_restrict($data["usersession"] ?? '', $data["restrict_level"] ?? '');
+        if ($restrict_query) {
+            $strquery = " where a.salesmanid in (
+                                select distinct mss.salesmanid
+                                from m_sales_salesman mss
+                                where mss.salesmanid in (" . $restrict_query . ")
+                                  and mss.aktif=1
+                            )";
+        } else {
+            $strquery = "";
+        }
+
         $field = " a.* ";
         $table = " (
             select
@@ -137,8 +149,51 @@ class Sales_salesman_model extends CI_Model
                 group by msa.salesmanid
             ) area on a.salesmanid = area.salesmanid
             left join m_sales_salesman mss on a.supervisorid=mss.salesmanid
+            $strquery
         ) a";
         return easy_pagging($data, $field, $table);
+    }
+
+    public function savetoxlsx($data)
+    {
+        $restrict_query = get_salesman_restrict($data["usersession"] ?? '', $data["restrict_level"] ?? '');
+        if ($restrict_query) {
+            $strquery = " where a.salesmanid in (
+                                select distinct mss.salesmanid
+                                from m_sales_salesman mss
+                                where mss.salesmanid in (" . $restrict_query . ")
+                                  and mss.aktif=1
+                            )";
+        } else {
+            $strquery = "";
+        }
+
+        $sql = "
+            select
+                a.*,
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea,
+                case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
+                mss.nama_salesman as supervisor
+            from m_sales_salesman a 
+            left join (
+                select 
+                    msa.salesmanid,
+                    group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') as nama_regional,
+                    group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') as nama_area,
+                    group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') as nama_subarea
+                from m_salesman_area msa
+                left join m_area_regional b on msa.regionalid = b.regionalid
+                left join m_area_areasite c on msa.areaid = c.areaid
+                left join m_area_subarea d on msa.subareaid = d.subareaid
+                group by msa.salesmanid
+            ) area on a.salesmanid = area.salesmanid
+            left join m_sales_salesman mss on a.supervisorid=mss.salesmanid
+            $strquery
+            order by a.salesmanid asc
+        ";
+        return $this->db->query($sql)->result_array();
     }
 
     function cekusergff($usergff) {
@@ -152,6 +207,18 @@ class Sales_salesman_model extends CI_Model
 
     function load_salesman($data)
     {
+        $restrict_query = get_salesman_restrict($data["usersession"] ?? '', $data["restrict_level"] ?? '');
+        if ($restrict_query) {
+            $strquery = " where a.salesmanid in (
+                                select distinct mss.salesmanid
+                                from m_sales_salesman mss
+                                where mss.salesmanid in (" . $restrict_query . ")
+                                  and mss.aktif=1
+                            )";
+        } else {
+            $strquery = "";
+        }
+
         $data = $this->db->query("
             SELECT 
                 a.salesmanid as id,
@@ -178,7 +245,7 @@ class Sales_salesman_model extends CI_Model
                 LEFT JOIN m_area_subarea d ON msa.subareaid = d.subareaid
                 GROUP BY msa.salesmanid
             ) area ON a.salesmanid = area.salesmanid
-            WHERE a.salesmanid NOT IN (00332,09174,09159,09173)
+            $strquery
         ")->result_array();
         return $data;
     }

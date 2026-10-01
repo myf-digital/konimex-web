@@ -6,6 +6,7 @@
   common.setTitle("TPE");
   // ui components
   let uiTbl = $("#tbl-sales-salesman");
+  let paramsession = common.getCookie("session");
 
   initializeGrid();
   initialize();
@@ -28,6 +29,10 @@
       title: "TPE",
       toolbar: toolbar(),
       url: common.baseURL("ref_sales_salesman/load"),
+      queryParams: {
+        usersession: paramsession ? paramsession.username : "",
+        restrict_level: paramsession ? paramsession.restrict_level : "",
+      },
       pageNumber: 1,
       pageSize: commonGrid.getCurentSize(),
       pageList: commonGrid.getPageSize(),
