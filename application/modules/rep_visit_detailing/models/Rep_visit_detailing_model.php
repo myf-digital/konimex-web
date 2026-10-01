@@ -4,6 +4,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Rep_visit_detailing_model extends CI_Model
 {
     function load($data) {
+        $where_restrict = "";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $where_restrict = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
+
         $field = "a.* ";
         $table = " (
             select
@@ -21,9 +29,10 @@ class Rep_visit_detailing_model extends CI_Model
                 a.reason,
                 a.latitude_cell,
                 a.longitude_cell,
-                concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
-                concat('".URL_IMAGE."', a.url_file_signature) as url_file_signature,
-                concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
+                IF(a.url_img_detailing IS NOT NULL AND a.url_img_detailing <> '', concat('".URL_IMAGE."', a.url_img_detailing), NULL) as url_img_detailing,
+                IF(a.url_file_signature IS NOT NULL AND a.url_file_signature <> '', concat('".URL_IMAGE."', a.url_file_signature), NULL) as url_file_signature,
+                IF(a.url_file_serahterima IS NOT NULL AND a.url_file_serahterima <> '', concat('".URL_IMAGE."', a.url_file_serahterima), NULL) as url_file_serahterima,
+                (SELECT COUNT(1) FROM trx_visit_detailing_survei s WHERE s.siteid = a.siteid AND s.periode = a.periode AND s.salesmanid = a.salesmanid AND s.customerid = a.customerid) as has_survei,
                 b.nama_salesman,
                 c.nama_customer,
                 CASE
@@ -45,6 +54,7 @@ class Rep_visit_detailing_model extends CI_Model
                 left join ref_spesialisasi b on b.id = a.spesialisasi_id
             ) as rp on rp.id = a.user_id
             where a.periode between '".(@$data["get_date1"] ?? today())."' and '".(@$data["get_date2"] ?? today())."'
+            $where_restrict
         ) a";        
         return easy_pagging($data, $field, $table);
     }
@@ -108,6 +118,14 @@ class Rep_visit_detailing_model extends CI_Model
 	}
 
     function savetoxlsx($data) {
+        $where_restrict = "";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $where_restrict = " AND a.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
+
         $q = $this->db->query("
             select
                 a.periode,
@@ -155,8 +173,9 @@ class Rep_visit_detailing_model extends CI_Model
                 from ref_professional a
                 left join ref_spesialisasi b on b.id = a.spesialisasi_id
             ) as rp on rp.id = a.user_id
-            where a.periode between '".@$data["get_date1"]."' and '".@$data["get_date2"]."'"
-        );
+            where a.periode between '".@$data["get_date1"]."' and '".@$data["get_date2"]."'
+            $where_restrict
+        ");
 		return $q->result_array();
     }
 

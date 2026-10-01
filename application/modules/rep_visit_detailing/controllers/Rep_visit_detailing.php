@@ -22,14 +22,15 @@ class Rep_visit_detailing extends BaseController
     public function load()
     {
         $data = param_input();
-		echo $this->db->last_query();
+        $data['usersession'] = !empty($data['usersession']) ? $data['usersession'] : '';
+        $data['restrict_level'] = !empty($data['restrict_level']) ? $data['restrict_level'] : '';
+        $data['idjabatan'] = !empty($data['idjabatan']) ? $data['idjabatan'] : '';
         responseJSON($this->visit_detailing->load($data));
     } 
 
     public function survei()
     {
         $data = param_input();
-		echo $this->db->last_query();
         responseJSON($this->visit_detailing->get_survei($data));
     } 
 
@@ -140,29 +141,34 @@ class Rep_visit_detailing extends BaseController
 		foreach ($d_posisisales as $d_position) {
 			$latpos = $d_position['latitude_cell'];
 			$longpos = $d_position['longitude_cell'];
-			$waktu = $d_position['lamakunjungan'];
-			$start_detailing = $d_position['start_detailing'];
-			$end_detailing = $d_position['end_detailing'];
-			$outletid = $d_position['customerid'];
-			$name = $d_position['nama_customer'];
-			$add = $d_position['alamat'];
-			$account = $d_position['account'];
-			$pic = $d_position['professional_name'];
-			$spesialisasi = $d_position['spesialisasi'];
-			$keterangan = $d_position['keterangan'];
-			$reason = $d_position['reason'];
+			$waktu = $d_position['lamakunjungan'] ?? '';
+			$start_detailing = $d_position['start_detailing'] ?? '';
+			$end_detailing = $d_position['end_detailing'] ?? '';
+			$outletid = addslashes(htmlspecialchars($d_position['customerid'] ?? '', ENT_QUOTES));
+			$name_raw = $d_position['nama_customer'] ?? '';
+			$name = addslashes(htmlspecialchars($name_raw, ENT_QUOTES));
+			$name_title = addslashes($name_raw);
+			$add = addslashes(htmlspecialchars($d_position['alamat'] ?? '', ENT_QUOTES));
+			$account = addslashes(htmlspecialchars($d_position['account'] ?? '', ENT_QUOTES));
+			$pic_raw = $d_position['professional_name'] ?? '';
+			if (!empty($d_position['tipe_pic'])) {
+				$pic_raw .= ' (' . $d_position['tipe_pic'] . ')';
+			}
+			$pic = addslashes(htmlspecialchars($pic_raw, ENT_QUOTES));
+			$spesialisasi = addslashes(htmlspecialchars($d_position['spesialisasi'] ?? '', ENT_QUOTES));
+			$keterangan = addslashes(htmlspecialchars(str_replace(["\r", "\n"], ' ', $d_position['keterangan'] ?? ''), ENT_QUOTES));
+			$reason = addslashes(htmlspecialchars($d_position['reason'] ?? '', ENT_QUOTES));
 			$img = '';
-			if ($d_position['url_img_detailing']) {
-				$img = '<br/><img src="'.$d_position['url_img_detailing'].'" alt="foto" width="100">';
+			if (!empty($d_position['url_img_detailing'])) {
+				$img = '<br/><img src="'.addslashes($d_position['url_img_detailing']).'" alt="foto" width="100">';
 			}
 			$products = "";
 			if (!empty($d_position['products'])) {
-				$p = explode('||',$d_position['products']);
+				$p = explode('||', $d_position['products']);
 				foreach ($p as $k => $pr) {
-					$products .= ($k+1).'. '.$pr.'<br/>';
+					$products .= ($k+1).'. '.addslashes(htmlspecialchars($pr, ENT_QUOTES)).'<br/>';
 				}
 			}
-			if ($d_position['tipe_pic']) $pic .= ' ('.$d_position['tipe_pic'].')';
 			$icon = base_url().'assets/mapIcon/tracking.png';
 			
 			if (($latpos) and ($longpos !="0")) {
@@ -174,9 +180,9 @@ class Rep_visit_detailing extends BaseController
 								url: \''.$icon.'\',
 								labelOrigin: { x: 17, y: 40}
 							  },
-							  title: \''.@$name.'\',
+							  title: \''.$name_title.'\',
 							  label: {
-								text: \''.@$name.'\',
+								text: \''.$name_title.'\',
 								color: "#222222",
 								fontSize: "10px"
 							  }
@@ -193,42 +199,42 @@ class Rep_visit_detailing extends BaseController
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">OutletId</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$outletid.'</td>\'+	
+													\'<td class="text-muted" style="white-space: nowrap;">'.$outletid.'</td>\'+	
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Nama Outlet</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$name.' ('.@$account.')</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.$name.' ('.$account.')</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Alamat</td>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted">'.@$add.'</td>\'+	
+													\'<td class="text-muted">'.$add.'</td>\'+	
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">User</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$pic.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.$pic.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Spesialisasi</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$spesialisasi.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.$spesialisasi.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;vertical-align: top;">Produk</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;vertical-align: top;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$products.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.$products.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Keterangan</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$keterangan.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.$keterangan.'</td>\'+
 												\'</tr>\'+
 												\'<tr>\'+
 													\'<td class="text-muted" style="white-space: nowrap;">Reason</td>\'+	
 													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$reason.'</td>\'+
+													\'<td class="text-muted" style="white-space: nowrap;">'.$reason.'</td>\'+
 												\'</tr>\'+
 											\'</table>\'+
 										\'</div>\'+											
@@ -300,25 +306,25 @@ class Rep_visit_detailing extends BaseController
 						foreach ($d_posisisales as $map) {
 							$lat = $map['latitude_cell'];
 							$long = $map['longitude_cell'];
-							$waktu = $map['waktu'];
-								$numtrans++;
-								if (($lat != "0") and ($long !="0")) {
-									
-									if ($vstart== "")
-									{
-									$vstart=$lat.','.$long;
+							$numtrans++;
+							if (($lat != "0") and ($long !="0")) {
+								if ($vstart == "")
+								{
+									$vstart = $lat.','.$long;
 									$html .='start = new google.maps.LatLng('.$lat.','.$long.');';
-									}
-									
-									if ($numtrans>=2 && $numtrans<=10){
+								}
+								
+								if ($numtrans >= 2 && $numtrans <= 10){
 									$html .='waypts.push({ location: \''.$lat.','.$long.'\',stopover: true});';
-									}
-									
-								$vstop=$lat.','.$long;
+								}
+								
+								$vstop = $lat.','.$long;
 							}
 							$i++;
 						}
-					$html .='end = new google.maps.LatLng('.$vstop.');';
+					if (!empty($vstop)) {
+						$html .='end = new google.maps.LatLng('.$vstop.');';
+					}
 					$html .='
 					if(start!=""){	
 						  var request = {
@@ -343,13 +349,16 @@ class Rep_visit_detailing extends BaseController
 		echo $html;
 	}
     
-    public function savetoxlsx($data)
+    public function savetoxlsx($data = null)
     {
 		ini_set('memory_limit', '512M');
 
         $data = [];
-        $data['get_date1'] = $this->uri->segment('3');
-        $data['get_date2'] = $this->uri->segment('4');
+        $data['get_date1'] = $this->input->get('get_date1') ?: $this->uri->segment('3');
+        $data['get_date2'] = $this->input->get('get_date2') ?: $this->uri->segment('4');
+        $data['usersession'] = $this->input->get('usersession') !== null ? $this->input->get('usersession') : $this->uri->segment('5');
+        $data['restrict_level'] = $this->input->get('restrict_level') !== null ? $this->input->get('restrict_level') : $this->uri->segment('6');
+        $data['idjabatan'] = $this->input->get('idjabatan') !== null ? $this->input->get('idjabatan') : $this->uri->segment('7');
 
         $detailing = $this->visit_detailing->savetoxlsx($data);
         $filename = "report_visit_detailing_" . date('Y-m-d_His');

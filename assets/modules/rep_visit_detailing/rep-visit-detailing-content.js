@@ -7,6 +7,7 @@
   // ui components
   let uiTbl = $("#tbl");
   let uiMaps = $("#maps");
+  let paramsession = common.getCookie("session");
 
   initializeGrid();
   setupFormUI();
@@ -110,7 +111,13 @@
           },
         ],
       ],
-      onBeforeLoad: function (param) {},
+      onBeforeLoad: function (param) {
+        if (paramsession) {
+          param.usersession = paramsession.username;
+          param.restrict_level = paramsession.restrict_level;
+          param.idjabatan = paramsession.idjabatan;
+        }
+      },
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
         optionButton(data);
@@ -156,6 +163,9 @@
       uiTbl.datagrid("load", {
         get_date1: uiTanggalPicker1.val(),
         get_date2: uiTanggalPicker2.val(),
+        usersession: paramsession ? paramsession.username : "",
+        restrict_level: paramsession ? paramsession.restrict_level : "",
+        idjabatan: paramsession ? paramsession.idjabatan : "",
       });
     });
 
@@ -202,16 +212,16 @@
     let index = 0;
     for (const btns of btnContent) {
       const param = data.rows[index];
-      const btnPreview = $(btns).find("a.btn-success");
-      btnPreview.click(function () {
+      const btnPreview = $(btns).find("a.btn-viem-maps, a.btn-success");
+      btnPreview.off("click").on("click", function () {
         open_detail(param.salesmanid, param.periode, param.nama_salesman);
       });
-      const btnImage = $(btns).find("a.btn-info");
-      btnImage.click(function () {
+      const btnImage = $(btns).find("a.btn-viem-image, a.btn-info");
+      btnImage.off("click").on("click", function () {
         open_image(param);
       });
-      const btnSurvei = $(btns).find("a.btn-warning");
-      btnSurvei.click(function () {
+      const btnSurvei = $(btns).find("a.btn-survei, a.btn-warning");
+      btnSurvei.off("click").on("click", function () {
         open_survei(param);
       });
       index++;
@@ -222,19 +232,30 @@
    * action button generator
    */
   function formatterButton(val, row, index) {
-    let btnImage = "";
-    if (row.url_img_detailing && row.url_img_detailing != undefined)
-      btnImage = commonGrid.btnBuilder("btn-viem-image", "info", "fa fa-image");
-    const btnSurvei = commonGrid.btnBuilder(
-      "btn-survei",
-      "warning",
-      "fa fa-clipboard",
-    );
     const btnPreview = commonGrid.btnBuilder(
       "btn-viem-maps",
       "success",
       "fa fa-map-o",
     );
+
+    let btnImage = "";
+    if (
+      (row.url_img_detailing && row.url_img_detailing !== "null" && row.url_img_detailing !== "") ||
+      (row.url_file_signature && row.url_file_signature !== "null" && row.url_file_signature !== "") ||
+      (row.url_file_serahterima && row.url_file_serahterima !== "null" && row.url_file_serahterima !== "")
+    ) {
+      btnImage = commonGrid.btnBuilder("btn-viem-image", "info", "fa fa-image");
+    }
+
+    let btnSurvei = "";
+    if (parseInt(row.has_survei || 0) > 0) {
+      btnSurvei = commonGrid.btnBuilder(
+        "btn-survei",
+        "warning",
+        "fa fa-clipboard",
+      );
+    }
+
     return (
       '<div class="action-grid">' + btnPreview + btnImage + btnSurvei + "</div>"
     );
@@ -245,18 +266,33 @@
       $("#myModalImage").text(
         `Visit Detailing: ${data.nama_salesman}, Outlet: ${data.nama_customer}`,
       );
-      $("#show-image").html(`
-                <div class="row text-left">
-                    <div class="col-md-12">
-                        <h5><b>1. Foto Detailing</b></h5>
-                        <img src="${data.url_img_detailing}" alt="Foto Detailing" class="img-fluid">
-                    </div>
-                    <div class="col-md-12">
-                        <h5><b>2. Foto Signature</b></h5>
-                        ${data.url_file_signature ? `<img src="${data.url_file_signature}" alt="Foto Signature" class="img-fluid">` : "<p>-</p>"}
-                    </div>
-                </div>
-            `);
+      let imgHtml = '<div class="row text-left">';
+      if (data.url_img_detailing) {
+        imgHtml += `
+          <div class="col-md-12" style="margin-bottom:15px;">
+            <h5><b>1. Foto Detailing</b></h5>
+            <img src="${data.url_img_detailing}" alt="Foto Detailing" class="img-fluid" style="max-width:100%;">
+          </div>
+        `;
+      }
+      if (data.url_file_signature) {
+        imgHtml += `
+          <div class="col-md-12" style="margin-bottom:15px;">
+            <h5><b>2. Foto Signature</b></h5>
+            <img src="${data.url_file_signature}" alt="Foto Signature" class="img-fluid" style="max-width:100%;">
+          </div>
+        `;
+      }
+      if (data.url_file_serahterima) {
+        imgHtml += `
+          <div class="col-md-12" style="margin-bottom:15px;">
+            <h5><b>3. Foto Serah Terima</b></h5>
+            <img src="${data.url_file_serahterima}" alt="Foto Serah Terima" class="img-fluid" style="max-width:100%;">
+          </div>
+        `;
+      }
+      imgHtml += '</div>';
+      $("#show-image").html(imgHtml);
       $("#modal_image").modal("show");
     }
   }
@@ -268,16 +304,26 @@
       url: common.baseURL("rep_visit_detailing/get_gmap"),
       data: "sid=" + sid + "&periode=" + periode,
       success: function (res) {
-        response = res;
         $("div .modal-header .modal-title").text("Visit Detailing " + nama);
-        $("#maps").html(response);
         $("#modal_detail").modal("show");
+        $("#maps").html(res);
       },
       error: function () {
         alert("Load failed");
       },
     });
   }
+
+  $("#modal_detail").on("shown.bs.modal", function () {
+    if (typeof google !== "undefined" && typeof google.maps !== "undefined") {
+      if (typeof map !== "undefined" && map) {
+        google.maps.event.trigger(map, "resize");
+        if (typeof directionsDisplay !== "undefined" && directionsDisplay) {
+          directionsDisplay.setMap(map);
+        }
+      }
+    }
+  });
 
   function open_survei(data) {
     $.ajax({
@@ -360,6 +406,21 @@
   }
 
   function save_xls(start, end) {
-    common.direct("rep_visit_detailing/savetoxlsx/" + start + "/" + end);
+    let username = paramsession && paramsession.username ? paramsession.username : "";
+    let restrict_level = paramsession && paramsession.restrict_level ? paramsession.restrict_level : "";
+    let idjabatan = paramsession && paramsession.idjabatan ? paramsession.idjabatan : "";
+
+    let baseUrl = common.baseURL("rep_visit_detailing/savetoxlsx");
+    baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+    let downloadUrl =
+      baseUrl +
+      "?get_date1=" + encodeURIComponent(start) +
+      "&get_date2=" + encodeURIComponent(end) +
+      "&usersession=" + encodeURIComponent(username) +
+      "&restrict_level=" + encodeURIComponent(restrict_level) +
+      "&idjabatan=" + encodeURIComponent(idjabatan);
+
+    window.location.href = downloadUrl;
   }
 })();
