@@ -22,8 +22,8 @@
                     <div class="box-body">
 							<div class="form-group col-md-6">
 								<label for="classid">Channel</label>
-                                <select id="classid-id" name="classid" class="form-control" placeholder="Channel">
-								<option value="All">All Channel</option>
+                                <select id="classid-id" name="classid" class="form-control" style="width: 100%;">
+								<option value="All">Semua Channel</option>
 								</select>
 							</div>
                     </div>
@@ -37,4 +37,4 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-form-download.js' ?>?v=1.0"></script>
+<script src="<?php echo base_url() . 'assets/modules/ref_customer/customer-form-download.js' ?>?v=1.2"></script>

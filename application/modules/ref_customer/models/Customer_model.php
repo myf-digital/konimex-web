@@ -231,34 +231,36 @@ class Customer_model extends CI_Model
             $data['order'] = "desc";
         }
 
-		if (empty($data['account']) || $data['account'] == 'All') {
+		if (empty($data['account']) || $data['account'] == 'All' || $data['account'] == 'null') {
 			$strsubquery = "";
 		} else {
-			$strsubquery = " and a.typeid='".$data['account']."'";
+			$strsubquery = " and a.typeid='".$this->db->escape_str($data['account'])."'";
 		}
 
         $strquery = "" . $strsubquery;
-        if ($data["restrict_level"]=='4'){
-            $strquery = " and a.subareaid in (
-                select distinct b.subareaid
-                from app_resource a 
-                left join app_restrict_location b on a.resource_id=b.resource_id 
-                where a.username='".$data["usersession"]."'
-            )";
-        } else if ($data["restrict_level"]=='3'){
-            $strquery = " and a.areaid in (
-                select distinct b.areaid
-                from app_resource a 
-                left join app_restrict_location b on a.resource_id=b.resource_id 
-                where a.username='".$data["usersession"]."'
-            )";
-        } else if ($data["restrict_level"]=='2'){
-            $strquery = " and a.regionalid in (
-                select distinct b.regionalid
-                from app_resource a 
-                left join app_restrict_location b on a.resource_id=b.resource_id 
-                where a.username='".$data["usersession"]."'
-            )";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '4'){
+                $strquery .= " and a.subareaid in (
+                    select distinct b.subareaid
+                    from app_resource a 
+                    left join app_restrict_location b on a.resource_id=b.resource_id 
+                    where a.username='".$this->db->escape_str($data["usersession"])."'
+                )";
+            } else if ($data["restrict_level"] == '3'){
+                $strquery .= " and a.areaid in (
+                    select distinct b.areaid
+                    from app_resource a 
+                    left join app_restrict_location b on a.resource_id=b.resource_id 
+                    where a.username='".$this->db->escape_str($data["usersession"])."'
+                )";
+            } else if ($data["restrict_level"] == '2'){
+                $strquery .= " and a.regionalid in (
+                    select distinct b.regionalid
+                    from app_resource a 
+                    left join app_restrict_location b on a.resource_id=b.resource_id 
+                    where a.username='".$this->db->escape_str($data["usersession"])."'
+                )";
+            }
         }
 
         $field = "a.* ";

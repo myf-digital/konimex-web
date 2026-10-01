@@ -73,21 +73,27 @@ class Ref_customer extends BaseController
     }
 
     function savetoxlsx() {
-        $account = $this->uri->segment('3');
-        $username = $this->uri->segment('4');
-        $jabatan = $this->uri->segment('5');
-        $restrict_level = $this->uri->segment('6');
-        $filtername = $this->uri->segment('7');
+        $account = $this->input->get('account') ?? $this->uri->segment('3');
+        $username = $this->input->get('username') ?? $this->uri->segment('4') ?? 'admin';
+        $jabatan = $this->input->get('idjabatan') ?? $this->uri->segment('5') ?? '-';
+        $restrict_level = $this->input->get('restrict_level') ?? $this->uri->segment('6') ?? '-';
+        $filtername = $this->input->get('filtername') ?? $this->uri->segment('7');
         ini_set("memory_limit","2048M");
         ini_set('max_execution_time', '0');
         
-        if ($account=='' or empty($account) or $account=='null'){
-            $account='All';
-            $filename = 'All_Account';
+        if ($account == '' || empty($account) || $account == 'null' || $account == 'All') {
+            $account = 'All';
+            $filtername = 'Semua_Channel';
         }
 
+        if (empty($filtername)) {
+            $filtername = ($account == 'All') ? 'Semua_Channel' : $account;
+        }
+
+        $filtername = urldecode($filtername);
+
         $data = array(
-            "account" => $account ,
+            "account" => $account,
             "usersession" => $username,
             "restrict_level" => $restrict_level,
             "filename" => $filtername
@@ -195,7 +201,7 @@ class Ref_customer extends BaseController
         $writer = new Xlsx($spreadsheet);
         
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Content-Disposition: attachment;filename="'. $filename .'"'); 
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');

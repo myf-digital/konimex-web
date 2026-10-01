@@ -18,21 +18,45 @@
     });
 
     uiBtnDownload.click(function () {
-      let classid = $("#classid-id option:selected").text();
-      if (classid) classid = classid.replace(/ /g, "_");
-      common.direct(
-        "ref_customer/savetoxlsx/" +
-          uiSelectClass.val() +
-          "/" +
-          paramsession.username +
-          "/" +
-          paramsession.idjabatan +
-          "/" +
-          paramsession.restrict_level +
-          "/" +
-          classid,
-      );
-      //}
+      let selectedVal = uiSelectClass.val();
+      if (!selectedVal || selectedVal === "null" || selectedVal === "All") {
+        selectedVal = "All";
+      }
+
+      let selectedText = $("#classid-id option:selected").text();
+      if (!selectedText || selectedVal === "All") {
+        selectedText = "Semua_Channel";
+      } else {
+        selectedText = selectedText.replace(/ /g, "_");
+      }
+
+      let username =
+        paramsession && paramsession.username ? paramsession.username : "admin";
+      let idjabatan =
+        paramsession && paramsession.idjabatan ? paramsession.idjabatan : "-";
+      let restrict_level =
+        paramsession && paramsession.restrict_level
+          ? paramsession.restrict_level
+          : "-";
+
+      let baseUrl = common.baseURL("ref_customer/savetoxlsx");
+      // Clean up any double slash before endpoint
+      baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+      let downloadUrl =
+        baseUrl +
+        "?account=" +
+        encodeURIComponent(selectedVal) +
+        "&username=" +
+        encodeURIComponent(username) +
+        "&idjabatan=" +
+        encodeURIComponent(idjabatan) +
+        "&restrict_level=" +
+        encodeURIComponent(restrict_level) +
+        "&filtername=" +
+        encodeURIComponent(selectedText);
+
+      window.location.href = downloadUrl;
     });
 
     uiBtnCancel.click(function () {
@@ -44,17 +68,25 @@
     common.loading();
     $.post(common.baseURL("ref_customer_type/load"), function (res) {
       uiSelectClass.empty();
+      let options = [{ id: "All", text: "Semua Channel" }];
+      if (res && res.rows && res.rows.length > 0) {
+        $.each(res.rows, function (i, o) {
+          options.push({
+            id: o.typeid,
+            text: o.nama_type || o.typeid,
+          });
+        });
+      }
+
       uiSelectClass.select2({
-        placeholder: "All Channel",
+        placeholder: "Semua Channel",
         allowClear: true,
-        data: $.map(res.rows, function (o) {
-          o.id = o.typeid; // replace name with the property used for the text
-          o.text = o.nama_type;
-          return o;
-        }),
+        data: options,
       });
 
-      uiSelectClass.val(null).trigger("change");
+      uiSelectClass.val("All").trigger("change");
+      common.loadingClose();
+    }).fail(function () {
       common.loadingClose();
     });
   }
