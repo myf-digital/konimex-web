@@ -173,10 +173,15 @@ class Request_new_outlet_model extends CI_Model
     public function load($data)
     {
         $strquery = "";
-        if (!empty($data["restrict_level"])) {
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
             $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
             if ($restrict_query) {
-                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+                $strquery = " AND a.salesmanid IN (
+                    SELECT DISTINCT mss.salesmanid
+                    FROM m_sales_salesman mss
+                    WHERE mss.salesmanid IN (" . $restrict_query . ")
+                      AND mss.aktif=1
+                )";
             }
         }
 
