@@ -34,17 +34,16 @@ class App_dashboard_model extends CI_Model
 
     public function load($data)
     {
+		$strquery = " where b.aktif=1 and b.nama_salesman not like '%vacant%'";
+
 		$restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
 		if ($restrict_query) {
-			$strquery = " where b.salesmanid in (
+			$strquery .= " and b.salesmanid in (
 								select distinct mss.salesmanid
 								from m_sales_salesman mss
 								where mss.salesmanid in (" . $restrict_query . ")
 								  and mss.aktif=1
 							)";
-		}
-		else {
-			$strquery = " where b.salesmanid in (select salesmanid from m_sales_salesman where aktif=1)";
 		}
 
 		$field = " a.* ";
