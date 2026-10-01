@@ -62,13 +62,13 @@ $(function () {
 
   function loadProduct() {
     common.loading();
-    $.post(common.baseURL("api_v1/call_product"), function (res) {
+    $.post(common.baseURL("rekap_produk_target/get_product"), function (res) {
       $productId.empty();
       $productId.select2({
         placeholder: "Produk (Semua)",
         allowClear: true,
         multiple: true,
-        data: $.map(res.result, function (o) {
+        data: $.map(res, function (o) {
           o.id = o.productid;
           o.text = o.productid + " - " + o.nama_invoice;
           return o;

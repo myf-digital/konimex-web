@@ -254,4 +254,14 @@ class Rekap_produk_target_model extends CI_Model
         ";
         return $this->db->query($sql, $params)->result_array();
     }
+
+    public function get_product($data)
+    {
+        $this->db->select('productid, nama_invoice');
+        $this->db->from('m_product');
+        $this->db->where('status', 'A');
+        $result = $this->db->get()->result_array();
+
+        return $result;
+    }
 }

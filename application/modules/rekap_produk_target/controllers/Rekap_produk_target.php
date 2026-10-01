@@ -64,6 +64,13 @@ class Rekap_produk_target extends BaseController
         ]);
     }
 
+    public function get_product()
+    {
+        $data = param_input();
+        $result = $this->rekap->get_product($data);
+        responseJSON($result);
+    }
+
     public function export()
     {
         $productIds = $this->input->get('product_ids') ?? null;

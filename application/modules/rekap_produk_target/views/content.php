@@ -153,4 +153,4 @@
     </div>
 </div>
 
-<script src="<?php echo base_url() . 'assets/modules/rekap_produk_target/rekap-produk-target.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/rekap_produk_target/rekap-produk-target.js' ?>?v=1.0"></script>
