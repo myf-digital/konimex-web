@@ -29,12 +29,18 @@ class Rep_kunjungan extends BaseController
     public function load()
     {
         $data = param_input();
+        $data['usersession'] = !empty($data['usersession']) ? $data['usersession'] : '';
+        $data['restrict_level'] = !empty($data['restrict_level']) ? $data['restrict_level'] : '';
+        $data['idjabatan'] = !empty($data['idjabatan']) ? $data['idjabatan'] : '';
         responseJSON($this->rep_kunjungan->load($data));
     }
 
     public function load_parma()
     {
         $data = param_input();
+        $data['usersession'] = !empty($data['usersession']) ? $data['usersession'] : '';
+        $data['restrict_level'] = !empty($data['restrict_level']) ? $data['restrict_level'] : '';
+        $data['idjabatan'] = !empty($data['idjabatan']) ? $data['idjabatan'] : '';
         responseJSON($this->rep_kunjungan->load_parma($data));
     }
 
@@ -399,16 +405,16 @@ class Rep_kunjungan extends BaseController
 		echo $html;
 	}
 
-    public function savetoxlsx($data)
+    public function savetoxlsx($data = null)
     {
 		ini_set('memory_limit', '1024M');
         
-        $start = $this->uri->segment('3');
-        $end = $this->uri->segment('4');
-        $idjabatan = $this->uri->segment('5');
-        $usersession = $this->uri->segment('6');
-		$restrict_level = $this->uri->segment('7');
-		$salesmanid = $this->uri->segment('8');
+        $start = $this->input->get('start') ?: $this->uri->segment('3');
+        $end = $this->input->get('end') ?: $this->uri->segment('4');
+        $idjabatan = $this->input->get('idjabatan') !== null ? $this->input->get('idjabatan') : $this->uri->segment('5');
+        $usersession = $this->input->get('usersession') !== null ? $this->input->get('usersession') : $this->uri->segment('6');
+		$restrict_level = $this->input->get('restrict_level') !== null ? $this->input->get('restrict_level') : $this->uri->segment('7');
+		$salesmanid = $this->input->get('salesmanid') !== null ? $this->input->get('salesmanid') : $this->uri->segment('8');
 
 		$filename = "Report_Kunjungan_".$start."-".$end.".xlsx";
 

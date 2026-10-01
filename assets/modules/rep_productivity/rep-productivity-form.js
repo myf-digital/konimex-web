@@ -215,7 +215,7 @@
 
   function populateMedrepOptions(r) {
     uiSelectMedrep.empty();
-    let options = [{ id: "all", text: "Semua Medrep" }];
+    let options = [{ id: "all", text: "Semua TPE" }];
     if (r && r.rows && r.rows.length > 0) {
       $.each(r.rows, function (i, o) {
         options.push({
@@ -225,7 +225,7 @@
       });
     }
     uiSelectMedrep.select2({
-      placeholder: "Select User Medrep",
+      placeholder: "Select TPE",
       allowClear: true,
       data: options,
     });
