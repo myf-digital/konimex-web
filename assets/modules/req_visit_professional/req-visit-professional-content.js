@@ -3,7 +3,7 @@
   const common = new Common();
   const commonGrid = new CommonGrid();
 
-  common.setTitle("Request Visit Professional");
+  common.setTitle("Join Activity");
 
   const uiTbl = $("#tbl-req-visit-professional");
   const uiStartPeriod = $("#start_periode");
@@ -81,7 +81,7 @@
 
   function initializeGrid() {
     const option = {
-      title: "List Join Visit",
+      title: "List Join Activity",
       toolbar: "",
       url: common.baseURL("req_visit_professional/load"),
       pageNumber: 1,
@@ -98,7 +98,7 @@
           { field: "professional", title: "PROFESSIONAL", width: 220, halign: "center", align: "left", sortable: "true" },
           { field: "keterangan", title: "KETERANGAN", width: 220, halign: "center", align: "left", sortable: "true" },
           { field: "status_desc", title: "STATUS", width: 110, halign: "center", align: "center", sortable: "true", formatter: formatterStatus },
-          { field: "visit_keterangan", title: "KETERANGAN VISIT", width: 220, halign: "center", align: "left", sortable: "true", formatter: formatterVisitKeterangan },
+          { field: "visit_keterangan", title: "KETERANGAN ACTIVITY", width: 220, halign: "center", align: "left", sortable: "true", formatter: formatterVisitKeterangan },
           { field: "action", title: "AKSI", width: 110, halign: "center", align: "center", formatter: formatterAction },
         ],
       ],
@@ -188,7 +188,7 @@
         '" style="border-radius: 3px; font-weight: 600;"><i class="fa fa-eye"></i> Detail</button>'
       );
     } else {
-      return '<span class="label label-default" style="font-size: 10px; padding: 3px 6px;" title="Belum melakukan kunjungan"><i class="fa fa-clock-o"></i> Belum Visit</span>';
+      return '<span class="label label-default" style="font-size: 10px; padding: 3px 6px;" title="Belum melakukan kunjungan"><i class="fa fa-clock-o"></i> Belum Activity</span>';
     }
   }
 

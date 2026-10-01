@@ -303,27 +303,36 @@ class Dashboard_tts_model extends CI_Model
             $prod_name_map[trim($pr['productid'])] = $pr['nama_invoice'];
         }
 
-        $act_prd_map = [];
-        $total_act_detailing = 0;
-        $total_act_selling = 0;
+        $filter_salesman_sls = $this->build_salesman_filter($data, 'sls', 'salesmanid');
 
+        $act_detailing_map = [];
         foreach ($res_tvd_array as $row) {
             $rawList = explode(',', $row['array_product']);
             $count = (int)$row['cnt'];
             foreach ($rawList as $pId) {
                 $pId = trim($pId);
                 if (empty($pId)) continue;
-                if (!isset($act_prd_map[$pId])) {
-                    $act_prd_map[$pId] = [
-                        'nama_produk' => $prod_name_map[$pId] ?? $pId,
-                        'actual_detailing' => 0,
-                        'actual_selling' => 0
-                    ];
-                }
-                $act_prd_map[$pId]['actual_detailing'] += $count;
-                $act_prd_map[$pId]['actual_selling'] += $count;
-                $total_act_detailing += $count;
-                $total_act_selling += $count;
+                $act_detailing_map[$pId] = ($act_detailing_map[$pId] ?? 0) + $count;
+            }
+        }
+
+        $sql_act_selling_kpi = "
+            SELECT 
+                dtl.productid,
+                SUM(dtl.qty_kecil) AS total_qty
+            FROM t_sales_master sls
+            JOIN t_sales_detail dtl ON sls.siteid = dtl.siteid AND sls.no_po = dtl.no_po
+            WHERE sls.tanggal BETWEEN ? AND ?
+              AND IFNULL(sls.retur, 0) = 0
+            {$filter_salesman_sls}
+            GROUP BY dtl.productid
+        ";
+        $res_act_selling_kpi = $this->db->query($sql_act_selling_kpi, [$start_date, $end_date])->result_array();
+        $act_selling_map = [];
+        foreach ($res_act_selling_kpi as $row) {
+            $pId = trim($row['productid']);
+            if (!empty($pId)) {
+                $act_selling_map[$pId] = (float)$row['total_qty'];
             }
         }
 
@@ -360,7 +369,7 @@ class Dashboard_tts_model extends CI_Model
         $total_tgt_detailing = 0;
         $total_tgt_selling = 0;
         foreach ($res_prd_tgt as $r) {
-            $pId = $r['product_id'];
+            $pId = trim($r['product_id']);
             $tgt_prd_map[$pId] = [
                 'nama_produk' => $r['nama_produk'],
                 'target_detailing' => (float)$r['total_target_detailing'],
@@ -370,19 +379,23 @@ class Dashboard_tts_model extends CI_Model
             $total_tgt_selling += (float)$r['total_target_selling'];
         }
 
-        $all_prd_ids = array_unique(array_merge(array_keys($act_prd_map), array_keys($tgt_prd_map)));
         $combined_detailing = [];
         $combined_selling = [];
+        $total_act_detailing = 0;
+        $total_act_selling = 0;
 
-        foreach ($all_prd_ids as $pId) {
-            $nama = $act_prd_map[$pId]['nama_produk'] ?? $tgt_prd_map[$pId]['nama_produk'] ?? $pId;
-            $act_det = $act_prd_map[$pId]['actual_detailing'] ?? 0;
-            $tgt_det = $tgt_prd_map[$pId]['target_detailing'] ?? 0;
+        foreach ($tgt_prd_map as $pId => $tgtInfo) {
+            $nama = !empty($tgtInfo['nama_produk']) ? $tgtInfo['nama_produk'] : ($prod_name_map[$pId] ?? $pId);
+            
+            $act_det = $act_detailing_map[$pId] ?? 0;
+            $tgt_det = $tgtInfo['target_detailing'] ?? 0;
             $pct_det = $tgt_det > 0 ? round(($act_det / $tgt_det) * 100, 1) : 0;
+            $total_act_detailing += $act_det;
 
-            $act_sel = $act_prd_map[$pId]['actual_selling'] ?? 0;
-            $tgt_sel = $tgt_prd_map[$pId]['target_selling'] ?? 0;
+            $act_sel = $act_selling_map[$pId] ?? 0;
+            $tgt_sel = $tgtInfo['target_selling'] ?? 0;
             $pct_sel = $tgt_sel > 0 ? round(($act_sel / $tgt_sel) * 100, 1) : 0;
+            $total_act_selling += $act_sel;
 
             $combined_detailing[] = [
                 'product_id' => $pId,
@@ -742,7 +755,7 @@ class Dashboard_tts_model extends CI_Model
             $uw_tgt_map[$r['bulan']] = (int)$r['total_target'];
         }
 
-        // Detailing & Selling Produk
+        $filter_salesman_sls = $this->build_salesman_filter($data, 'sls', 'salesmanid');
         $sql_prod_act = "
             SELECT 
                 DATE_FORMAT(tvd.periode, '%m') AS bulan,
@@ -758,23 +771,46 @@ class Dashboard_tts_model extends CI_Model
             GROUP BY DATE_FORMAT(tvd.periode, '%m'), tvd.array_product
         ";
         $res_prod_act = $this->db->query($sql_prod_act, [$year_start, $year_end])->result_array();
+
+        $sql_tgt_pids = "SELECT DISTINCT product_id FROM m_sales_produk_target WHERE tahun = ?";
+        $res_tgt_pids = $this->db->query($sql_tgt_pids, [$year])->result_array();
+        $target_pids_set = array_flip(array_map('trim', array_column($res_tgt_pids, 'product_id')));
+
         $detailing_act_map = [];
-        $selling_act_map = [];
         foreach ($res_prod_act as $row) {
             $m = $row['bulan'];
             $count = (int)$row['cnt'];
             $rawList = explode(',', $row['array_product']);
             $numProducts = 0;
             foreach ($rawList as $p) {
-                if (trim($p) !== '') $numProducts++;
+                $p = trim($p);
+                if (isset($target_pids_set[$p])) {
+                    $numProducts++;
+                }
             }
             if ($numProducts > 0) {
                 $detailing_act_map[$m] = ($detailing_act_map[$m] ?? 0) + ($count * $numProducts);
-                $selling_act_map[$m]   = ($selling_act_map[$m] ?? 0) + ($count * $numProducts);
             }
         }
 
-        // Target Produk
+        $sql_sales_trend = "
+            SELECT 
+                DATE_FORMAT(sls.tanggal, '%m') AS bulan,
+                SUM(dtl.qty_kecil) AS total_qty
+            FROM t_sales_master sls
+            JOIN t_sales_detail dtl ON sls.siteid = dtl.siteid AND sls.no_po = dtl.no_po
+            WHERE sls.tanggal BETWEEN ? AND ?
+              AND IFNULL(sls.retur, 0) = 0
+              AND dtl.productid IN (SELECT DISTINCT product_id FROM m_sales_produk_target WHERE tahun = ?)
+            {$filter_salesman_sls}
+            GROUP BY DATE_FORMAT(sls.tanggal, '%m')
+        ";
+        $res_sales_trend = $this->db->query($sql_sales_trend, [$year_start, $year_end, $year])->result_array();
+        $selling_act_map = [];
+        foreach ($res_sales_trend as $r) {
+            $selling_act_map[$r['bulan']] = (float)$r['total_qty'];
+        }
+
         $sql_prod_tgt = "
             SELECT 
                 LPAD(mpt.bulan, 2, '0') AS bulan,
@@ -1254,13 +1290,7 @@ class Dashboard_tts_model extends CI_Model
             foreach ($rawList as $pId) {
                 $pId = trim($pId);
                 if (empty($pId)) continue;
-                if (!isset($act_prd_map[$pId])) {
-                    $act_prd_map[$pId] = [
-                        'nama_invoice' => $prod_name_map[$pId] ?? $pId,
-                        'aktual' => 0
-                    ];
-                }
-                $act_prd_map[$pId]['aktual'] += $count;
+                $act_prd_map[$pId] = ($act_prd_map[$pId] ?? 0) + $count;
             }
         }
 
@@ -1293,19 +1323,18 @@ class Dashboard_tts_model extends CI_Model
 
         $tgt_prd_map = [];
         foreach ($res_prd_tgt as $r) {
-            $pId = $r['product_id'];
+            $pId = trim($r['product_id']);
             $tgt_prd_map[$pId] = [
                 'nama_invoice' => $r['nama_invoice'],
                 'target' => (float)$r['total_target']
             ];
         }
 
-        $all_ids = array_unique(array_merge(array_keys($act_prd_map), array_keys($tgt_prd_map)));
         $list = [];
-        foreach ($all_ids as $pId) {
-            $nama = $act_prd_map[$pId]['nama_invoice'] ?? $tgt_prd_map[$pId]['nama_invoice'] ?? ($prod_name_map[$pId] ?? $pId);
-            $act = $act_prd_map[$pId]['aktual'] ?? 0;
-            $tgt = $tgt_prd_map[$pId]['target'] ?? 0;
+        foreach ($tgt_prd_map as $pId => $tgtInfo) {
+            $nama = !empty($tgtInfo['nama_invoice']) ? $tgtInfo['nama_invoice'] : ($prod_name_map[$pId] ?? $pId);
+            $act = $act_prd_map[$pId] ?? 0;
+            $tgt = $tgtInfo['target'] ?? 0;
             $pct = $tgt > 0 ? round(($act / $tgt) * 100, 1) : 0;
 
             $list[] = [
@@ -1334,19 +1363,8 @@ class Dashboard_tts_model extends CI_Model
         $start_date = "{$year}-{$month}-01";
         $end_date = date("Y-m-t", strtotime($start_date));
 
-        $filter_salesman_tvd = $this->build_salesman_filter($data, 'tvd', 'salesmanid');
+        $filter_salesman_sls = $this->build_salesman_filter($data, 'sls', 'salesmanid');
         $filter_salesman_mss = $this->build_salesman_filter($data, 'mss', 'salesmanid');
-
-        $sql_tvd_array = "
-            SELECT tvd.array_product, COUNT(1) AS cnt
-            FROM trx_visit_detailing tvd
-            WHERE tvd.periode BETWEEN ? AND ?
-              AND tvd.array_product IS NOT NULL
-              AND TRIM(tvd.array_product) <> ''
-            {$filter_salesman_tvd}
-            GROUP BY tvd.array_product
-        ";
-        $res_tvd_array = $this->db->query($sql_tvd_array, [$start_date, $end_date])->result_array();
 
         $sql_all_products = "SELECT productid, COALESCE(NULLIF(nama_invoice, ''), productid) AS nama_invoice FROM m_product";
         $all_prod_rows = $this->db->query($sql_all_products)->result_array();
@@ -1355,20 +1373,23 @@ class Dashboard_tts_model extends CI_Model
             $prod_name_map[trim($pr['productid'])] = $pr['nama_invoice'];
         }
 
+        $sql_act_selling = "
+            SELECT 
+                dtl.productid,
+                SUM(dtl.qty_kecil) AS total_qty
+            FROM t_sales_master sls
+            JOIN t_sales_detail dtl ON sls.siteid = dtl.siteid AND sls.no_po = dtl.no_po
+            WHERE sls.tanggal BETWEEN ? AND ?
+              AND IFNULL(sls.retur, 0) = 0
+            {$filter_salesman_sls}
+            GROUP BY dtl.productid
+        ";
+        $res_act_selling = $this->db->query($sql_act_selling, [$start_date, $end_date])->result_array();
         $act_prd_map = [];
-        foreach ($res_tvd_array as $row) {
-            $rawList = explode(',', $row['array_product']);
-            $count = (int)$row['cnt'];
-            foreach ($rawList as $pId) {
-                $pId = trim($pId);
-                if (empty($pId)) continue;
-                if (!isset($act_prd_map[$pId])) {
-                    $act_prd_map[$pId] = [
-                        'nama_invoice' => $prod_name_map[$pId] ?? $pId,
-                        'aktual' => 0
-                    ];
-                }
-                $act_prd_map[$pId]['aktual'] += $count;
+        foreach ($res_act_selling as $row) {
+            $pId = trim($row['productid']);
+            if (!empty($pId)) {
+                $act_prd_map[$pId] = (float)$row['total_qty'];
             }
         }
 
@@ -1401,19 +1422,18 @@ class Dashboard_tts_model extends CI_Model
 
         $tgt_prd_map = [];
         foreach ($res_prd_tgt as $r) {
-            $pId = $r['product_id'];
+            $pId = trim($r['product_id']);
             $tgt_prd_map[$pId] = [
                 'nama_invoice' => $r['nama_invoice'],
                 'target_qty' => (float)$r['total_target_qty']
             ];
         }
 
-        $all_ids = array_unique(array_merge(array_keys($act_prd_map), array_keys($tgt_prd_map)));
         $list = [];
-        foreach ($all_ids as $pId) {
-            $nama = $act_prd_map[$pId]['nama_invoice'] ?? $tgt_prd_map[$pId]['nama_invoice'] ?? ($prod_name_map[$pId] ?? $pId);
-            $act = $act_prd_map[$pId]['aktual'] ?? 0;
-            $tgt = $tgt_prd_map[$pId]['target_qty'] ?? 0;
+        foreach ($tgt_prd_map as $pId => $tgtInfo) {
+            $nama = !empty($tgtInfo['nama_invoice']) ? $tgtInfo['nama_invoice'] : ($prod_name_map[$pId] ?? $pId);
+            $act = $act_prd_map[$pId] ?? 0;
+            $tgt = $tgtInfo['target_qty'] ?? 0;
             $pct = $tgt > 0 ? round(($act / $tgt) * 100, 1) : 0;
 
             $list[] = [
@@ -1579,6 +1599,7 @@ class Dashboard_tts_model extends CI_Model
                 'salesman' => null,
                 'kunjungan' => [],
                 'detailing' => [],
+                'selling' => [],
                 'absensi' => []
             ];
         }
@@ -1737,10 +1758,44 @@ class Dashboard_tts_model extends CI_Model
             $salesmanid                          // join vd
         ])->result_array();
 
+        $sql_selling = "
+            SELECT 
+                sls.tanggal,
+                sls.no_po,
+                sls.no_sales,
+                sls.customerid,
+                COALESCE(c.nama_customer, sls.customerid) AS nama_outlet,
+                COALESCE(c.typeid, '-') AS tipe_outlet,
+                dtl.productid,
+                COALESCE(p.nama_invoice, dtl.productid) AS nama_produk,
+                dtl.qty_kecil AS qty,
+                COALESCE(dtl.sat_kecil, 'Pcs') AS satuan,
+                dtl.h_jual,
+                dtl.netto,
+                CASE 
+                    WHEN dtl.flag_bonus = 1 THEN 'Bonus'
+                    ELSE 'Jual'
+                END AS tipe_item,
+                CASE 
+                    WHEN sls.url_img_po IS NOT NULL AND sls.url_img_po != '' THEN CONCAT('".URL_IMAGE."', sls.url_img_po)
+                    ELSE ''
+                END AS url_img_po
+            FROM t_sales_master sls
+            JOIN t_sales_detail dtl ON sls.siteid = dtl.siteid AND sls.no_po = dtl.no_po
+            LEFT JOIN m_customer c ON c.customerid = sls.customerid
+            LEFT JOIN m_product p ON p.productid = dtl.productid
+            WHERE sls.salesmanid = ?
+              AND sls.tanggal BETWEEN ? AND ?
+              AND IFNULL(sls.retur, 0) = 0
+            ORDER BY sls.tanggal DESC, sls.no_po ASC
+        ";
+        $selling_list = $this->db->query($sql_selling, [$salesmanid, $start_date, $end_date])->result_array();
+
         return [
             'salesman' => $salesman_info,
             'kunjungan' => $kunjungan_list,
             'detailing' => $detailing_list,
+            'selling' => $selling_list,
             'absensi' => $absensi_list
         ];
     }

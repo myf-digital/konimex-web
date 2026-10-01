@@ -53,11 +53,11 @@
 
 <section class="content-header">
     <h1>
-      Join Visit <small>Reporting</small>
+      Join Activity <small>Reporting</small>
     </h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Report</a></li>
-        <li class="active">Join Visit</li>
+        <li class="active">Join Activity</li>
     </ol>
 </section>
 
@@ -67,7 +67,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">List Join Visit</h3>
+                    <h3 class="box-title">List Join Activity</h3>
                 </div>
 
                 <form id="fm-report-req-visit" role="form" method="post">
@@ -127,7 +127,7 @@
       <div class="modal-header bg-primary" style="color: #fff; padding: 15px 20px;">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: #fff; opacity: 0.9;">&times;</button>
         <h4 class="modal-title" id="modalDetailLabel" style="font-weight: 600;">
-          <i class="fa fa-user-md"></i> Detail Join Visit
+          <i class="fa fa-user-md"></i> Detail Join Activity
         </h4>
       </div>
       <div class="modal-body" style="padding: 20px; max-height: calc(85vh - 120px); overflow-y: auto;">
@@ -135,7 +135,7 @@
         <div class="box box-solid box-default" style="margin-bottom: 20px; border: 1px solid #e5e7eb; border-radius: 6px;">
           <div class="box-header with-border" style="background: #f8fafc;">
             <h3 class="box-title" style="font-size: 14px; font-weight: 700; color: #374151;">
-              <i class="fa fa-info-circle text-primary"></i> Informasi
+              <i class="fa fa-info-circle text-primary"></i> Informasi Activity
             </h3>
           </div>
           <div class="box-body no-padding">
@@ -174,7 +174,7 @@
                   <td><span id="detail-approved-by">-</span> (<span id="detail-approved-date">-</span>)</td>
                 </tr>
                 <tr>
-                  <th style="background-color: #ecfdf5; color: #065f46;">Keterangan Visit</th>
+                  <th style="background-color: #ecfdf5; color: #065f46;">Keterangan Activity</th>
                   <td id="detail-visit-keterangan" style="font-weight: 500; white-space: pre-wrap;">-</td>
                 </tr>
               </tbody>
@@ -222,4 +222,4 @@
   </div>
 </div>
 
-<script src="<?php echo base_url() . 'assets/modules/req_visit_professional/req-visit-professional-content.js' ?>?v=1.0"></script>
+<script src="<?php echo base_url() . 'assets/modules/req_visit_professional/req-visit-professional-content.js' ?>?v=1.1"></script>

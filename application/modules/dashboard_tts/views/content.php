@@ -297,7 +297,7 @@
                 <div class="inner" style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div style="min-width: 80px; margin-right: 6px;">
                         <h3 id="kpi_join_pct">0%</h3>
-                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Join Visit: <span id="kpi_join_act">0</span> / <span id="kpi_join_tgt">0</span></p>
+                        <p style="margin-bottom: 0; font-size: 12px; white-space: nowrap;">Join Activity: <span id="kpi_join_act">0</span> / <span id="kpi_join_tgt">0</span></p>
                     </div>
                     <div id="kpi_join_rincian" style="flex: 1; font-size: 11px; line-height: 1.3; text-align: right; max-height: 62px; overflow: hidden; position: relative; z-index: 2;">
                         -
@@ -400,7 +400,7 @@
                     </li>
                     <li>
                         <a href="#tab_breakdown_join_visit" data-toggle="tab" id="tab_link_join_visit">
-                            <i class="fa fa-users text-maroon"></i> 7. Join Visit
+                            <i class="fa fa-users text-maroon"></i> 7. Join Activity
                         </a>
                     </li>
                     <li>
@@ -609,9 +609,9 @@
                         <div class="row" style="margin-bottom: 12px;">
                             <div class="col-xs-12">
                                 <h4 style="margin: 5px 0 0; font-weight: 700;">
-                                    <i class="fa fa-users text-maroon"></i> Rincian Join Visit
+                                    <i class="fa fa-users text-maroon"></i> Rincian Join Activity
                                 </h4>
-                                <small class="text-muted">Daftar join visit ke profesional</small>
+                                <small class="text-muted">Daftar join activity ke profesional</small>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -692,6 +692,7 @@
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#tab_sub_kunjungan" data-toggle="tab">Kunjungan (<span id="count_log_kunjungan">0</span>)</a></li>
                             <li><a href="#tab_sub_detailing" data-toggle="tab">Detailing (<span id="count_log_detailing">0</span>)</a></li>
+                            <li><a href="#tab_sub_selling" data-toggle="tab">Selling (<span id="count_log_selling">0</span>)</a></li>
                             <li><a href="#tab_sub_absensi" data-toggle="tab">Presensi (<span id="count_log_absensi">0</span>)</a></li>
                         </ul>
                         <div class="tab-content" style="padding: 15px 0;">
@@ -740,6 +741,30 @@
                                 </div>
                             </div>
 
+                            <div class="tab-pane" id="tab_sub_selling">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover fixed-table" id="table_modal_selling" style="font-size: 12px; width: 100%;">
+                                        <thead style="background: #eef2f7;">
+                                            <tr>
+                                                <th class="text-center" style="width: 40px;">No</th>
+                                                <th>Tanggal</th>
+                                                <th>No PO</th>
+                                                <th>Outlet ID</th>
+                                                <th>Nama Outlet</th>
+                                                <th>Kode Produk</th>
+                                                <th>Nama Produk</th>
+                                                <th class="text-center">Tipe</th>
+                                                <th class="text-right">Qty</th>
+                                                <th class="text-right">Harga Jual</th>
+                                                <th class="text-right">Total Netto</th>
+                                                <th class="text-center">Foto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                             <div class="tab-pane" id="tab_sub_absensi">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped table-hover fixed-table" id="table_modal_absensi" style="font-size: 12px; width: 100%;">
@@ -775,14 +800,14 @@
                 <div class="modal-header bg-primary" style="background: #b5154f; color: #fff; padding: 15px 20px;">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: #fff; opacity: 0.9;">&times;</button>
                     <h4 class="modal-title" id="modalDetailVisitLabel" style="font-weight: 600;">
-                        <i class="fa fa-users"></i> Detail Supervisi Join Visit
+                        <i class="fa fa-users"></i> Detail Join Activity
                     </h4>
                 </div>
                 <div class="modal-body" style="padding: 20px; max-height: calc(85vh - 120px); overflow-y: auto;">
                     <div class="box box-solid box-default" style="margin-bottom: 20px; border: 1px solid #e5e7eb; border-radius: 6px;">
                         <div class="box-header with-border" style="background: #f8fafc;">
                             <h3 class="box-title" style="font-size: 14px; font-weight: 700; color: #374151;">
-                                <i class="fa fa-info-circle text-primary"></i> Informasi Join Visit
+                                <i class="fa fa-info-circle text-primary"></i> Informasi Join Activity
                             </h3>
                         </div>
                         <div class="box-body no-padding">
@@ -821,7 +846,7 @@
                                         <td><span id="detail_visit_approved_by">-</span> (<span id="detail_visit_approved_date">-</span>)</td>
                                     </tr>
                                     <tr>
-                                        <th style="background: #ecfdf5; color: #065f46;">Keterangan Visit</th>
+                                        <th style="background: #ecfdf5; color: #065f46;">Keterangan Activity</th>
                                         <td id="detail_visit_keterangan_visit" style="font-weight: 500; white-space: pre-wrap;">-</td>
                                     </tr>
                                 </tbody>
@@ -875,4 +900,4 @@
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="<?= base_url() . 'assets/modules/dashboard_tts/dashboard-tts.js' ?>?v=1.2"></script>
+<script src="<?= base_url() . 'assets/modules/dashboard_tts/dashboard-tts.js' ?>?v=1.3"></script>

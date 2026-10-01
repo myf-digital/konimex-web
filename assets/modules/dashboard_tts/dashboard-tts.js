@@ -27,6 +27,7 @@ let DashboardTTS = (function ($) {
 
     let dtModalKunjungan = null;
     let dtModalDetailing = null;
+    let dtModalSelling = null;
     let dtModalAbsensi = null;
 
     let dtLanguageIndo = {
@@ -1108,7 +1109,7 @@ let DashboardTTS = (function ($) {
                         html += '<td><strong>' + (row.nama_outlet || '-') + '</strong><br><small class="text-muted">' + (row.customerid || '-') + '</small></td>';
                         html += '<td><i class="fa fa-user-md text-maroon"></i> <strong>' + (row.nama_user || '-') + '</strong></td>';
                         html += '<td class="text-center">' + statusBadge + '</td>';
-                        html += '<td class="text-center"><button type="button" class="btn btn-xs btn-primary btn-detail-join-visit" data-reqno="' + row.req_no + '" title="Lihat Detail Join Visit"><i class="fa fa-search"></i> Detail</button></td>';
+                        html += '<td class="text-center"><button type="button" class="btn btn-xs btn-primary btn-detail-join-visit" data-reqno="' + row.req_no + '" title="Lihat Detail Join Activity"><i class="fa fa-search"></i> Detail</button></td>';
                         html += '</tr>';
                     });
                 }
@@ -1283,7 +1284,7 @@ let DashboardTTS = (function ($) {
                             let fullUrl = url.startsWith('http') ? url : (common.baseURL() + url.replace(/^\//, ''));
                             let filename = fullUrl.split('/').pop() || ('Foto ' + (idx + 1));
                             galleryHtml += '<div class="img-gallery-card" style="border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; background: #fff; width: calc(33.333% - 10px); min-width: 180px; display: flex; flex-direction: column;">' +
-                                '<img src="' + fullUrl + '" class="img-gallery-thumb" data-title="Foto ' + (idx + 1) + ' - ' + (res.nama_professional || 'Join Visit') + '" onerror="this.onerror=null; this.src=\'https://placehold.co/400x300?text=No+Image\';" style="width: 100%; height: 160px; object-fit: cover; cursor: pointer;" alt="Foto Dokumentasi">' +
+                                '<img src="' + fullUrl + '" class="img-gallery-thumb" data-title="Foto ' + (idx + 1) + ' - ' + (res.nama_professional || 'Join Activity') + '" onerror="this.onerror=null; this.src=\'https://placehold.co/400x300?text=No+Image\';" style="width: 100%; height: 160px; object-fit: cover; cursor: pointer;" alt="Foto Dokumentasi">' +
                                 '<div class="card-footer-info" style="padding: 8px 10px; font-size: 11px; color: #6b7280; background: #f9fafb; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">' +
                                 '<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px;" title="' + filename + '"><i class="fa fa-image"></i> Foto #' + (idx + 1) + '</span>' +
                                 '<a href="' + fullUrl + '" target="_blank" class="btn btn-xs btn-default" title="Buka Gambar"><i class="fa fa-external-link"></i></a>' +
@@ -1309,10 +1310,12 @@ let DashboardTTS = (function ($) {
         
         if (dtModalKunjungan) { dtModalKunjungan.destroy(); dtModalKunjungan = null; }
         if (dtModalDetailing) { dtModalDetailing.destroy(); dtModalDetailing = null; }
+        if (dtModalSelling) { dtModalSelling.destroy(); dtModalSelling = null; }
         if (dtModalAbsensi) { dtModalAbsensi.destroy(); dtModalAbsensi = null; }
 
         $('#table_modal_kunjungan tbody').html('');
         $('#table_modal_detailing tbody').html('');
+        $('#table_modal_selling tbody').html('');
         $('#table_modal_absensi tbody').html('');
         $('#modal_detail_tpe').modal('show');
         $('#loading_modal_detail').show();
@@ -1378,6 +1381,35 @@ let DashboardTTS = (function ($) {
                     }
                     $('#table_modal_detailing tbody').html(htmlD);
 
+                    let htmlS = '';
+                    if (res.selling && res.selling.length > 0) {
+                        $('#count_log_selling').text(res.selling.length);
+                        $.each(res.selling, function (i, r) {
+                            htmlS += '<tr>';
+                            htmlS += '<td class="text-center">' + (i + 1) + '</td>';
+                            htmlS += '<td>' + r.tanggal + '</td>';
+                            htmlS += '<td><code>' + (r.no_po || r.no_sales || '-') + '</code></td>';
+                            htmlS += '<td><code>' + (r.customerid || '-') + '</code></td>';
+                            htmlS += '<td><strong>' + (r.nama_outlet || '-') + '</strong></td>';
+                            htmlS += '<td>' + (r.productid || '-') + '</td>';
+                            htmlS += '<td><strong>' + (r.nama_produk || '-') + '</strong></td>';
+                            let tipeBadge = r.tipe_item === 'Bonus' ? '<span class="label label-warning">Bonus</span>' : '<span class="label label-success">Jual</span>';
+                            htmlS += '<td class="text-center">' + tipeBadge + '</td>';
+                            let qtyFormatted = r.qty !== null ? Number(r.qty).toLocaleString('id-ID') + ' ' + (r.satuan || '') : '-';
+                            let hJualFormatted = r.h_jual !== null ? 'Rp ' + Number(r.h_jual).toLocaleString('id-ID') : '-';
+                            let nettoFormatted = r.netto !== null ? 'Rp ' + Number(r.netto).toLocaleString('id-ID') : '-';
+                            htmlS += '<td class="text-right">' + qtyFormatted + '</td>';
+                            htmlS += '<td class="text-right">' + hJualFormatted + '</td>';
+                            htmlS += '<td class="text-right">' + nettoFormatted + '</td>';
+                            let imgPo = r.url_img_po ? '<a href="' + r.url_img_po + '" target="_blank" class="btn btn-xs btn-default"><i class="fa fa-image"></i> Foto</a>' : '-';
+                            htmlS += '<td class="text-center">' + imgPo + '</td>';
+                            htmlS += '</tr>';
+                        });
+                    } else {
+                        $('#count_log_selling').text('0');
+                    }
+                    $('#table_modal_selling tbody').html(htmlS);
+
                     let htmlA = '';
                     if (res.absensi && res.absensi.length > 0) {
                         $('#count_log_absensi').text(res.absensi.length);
@@ -1412,6 +1444,14 @@ let DashboardTTS = (function ($) {
                         });
 
                         dtModalDetailing = $('#table_modal_detailing').DataTable({
+                            pageLength: 10,
+                            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+                            language: dtLanguageIndo,
+                            order: [[1, 'desc']],
+                            responsive: true
+                        });
+
+                        dtModalSelling = $('#table_modal_selling').DataTable({
                             pageLength: 10,
                             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
                             language: dtLanguageIndo,
