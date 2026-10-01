@@ -33,6 +33,10 @@
       title: "List User",
       toolbar: toolbar(),
       url: common.baseURL("professional/load"),
+      queryParams: {
+        usersession: paramsession ? paramsession.username : "",
+        restrict_level: paramsession ? paramsession.restrict_level : "",
+      },
       pageNumber: 1,
       pageSize: commonGrid.getCurentSize(),
       pageList: commonGrid.getPageSize(),
@@ -336,7 +340,11 @@
   }
 
   function save_xls(start, end) {
-    common.direct("professional/savetoxlsx");
+    let url = "professional/savetoxlsx";
+    if (paramsession) {
+      url += `?usersession=${encodeURIComponent(paramsession.username || "")}&restrict_level=${encodeURIComponent(paramsession.restrict_level || "")}`;
+    }
+    common.direct(url);
   }
 
   function handleApproveReject(id, targetStatus) {

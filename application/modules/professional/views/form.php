@@ -84,7 +84,7 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/professional/form.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/professional/form.js' ?>?v=1.1"></script>
 <style>
   .datepicker table thead tr:first-child {
     display: table-row !important;

@@ -735,18 +735,58 @@ class Customer_model extends CI_Model
             $this->db->where_in('c.subareaid', $subarea_arr);
         }
 
-        $restrict_query = get_salesman_restrict($usersession, $restrict_level);
-        if ($restrict_query) {
-            $this->db->where("c.subareaid IN (
-                SELECT DISTINCT subareaid 
-                FROM m_salesman_area 
-                WHERE salesmanid IN (" . $restrict_query . ")
-            )", NULL, FALSE);
+        if (!empty($restrict_level) && !empty($usersession)) {
+            $column = "";
+            if ($restrict_level == '4') {
+                $column = "subareaid";
+            } else if ($restrict_level == '3') {
+                $column = "areaid";
+            } else if ($restrict_level == '2') {
+                $column = "regionalid";
+            }
+
+            if (!empty($column)) {
+                $escaped_user = $this->db->escape($usersession);
+                $this->db->where("c.{$column} IN (
+                    SELECT DISTINCT b.{$column} 
+                    FROM app_resource ar 
+                    JOIN app_restrict_location b ON ar.resource_id = b.resource_id 
+                    WHERE ar.username = {$escaped_user}
+                )", NULL, FALSE);
+            }
         }
 
         $this->db->order_by('c.customerid', 'DESC');
         $this->db->order_by('p.id', 'ASC');
-        return $this->db->get()->result_array();
+        $outlets = $this->db->get()->result_array();
+
+        // Include unmapped users (professionals without any outlet)
+        $this->db->select('
+            NULL as customerid,
+            NULL as kode_outlet,
+            NULL as nama_customer,
+            NULL as channel,
+            NULL as telp,
+            NULL as email,
+            NULL as regional,
+            NULL as area,
+            NULL as sub_area,
+            NULL as alamat,
+            p.id as id_professional,
+            p.nama_professional,
+            p.spesialisasi_name,
+            p.type as tipe_user
+        ', FALSE);
+        $this->db->from('ref_professional p');
+        $this->db->where('p.id NOT IN (
+            SELECT DISTINCT rpm.id_professional 
+            FROM ref_professional_mapping rpm 
+            WHERE rpm.customerid IS NOT NULL AND rpm.customerid <> ""
+        )', NULL, FALSE);
+        $this->db->order_by('p.id', 'ASC');
+        $unmapped_professionals = $this->db->get()->result_array();
+
+        return array_merge($outlets, $unmapped_professionals);
     }
 }
 

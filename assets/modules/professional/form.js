@@ -171,6 +171,8 @@
       common.baseURL("professional/outlet"),
       {
         q: keyword,
+        usersession: paramsession ? paramsession.username : "",
+        restrict_level: paramsession ? paramsession.restrict_level : "",
       },
       function (res) {
         let select = document.getElementById("customerid");

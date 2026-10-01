@@ -344,6 +344,8 @@ class Professional extends BaseController
         $data = [];
         $data['get_date1'] = $this->uri->segment('3');
         $data['get_date2'] = $this->uri->segment('4');
+        $data['usersession'] = $this->input->get('usersession') ?: $this->uri->segment('3');
+        $data['restrict_level'] = $this->input->get('restrict_level') ?: $this->uri->segment('4');
 
         $result = $this->professional->savetoxlsx($data);
         $filename = "data_pelanggan_" . date('Y-m-d_His');
@@ -556,10 +558,15 @@ class Professional extends BaseController
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         
-        header('Content-Type: application/vnd.ms-excel');
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
+        exit;
     }
 }

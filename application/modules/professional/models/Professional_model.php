@@ -5,6 +5,40 @@ class Professional_model extends CI_Model
 {
     public function load($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $column = "";
+            if ($data["restrict_level"] == '4') {
+                $column = "subareaid";
+            } else if ($data["restrict_level"] == '3') {
+                $column = "areaid";
+            } else if ($data["restrict_level"] == '2') {
+                $column = "regionalid";
+            }
+
+            if (!empty($column)) {
+                $escaped_user = $this->db->escape_str($data["usersession"]);
+                $where .= " AND (
+                    a.id NOT IN (
+                        SELECT DISTINCT rpm_check.id_professional 
+                        FROM ref_professional_mapping rpm_check 
+                        WHERE rpm_check.customerid IS NOT NULL AND rpm_check.customerid <> ''
+                    )
+                    OR a.id IN (
+                        SELECT DISTINCT rpm_sub.id_professional 
+                        FROM ref_professional_mapping rpm_sub 
+                        JOIN m_customer mc_sub ON mc_sub.customerid = rpm_sub.customerid 
+                        WHERE mc_sub.{$column} IN (
+                            SELECT DISTINCT b.{$column} 
+                            FROM app_resource ar 
+                            JOIN app_restrict_location b ON ar.resource_id = b.resource_id 
+                            WHERE ar.username = '{$escaped_user}'
+                        )
+                    )
+                )";
+            }
+        }
+
         $field = "a.* ";
         $table = " (
                     SELECT
@@ -32,6 +66,7 @@ class Professional_model extends CI_Model
                     LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
                     LEFT JOIN m_customer mc ON mc.customerid = rpm.customerid
                     LEFT JOIN m_sales_salesman mss ON mss.salesmanid = a.created_by
+                    $where
                     GROUP BY a.id
                     ORDER BY CASE a.status
                         WHEN 1 THEN 1
@@ -61,6 +96,28 @@ class Professional_model extends CI_Model
         }
         $this->db->where('customerid IS NOT NULL', null, false);
         $this->db->where('customerid <>', '');
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $column = "";
+            if ($data["restrict_level"] == '4') {
+                $column = "subareaid";
+            } else if ($data["restrict_level"] == '3') {
+                $column = "areaid";
+            } else if ($data["restrict_level"] == '2') {
+                $column = "regionalid";
+            }
+
+            if (!empty($column)) {
+                $escaped_user = $this->db->escape($data["usersession"]);
+                $this->db->where("{$column} IN (
+                    SELECT DISTINCT b.{$column} 
+                    FROM app_resource ar 
+                    JOIN app_restrict_location b ON ar.resource_id = b.resource_id 
+                    WHERE ar.username = {$escaped_user}
+                )", NULL, FALSE);
+            }
+        }
+
         $this->db->order_by('customerid', 'DESC');
         $this->db->limit(50);
         $result = $this->db->from('m_customer')->get()->result_array();
@@ -301,6 +358,40 @@ class Professional_model extends CI_Model
 
     public function savetoxlsx($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $column = "";
+            if ($data["restrict_level"] == '4') {
+                $column = "subareaid";
+            } else if ($data["restrict_level"] == '3') {
+                $column = "areaid";
+            } else if ($data["restrict_level"] == '2') {
+                $column = "regionalid";
+            }
+
+            if (!empty($column)) {
+                $escaped_user = $this->db->escape_str($data["usersession"]);
+                $where .= " AND (
+                    a.id NOT IN (
+                        SELECT DISTINCT rpm_check.id_professional 
+                        FROM ref_professional_mapping rpm_check 
+                        WHERE rpm_check.customerid IS NOT NULL AND rpm_check.customerid <> ''
+                    )
+                    OR a.id IN (
+                        SELECT DISTINCT rpm_sub.id_professional 
+                        FROM ref_professional_mapping rpm_sub 
+                        JOIN m_customer mc_sub ON mc_sub.customerid = rpm_sub.customerid 
+                        WHERE mc_sub.{$column} IN (
+                            SELECT DISTINCT b.{$column} 
+                            FROM app_resource ar 
+                            JOIN app_restrict_location b ON ar.resource_id = b.resource_id 
+                            WHERE ar.username = '{$escaped_user}'
+                        )
+                    )
+                )";
+            }
+        }
+
         $sql = "
                 SELECT
                     a.id,
@@ -321,7 +412,7 @@ class Professional_model extends CI_Model
                 LEFT JOIN ref_spesialisasi rs ON rs.id = a.spesialisasi_id
                 LEFT JOIN ref_professional_mapping rpm ON rpm.id_professional = a.id
                 LEFT JOIN m_customer mc ON mc.customerid = rpm.customerid
-                WHERE rpm.customerid IS NOT NULL
+                $where
                 GROUP BY a.id
                 ORDER BY a.id DESC
             ";
