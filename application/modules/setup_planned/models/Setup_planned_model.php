@@ -204,15 +204,26 @@ class Setup_planned_model extends CI_Model
     public function load($data, $type = 'load')
     {
         $strquery = "";
-        if (!empty($data["restrict_level"])) {
-            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+        $usersession = $data["usersession"] ?? $data["username"] ?? "";
+        if (!empty($data["restrict_level"]) && !empty($usersession)) {
+            $restrict_query = get_salesman_restrict($usersession, $data["restrict_level"]);
             if ($restrict_query) {
-                $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
+                $strquery .= " AND a.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
-        if (!empty($data['salesmanid'])) {
-            $strquery .= " and a.salesmanid IN (".$data['salesmanid'].") ";
+        if (!empty($data['salesmanid']) && $data['salesmanid'] !== 'All') {
+            $arr = is_array($data['salesmanid']) ? $data['salesmanid'] : explode(',', $data['salesmanid']);
+            $quoted = [];
+            foreach ($arr as $sid) {
+                $sid = trim($sid, " '\"");
+                if ($sid !== '' && $sid !== 'All') {
+                    $quoted[] = "'" . $this->db->escape_str($sid) . "'";
+                }
+            }
+            if (!empty($quoted)) {
+                $strquery .= " and a.salesmanid IN (" . implode(',', $quoted) . ") ";
+            }
         }
 
         $field = " a.* ";
@@ -511,13 +522,35 @@ class Setup_planned_model extends CI_Model
         }
     }
 
-    public function get_template_data($salesmanid)
+    public function get_template_data($salesmanid, $usersession = '', $restrict_level = '')
     {
-        $salesId = $this->db->escape_str($salesmanid);
         $where = '';
-        if (!empty($salesId) && $salesId != 'all') {
-            $where = "and a.salesmanid = '".$salesId."'";
+        if (!empty($salesmanid) && strtolower($salesmanid) !== 'all') {
+            $arr = is_array($salesmanid) ? $salesmanid : explode(',', $salesmanid);
+            $quoted = [];
+            foreach ($arr as $sid) {
+                $sid = trim($sid, " '\"");
+                if ($sid !== '' && strtolower($sid) !== 'all') {
+                    $quoted[] = "'" . $this->db->escape_str($sid) . "'";
+                }
+            }
+            if (!empty($quoted)) {
+                $where .= " and a.salesmanid in (" . implode(',', $quoted) . ") ";
+            }
         }
+
+        if (!empty($restrict_level) && !empty($usersession)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $where .= " and a.salesmanid in (
+                    select distinct mss.salesmanid
+                    from m_sales_salesman mss
+                    where mss.salesmanid in (" . $restrict_query . ")
+                      and mss.aktif = 1
+                )";
+            }
+        }
+
         $sql = "
             select distinct
                 a.salesmanid,
@@ -528,7 +561,7 @@ class Setup_planned_model extends CI_Model
             from m_customer_ob a
             join ref_professional_mapping rpm on rpm.id_professional = a.user_id and rpm.customerid = a.customerid
             where a.customerid <> '' $where
-            order by rpm.customerid desc, rpm.id_professional desc
+            order by a.salesmanid asc, rpm.customerid desc, rpm.id_professional desc
         ";
         $data = $this->db->query($sql)->result_array();
         return $data;

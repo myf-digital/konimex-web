@@ -30,16 +30,30 @@
         });
         return;
       }
-      common.direct(
-        "setup_planned/savetoxlsx/" +
-          vSelected.join(",") +
-          "/" +
-          paramsession.username +
-          "/" +
-          paramsession.idjabatan +
-          "/" +
-          paramsession.restrict_level,
-      );
+      let baseUrl = common.baseURL("setup_planned/savetoxlsx");
+      baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+      let username =
+        paramsession && paramsession.username ? paramsession.username : "";
+      let idjabatan =
+        paramsession && paramsession.idjabatan ? paramsession.idjabatan : "";
+      let restrict_level =
+        paramsession && paramsession.restrict_level
+          ? paramsession.restrict_level
+          : "";
+
+      let downloadUrl =
+        baseUrl +
+        "?salesmanid=" +
+        encodeURIComponent(vSelected.join(",")) +
+        "&username=" +
+        encodeURIComponent(username) +
+        "&idjabatan=" +
+        encodeURIComponent(idjabatan) +
+        "&restrict_level=" +
+        encodeURIComponent(restrict_level);
+
+      window.location.href = downloadUrl;
     });
 
     uiBtnCancel.click(function () {

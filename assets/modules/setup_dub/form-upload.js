@@ -61,9 +61,26 @@ function validasiFile() {
         });
         return;
       }
-      window.location.href = common.baseURL(
-        "setup_dub/download_template/" + selectedSalesman,
-      );
+      let baseUrl = common.baseURL("setup_dub/download_template");
+      baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+      let username =
+        paramsession && paramsession.username ? paramsession.username : "";
+      let restrict_level =
+        paramsession && paramsession.restrict_level
+          ? paramsession.restrict_level
+          : "";
+
+      let downloadUrl =
+        baseUrl +
+        "?salesmanid=" +
+        encodeURIComponent(selectedSalesman) +
+        "&usersession=" +
+        encodeURIComponent(username) +
+        "&restrict_level=" +
+        encodeURIComponent(restrict_level);
+
+      window.location.href = downloadUrl;
     });
 
     uiBtnUpload.click(function (e) {
@@ -171,15 +188,20 @@ function validasiFile() {
       },
       function (res) {
         uiSelectSalesman.empty();
+        let options = $.map(res.result, function (o) {
+          o.id = o.salesmanid;
+          o.text =
+            o.salesmanid + " - " + o.nama_salesman + " - " + o.tipe_sales;
+          return o;
+        });
+        options.unshift({
+          id: "all",
+          text: "Semua MEDREP",
+        });
         uiSelectSalesman.select2({
           placeholder: "Pilih MEDREP",
           allowClear: true,
-          data: $.map(res.result, function (o) {
-            o.id = o.salesmanid;
-            o.text =
-              o.salesmanid + " - " + o.nama_salesman + " - " + o.tipe_sales;
-            return o;
-          }),
+          data: options,
         });
 
         uiSelectSalesman.val(null).trigger("change");

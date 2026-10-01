@@ -198,15 +198,26 @@ class Setup_dub_model extends CI_Model
     public function load($data, $type = 'load')
     {
 		$strquery = "";
-        if (!empty($data["restrict_level"])) {
-            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+        $usersession = $data["usersession"] ?? $data["username"] ?? "";
+        if (!empty($data["restrict_level"]) && !empty($usersession)) {
+            $restrict_query = get_salesman_restrict($usersession, $data["restrict_level"]);
             if ($restrict_query) {
                 $strquery = " AND a.salesmanid IN (" . $restrict_query . ")";
             }
         }
 
-        if (!empty($data['salesmanid'])) {
-            $strquery .= " and a.salesmanid IN (".$data['salesmanid'].") ";
+        if (!empty($data['salesmanid']) && $data['salesmanid'] !== 'All') {
+            $arr = is_array($data['salesmanid']) ? $data['salesmanid'] : explode(',', $data['salesmanid']);
+            $quoted = [];
+            foreach ($arr as $sid) {
+                $sid = trim($sid, " '\"");
+                if ($sid !== '' && $sid !== 'All') {
+                    $quoted[] = "'" . $this->db->escape_str($sid) . "'";
+                }
+            }
+            if (!empty($quoted)) {
+                $strquery .= " and a.salesmanid IN (" . implode(',', $quoted) . ") ";
+            }
         }
 
         $field = " a.* ";
@@ -438,46 +449,48 @@ class Setup_dub_model extends CI_Model
         }
     }
 
-    public function get_template_data($salesmanid)
+    public function get_template_data($salesmanid, $usersession = '', $restrict_level = '')
     {
-        $salesman_areas = $this->db->get_where('m_salesman_area', ['salesmanid' => $salesmanid])->result_array();
-        if (empty($salesman_areas)) {
-            return [];
+        $whereSalesman = "";
+        if (!empty($salesmanid) && strtolower($salesmanid) !== 'all') {
+            $arr = is_array($salesmanid) ? $salesmanid : explode(',', $salesmanid);
+            $quoted = [];
+            foreach ($arr as $sid) {
+                $sid = trim($sid, " '\"");
+                if ($sid !== '' && strtolower($sid) !== 'all') {
+                    $quoted[] = "'" . $this->db->escape_str($sid) . "'";
+                }
+            }
+            if (!empty($quoted)) {
+                $whereSalesman .= " and msa.salesmanid in (" . implode(',', $quoted) . ") ";
+            }
         }
 
-        $subareaids = array_unique(array_filter(array_column($salesman_areas, 'subareaid')));
-        $areaids = array_unique(array_filter(array_column($salesman_areas, 'areaid')));
-        $regionalids = array_unique(array_filter(array_column($salesman_areas, 'regionalid')));
-
-        $conditions = [];
-        if (!empty($subareaids)) {
-            $conditions[] = "a.subareaid IN (" . implode(",", $subareaids) . ")";
+        if (!empty($restrict_level) && !empty($usersession)) {
+            $restrict_query = get_salesman_restrict($usersession, $restrict_level);
+            if ($restrict_query) {
+                $whereSalesman .= " and msa.salesmanid in (" . $restrict_query . ") ";
+            }
         }
-        if (!empty($areaids)) {
-            $conditions[] = "a.areaid IN (" . implode(",", $areaids) . ")";
-        }
-        if (!empty($regionalids)) {
-            $conditions[] = "a.regionalid IN (" . implode(",", $regionalids) . ")";
-        }
-
-        if (empty($conditions)) {
-            return [];
-        }
-
-        $where = " AND (" . implode(" OR ", $conditions) . ")";
 
         $sql = "
             select distinct
-                '".$this->db->escape_str($salesmanid)."' as salesmanid,
+                msa.salesmanid,
                 a.customerid,
                 a.nama_customer,
                 rp.id as user_id,
                 rp.nama_professional as nama_user
-            from m_customer a
+            from m_salesman_area msa
+            join m_sales_salesman s on s.salesmanid = msa.salesmanid and s.aktif = 1
+            join m_customer a on (
+                (a.subareaid is not null and a.subareaid <> '' and a.subareaid = msa.subareaid)
+                or ( (a.subareaid is null or a.subareaid = '') and a.areaid is not null and a.areaid <> '' and a.areaid = msa.areaid)
+                or ( (a.subareaid is null or a.subareaid = '') and (a.areaid is null or a.areaid = '') and a.regionalid is not null and a.regionalid <> '' and a.regionalid = msa.regionalid)
+            )
             join ref_professional_mapping rpm on rpm.customerid = a.customerid
             join ref_professional rp on rp.id = rpm.id_professional
-            where a.customerid <> '' $where
-            order by a.nama_customer asc, rp.nama_professional asc
+            where a.customerid <> '' $whereSalesman
+            order by msa.salesmanid asc, a.nama_customer asc, rp.nama_professional asc
         ";
         return $this->db->query($sql)->result_array();
     }

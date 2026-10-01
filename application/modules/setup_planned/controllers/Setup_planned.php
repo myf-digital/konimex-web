@@ -96,11 +96,11 @@ class Setup_planned extends BaseController
     
     public function savetoxlsx()
     {
-        $salesmanid = $this->uri->segment('3');
-        $username = $this->uri->segment('4');
-        $jabatan = $this->uri->segment('5');
-        $restrict_level = $this->uri->segment('6');
-        $filtername = $this->uri->segment('7');
+        $salesmanid = $this->input->get('salesmanid') ?: $this->uri->segment('3');
+        $username = $this->input->get('username') ?: $this->input->get('usersession') ?: $this->uri->segment('4');
+        $jabatan = $this->input->get('jabatan') ?: $this->input->get('idjabatan') ?: $this->uri->segment('5');
+        $restrict_level = $this->input->get('restrict_level') ?: $this->uri->segment('6');
+        $filtername = $this->input->get('filtername') ?: $this->uri->segment('7');
         
         if (empty($filtername)) {
             $filtername = "All";
@@ -113,8 +113,10 @@ class Setup_planned extends BaseController
 
         $data = [
             'salesmanid' => $salesmanid,
+            'usersession' => $username,
             'username' => $username,
             'jabatan' => $jabatan,
+            'idjabatan' => $jabatan,
             'restrict_level' => $restrict_level,
             'filtername' => $filtername,
         ];
@@ -288,8 +290,11 @@ class Setup_planned extends BaseController
     public function download_template($salesmanid = '')
     {
         if (empty($salesmanid)) {
-            $salesmanid = $this->uri->segment('3');
+            $salesmanid = $this->input->get('salesmanid') ?: $this->uri->segment('3');
         }
+
+        $usersession = $this->input->get('usersession') ?: $this->input->get('username') ?: $this->uri->segment('4');
+        $restrict_level = $this->input->get('restrict_level') ?: $this->uri->segment('5');
 
         ini_set("memory_limit", "1024M");
 
@@ -311,7 +316,7 @@ class Setup_planned extends BaseController
 
         $rowNum = 2;
         if (!empty($salesmanid)) {
-            $data = $this->setup_planned->get_template_data($salesmanid);
+            $data = $this->setup_planned->get_template_data($salesmanid, $usersession, $restrict_level);
             if (!empty($data)) {
                 foreach ($data as $item) {
                     $sheet->fromArray([

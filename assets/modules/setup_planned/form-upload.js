@@ -61,9 +61,26 @@ function validasiFile() {
         });
         return;
       }
-      window.location.href = common.baseURL(
-        "setup_planned/download_template/" + selectedSalesman,
-      );
+      let baseUrl = common.baseURL("setup_planned/download_template");
+      baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+      let username =
+        paramsession && paramsession.username ? paramsession.username : "";
+      let restrict_level =
+        paramsession && paramsession.restrict_level
+          ? paramsession.restrict_level
+          : "";
+
+      let downloadUrl =
+        baseUrl +
+        "?salesmanid=" +
+        encodeURIComponent(selectedSalesman) +
+        "&usersession=" +
+        encodeURIComponent(username) +
+        "&restrict_level=" +
+        encodeURIComponent(restrict_level);
+
+      window.location.href = downloadUrl;
     });
 
     uiBtnUpload.click(function (e) {
