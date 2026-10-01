@@ -6,44 +6,136 @@ class Rep_productivity_model extends CI_Model
 
     public function get_regional($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '2' || $data["restrict_level"] == '3' || $data["restrict_level"] == '4') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
 
         $field = " a.* ";
-        $table = " ( select regionalid, nama_regional from m_area_regional 
-                        order by regionalid asc
-                    ) as a";
+        $table = " ( SELECT regionalid, nama_regional FROM m_area_regional 
+                     $where
+                     ORDER BY nama_regional ASC
+                   ) as a";
         return easy_pagging($data, $field, $table);
     }
 
     public function get_area($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND regionalid = '" . $this->db->escape_str($data['regionalid']) . "'";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '3' || $data["restrict_level"] == '4') {
+                $where .= " AND areaid IN (
+                    SELECT DISTINCT b.areaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.areaid IS NOT NULL AND b.areaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '2') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
+
         $field = " a.* ";
-        $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
-                        order by areaid asc
-                    ) as a";
+        $table = " ( SELECT areaid, nama_area FROM m_area_areasite 
+                     $where
+                     ORDER BY nama_area ASC
+                   ) as a";
         return easy_pagging($data, $field, $table);
     }
 
     public function get_subarea($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND areaid = '" . $this->db->escape_str($data['areaid']) . "'";
+        }
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND regionalid = '" . $this->db->escape_str($data['regionalid']) . "'";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '4') {
+                $where .= " AND subareaid IN (
+                    SELECT DISTINCT b.subareaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.subareaid IS NOT NULL AND b.subareaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '3') {
+                $where .= " AND areaid IN (
+                    SELECT DISTINCT b.areaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.areaid IS NOT NULL AND b.areaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '2') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
+
         $field = " a.* ";
-        $table = " ( select subareaid, nama_area as nama_subarea from m_area_subarea where areaid = '".$data['areaid']."' 
-                        order by subareaid asc
-                    ) as a";
+        $table = " ( SELECT subareaid, nama_area as nama_subarea FROM m_area_subarea 
+                     $where
+                     ORDER BY nama_area ASC
+                   ) as a";
         return easy_pagging($data, $field, $table);
     }
 
     public function get_city($data)
     {
-        $field = " a.* ";
-        $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
-                        order by areaid asc
-                    ) as a";
-        return easy_pagging($data, $field, $table);
+        return $this->get_area($data);
     }
 
     public function load_parma($data)
     {
         $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
+        
+        $where = "WHERE s.aktif = 1 AND LOWER(s.nama_salesman) NOT LIKE '%vacant%'";
+
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND s.salesmanid IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE regionalid = '" . $this->db->escape_str($data['regionalid']) . "')";
+        }
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND s.salesmanid IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE areaid = '" . $this->db->escape_str($data['areaid']) . "')";
+        }
+        if (!empty($data['subareaid']) && $data['subareaid'] != 'null') {
+            $where .= " AND s.salesmanid IN (SELECT DISTINCT salesmanid FROM m_salesman_area WHERE subareaid = '" . $this->db->escape_str($data['subareaid']) . "')";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $where .= " AND s.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
+
         $field = " a.* ";
         $table = " (
             select 
@@ -66,8 +158,8 @@ class Rep_productivity_model extends CI_Model
                 left join m_area_subarea mas on mas.subareaid = msa.subareaid
                 group by msa.salesmanid
             ) b on s.salesmanid = b.salesmanid
-            where s.aktif = 1
-            order by s.salesmanid asc
+            $where
+            order by s.nama_salesman asc, s.salesmanid asc
         ) as a";
         return easy_pagging($data, $field, $table);
     }

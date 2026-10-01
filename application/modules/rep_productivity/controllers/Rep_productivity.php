@@ -23,24 +23,36 @@ class Rep_productivity extends BaseController
     public function load_regional()
     {
         $data = param_input();
+        $data['usersession'] = !empty($data['usersession']) ? $data['usersession'] : '';
+        $data['restrict_level'] = !empty($data['restrict_level']) ? $data['restrict_level'] : '';
+        $data['idjabatan'] = !empty($data['idjabatan']) ? $data['idjabatan'] : '';
         responseJSON($this->report_productivity->get_regional($data));
     }
 
     public function load_area()
     {
         $data = param_input();
+        $data['usersession'] = !empty($data['usersession']) ? $data['usersession'] : '';
+        $data['restrict_level'] = !empty($data['restrict_level']) ? $data['restrict_level'] : '';
+        $data['idjabatan'] = !empty($data['idjabatan']) ? $data['idjabatan'] : '';
         responseJSON($this->report_productivity->get_area($data));
     }
 
     public function load_subarea()
     {
         $data = param_input();
+        $data['usersession'] = !empty($data['usersession']) ? $data['usersession'] : '';
+        $data['restrict_level'] = !empty($data['restrict_level']) ? $data['restrict_level'] : '';
+        $data['idjabatan'] = !empty($data['idjabatan']) ? $data['idjabatan'] : '';
         responseJSON($this->report_productivity->get_subarea($data));
     }
 
     public function load_parma()
     {
         $data = param_input();
+        $data['usersession'] = !empty($data['usersession']) ? $data['usersession'] : '';
+        $data['restrict_level'] = !empty($data['restrict_level']) ? $data['restrict_level'] : '';
+        $data['idjabatan'] = !empty($data['idjabatan']) ? $data['idjabatan'] : '';
         responseJSON($this->report_productivity->load_parma($data));
     }
 
@@ -143,20 +155,20 @@ class Rep_productivity extends BaseController
 
 	}
 
-    public function savetoxlsx($data)
+    public function savetoxlsx($data = null)
     {
 		ini_set('memory_limit', '0');
         ini_set('max_execution_time', '0');
-        $start = $this->uri->segment('3');
-        $end = $this->uri->segment('4');
-        $regionalid = $this->uri->segment('5');
-        $areaid = $this->uri->segment('6');
-        $subareaid = $this->uri->segment('7');
+        $start = $this->input->get('start_period') ?: $this->uri->segment('3');
+        $end = $this->input->get('end_period') ?: $this->uri->segment('4');
+        $regionalid = $this->input->get('regionalid') !== null ? $this->input->get('regionalid') : $this->uri->segment('5');
+        $areaid = $this->input->get('areaid') !== null ? $this->input->get('areaid') : $this->uri->segment('6');
+        $subareaid = $this->input->get('subareaid') !== null ? $this->input->get('subareaid') : $this->uri->segment('7');
 
-        $usersession = $this->uri->segment('8');
-        $restrict_level = $this->uri->segment('9');
-        $idjabatan = $this->uri->segment('10');
-        $salesmanid = $this->uri->segment('11');
+        $usersession = $this->input->get('usersession') !== null ? $this->input->get('usersession') : $this->uri->segment('8');
+        $restrict_level = $this->input->get('restrict_level') !== null ? $this->input->get('restrict_level') : $this->uri->segment('9');
+        $idjabatan = $this->input->get('idjabatan') !== null ? $this->input->get('idjabatan') : $this->uri->segment('10');
+        $salesmanid = $this->input->get('salesmanid') !== null ? $this->input->get('salesmanid') : $this->uri->segment('11');
 
         $params = [
         	'start_period' => $start,
@@ -194,18 +206,18 @@ class Rep_productivity extends BaseController
 				$value['salesmanid'],
 				$value['nama_salesman'],
 				$value['tipe_sales'],
-				number_format($value['TPE Aktif'], 0, '.', ','),
-				number_format($value['TPE Hadir'], 0, '.', ','),
-				$value['TPE Aktif'] > 0 ? number_format($value['TPE Hadir']/$value['TPE Aktif']*100, 2, '.', ',') : '0.00',
-				'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')',
-				number_format($value['call_dub'], 0, '.', ','),
-				number_format($value['target_dub'], 0, '.', ','),
-				number_format($value['efektif_dub'], 0, '.', ','),
-				number_format($value['call_visit'], 0, '.', ','),
-				number_format($value['target_visit'], 0, '.', ','),
-				number_format($value['rata_rata_visit'], 2, '.', ','),
-				$value['rrk_keterangan'],
-				$value['rrk_detailing']
+				number_format($value['TPE Aktif'] ?? 0, 0, '.', ','),
+				number_format($value['TPE Hadir'] ?? 0, 0, '.', ','),
+				(!empty($value['TPE Aktif']) && $value['TPE Aktif'] > 0) ? number_format(($value['TPE Hadir'] ?? 0)/$value['TPE Aktif']*100, 2, '.', ',') : '0.00',
+				'Cuti('.number_format($value['cuti'] ?? 0, 0, '.', ',').'), Sakit('.number_format($value['sakit'] ?? 0, 0, '.', ',').')',
+				number_format($value['call_dub'] ?? 0, 0, '.', ','),
+				number_format($value['target_dub'] ?? 0, 0, '.', ','),
+				number_format($value['efektif_dub'] ?? 0, 0, '.', ','),
+				number_format($value['call_visit'] ?? 0, 0, '.', ','),
+				number_format($value['target_visit'] ?? 0, 0, '.', ','),
+				number_format($value['rata_rata_visit'] ?? 0, 2, '.', ','),
+				$value['rrk_keterangan'] ?? '',
+				$value['rrk_detailing'] ?? ''
 				];
 
             $sheet->fromArray($content,NULL,'A'.$row);
@@ -226,16 +238,16 @@ class Rep_productivity extends BaseController
 	function savexls_visit_and_order() {
         ini_set('max_execution_time', '300'); // atau set ke 300 (5 menit)
         ini_set('memory_limit', '1G'); // tambahkan memori jika datanya besar		
-        $start = $this->uri->segment('3');
-        $end = $this->uri->segment('4');
-        $regionalid = $this->uri->segment('5');
-        $areaid = $this->uri->segment('6');
-        $subareaid = $this->uri->segment('7');
+        $start = $this->input->get('start_period') ?: $this->uri->segment('3');
+        $end = $this->input->get('end_period') ?: $this->uri->segment('4');
+        $regionalid = $this->input->get('regionalid') !== null ? $this->input->get('regionalid') : $this->uri->segment('5');
+        $areaid = $this->input->get('areaid') !== null ? $this->input->get('areaid') : $this->uri->segment('6');
+        $subareaid = $this->input->get('subareaid') !== null ? $this->input->get('subareaid') : $this->uri->segment('7');
 
-        $usersession = $this->uri->segment('8');
-        $restrict_level = $this->uri->segment('9');
-        $idjabatan = $this->uri->segment('10');
-        $salesmanid = $this->uri->segment('11');
+        $usersession = $this->input->get('usersession') !== null ? $this->input->get('usersession') : $this->uri->segment('8');
+        $restrict_level = $this->input->get('restrict_level') !== null ? $this->input->get('restrict_level') : $this->uri->segment('9');
+        $idjabatan = $this->input->get('idjabatan') !== null ? $this->input->get('idjabatan') : $this->uri->segment('10');
+        $salesmanid = $this->input->get('salesmanid') !== null ? $this->input->get('salesmanid') : $this->uri->segment('11');
 
         $params = [
         	'start_period' => $start,
@@ -260,8 +272,8 @@ class Rep_productivity extends BaseController
         $sheetAttendance = $spreadsheet->getActiveSheet();
 		$sheetAttendance->setTitle('Attendance');
         $sheetAttendance->setCellValue('A1', 'No.')
-            ->setCellValue('B1', 'Medrep')
-            ->setCellValue('C1', 'Medrep Name')
+            ->setCellValue('B1', 'TPE')
+            ->setCellValue('C1', 'TPE Name')
             ->setCellValue('D1', 'Area');
         $sheetAttendance->mergeCells('A1:A2');
         $sheetAttendance->mergeCells('B1:B2');

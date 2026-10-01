@@ -308,7 +308,7 @@ class Rep_kunjungan extends BaseController
 		$html .= '<tr>';
         $html .= '<th style="width: 80px">No</th>';
 		$html .= '<th style="width: 100px">Periode</th>';
-		$html .= '<th style="width: 150px">Medrep</th>';
+		$html .= '<th style="width: 150px">TPE</th>';
 		$html .= '<th style="width: 150px">Outlet ID</th>';
 		$html .= '<th style="width: 200px">Outlet</th>';
 		$html .= '<th style="width: 200px">Alamat</th>';

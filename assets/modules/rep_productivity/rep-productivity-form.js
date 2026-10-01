@@ -21,11 +21,15 @@
   function initializeParam() {
     common.loading();
     let resolver = new HttpResolver();
-    let filter = new Filter();
+    let sessionData = {
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
 
     $.when(
-      $.post(common.baseURL("rep_productivity/load_regional"), filter.build()),
-      $.post(common.baseURL("rep_productivity/load_parma"), filter.build())
+      $.post(common.baseURL("rep_productivity/load_regional"), sessionData),
+      $.post(common.baseURL("rep_productivity/load_parma"), sessionData)
     )
       .done(function (data, textStatus, jqXHR) {})
       .then(function (r1, r2) {
@@ -95,15 +99,32 @@
     }).datepicker("setDate", new Date());
 
     uiSelectRegional.on("select2:select", function (e) {
-      regional = e.params.data;
-
+      let regional = e.params.data;
       loadArea(regional);
     });
 
-    uiSelectArea.on("select2:select", function (e) {
-      area = e.params.data;
+    uiSelectRegional.on("select2:unselect", function () {
+      uiSelectArea.empty().select2({ placeholder: "Select Area", allowClear: true });
+      uiSelectSubArea.empty().select2({ placeholder: "Select Sub Area", allowClear: true });
+      loadMedrepList();
+    });
 
+    uiSelectArea.on("select2:select", function (e) {
+      let area = e.params.data;
       loadSubArea(area);
+    });
+
+    uiSelectArea.on("select2:unselect", function () {
+      uiSelectSubArea.empty().select2({ placeholder: "Select Sub Area", allowClear: true });
+      loadMedrepList();
+    });
+
+    uiSelectSubArea.on("select2:select", function () {
+      loadMedrepList();
+    });
+
+    uiSelectSubArea.on("select2:unselect", function () {
+      loadMedrepList();
     });
 
     uiStartPeriode.on("changeDate", function (selected) {
@@ -119,14 +140,14 @@
   }
 
   function setupForm(r1, r2) {
-    let rows1 = r1.rows;
+    let rows1 = r1 && r1.rows ? r1.rows : [];
 
     uiSelectRegional.select2({
       placeholder: "Select Regional",
       allowClear: true,
       data: $.map(rows1, function (o) {
-        o.id = o.regionalid; // replace name with the property used for the text
-        o.text = o.nama_regional; // replace name with the property used for the text
+        o.id = o.regionalid;
+        o.text = o.nama_regional;
         return o;
       }),
     });
@@ -141,22 +162,7 @@
       allowClear: true,
     });
 
-    if (r2 && r2.rows) {
-      let rows2 = r2.rows;
-      let options = [
-        { id: "all", text: "Semua Medrep" },
-        ...(rows2.map((o) => ({
-          id: o.salesmanid,
-          text: o.salesmanid + " - " + o.nama_salesman,
-        }))),
-      ];
-      uiSelectMedrep.select2({
-        placeholder: "Select User Medrep",
-        allowClear: true,
-        data: options,
-      });
-      uiSelectMedrep.val("all").trigger("change");
-    }
+    populateMedrepOptions(r2);
 
     uiSelectRegional.val(null).trigger("change");
   }
@@ -207,23 +213,65 @@
     });
   }
 
+  function populateMedrepOptions(r) {
+    uiSelectMedrep.empty();
+    let options = [{ id: "all", text: "Semua Medrep" }];
+    if (r && r.rows && r.rows.length > 0) {
+      $.each(r.rows, function (i, o) {
+        options.push({
+          id: o.salesmanid,
+          text: o.salesmanid + " - " + o.nama_salesman,
+        });
+      });
+    }
+    uiSelectMedrep.select2({
+      placeholder: "Select User Medrep",
+      allowClear: true,
+      data: options,
+    });
+    uiSelectMedrep.val("all").trigger("change");
+  }
+
+  function loadMedrepList() {
+    let postData = {
+      regionalid: uiSelectRegional.val() || "",
+      areaid: uiSelectArea.val() || "",
+      subareaid: uiSelectSubArea.val() || "",
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
+    $.post(common.baseURL("rep_productivity/load_parma"), postData, function (res) {
+      populateMedrepOptions(res);
+    });
+  }
+
   function loadArea(data) {
     common.loading();
+    let postData = {
+      regionalid: data ? data.regionalid : "",
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
     $.post(
       common.baseURL("rep_productivity/load_area"),
-      { regionalid: data.regionalid },
+      postData,
       function (res) {
         uiSelectArea.empty();
         uiSelectArea.select2({
           placeholder: "Select Area",
           allowClear: true,
-          data: $.map(res.rows, function (o) {
-            o.id = o.areaid; // replace name with the property used for the text
+          data: $.map(res && res.rows ? res.rows : [], function (o) {
+            o.id = o.areaid;
             o.text = o.nama_area;
             return o;
           }),
         });
         uiSelectArea.val(null).trigger("change");
+
+        uiSelectSubArea.empty().select2({ placeholder: "Select Sub Area", allowClear: true });
+        loadMedrepList();
         common.loadingClose();
       },
     );
@@ -231,91 +279,92 @@
 
   function loadSubArea(data) {
     common.loading();
+    let postData = {
+      areaid: data ? data.areaid : "",
+      regionalid: uiSelectRegional.val() || "",
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
     $.post(
       common.baseURL("rep_productivity/load_subarea"),
-      { areaid: data.areaid },
+      postData,
       function (res) {
         uiSelectSubArea.empty();
         uiSelectSubArea.select2({
           placeholder: "Select Sub Area",
           allowClear: true,
-          data: $.map(res.rows, function (o) {
-            o.id = o.subareaid; // replace name with the property used for the text
+          data: $.map(res && res.rows ? res.rows : [], function (o) {
+            o.id = o.subareaid;
             o.text = o.nama_subarea;
             return o;
           }),
         });
         uiSelectSubArea.val(null).trigger("change");
+
+        loadMedrepList();
         common.loadingClose();
       },
     );
   }
 
   function save_xls() {
-    let start = uiStartPeriode.val();
-    let end = uiEndPeriode.val();
-    let regionalid = uiSelectRegional.val();
-    let areaid = uiSelectArea.val();
-    let subareaid = uiSelectSubArea.val();
+    let start = uiStartPeriode.val() || "";
+    let end = uiEndPeriode.val() || "";
+    let regionalid = uiSelectRegional.val() || "";
+    let areaid = uiSelectArea.val() || "";
+    let subareaid = uiSelectSubArea.val() || "";
     let salesmanid = uiSelectMedrep.val() || "all";
 
-    let idjabatan = paramsession.idjabatan;
-    let usersession = paramsession.username;
-    let restrict_level = paramsession.restrict_level;
+    let idjabatan = paramsession && paramsession.idjabatan ? paramsession.idjabatan : "";
+    let usersession = paramsession && paramsession.username ? paramsession.username : "";
+    let restrict_level = paramsession && paramsession.restrict_level ? paramsession.restrict_level : "";
 
-    common.direct(
-      "rep_productivity/savetoxlsx/" +
-        start +
-        "/" +
-        end +
-        "/" +
-        regionalid +
-        "/" +
-        areaid +
-        "/" +
-        subareaid +
-        "/" +
-        usersession +
-        "/" +
-        restrict_level +
-        "/" +
-        idjabatan +
-        "/" +
-        salesmanid,
-    );
+    let baseUrl = common.baseURL("rep_productivity/savetoxlsx");
+    baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+    let downloadUrl =
+      baseUrl +
+      "?start_period=" + encodeURIComponent(start) +
+      "&end_period=" + encodeURIComponent(end) +
+      "&regionalid=" + encodeURIComponent(regionalid) +
+      "&areaid=" + encodeURIComponent(areaid) +
+      "&subareaid=" + encodeURIComponent(subareaid) +
+      "&usersession=" + encodeURIComponent(usersession) +
+      "&restrict_level=" + encodeURIComponent(restrict_level) +
+      "&idjabatan=" + encodeURIComponent(idjabatan) +
+      "&salesmanid=" + encodeURIComponent(salesmanid);
+
+    window.location.href = downloadUrl;
   }
 
   function save_xls_all_data() {
-    let start = uiStartPeriode.val();
-    let end = uiEndPeriode.val();
-    let regionalid = uiSelectRegional.val();
-    let areaid = uiSelectArea.val();
-    let subareaid = uiSelectSubArea.val();
+    let start = uiStartPeriode.val() || "";
+    let end = uiEndPeriode.val() || "";
+    let regionalid = uiSelectRegional.val() || "";
+    let areaid = uiSelectArea.val() || "";
+    let subareaid = uiSelectSubArea.val() || "";
     let salesmanid = uiSelectMedrep.val() || "all";
 
-    let idjabatan = paramsession.idjabatan;
-    let usersession = paramsession.username;
-    let restrict_level = paramsession.restrict_level;
+    let idjabatan = paramsession && paramsession.idjabatan ? paramsession.idjabatan : "";
+    let usersession = paramsession && paramsession.username ? paramsession.username : "";
+    let restrict_level = paramsession && paramsession.restrict_level ? paramsession.restrict_level : "";
 
-    common.direct(
-      "rep_productivity/savexls_visit_and_order/" +
-        start +
-        "/" +
-        end +
-        "/" +
-        regionalid +
-        "/" +
-        areaid +
-        "/" +
-        subareaid +
-        "/" +
-        usersession +
-        "/" +
-        restrict_level +
-        "/" +
-        idjabatan +
-        "/" +
-        salesmanid,
-    );
+    let baseUrl = common.baseURL("rep_productivity/savexls_visit_and_order");
+    baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+    let downloadUrl =
+      baseUrl +
+      "?start_period=" + encodeURIComponent(start) +
+      "&end_period=" + encodeURIComponent(end) +
+      "&regionalid=" + encodeURIComponent(regionalid) +
+      "&areaid=" + encodeURIComponent(areaid) +
+      "&subareaid=" + encodeURIComponent(subareaid) +
+      "&usersession=" + encodeURIComponent(usersession) +
+      "&restrict_level=" + encodeURIComponent(restrict_level) +
+      "&idjabatan=" + encodeURIComponent(idjabatan) +
+      "&salesmanid=" + encodeURIComponent(salesmanid);
+
+    window.location.href = downloadUrl;
   }
 })();
