@@ -5,6 +5,14 @@ class Rep_absensi_model extends CI_Model
 {
     public function load($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $where .= " AND s.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
+
         $field = " a.* ";
         $table = " (
         select 
@@ -27,6 +35,7 @@ class Rep_absensi_model extends CI_Model
                 left join m_area_subarea mas on mas.subareaid = msa.subareaid
                 group by msa.salesmanid
             ) b on s.salesmanid = b.salesmanid
+            $where
             order by s.salesmanid asc
         ) as a";
         return easy_pagging($data, $field, $table);
@@ -35,6 +44,14 @@ class Rep_absensi_model extends CI_Model
     public function load_parma($data)
     {
         $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
+        $where = "WHERE s.aktif = 1 AND LOWER(s.nama_salesman) NOT LIKE '%vacant%'";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $where .= " AND s.salesmanid IN (" . $restrict_query . ")";
+            }
+        }
+
         $field = " a.* ";
         $table = " (
             select 
@@ -57,7 +74,8 @@ class Rep_absensi_model extends CI_Model
                 left join m_area_subarea mas on mas.subareaid = msa.subareaid
                 group by msa.salesmanid
             ) b on s.salesmanid = b.salesmanid
-            order by s.salesmanid asc
+            $where
+            order by s.nama_salesman asc, s.salesmanid asc
         ) as a";
         return easy_pagging($data, $field, $table);
     }

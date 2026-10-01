@@ -17,10 +17,14 @@
     function initializeParam() {
         //common.loading();
         let resolver = new HttpResolver();
-        let filter = new Filter();
+        let postData = {
+            usersession: paramsession ? paramsession.username : "",
+            restrict_level: paramsession ? paramsession.restrict_level : "",
+            idjabatan: paramsession ? paramsession.idjabatan : "",
+        };
         
         $.when(
-            $.post(common.baseURL("rep_absensi/load_parma"), filter.build()),
+            $.post(common.baseURL("rep_absensi/load_parma"), postData),
         ).done(function (data, textStatus, jqXHR) {
         }).then(function (r1) {
             common.loadingClose();
@@ -109,14 +113,26 @@
     }
 
     function save_xls() {
-		
         var start = uiStartPeriode.val();
         var end = uiEndPeriode.val();
         var salesmanid = uiSelectMedrep.val();
-        var idjabatan = paramsession.idjabatan;
-        var usersession = paramsession.username;
-        var restrict_level = paramsession.restrict_level;
-        common.direct("rep_absensi/savetoxlsx/"+start+"/"+end+"/"+idjabatan+"/"+usersession+"/"+restrict_level+"/"+salesmanid);
+        var idjabatan = paramsession && paramsession.idjabatan ? paramsession.idjabatan : "";
+        var usersession = paramsession && paramsession.username ? paramsession.username : "";
+        var restrict_level = paramsession && paramsession.restrict_level ? paramsession.restrict_level : "";
+
+        let baseUrl = common.baseURL("rep_absensi/savetoxlsx");
+        baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+        let downloadUrl =
+            baseUrl +
+            "?start=" + encodeURIComponent(start) +
+            "&end=" + encodeURIComponent(end) +
+            "&idjabatan=" + encodeURIComponent(idjabatan) +
+            "&usersession=" + encodeURIComponent(usersession) +
+            "&restrict_level=" + encodeURIComponent(restrict_level) +
+            "&salesmanid=" + encodeURIComponent(salesmanid);
+
+        window.location.href = downloadUrl;
     }
 
 })();
