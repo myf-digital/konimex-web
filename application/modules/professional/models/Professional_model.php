@@ -7,6 +7,14 @@ class Professional_model extends CI_Model
     {
         $where = "WHERE 1=1";
         if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $escaped_user = $this->db->escape_str($data["usersession"]);
+            $restrict_salesman = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+
+            $createdByCond = "a.created_by = '{$escaped_user}'";
+            if ($restrict_salesman) {
+                $createdByCond .= " OR a.created_by IN ({$restrict_salesman})";
+            }
+
             $column = "";
             if ($data["restrict_level"] == '4') {
                 $column = "subareaid";
@@ -17,13 +25,8 @@ class Professional_model extends CI_Model
             }
 
             if (!empty($column)) {
-                $escaped_user = $this->db->escape_str($data["usersession"]);
                 $where .= " AND (
-                    a.id NOT IN (
-                        SELECT DISTINCT rpm_check.id_professional 
-                        FROM ref_professional_mapping rpm_check 
-                        WHERE rpm_check.customerid IS NOT NULL AND rpm_check.customerid <> ''
-                    )
+                    ({$createdByCond})
                     OR a.id IN (
                         SELECT DISTINCT rpm_sub.id_professional 
                         FROM ref_professional_mapping rpm_sub 
@@ -36,6 +39,8 @@ class Professional_model extends CI_Model
                         )
                     )
                 )";
+            } else {
+                $where .= " AND ({$createdByCond})";
             }
         }
 
@@ -360,6 +365,14 @@ class Professional_model extends CI_Model
     {
         $where = "WHERE 1=1";
         if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $escaped_user = $this->db->escape_str($data["usersession"]);
+            $restrict_salesman = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+
+            $createdByCond = "a.created_by = '{$escaped_user}'";
+            if ($restrict_salesman) {
+                $createdByCond .= " OR a.created_by IN ({$restrict_salesman})";
+            }
+
             $column = "";
             if ($data["restrict_level"] == '4') {
                 $column = "subareaid";
@@ -370,13 +383,8 @@ class Professional_model extends CI_Model
             }
 
             if (!empty($column)) {
-                $escaped_user = $this->db->escape_str($data["usersession"]);
                 $where .= " AND (
-                    a.id NOT IN (
-                        SELECT DISTINCT rpm_check.id_professional 
-                        FROM ref_professional_mapping rpm_check 
-                        WHERE rpm_check.customerid IS NOT NULL AND rpm_check.customerid <> ''
-                    )
+                    ({$createdByCond})
                     OR a.id IN (
                         SELECT DISTINCT rpm_sub.id_professional 
                         FROM ref_professional_mapping rpm_sub 
@@ -389,6 +397,8 @@ class Professional_model extends CI_Model
                         )
                     )
                 )";
+            } else {
+                $where .= " AND ({$createdByCond})";
             }
         }
 
