@@ -19,15 +19,24 @@ class Rep_sales_planned_model extends CI_Model
                 s.aktif,
                 s.supervisorid,
                 mss.nama_salesman as supervisor,
-                r.nama_regional,
-                a.nama_area,
-                ss.nama_area as nama_subarea
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea
             from m_sales_salesman s
             left join m_sales_salesman mss on mss.salesmanid = s.supervisorid
-            left join m_area_regional r on r.regionalid = s.regionalid
-            left join m_area_areasite a on a.areaid = s.areaid
-            left join m_area_subarea ss on ss.subareaid = s.subareaid
-            where s.salesmanid='".$salesmanid."'"
+            left join (
+                select 
+                    msa.salesmanid,
+                    group_concat(distinct b.nama_regional order by b.nama_regional asc separator ', ') as nama_regional,
+                    group_concat(distinct c.nama_area order by c.nama_area asc separator ', ') as nama_area,
+                    group_concat(distinct d.nama_area order by d.nama_area asc separator ', ') as nama_subarea
+                from m_salesman_area msa
+                left join m_area_regional b on msa.regionalid = b.regionalid
+                left join m_area_areasite c on msa.areaid = c.areaid
+                left join m_area_subarea d on msa.subareaid = d.subareaid
+                group by msa.salesmanid
+            ) area on s.salesmanid = area.salesmanid
+            where s.salesmanid='".$this->db->escape_str($salesmanid)."'"
         );
 		return $query->row();
 	}
@@ -65,6 +74,18 @@ class Rep_sales_planned_model extends CI_Model
 		$strquery = "";
         if (!empty($data['salesmanid'])) {
             $strquery .= " and a.salesmanid IN (".$data['salesmanid'].") ";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query) {
+                $strquery .= " and a.salesmanid in (
+                    select distinct mss.salesmanid
+                    from m_sales_salesman mss
+                    where mss.salesmanid in (" . $restrict_query . ")
+                      and mss.aktif=1
+                )";
+            }
         }
 
         $sql = "

@@ -74,6 +74,8 @@
         salesmanid: salesmanid,
         month: month,
         year: year,
+        usersession: paramsession.username || paramsession.usersession || "",
+        restrict_level: paramsession.restrict_level || "",
       },
       success: function (res) {
         if (res && res.status) {
@@ -108,7 +110,11 @@
         "&month=" +
         month +
         "&year=" +
-        year,
+        year +
+        "&usersession=" +
+        (paramsession.username || paramsession.usersession || "") +
+        "&restrict_level=" +
+        (paramsession.restrict_level || ""),
     );
   }
 
@@ -120,7 +126,7 @@
       dataType: "json",
       data: {
         idjabatan: paramsession.idjabatan,
-        usersession: paramsession.usersession,
+        usersession: paramsession.username || paramsession.usersession || "",
         restrict_level: paramsession.restrict_level,
         salesmanid: paramsession.salesmanid || "",
       },
