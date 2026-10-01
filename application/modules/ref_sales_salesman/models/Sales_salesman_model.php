@@ -130,9 +130,9 @@ class Sales_salesman_model extends CI_Model
         $table = " (
             select
                 a.*,
-                area.nama_regional,
-                area.nama_area,
-                area.nama_subarea,
+                coalesce(area.nama_regional, reg.nama_regional) as nama_regional,
+                coalesce(area.nama_area, ar.nama_area) as nama_area,
+                coalesce(area.nama_subarea, sub.nama_area) as nama_subarea,
                 case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
                 mss.nama_salesman as supervisor
             from m_sales_salesman a 
@@ -148,6 +148,9 @@ class Sales_salesman_model extends CI_Model
                 left join m_area_subarea d on msa.subareaid = d.subareaid
                 group by msa.salesmanid
             ) area on a.salesmanid = area.salesmanid
+            left join m_area_regional reg on a.regionalid = reg.regionalid
+            left join m_area_areasite ar on a.areaid = ar.areaid
+            left join m_area_subarea sub on a.subareaid = sub.subareaid
             left join m_sales_salesman mss on a.supervisorid=mss.salesmanid
             $strquery
         ) a";
@@ -171,9 +174,9 @@ class Sales_salesman_model extends CI_Model
         $sql = "
             select
                 a.*,
-                area.nama_regional,
-                area.nama_area,
-                area.nama_subarea,
+                coalesce(area.nama_regional, reg.nama_regional) as nama_regional,
+                coalesce(area.nama_area, ar.nama_area) as nama_area,
+                coalesce(area.nama_subarea, sub.nama_area) as nama_subarea,
                 case when a.aktif = 1 then 'Active' when a.aktif = 0 then 'Not Active' end aktifstatus,
                 mss.nama_salesman as supervisor
             from m_sales_salesman a 
@@ -189,6 +192,9 @@ class Sales_salesman_model extends CI_Model
                 left join m_area_subarea d on msa.subareaid = d.subareaid
                 group by msa.salesmanid
             ) area on a.salesmanid = area.salesmanid
+            left join m_area_regional reg on a.regionalid = reg.regionalid
+            left join m_area_areasite ar on a.areaid = ar.areaid
+            left join m_area_subarea sub on a.subareaid = sub.subareaid
             left join m_sales_salesman mss on a.supervisorid=mss.salesmanid
             $strquery
             order by a.salesmanid asc
@@ -228,9 +234,9 @@ class Sales_salesman_model extends CI_Model
                 a.jabatan,
                 a.kpp_area,
                 COALESCE(NULLIF(a.supervisorid, 0), '') as pid,
-                area.nama_regional,
-                area.nama_area,
-                area.nama_subarea,
+                coalesce(area.nama_regional, reg.nama_regional) as nama_regional,
+                coalesce(area.nama_area, ar.nama_area) as nama_area,
+                coalesce(area.nama_subarea, sub.nama_area) as nama_subarea,
                 'https://cdn-icons-png.flaticon.com/512/149/149071.png' as img
             FROM m_sales_salesman a
             LEFT JOIN (
@@ -245,6 +251,9 @@ class Sales_salesman_model extends CI_Model
                 LEFT JOIN m_area_subarea d ON msa.subareaid = d.subareaid
                 GROUP BY msa.salesmanid
             ) area ON a.salesmanid = area.salesmanid
+            LEFT JOIN m_area_regional reg ON a.regionalid = reg.regionalid
+            LEFT JOIN m_area_areasite ar ON a.areaid = ar.areaid
+            LEFT JOIN m_area_subarea sub ON a.subareaid = sub.subareaid
             $strquery
         ")->result_array();
         return $data;
