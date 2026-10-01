@@ -196,7 +196,9 @@ class Rep_order extends BaseController
                     function savexls(salesmanid) {
                         var startdate1 = $("#start_periode");
                         var startdate2 = $("#end_periode");
-                        common.direct("rep_order/savexls_order_all/"+salesmanid+"/"+startdate1.val()+"/"+startdate2.val());
+                        let baseUrl = common.baseURL("rep_order/savexls_order_all");
+                        baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+                        window.location.href = baseUrl + "?salesmanid=" + encodeURIComponent(salesmanid) + "&start=" + encodeURIComponent(startdate1.val()) + "&end=" + encodeURIComponent(startdate2.val());
                     }
 
                     $(".container-table-content").on("scroll", function() {
@@ -242,9 +244,9 @@ class Rep_order extends BaseController
 	function savexls_order_all() {
 		
 		ini_set('memory_limit', '512M');
-        $salesmanid = $this->uri->segment('3');
-        $startdate1 = $this->uri->segment('4');
-        $startdate2 = $this->uri->segment('5');
+        $salesmanid = $this->input->get('salesmanid') ?: $this->uri->segment('3');
+        $startdate1 = $this->input->get('start') ?: ($this->input->get('startdate1') ?: $this->uri->segment('4'));
+        $startdate2 = $this->input->get('end') ?: ($this->input->get('startdate2') ?: $this->uri->segment('5'));
 
         $data = array(
         	"salesmanid" => $salesmanid, 
@@ -305,7 +307,25 @@ class Rep_order extends BaseController
                 $sheet->setCellValue("E{$row}", number_format($v_detail->total_bruto, 0, '.', ','));
                 $sheet->setCellValue("F{$row}", number_format($v_detail->total_discount, 0, '.', ','));
                 $sheet->setCellValue("G{$row}", number_format($v_detail->total_netto, 0, '.', ','));
-                $sheet->setCellValue("H{$row}", $v_detail->url_img_po ?: '');
+
+                if (!empty($v_detail->url_img_po) && $v_detail->url_img_po != URL_IMAGE) {
+                    $img_raw = trim($v_detail->url_img_po);
+                    if (strpos($img_raw, 'http://') === 0 || strpos($img_raw, 'https://') === 0) {
+                        $img_url = $img_raw;
+                    } else {
+                        $img_url = URL_IMAGE . ltrim($img_raw, '/');
+                    }
+                    $sheet->setCellValue("H{$row}", 'Image');
+                    $sheet->getCell("H{$row}")->getHyperlink()->setUrl($img_url);
+                    $sheet->getStyle("H{$row}")->applyFromArray([
+                        'font' => [
+                            'color' => ['rgb' => '0000FF'],
+                            'underline' => 'single'
+                        ]
+                    ]);
+                } else {
+                    $sheet->setCellValue("H{$row}", '-');
+                }
 
                 $totBruto += $v_detail->total_bruto;
                 $totDisc  += $v_detail->total_discount;
@@ -330,24 +350,26 @@ class Rep_order extends BaseController
         
         $writer = new Xlsx($spreadsheet);
         
-        header('Content-Type: application/vnd.ms-excel');
+        if (ob_get_length()) ob_end_clean();
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
         header('Cache-Control: max-age=0');
 
-        $writer->save('php://output');		
+        $writer->save('php://output');
+        exit;
 	}
 
 	function savexls_order_all_salesman() {
 		ini_set('memory_limit', '512M');
 
-        $start = $this->uri->segment('3');
-        $end = $this->uri->segment('4');
-        $usersession = $this->uri->segment('5');
-        $restrict_level = $this->uri->segment('6');
+        $start = $this->input->get('start') ?: $this->uri->segment('3');
+        $end = $this->input->get('end') ?: $this->uri->segment('4');
+        $usersession = $this->input->get('usersession') !== null ? $this->input->get('usersession') : $this->uri->segment('5');
+        $restrict_level = $this->input->get('restrict_level') !== null ? $this->input->get('restrict_level') : $this->uri->segment('6');
 
-        $regionalid = $this->uri->segment('7');
-        $areaid = $this->uri->segment('8');
-        $subareaid = $this->uri->segment('9');
+        $regionalid = $this->input->get('regionalid') !== null ? $this->input->get('regionalid') : $this->uri->segment('7');
+        $areaid = $this->input->get('areaid') !== null ? $this->input->get('areaid') : $this->uri->segment('8');
+        $subareaid = $this->input->get('subareaid') !== null ? $this->input->get('subareaid') : $this->uri->segment('9');
 
         $data = array(
 			"start" => $start,
@@ -412,7 +434,25 @@ class Rep_order extends BaseController
                 $sheet->setCellValue("E{$row}", number_format($v_detail->total_bruto, 0, '.', ','));
                 $sheet->setCellValue("F{$row}", number_format($v_detail->total_discount, 0, '.', ','));
                 $sheet->setCellValue("G{$row}", number_format($v_detail->total_netto, 0, '.', ','));
-                $sheet->setCellValue("H{$row}", $v_detail->url_img_po ?: '');
+
+                if (!empty($v_detail->url_img_po) && $v_detail->url_img_po != URL_IMAGE) {
+                    $img_raw = trim($v_detail->url_img_po);
+                    if (strpos($img_raw, 'http://') === 0 || strpos($img_raw, 'https://') === 0) {
+                        $img_url = $img_raw;
+                    } else {
+                        $img_url = URL_IMAGE . ltrim($img_raw, '/');
+                    }
+                    $sheet->setCellValue("H{$row}", 'Image');
+                    $sheet->getCell("H{$row}")->getHyperlink()->setUrl($img_url);
+                    $sheet->getStyle("H{$row}")->applyFromArray([
+                        'font' => [
+                            'color' => ['rgb' => '0000FF'],
+                            'underline' => 'single'
+                        ]
+                    ]);
+                } else {
+                    $sheet->setCellValue("H{$row}", '-');
+                }
 
                 $totBruto += $v_detail->total_bruto;
                 $totDisc  += $v_detail->total_discount;
@@ -437,11 +477,13 @@ class Rep_order extends BaseController
  
         $writer = new Xlsx($spreadsheet);
         
-        header('Content-Type: application/vnd.ms-excel');
+        if (ob_get_length()) ob_end_clean();
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
         header('Cache-Control: max-age=0');
 
-        $writer->save('php://output');	
+        $writer->save('php://output');
+        exit;
 	} 
 
 
@@ -460,9 +502,9 @@ class Rep_order extends BaseController
 		
 		ini_set('memory_limit', '512M');
 
-        $salesmanid = $this->uri->segment('3');
-        $startdate1 = $this->uri->segment('4');
-        $startdate2 = $this->uri->segment('5');
+        $salesmanid = $this->input->get('salesmanid') ?: $this->uri->segment('3');
+        $startdate1 = $this->input->get('start') ?: ($this->input->get('startdate1') ?: $this->uri->segment('4'));
+        $startdate2 = $this->input->get('end') ?: ($this->input->get('startdate2') ?: $this->uri->segment('5'));
 
         $data = array(
         	"salesmanid" => $salesmanid , 
@@ -513,6 +555,16 @@ class Rep_order extends BaseController
             $total_tunai += $value['bayar_tunai'];
             $total_all += $total;
         }
+
+        $writer = new Xlsx($spreadsheet);
+        
+        if (ob_get_length()) ob_end_clean();
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
 	}
 
 	function get_fancy_order() {

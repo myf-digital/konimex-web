@@ -6,18 +6,17 @@ class Rep_order_model extends CI_Model
 
     public function load($data)
     {
-
-        $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
-        if ($restrict_query){
-            $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+        $strquery = "";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query){
+                $strquery = " and z.salesmanid in (" . $restrict_query . ")";
+            }
         }
-        else {
-            $strquery = "";
-        }
 
-        $regional = $data['regionalid'] != '' ? ' and b.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != '' ? ' and b.areaid="'.$data['areaid'].'" ' : '';
-        $subarea = $data['subareaid'] != '' ? ' and b.subareaid="'.$data['subareaid'].'" ' : '';
+        $regional = !empty($data['regionalid']) && $data['regionalid'] != 'null' ? ' and z.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid="'.$this->db->escape_str($data['regionalid']).'") ' : '';
+        $area = !empty($data['areaid']) && $data['areaid'] != 'null' ? ' and z.salesmanid in (select distinct salesmanid from m_salesman_area where areaid="'.$this->db->escape_str($data['areaid']).'") ' : '';
+        $subarea = !empty($data['subareaid']) && $data['subareaid'] != 'null' ? ' and z.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid="'.$this->db->escape_str($data['subareaid']).'") ' : '';
 
         $field = " a.* ";
         $table = " (
@@ -46,9 +45,23 @@ class Rep_order_model extends CI_Model
 
     public function get_regional($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '2' || $data["restrict_level"] == '3' || $data["restrict_level"] == '4') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
+
         $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
         $table = " ( select regionalid, nama_regional from m_area_regional 
+                        $where
                         order by regionalid asc
                     ) as a";
         return easy_pagging($data, $field, $table);
@@ -56,9 +69,35 @@ class Rep_order_model extends CI_Model
 
     public function get_area($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND regionalid = '" . $this->db->escape_str($data['regionalid']) . "'";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '3' || $data["restrict_level"] == '4') {
+                $where .= " AND areaid IN (
+                    SELECT DISTINCT b.areaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.areaid IS NOT NULL AND b.areaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '2') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
+
         $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
-        $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
+        $table = " ( select areaid, nama_area from m_area_areasite 
+                        $where
                         order by areaid asc
                     ) as a";
         return easy_pagging($data, $field, $table);
@@ -66,9 +105,46 @@ class Rep_order_model extends CI_Model
 
     public function get_city($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND areaid = '" . $this->db->escape_str($data['areaid']) . "'";
+        }
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND regionalid = '" . $this->db->escape_str($data['regionalid']) . "'";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '4') {
+                $where .= " AND subareaid IN (
+                    SELECT DISTINCT b.subareaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.subareaid IS NOT NULL AND b.subareaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '3') {
+                $where .= " AND areaid IN (
+                    SELECT DISTINCT b.areaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.areaid IS NOT NULL AND b.areaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '2') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
+
         $data["rows"] = !empty($data["rows"]) ? $data["rows"] : 1000;
         $field = " a.* ";
-        $table = " ( select subareaid, nama_area from m_area_subarea where areaid = '".$data['areaid']."' 
+        $table = " ( select subareaid, nama_area from m_area_subarea 
+                        $where
                         order by subareaid asc
                     ) as a";
         return easy_pagging($data, $field, $table);
@@ -296,17 +372,17 @@ class Rep_order_model extends CI_Model
         $startdate1 = $data['start'];
         $startdate2 = $data['end'];
 
-        $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
-        if ($restrict_query){
-            $strquery = " and salesamn.salesmanid in (" . $restrict_query . ")";
-        }
-        else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query){
+                $strquery = " and salesamn.salesmanid in (" . $restrict_query . ")";
+            }
         }
 
-        $regional = $data['regionalid'] != 'null' ? ' and salesamn.regionalid="'.$data['regionalid'].'" ' : '';
-        $area = $data['areaid'] != 'null' ? ' and salesamn.areaid="'.$data['areaid'].'" ' : '';
-        $subarea = $data['subareaid'] != 'null' ? ' and salesamn.subareaid="'.$data['subareaid'].'" ' : '';
+        $regional = !empty($data['regionalid']) && $data['regionalid'] != 'null' ? ' and salesamn.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid="'.$this->db->escape_str($data['regionalid']).'") ' : '';
+        $area = !empty($data['areaid']) && $data['areaid'] != 'null' ? ' and salesamn.salesmanid in (select distinct salesmanid from m_salesman_area where areaid="'.$this->db->escape_str($data['areaid']).'") ' : '';
+        $subarea = !empty($data['subareaid']) && $data['subareaid'] != 'null' ? ' and salesamn.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid="'.$this->db->escape_str($data['subareaid']).'") ' : '';
         
         $q_detail = $this->db->query("
             select 
@@ -446,7 +522,9 @@ class Rep_order_model extends CI_Model
                                 function savexlstagihan(salesmanid) {
                                     var startdate1 = $("#start_periode");
                                     var startdate2 = $("#end_periode");
-                                    common.direct("rep_order/savexls_tagihan_all/"+salesmanid+"/"+startdate1.val()+"/"+startdate2.val());
+                                    let baseUrl = common.baseURL("rep_order/savexls_tagihan_all");
+                                    baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+                                    window.location.href = baseUrl + "?salesmanid=" + encodeURIComponent(salesmanid) + "&start=" + encodeURIComponent(startdate1.val()) + "&end=" + encodeURIComponent(startdate2.val());
                                 }
 
                                 $(".container-table-content").on("scroll", function() {
@@ -487,16 +565,17 @@ class Rep_order_model extends CI_Model
 
     public function get_salesman($data)
     {
-        $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
-        if ($restrict_query){
-            $strquery = " and b.salesmanid in (" . $restrict_query . ")";
-        } else {
-            $strquery = "";
+        $strquery = "";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            $restrict_query = get_salesman_restrict($data["usersession"], $data["restrict_level"]);
+            if ($restrict_query){
+                $strquery = " and b.salesmanid in (" . $restrict_query . ")";
+            }
         }
 
-        $regional = !empty($data['regionalid']) && $data['regionalid'] != 'null' ? ' and b.regionalid="' . $data['regionalid'] . '" ' : '';
-        $area = !empty($data['areaid']) && $data['areaid'] != 'null' ? ' and b.areaid="' . $data['areaid'] . '" ' : '';
-        $subarea = !empty($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.subareaid="' . $data['subareaid'] . '" ' : '';
+        $regional = !empty($data['regionalid']) && $data['regionalid'] != 'null' ? ' and b.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid="' . $this->db->escape_str($data['regionalid']) . '") ' : '';
+        $area = !empty($data['areaid']) && $data['areaid'] != 'null' ? ' and b.salesmanid in (select distinct salesmanid from m_salesman_area where areaid="' . $this->db->escape_str($data['areaid']) . '") ' : '';
+        $subarea = !empty($data['subareaid']) && $data['subareaid'] != 'null' ? ' and b.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid="' . $this->db->escape_str($data['subareaid']) . '") ' : '';
 
         $search = "";
         if (!empty($data['q'])) {

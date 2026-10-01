@@ -41,7 +41,13 @@
     });
 
     // Load initial dropdowns
-    $.post(common.baseURL("rep_order/load_regional"), {}, function (res) {
+    let postData = {
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
+
+    $.post(common.baseURL("rep_order/load_regional"), postData, function (res) {
       uiSelectRegional.select2({
         placeholder: "Select Regional",
         allowClear: true,
@@ -190,9 +196,9 @@
       regionalid: uiSelectRegional.val(),
       areaid: uiSelectArea.val(),
       subareaid: uiSelectSubArea.val(),
-      usersession: paramsession.username,
-      idjabatan: paramsession.idjabatan,
-      restrict_level: paramsession.restrict_level,
+      usersession: paramsession ? paramsession.username : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
     };
   }
 
@@ -219,9 +225,15 @@
 
   function loadArea(data) {
     common.loading();
+    let postData = {
+      regionalid: data ? data.regionalid : "",
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
     $.post(
       common.baseURL("rep_order/load_area"),
-      { regionalid: data.regionalid },
+      postData,
       function (res) {
         uiSelectArea.empty();
         uiSelectArea.select2({
@@ -242,9 +254,16 @@
 
   function loadSubArea(data) {
     common.loading();
+    let postData = {
+      areaid: data ? data.areaid : "",
+      regionalid: uiSelectRegional.val() || "",
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
     $.post(
       common.baseURL("rep_order/load_city"),
-      { areaid: data.areaid },
+      postData,
       function (res) {
         uiSelectSubArea.empty();
         uiSelectSubArea.select2({
