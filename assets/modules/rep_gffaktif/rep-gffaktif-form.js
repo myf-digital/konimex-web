@@ -19,9 +19,13 @@
   function initializeParam() {
     //common.loading();
     let resolver = new HttpResolver();
-    let filter = new Filter();
+    let postData = {
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
 
-    $.when($.post(common.baseURL("rep_gffaktif/load_regional"), filter.build()))
+    $.when($.post(common.baseURL("rep_gffaktif/load_regional"), postData))
       .done(function (data, textStatus, jqXHR) {})
       .then(function (r1) {
         common.loadingClose();
@@ -106,9 +110,15 @@
 
   function loadArea(data) {
     common.loading();
+    let postData = {
+      regionalid: data ? data.regionalid : "",
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
     $.post(
       common.baseURL("rep_gffaktif/load_area"),
-      { regionalid: data.regionalid },
+      postData,
       function (res) {
         uiSelectArea.empty();
         uiSelectArea.select2({
@@ -128,10 +138,14 @@
 
   function loadCity(data) {
     common.loading();
-    let postData = {};
-    if (data.areaid) {
+    let postData = {
+      usersession: paramsession ? paramsession.username : "",
+      restrict_level: paramsession ? paramsession.restrict_level : "",
+      idjabatan: paramsession ? paramsession.idjabatan : "",
+    };
+    if (data && data.areaid) {
       postData.areaid = data.areaid;
-    } else {
+    } else if (data && data.regionalid) {
       postData.regionalid = data.regionalid;
     }
     $.post(common.baseURL("rep_gffaktif/load_city"), postData, function (res) {
@@ -154,9 +168,9 @@
     var start = uiStartPeriode.val();
     var end = uiEndPeriode.val();
     var position = uiSelectPosition.val();
-    var idjabatan = paramsession.idjabatan;
-    var usersession = paramsession.username;
-    var restrictlevel = paramsession.restrict_level;
+    var idjabatan = paramsession && paramsession.idjabatan ? paramsession.idjabatan : "";
+    var usersession = paramsession && paramsession.username ? paramsession.username : "";
+    var restrictlevel = paramsession && paramsession.restrict_level ? paramsession.restrict_level : "";
 
     var regionalid = uiSelectRegional.val();
     var areaid = uiSelectArea.val();
@@ -239,36 +253,30 @@
     var start = uiStartPeriode.val();
     var end = uiEndPeriode.val();
     var position = uiSelectPosition.val();
-    var idjabatan = paramsession.idjabatan;
-    var usersession = paramsession.username;
-    var restrictlevel = paramsession.restrict_level;
+    var idjabatan = paramsession && paramsession.idjabatan ? paramsession.idjabatan : "";
+    var usersession = paramsession && paramsession.username ? paramsession.username : "";
+    var restrictlevel = paramsession && paramsession.restrict_level ? paramsession.restrict_level : "";
 
     var regionalid = uiSelectRegional.val();
     var areaid = uiSelectArea.val();
     var subareaid = uiSelectCity.val();
-    if (!subareaid) {
-      subareaid = "null";
-    }
-    common.direct(
-      "rep_gffaktif/savetoxlsx/" +
-        start +
-        "/" +
-        end +
-        "/" +
-        idjabatan +
-        "/" +
-        usersession +
-        "/" +
-        restrictlevel +
-        "/" +
-        position +
-        "/" +
-        regionalid +
-        "/" +
-        areaid +
-        "/" +
-        subareaid,
-    );
+
+    let baseUrl = common.baseURL("rep_gffaktif/savetoxlsx");
+    baseUrl = baseUrl.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+
+    let downloadUrl =
+      baseUrl +
+      "?start=" + encodeURIComponent(start || "") +
+      "&end=" + encodeURIComponent(end || "") +
+      "&idjabatan=" + encodeURIComponent(idjabatan || "") +
+      "&usersession=" + encodeURIComponent(usersession || "") +
+      "&restrict_level=" + encodeURIComponent(restrictlevel || "") +
+      "&position=" + encodeURIComponent(position || "") +
+      "&regionalid=" + encodeURIComponent(regionalid || "") +
+      "&areaid=" + encodeURIComponent(areaid || "") +
+      "&subareaid=" + encodeURIComponent(subareaid || "");
+
+    window.location.href = downloadUrl;
   }
 
   $(document).on("click", ".btn-preview-absensi", function (e) {

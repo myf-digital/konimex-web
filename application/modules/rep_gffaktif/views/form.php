@@ -258,4 +258,4 @@
     </div>
 </div>
 
-<script src="<?php echo base_url() . 'assets/modules/rep_gffaktif/rep-gffaktif-form.js' ?>?v=1.0"></script>
+<script src="<?php echo base_url() . 'assets/modules/rep_gffaktif/rep-gffaktif-form.js' ?>?v=1.1"></script>

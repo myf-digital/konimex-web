@@ -213,7 +213,7 @@ class Rep_gffaktif extends BaseController
 				while($start <= $end)
 				{
 					$vdate=date_format($start,"Y-m-d");
-					$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily($vdate,$position,$restrictlevel,$usersession);
+					$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily($vdate,$position,$restrictlevel,$usersession,$regionalid,$areaid,$subareaid);
 					if (!empty($get_salesman_aktif)){
 						foreach ($get_salesman_aktif as $val_aktif) {
 							$namahari = date_format($start,"D");
@@ -223,7 +223,7 @@ class Rep_gffaktif extends BaseController
 
 					$start->modify('+1 day');
 				}
-				$get_aktif_sum_periode = $this->report_gffaktif->get_salesman_sum_periode($periode,$until,$position,$restrictlevel,$usersession);
+				$get_aktif_sum_periode = $this->report_gffaktif->get_salesman_sum_periode($periode,$until,$position,$restrictlevel,$usersession,$regionalid,$areaid,$subareaid);
 				if (!empty($get_aktif_sum_periode)){
 					foreach ($get_aktif_sum_periode as $val_sumaktif) {
 						$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sumaktif'].'</td>';
@@ -256,16 +256,16 @@ class Rep_gffaktif extends BaseController
 	function savetoxls() {
 
 		ini_set('memory_limit', '256M');
-        $periode = $this->uri->segment('3');
-        $until = $this->uri->segment('4');
-        $idjabatan = $this->uri->segment('5');
-		$usersession = $this->uri->segment('6');
-		$restrictlevel = $this->uri->segment('7');
-		$position = $this->uri->segment('8');
+        $periode = $this->input->get('start') ?: $this->uri->segment('3');
+        $until = $this->input->get('end') ?: $this->uri->segment('4');
+        $idjabatan = $this->input->get('idjabatan') !== null ? $this->input->get('idjabatan') : $this->uri->segment('5');
+		$usersession = $this->input->get('usersession') !== null ? $this->input->get('usersession') : $this->uri->segment('6');
+		$restrictlevel = $this->input->get('restrict_level') !== null ? $this->input->get('restrict_level') : $this->uri->segment('7');
+		$position = $this->input->get('position') !== null ? $this->input->get('position') : $this->uri->segment('8');
 
-		$regionalid = $this->uri->segment('9');
-        $areaid = $this->uri->segment('10');
-        $subareaid = $this->uri->segment('11');
+		$regionalid = $this->input->get('regionalid') !== null ? $this->input->get('regionalid') : $this->uri->segment('9');
+        $areaid = $this->input->get('areaid') !== null ? $this->input->get('areaid') : $this->uri->segment('10');
+        $subareaid = $this->input->get('subareaid') !== null ? $this->input->get('subareaid') : $this->uri->segment('11');
 		
         /*Header*/
 		$html ='<style>
@@ -394,7 +394,7 @@ class Rep_gffaktif extends BaseController
 				while($start <= $end)
 				{
 					$vdate=date_format($start,"Y-m-d");
-					$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily($vdate,$position,$restrictlevel,$usersession);
+					$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily($vdate,$position,$restrictlevel,$usersession,$regionalid,$areaid,$subareaid);
 					if (!empty($get_salesman_aktif)){
 						foreach ($get_salesman_aktif as $val_aktif) {
 							$namahari = date_format($start,"D");
@@ -406,7 +406,7 @@ class Rep_gffaktif extends BaseController
 				}
 				
 
-		$get_aktif_sum_periode = $this->report_gffaktif->get_salesman_sum_periode($periode,$until,$position,$restrictlevel,$usersession);
+		$get_aktif_sum_periode = $this->report_gffaktif->get_salesman_sum_periode($periode,$until,$position,$restrictlevel,$usersession,$regionalid,$areaid,$subareaid);
 		if (!empty($get_aktif_sum_periode)){
 			foreach ($get_aktif_sum_periode as $val_sumaktif) {
 				$html .='<th style="text-align:center;font-size:11px;">'.$val_sumaktif['sumaktif'].'</th>';
@@ -427,42 +427,33 @@ class Rep_gffaktif extends BaseController
 		$html .= '</table></div></div>';
 
 		$filename = "Report_TPE_Aktif_".$periodemonth.".xls";
-        /*header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment;filename=$filename");
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE over SSL, then the following may be needed
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header ('Pragma: public'); // HTTP/1.0
-		*/
-
+		if (ob_get_length()) ob_end_clean();
 		header('Content-Type: application/vnd.ms-excel');
-		header("Content-Disposition: attachment; filename=" . $filename);  //File name extension was wrong
+		header("Content-Disposition: attachment; filename=" . $filename);
 		header('Cache-Control: max-age=0');
         header("Expires: 0");
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private", false);
         
 		echo $html;
+		exit;
 	}
 
 	
-    public function savetoxlsx($data)
+    public function savetoxlsx($data = null)
     {
     	ini_set('memory_limit', '512M');
 
-    	$periode = $this->uri->segment('3');
-        $until = $this->uri->segment('4');
-        $idjabatan = $this->uri->segment('5');
-		$usersession = $this->uri->segment('6');
-		$restrictlevel = $this->uri->segment('7');
-		$position = $this->uri->segment('8');
+    	$periode = $this->input->get('start') ?: $this->uri->segment('3');
+        $until = $this->input->get('end') ?: $this->uri->segment('4');
+        $idjabatan = $this->input->get('idjabatan') !== null ? $this->input->get('idjabatan') : $this->uri->segment('5');
+		$usersession = $this->input->get('usersession') !== null ? $this->input->get('usersession') : $this->uri->segment('6');
+		$restrictlevel = $this->input->get('restrict_level') !== null ? $this->input->get('restrict_level') : $this->uri->segment('7');
+		$position = $this->input->get('position') !== null ? $this->input->get('position') : $this->uri->segment('8');
 
-		$regionalid = $this->uri->segment('9');
-        $areaid = $this->uri->segment('10');
-        $subareaid = $this->uri->segment('11');
+		$regionalid = $this->input->get('regionalid') !== null ? $this->input->get('regionalid') : $this->uri->segment('9');
+        $areaid = $this->input->get('areaid') !== null ? $this->input->get('areaid') : $this->uri->segment('10');
+        $subareaid = $this->input->get('subareaid') !== null ? $this->input->get('subareaid') : $this->uri->segment('11');
 
         $start = date_create($periode);
 		$end = date_create($until);
@@ -483,7 +474,7 @@ class Rep_gffaktif extends BaseController
 			$headerDay[] = $nameDay;
 
 			$vdate=date_format($start,"Y-m-d");
-			$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily_new($vdate,$position,$restrictlevel,$usersession);
+			$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily_new($vdate,$position,$restrictlevel,$usersession,$regionalid,$areaid,$subareaid);
 
 			if (!empty($get_salesman_aktif)){
 				$sumStatus[] = $get_salesman_aktif->sumaktif;
@@ -618,11 +609,13 @@ class Rep_gffaktif extends BaseController
  
 		$writer = new Xlsx($spreadsheet);
 		
-		header('Content-Type: application/vnd.ms-excel');
+		if (ob_get_length()) ob_end_clean();
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
 		header('Cache-Control: max-age=0');
 
 		$writer->save('php://output');
+		exit;
     }
 
 	function savexls_attendance_parma() {

@@ -28,33 +28,102 @@ class Rep_gffaktif_model extends CI_Model
 
     public function get_regional($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '2' || $data["restrict_level"] == '3' || $data["restrict_level"] == '4') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
 
         $field = " a.* ";
         $table = " ( select regionalid, nama_regional from m_area_regional 
-                        order by regionalid asc
+                        $where
+                        order by nama_regional asc
                     ) as a";
         return easy_pagging($data, $field, $table);
     }
 
     public function get_area($data)
     {
+        $where = "WHERE 1=1";
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND regionalid = '" . $this->db->escape_str($data['regionalid']) . "'";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '3' || $data["restrict_level"] == '4') {
+                $where .= " AND areaid IN (
+                    SELECT DISTINCT b.areaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.areaid IS NOT NULL AND b.areaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '2') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
+
         $field = " a.* ";
-        $table = " ( select areaid, nama_area from m_area_areasite where regionalid = '".$data['regionalid']."' 
-                        order by areaid asc
+        $table = " ( select areaid, nama_area from m_area_areasite 
+                        $where
+                        order by nama_area asc
                     ) as a";
         return easy_pagging($data, $field, $table);
     }
 
     public function get_city($data)
     {
-        $field = " a.* ";
-        $where = " 1=1 ";
-        if (!empty($data['areaid'])) {
-            $where .= " and areaid = '".$data['areaid']."' ";
-        } else if (!empty($data['regionalid'])) {
-            $where .= " and regionalid = '".$data['regionalid']."' ";
+        $where = "WHERE 1=1";
+        if (!empty($data['areaid']) && $data['areaid'] != 'null') {
+            $where .= " AND areaid = '" . $this->db->escape_str($data['areaid']) . "'";
         }
-        $table = " ( select subareaid, nama_area from m_area_subarea where $where order by nama_area asc
+        if (!empty($data['regionalid']) && $data['regionalid'] != 'null') {
+            $where .= " AND regionalid = '" . $this->db->escape_str($data['regionalid']) . "'";
+        }
+
+        if (!empty($data["restrict_level"]) && !empty($data["usersession"])) {
+            if ($data["restrict_level"] == '4') {
+                $where .= " AND subareaid IN (
+                    SELECT DISTINCT b.subareaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.subareaid IS NOT NULL AND b.subareaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '3') {
+                $where .= " AND areaid IN (
+                    SELECT DISTINCT b.areaid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.areaid IS NOT NULL AND b.areaid <> ''
+                )";
+            } else if ($data["restrict_level"] == '2') {
+                $where .= " AND regionalid IN (
+                    SELECT DISTINCT b.regionalid
+                    FROM app_resource a
+                    JOIN app_restrict_location b ON a.resource_id = b.resource_id
+                    WHERE a.username = '" . $this->db->escape_str($data["usersession"]) . "'
+                      AND b.regionalid IS NOT NULL AND b.regionalid <> ''
+                )";
+            }
+        }
+
+        $field = " a.* ";
+        $table = " ( select subareaid, nama_area from m_area_subarea $where order by nama_area asc
                     ) as a";
         return easy_pagging($data, $field, $table);
     }
@@ -188,13 +257,23 @@ class Rep_gffaktif_model extends CI_Model
         return $query->row();
     }
 
-    function get_salesman_sum_daily($date1,$position,$restrictlevel,$usersession) {
+    function get_salesman_sum_daily($date1,$position,$restrictlevel,$usersession,$regionalid=null,$areaid=null,$subareaid=null) {
         $strquery = "";
-        if (!empty($restrictlevel)) {
+        if (!empty($restrictlevel) && !empty($usersession)) {
             $restrict_query = get_salesman_restrict($usersession, $restrictlevel);
             if ($restrict_query) {
-                $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+                $strquery .= " and a.salesmanid in (" . $restrict_query . ")";
             }
+        }
+
+        if (!empty($regionalid) && $regionalid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($regionalid)."') ";
+        }
+        if (!empty($areaid) && $areaid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($areaid)."') ";
+        }
+        if (!empty($subareaid) && $subareaid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($subareaid)."') ";
         }
 
         if(empty($position) || $position=='null'){
@@ -214,13 +293,23 @@ class Rep_gffaktif_model extends CI_Model
 		return $query->result_array();
 	}
 
-    function get_salesman_sum_daily_new($date1,$position,$restrictlevel,$usersession) {
+    function get_salesman_sum_daily_new($date1,$position,$restrictlevel,$usersession,$regionalid=null,$areaid=null,$subareaid=null) {
         $strquery = "";
-        if (!empty($restrictlevel)) {
+        if (!empty($restrictlevel) && !empty($usersession)) {
             $restrict_query = get_salesman_restrict($usersession, $restrictlevel);
             if ($restrict_query) {
-                $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+                $strquery .= " and a.salesmanid in (" . $restrict_query . ")";
             }
+        }
+
+        if (!empty($regionalid) && $regionalid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($regionalid)."') ";
+        }
+        if (!empty($areaid) && $areaid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($areaid)."') ";
+        }
+        if (!empty($subareaid) && $subareaid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($subareaid)."') ";
         }
 
         if(empty($position) || $position=='null'){
@@ -240,13 +329,23 @@ class Rep_gffaktif_model extends CI_Model
         return $query->row();
     }
 
-    function get_salesman_sum_periode($date1,$date2,$position,$restrictlevel,$usersession) {
+    function get_salesman_sum_periode($date1,$date2,$position,$restrictlevel,$usersession,$regionalid=null,$areaid=null,$subareaid=null) {
         $strquery = "";
-        if (!empty($restrictlevel)) {
+        if (!empty($restrictlevel) && !empty($usersession)) {
             $restrict_query = get_salesman_restrict($usersession, $restrictlevel);
             if ($restrict_query) {
-                $strquery = " and a.salesmanid in (" . $restrict_query . ")";
+                $strquery .= " and a.salesmanid in (" . $restrict_query . ")";
             }
+        }
+
+        if (!empty($regionalid) && $regionalid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where regionalid = '".$this->db->escape_str($regionalid)."') ";
+        }
+        if (!empty($areaid) && $areaid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where areaid = '".$this->db->escape_str($areaid)."') ";
+        }
+        if (!empty($subareaid) && $subareaid != 'null') {
+            $strquery .= " and a.salesmanid in (select distinct salesmanid from m_salesman_area where subareaid = '".$this->db->escape_str($subareaid)."') ";
         }
 
         if(empty($position) || $position=='null'){
