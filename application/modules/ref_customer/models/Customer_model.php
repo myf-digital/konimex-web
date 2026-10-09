@@ -25,7 +25,7 @@ class Customer_model extends CI_Model
         $this->db->where('customerid', $data['customerid']);
         $this->db->delete('ref_professional_mapping');
 
-        $professionals = $data['professional'];
+        $professionals = isset($data['professional']) ? $data['professional'] : [];
         if(!empty($professionals)){
             $dataProfessionals = $this->db->where_in('id', $professionals)->get('ref_professional')->result_array();
             $data_array = [];
@@ -60,7 +60,7 @@ class Customer_model extends CI_Model
         $datetime = $this->db->query($sqldate)->row();
         $data["modified_date"] = $datetime->datetime;
         $data["modified_by"] = $data["usersession"];
-        $professionals = $data['professional'];
+        $professionals = isset($data['professional']) ? $data['professional'] : [];
         
         $this->db->where('customerid', $data['customerid']);
         $this->db->delete('ref_professional_mapping');
