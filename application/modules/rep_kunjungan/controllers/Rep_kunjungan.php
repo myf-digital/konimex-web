@@ -542,8 +542,16 @@ class Rep_kunjungan extends BaseController
                     WHERE x.salesmanid = a.salesmanid
                     AND x.customerid = a.customerid
                     AND x.periode = a.periode
-                ) AS total_kunjungan
+                ) AS total_kunjungan,
+                CASE WHEN rrk.customerid IS NOT NULL THEN 1 ELSE 0 END AS is_planned
             FROM t_sales_rrk_trans a 
+            LEFT JOIN (
+                SELECT DISTINCT periode, salesmanid, customerid
+                FROM t_sales_rrk_user
+                WHERE periode BETWEEN '$start' AND '$end'
+            ) rrk ON a.periode = rrk.periode 
+                 AND a.salesmanid = rrk.salesmanid 
+                 AND a.customerid = rrk.customerid
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid 
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
             LEFT JOIN (
@@ -599,8 +607,17 @@ class Rep_kunjungan extends BaseController
                     ELSE 'Butuh Verifikasi'
                 END AS status_label,
                 a.url_img_detailing,
-                a.url_file_signature
+                a.url_file_signature,
+                CASE WHEN rrk.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_planned
             FROM trx_visit_detailing a
+            LEFT JOIN (
+                SELECT DISTINCT periode, salesmanid, customerid, user_id
+                FROM t_sales_rrk_user
+                WHERE periode BETWEEN '$start' AND '$end'
+            ) rrk ON a.periode = rrk.periode 
+                 AND a.salesmanid = rrk.salesmanid 
+                 AND a.customerid = rrk.customerid 
+                 AND a.user_id = rrk.user_id
             LEFT JOIN v_outlet_all b ON a.customerid = b.customerid
             LEFT JOIN m_sales_salesman s ON a.salesmanid = s.salesmanid
             LEFT JOIN (
@@ -654,9 +671,9 @@ class Rep_kunjungan extends BaseController
 
         $spreadsheet->setActiveSheetIndex(0);
         $sheetAct = $spreadsheet->getActiveSheet();
-        $sheetAct->setTitle('Activity Report');
+        $sheetAct->setTitle('Laporan Aktivitas');
 
-        $sheetAct->setCellValue('A1', 'ACTIVITY REPORT');
+        $sheetAct->setCellValue('A1', 'LAPORAN AKTIVITAS');
         $sheetAct->setCellValue('A2', $periode_title);
 
         $sheetAct->mergeCells('A1:L1');
@@ -785,216 +802,250 @@ class Rep_kunjungan extends BaseController
             $sheetAct->getColumnDimension($col)->setAutoSize(true);
         }
 
+        $lovkunjungan_planned = [];
+        $lovkunjungan_unplanned = [];
+        foreach ($lovkunjungan as $vk) {
+            if (!empty($vk['is_planned'])) {
+                $lovkunjungan_planned[] = $vk;
+            } else {
+                $lovkunjungan_unplanned[] = $vk;
+            }
+        }
+
+        $fillSheetKunjungan = function($sheet, $sheetTitle, $headerTitle, $dataKunjungan) {
+            $sheet->setTitle($sheetTitle);
+            $sheet->setCellValue('A1', $headerTitle)
+                ->setCellValue('A2', 'No.')
+                ->setCellValue('B2', 'Periode')
+                ->setCellValue('C2', 'User Medrep')
+                ->setCellValue('D2', 'Outlet ID')
+                ->setCellValue('E2', 'Outlet Name')
+                ->setCellValue('F2', 'Alamat')
+                ->setCellValue('G2', 'Area')
+                ->setCellValue('H2', 'Cluster')
+                ->setCellValue('I2', 'CheckIn')
+                ->setCellValue('J2', 'CheckOut')
+                ->setCellValue('K2', 'Durasi')
+                ->setCellValue('L2', 'Jarak')
+                ->setCellValue('M2', 'Kunjungan')
+                ->setCellValue('N2', 'Foto');
+
+            $i = 3;
+            $no = 1;
+            foreach ($dataKunjungan as $vkunjungan) {
+                $sheet->setCellValue('A'.$i, $no)
+                    ->setCellValue('B'.$i, $vkunjungan['periode'])
+                    ->setCellValue('C'.$i, $vkunjungan['parma_user'])
+                    ->setCellValue('D'.$i, $vkunjungan['customerid'])
+                    ->setCellValue('E'.$i, $vkunjungan['nama_customer'])
+                    ->setCellValue('F'.$i, $vkunjungan['alamat'])
+                    ->setCellValue('G'.$i, $vkunjungan['parma_area'])
+                    ->setCellValue('H'.$i, $vkunjungan['cluster'])
+                    ->setCellValue('I'.$i, format_time($vkunjungan['check_in']))
+                    ->setCellValue('J'.$i, format_time($vkunjungan['check_out']))
+                    ->setCellValue('K'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
+                    ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']))
+                    ->setCellValue('M'.$i, $vkunjungan['total_kunjungan'].' User');
+
+                if (!empty($vkunjungan['image'])) {
+                    $sheet->setCellValue('N'.$i, 'Foto Kunjungan');
+                    $sheet->getCell('N'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vkunjungan['image']);
+                    $sheet->getStyle('N'.$i)->applyFromArray([
+                        'font' => [
+                            'color' => ['rgb' => '0000FF'],
+                            'underline' => true,
+                        ]
+                    ]);
+                } else {
+                    $sheet->setCellValue('N'.$i, '');
+                }
+                $i++;
+                $no++;
+            }
+
+            $lastRow = ($i > 3) ? ($i - 1) : 2;
+
+            $sheet->mergeCells('A1:N1');
+            $sheet->getStyle('A1:N1')->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ]);
+
+            $sheet->getStyle('A2:N2')->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ]);
+
+            $sheet->getStyle('A2:N' . $lastRow)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ],
+            ]);
+
+            if ($lastRow >= 3) {
+                $sheet->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            }
+
+            foreach (range('A', 'N') as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+        };
+
+        $lovdetailing_planned = [];
+        $lovdetailing_unplanned = [];
+        foreach ($lovdetailing as $vd) {
+            if (!empty($vd['is_planned'])) {
+                $lovdetailing_planned[] = $vd;
+            } else {
+                $lovdetailing_unplanned[] = $vd;
+            }
+        }
+
+        $fillSheetDetailing = function($sheet, $sheetTitle, $headerTitle, $dataDetailing) {
+            $sheet->setTitle($sheetTitle);
+            $sheet->setCellValue('A1', $headerTitle)
+                ->setCellValue('A2', 'No.')
+                ->setCellValue('B2', 'Periode')
+                ->setCellValue('C2', 'Medrep')
+                ->setCellValue('D2', 'Outlet ID')
+                ->setCellValue('E2', 'Outlet Name')
+                ->setCellValue('F2', 'Area')
+                ->setCellValue('G2', 'Tipe Outlet')
+                ->setCellValue('H2', 'PIC / User')
+                ->setCellValue('I2', 'Tipe PIC')
+                ->setCellValue('J2', 'Spesialisasi')
+                ->setCellValue('K2', 'Produk')
+                ->setCellValue('L2', 'Start Detailing')
+                ->setCellValue('M2', 'End Detailing')
+                ->setCellValue('N2', 'Durasi')
+                ->setCellValue('O2', 'Keterangan')
+                ->setCellValue('P2', 'Status')
+                ->setCellValue('Q2', 'Reason')
+                ->setCellValue('R2', 'Foto Detailing')
+                ->setCellValue('S2', 'Signature');
+
+            $i = 3;
+            $no = 1;
+            foreach ($dataDetailing as $vdetailing) {
+                $sheet->setCellValue('A'.$i, $no)
+                    ->setCellValue('B'.$i, $vdetailing['periode'])
+                    ->setCellValue('C'.$i, $vdetailing['parma_user'])
+                    ->setCellValue('D'.$i, $vdetailing['customerid'])
+                    ->setCellValue('E'.$i, $vdetailing['nama_customer'])
+                    ->setCellValue('F'.$i, $vdetailing['parma_area'])
+                    ->setCellValue('G'.$i, $vdetailing['cluster'])
+                    ->setCellValue('H'.$i, $vdetailing['professional_name'])
+                    ->setCellValue('I'.$i, $vdetailing['tipe_pic'])
+                    ->setCellValue('J'.$i, $vdetailing['spesialisasi'])
+                    ->setCellValue('K'.$i, $vdetailing['products'])
+                    ->setCellValue('L'.$i, $vdetailing['start_detailing'])
+                    ->setCellValue('M'.$i, $vdetailing['end_detailing'])
+                    ->setCellValue('N'.$i, $vdetailing['durasi'])
+                    ->setCellValue('O'.$i, $vdetailing['keterangan'])
+                    ->setCellValue('P'.$i, $vdetailing['status_label'])
+                    ->setCellValue('Q'.$i, $vdetailing['reason']);
+
+                if (!empty($vdetailing['url_img_detailing'])) {
+                    $sheet->setCellValue('R'.$i, 'Foto Detailing');
+                    $sheet->getCell('R'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vdetailing['url_img_detailing']);
+                    $sheet->getStyle('R'.$i)->applyFromArray([
+                        'font' => [
+                            'color' => ['rgb' => '0000FF'],
+                            'underline' => true,
+                        ]
+                    ]);
+                } else {
+                    $sheet->setCellValue('R'.$i, '');
+                }
+
+                if (!empty($vdetailing['url_file_signature'])) {
+                    $sheet->setCellValue('S'.$i, 'Signature');
+                    $sheet->getCell('S'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vdetailing['url_file_signature']);
+                    $sheet->getStyle('S'.$i)->applyFromArray([
+                        'font' => [
+                            'color' => ['rgb' => '0000FF'],
+                            'underline' => true,
+                        ]
+                    ]);
+                } else {
+                    $sheet->setCellValue('S'.$i, '');
+                }
+
+                $i++;
+                $no++;
+            }
+
+            $lastRowDetailing = ($i > 3) ? ($i - 1) : 2;
+
+            $sheet->mergeCells('A1:S1');
+            $sheet->getStyle('A1:S1')->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ]);
+
+            $sheet->getStyle('A2:S2')->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ]);
+
+            $sheet->getStyle('A2:S' . $lastRowDetailing)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ],
+            ]);
+
+            if ($lastRowDetailing >= 3) {
+                $sheet->getStyle('A3:A' . $lastRowDetailing)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('K3:K' . $lastRowDetailing)->getAlignment()->setWrapText(true);
+                $sheet->getStyle('A3:S' . $lastRowDetailing)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            }
+
+            foreach (range('A', 'S') as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+        };
+
+        // 2. Laporan Kunjungan Planned
         $sheetKunjungan = $spreadsheet->createSheet(1);
-        $spreadsheet->setActiveSheetIndex(1);
-        $sheetKunjungan->setTitle('Report Kunjungan');
+        $fillSheetKunjungan($sheetKunjungan, 'Laporan Kunjungan Planned', 'Data Laporan Kunjungan Medrep (Planned)', $lovkunjungan_planned);
 
-        $sheetKunjungan->setCellValue('A1', 'List Report Kunjungan Medrep')
-            ->setCellValue('A2', 'No.')
-            ->setCellValue('B2', 'Periode')
-            ->setCellValue('C2', 'User Medrep')
-            ->setCellValue('D2', 'Outlet ID')
-            ->setCellValue('E2', 'Outlet Name')
-            ->setCellValue('F2', 'Alamat')
-            ->setCellValue('G2', 'Area')
-            ->setCellValue('H2', 'Cluster')
-            ->setCellValue('I2', 'CheckIn')
-            ->setCellValue('J2', 'CheckOut')
-            ->setCellValue('K2', 'Durasi')
-            ->setCellValue('L2', 'Jarak')
-            ->setCellValue('M2', 'Kunjungan')
-            ->setCellValue('N2', 'Foto');
+        // 3. Detailing Kunjungan Planned
+        $sheetDetailingPlanned = $spreadsheet->createSheet(2);
+        $fillSheetDetailing($sheetDetailingPlanned, 'Detailing Kunjungan Planned', 'Data Detailing Kunjungan Medrep (Planned)', $lovdetailing_planned);
 
-        $i = 3;
-        $no = 1;
-        foreach ($lovkunjungan as $vkunjungan) {
-            $sheetKunjungan->setCellValue('A'.$i, $no)
-                ->setCellValue('B'.$i, $vkunjungan['periode'])
-                ->setCellValue('C'.$i, $vkunjungan['parma_user'])
-                ->setCellValue('D'.$i, $vkunjungan['customerid'])
-                ->setCellValue('E'.$i, $vkunjungan['nama_customer'])
-                ->setCellValue('F'.$i, $vkunjungan['alamat'])
-                ->setCellValue('G'.$i, $vkunjungan['parma_area'])
-                ->setCellValue('H'.$i, $vkunjungan['cluster'])
-                ->setCellValue('I'.$i, format_time($vkunjungan['check_in']))
-                ->setCellValue('J'.$i, format_time($vkunjungan['check_out']))
-                ->setCellValue('K'.$i, cal_duration_date($vkunjungan['check_in'],$vkunjungan['check_out']))
-                ->setCellValue('L'.$i, format_jarak($vkunjungan['jarak_meter']))
-                ->setCellValue('M'.$i, $vkunjungan['total_kunjungan'].' User');
+        // 4. Laporan Kunjungan Unplanned
+        $sheetUnplanned = $spreadsheet->createSheet(3);
+        $fillSheetKunjungan($sheetUnplanned, 'Laporan Kunjungan Unplanned', 'Data Laporan Kunjungan Medrep (Unplanned)', $lovkunjungan_unplanned);
 
-            if (!empty($vkunjungan['image'])) {
-                $sheetKunjungan->setCellValue('N'.$i, 'Foto Kunjungan');
-                $sheetKunjungan->getCell('N'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vkunjungan['image']);
-                $sheetKunjungan->getStyle('N'.$i)->applyFromArray([
-                    'font' => [
-                        'color' => ['rgb' => '0000FF'],
-                        'underline' => true,
-                    ]
-                ]);
-            } else {
-                $sheetKunjungan->setCellValue('N'.$i, '');
-            }
-            $i++;
-            $no++;
-        }
-
-        $lastRow = ($i > 3) ? ($i - 1) : 2;
-
-        $sheetKunjungan->mergeCells('A1:N1');
-        $sheetKunjungan->getStyle('A1:N1')->applyFromArray([
-            'font' => [
-                'bold' => true,
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
-
-        $sheetKunjungan->getStyle('A2:N2')->applyFromArray([
-            'font' => [
-                'bold' => true,
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
-
-        $sheetKunjungan->getStyle('A2:N' . $lastRow)->applyFromArray([
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => '000000'],
-                ],
-            ],
-        ]);
-
-        if ($lastRow >= 3) {
-            $sheetKunjungan->getStyle('A3:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        }
-
-        foreach (range('A', 'N') as $col) {
-            $sheetKunjungan->getColumnDimension($col)->setAutoSize(true);
-        }
-
-        $sheetDetailing = $spreadsheet->createSheet(2);
-        $spreadsheet->setActiveSheetIndex(2);
-        $sheetDetailing->setTitle('Detailing Kunjungan');
-
-        $sheetDetailing->setCellValue('A1', 'List Detailing Kunjungan Medrep')
-            ->setCellValue('A2', 'No.')
-            ->setCellValue('B2', 'Periode')
-            ->setCellValue('C2', 'Medrep')
-            ->setCellValue('D2', 'Outlet ID')
-            ->setCellValue('E2', 'Outlet Name')
-            ->setCellValue('F2', 'Area')
-            ->setCellValue('G2', 'Tipe Outlet')
-            ->setCellValue('H2', 'PIC / User')
-            ->setCellValue('I2', 'Tipe PIC')
-            ->setCellValue('J2', 'Spesialisasi')
-            ->setCellValue('K2', 'Produk')
-            ->setCellValue('L2', 'Start Detailing')
-            ->setCellValue('M2', 'End Detailing')
-            ->setCellValue('N2', 'Durasi')
-            ->setCellValue('O2', 'Keterangan')
-            ->setCellValue('P2', 'Status')
-            ->setCellValue('Q2', 'Reason')
-            ->setCellValue('R2', 'Foto Detailing')
-            ->setCellValue('S2', 'Signature');
-
-        $i = 3;
-        $no = 1;
-        foreach ($lovdetailing as $vdetailing) {
-            $sheetDetailing->setCellValue('A'.$i, $no)
-                ->setCellValue('B'.$i, $vdetailing['periode'])
-                ->setCellValue('C'.$i, $vdetailing['parma_user'])
-                ->setCellValue('D'.$i, $vdetailing['customerid'])
-                ->setCellValue('E'.$i, $vdetailing['nama_customer'])
-                ->setCellValue('F'.$i, $vdetailing['parma_area'])
-                ->setCellValue('G'.$i, $vdetailing['cluster'])
-                ->setCellValue('H'.$i, $vdetailing['professional_name'])
-                ->setCellValue('I'.$i, $vdetailing['tipe_pic'])
-                ->setCellValue('J'.$i, $vdetailing['spesialisasi'])
-                ->setCellValue('K'.$i, $vdetailing['products'])
-                ->setCellValue('L'.$i, $vdetailing['start_detailing'])
-                ->setCellValue('M'.$i, $vdetailing['end_detailing'])
-                ->setCellValue('N'.$i, $vdetailing['durasi'])
-                ->setCellValue('O'.$i, $vdetailing['keterangan'])
-                ->setCellValue('P'.$i, $vdetailing['status_label'])
-                ->setCellValue('Q'.$i, $vdetailing['reason']);
-
-            if (!empty($vdetailing['url_img_detailing'])) {
-                $sheetDetailing->setCellValue('R'.$i, 'Foto Detailing');
-                $sheetDetailing->getCell('R'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vdetailing['url_img_detailing']);
-                $sheetDetailing->getStyle('R'.$i)->applyFromArray([
-                    'font' => [
-                        'color' => ['rgb' => '0000FF'],
-                        'underline' => true,
-                    ]
-                ]);
-            } else {
-                $sheetDetailing->setCellValue('R'.$i, '');
-            }
-
-            if (!empty($vdetailing['url_file_signature'])) {
-                $sheetDetailing->setCellValue('S'.$i, 'Signature');
-                $sheetDetailing->getCell('S'.$i)->getHyperlink()->setUrl(URL_IMAGE.$vdetailing['url_file_signature']);
-                $sheetDetailing->getStyle('S'.$i)->applyFromArray([
-                    'font' => [
-                        'color' => ['rgb' => '0000FF'],
-                        'underline' => true,
-                    ]
-                ]);
-            } else {
-                $sheetDetailing->setCellValue('S'.$i, '');
-            }
-
-            $i++;
-            $no++;
-        }
-
-        $lastRowDetailing = ($i > 3) ? ($i - 1) : 2;
-
-        $sheetDetailing->mergeCells('A1:S1');
-        $sheetDetailing->getStyle('A1:S1')->applyFromArray([
-            'font' => [
-                'bold' => true,
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
-
-        $sheetDetailing->getStyle('A2:S2')->applyFromArray([
-            'font' => [
-                'bold' => true,
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
-
-        $sheetDetailing->getStyle('A2:S' . $lastRowDetailing)->applyFromArray([
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => '000000'],
-                ],
-            ],
-        ]);
-
-        if ($lastRowDetailing >= 3) {
-            $sheetDetailing->getStyle('A3:A' . $lastRowDetailing)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheetDetailing->getStyle('K3:K' . $lastRowDetailing)->getAlignment()->setWrapText(true);
-            $sheetDetailing->getStyle('A3:S' . $lastRowDetailing)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-        }
-
-        foreach (range('A', 'S') as $col) {
-            $sheetDetailing->getColumnDimension($col)->setAutoSize(true);
-        }
+        // 5. Detailing Kunjungan Unplanned
+        $sheetDetailingUnplanned = $spreadsheet->createSheet(4);
+        $fillSheetDetailing($sheetDetailingUnplanned, 'Detailing Kunjungan Unplanned', 'Data Detailing Kunjungan Medrep (Unplanned)', $lovdetailing_unplanned);
 
         $spreadsheet->setActiveSheetIndex(0);
 

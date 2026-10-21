@@ -79,7 +79,7 @@
       data: options,
     });
 
-    uiSelectMedrep.val(null).trigger("change");
+    uiSelectMedrep.val('all').trigger("change");
   }
 
   function open_preview() {

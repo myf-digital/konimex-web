@@ -642,30 +642,35 @@ class Rep_productivity_model extends CI_Model
                     area.nama_regional,
                     area.areaid,
                     area.nama_area,
+                    area.nama_subarea,
                     c.typeid as channel,
                     e.nama_class as account,
                     DATE_FORMAT(a.check_in, '%H:%i:%s') check_in,
                     DATE_FORMAT(a.check_out, '%H:%i:%s') check_out,
-                    timediff(DATE_FORMAT(a.check_out, '%H:%i:%s'),DATE_FORMAT(a.check_in, '%H:%i:%s')) lama_kunjungan,
+                    TIME_FORMAT(timediff(a.check_out, a.check_in), '%H:%i:%s') lama_kunjungan,
                     (select reason from t_sales_rrk_reason where call_reasonid=a.call_reasonid) alasan,
                     REGEXP_REPLACE(a.keterangan, '\n', ' ') keterangan,
                     case when 
-                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
-                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
+                            (select count(customerid) from t_sales_rrk_user where periode=a.periode and customerid=a.customerid and salesmanid=a.salesmanid) >= 1 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid) >= 1 
                             then 'Effective Call' 
                             when 
-                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
-                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=1 
+                            (select count(customerid) from t_sales_rrk_user where periode=a.periode and customerid=a.customerid and salesmanid=a.salesmanid) = 0 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid) >= 1 
                             then 'Extra Call' 
                             when 
-                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=0 and
-                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
+                            (select count(customerid) from t_sales_rrk_user where periode=a.periode and customerid=a.customerid and salesmanid=a.salesmanid) = 0 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid) = 0
                             then 'Extra Call' 
                             when 
-                            (select count(customerid) from t_sales_rrk where periode=a.periode and customerid=a.customerid)=1 and
-                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid)=0
+                            (select count(customerid) from t_sales_rrk_user where periode=a.periode and customerid=a.customerid and salesmanid=a.salesmanid) >= 1 and
+                            (select count(customerid) from t_sales_master where tanggal=a.periode and customerid=a.customerid) = 0
                             then 'Call' 
-                        end as flag
+                        end as flag,
+                    case when 
+                            (select count(customerid) from t_sales_rrk_user where periode=a.periode and customerid=a.customerid and salesmanid=a.salesmanid) >= 1
+                            then 1 else 0 
+                        end as is_planned
                 from t_sales_rrk_trans a
                 left join m_sales_salesman b on a.salesmanid = b.salesmanid
                 left join (
@@ -674,10 +679,12 @@ class Rep_productivity_model extends CI_Model
                         group_concat(distinct msa.regionalid separator ', ') as regionalid,
                         group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ') as nama_regional,
                         group_concat(distinct msa.areaid separator ', ') as areaid,
-                        group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area
+                        group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area,
+                        group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ') as nama_subarea
                     from m_salesman_area msa
                     left join m_area_regional r on r.regionalid = msa.regionalid
                     left join m_area_areasite ar on msa.areaid = ar.areaid
+                    left join m_area_subarea sa on msa.subareaid = sa.subareaid
                     group by msa.salesmanid
                 ) area on b.salesmanid = area.salesmanid
                 left join m_customer c on a.customerid= c.customerid 
@@ -701,6 +708,7 @@ class Rep_productivity_model extends CI_Model
                     area.nama_regional,
                     area.areaid,
                     area.nama_area,
+                    area.nama_subarea,
                     c.typeid as channel,
                     e.nama_class as account,
                     0 check_in,
@@ -708,8 +716,12 @@ class Rep_productivity_model extends CI_Model
                     0 lama_kunjungan,
                     '' alasan,
                     '' keterangan,
-                    'FJP Tidak Terkunjungi' as flag
-                from t_sales_rrk a
+                    'FJP Tidak Terkunjungi' as flag,
+                    1 as is_planned
+                from (
+                    select distinct periode, siteid, salesmanid, customerid
+                    from t_sales_rrk_user
+                ) a
                 left join m_sales_salesman b on a.salesmanid = b.salesmanid
                 left join (
                     select 
@@ -717,16 +729,23 @@ class Rep_productivity_model extends CI_Model
                         group_concat(distinct msa.regionalid separator ', ') as regionalid,
                         group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ') as nama_regional,
                         group_concat(distinct msa.areaid separator ', ') as areaid,
-                        group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area
+                        group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area,
+                        group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ') as nama_subarea
                     from m_salesman_area msa
                     left join m_area_regional r on r.regionalid = msa.regionalid
                     left join m_area_areasite ar on msa.areaid = ar.areaid
+                    left join m_area_subarea sa on msa.subareaid = sa.subareaid
                     group by msa.salesmanid
                 ) area on b.salesmanid = area.salesmanid
                 left join m_customer c on a.customerid= c.customerid 
                 left join m_customer_class e on e.classid=c.classid
                 where a.periode between '".$start."' and '".$end."' 
-                and a.customerid not in (select customerid from t_sales_rrk_trans where periode between '".$start."' and '".$end."')
+                and not exists (
+                    select 1 from t_sales_rrk_trans trans 
+                    where trans.periode = a.periode 
+                    and trans.customerid = a.customerid 
+                    and trans.salesmanid = a.salesmanid
+                )
                 and b.tipe_sales not in ('ADMIN','SPV','FC') 
                 and b.aktif = 1 $strquery
                 $area $regional $subarea $salesman
@@ -783,8 +802,12 @@ class Rep_productivity_model extends CI_Model
                 concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
                 concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
                 b.nama_salesman,
-                c.nama_customer,c.typeid as channel,c.nama_account as account,
+                c.nama_customer,c.typeid as channel,c.typeid,c.nama_account as account,
                 area.city,
+                area.nama_regional,
+                area.nama_area,
+                area.nama_subarea,
+                CASE WHEN rrk.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_planned,
                 CASE
                     WHEN a.status = 5 THEN 'Tidak Valid'
                     WHEN a.status = 3 THEN 'Valid'
@@ -804,11 +827,24 @@ class Rep_productivity_model extends CI_Model
             left join (
                 select 
                     msa.salesmanid,
+                    group_concat(distinct r.nama_regional order by r.nama_regional asc separator ', ') as nama_regional,
+                    group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as nama_area,
+                    group_concat(distinct sa.nama_area order by sa.nama_area asc separator ', ') as nama_subarea,
                     group_concat(distinct ar.nama_area order by ar.nama_area asc separator ', ') as city
                 from m_salesman_area msa
-                join m_area_areasite ar on msa.areaid = ar.areaid
+                left join m_area_regional r on r.regionalid = msa.regionalid
+                left join m_area_areasite ar on msa.areaid = ar.areaid
+                left join m_area_subarea sa on msa.subareaid = sa.subareaid
                 group by msa.salesmanid
             ) area on a.salesmanid = area.salesmanid
+            left join (
+                select distinct periode, salesmanid, customerid, user_id
+                from t_sales_rrk_user
+                where periode between '".$start."' and '".$end."'
+            ) rrk on a.periode = rrk.periode 
+                 and a.salesmanid = rrk.salesmanid 
+                 and a.customerid = rrk.customerid 
+                 and a.user_id = rrk.user_id
             left join v_outlet_all c on a.customerid=c.customerid
             left join (
                 select 

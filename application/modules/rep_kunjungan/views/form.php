@@ -112,4 +112,4 @@
         </div>
     </div>
 </section>
-<script src="<?php echo base_url() . 'assets/modules/rep_kunjungan/rep-kunjungan-form.js' ?>?v=1.0"></script>
+<script src="<?php echo base_url() . 'assets/modules/rep_kunjungan/rep-kunjungan-form.js' ?>?v=1.1"></script>

@@ -226,16 +226,19 @@ class Rep_productivity extends BaseController
 	function savexls_visit_and_order() {
         ini_set('max_execution_time', '300'); // atau set ke 300 (5 menit)
         ini_set('memory_limit', '1G'); // tambahkan memori jika datanya besar		
-        $start = $this->uri->segment('3');
-        $end = $this->uri->segment('4');
-        $regionalid = $this->uri->segment('5');
-        $areaid = $this->uri->segment('6');
-        $subareaid = $this->uri->segment('7');
+        $start = $this->uri->segment('3') ?? $this->input->get_post('start');
+        $end = $this->uri->segment('4') ?? $this->input->get_post('end');
+        $regionalid = $this->uri->segment('5') ?? $this->input->get_post('regionalid');
+        $areaid = $this->uri->segment('6') ?? $this->input->get_post('areaid');
+        $subareaid = $this->uri->segment('7') ?? $this->input->get_post('subareaid');
 
-        $usersession = $this->uri->segment('8');
-        $restrict_level = $this->uri->segment('9');
-        $idjabatan = $this->uri->segment('10');
-        $salesmanid = $this->uri->segment('11');
+        $usersession = $this->uri->segment('8') ?? $this->input->get_post('usersession');
+        $restrict_level = $this->uri->segment('9') ?? $this->input->get_post('restrict_level');
+        $idjabatan = $this->uri->segment('10') ?? $this->input->get_post('idjabatan');
+        $salesmanid = $this->uri->segment('11') ?? $this->input->get_post('salesmanid');
+        if ($salesmanid) {
+            $salesmanid = rtrim($salesmanid, '/');
+        }
 
         $params = [
         	'start_period' => $start,
@@ -426,49 +429,68 @@ class Rep_productivity extends BaseController
             $row++;
         }
 		
-        // Visit MEDREP (Sheet 2)
-        $sheetVisit = $spreadsheet->createSheet();
-        $sheetVisit->setTitle('Visit MEDREP');
-        $sheetVisit->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Period')
-            ->setCellValue('C1', 'MEDREP')
-            ->setCellValue('D1', 'MEDREP Name')
-            ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'MEDREP Nama Outlet')
-            ->setCellValue('G1', 'Channel')
-            ->setCellValue('H1', 'Regional')
-            ->setCellValue('I1', 'Area')
-            ->setCellValue('J1', 'Sub Area')
-            ->setCellValue('K1', 'CheckIn')
-            ->setCellValue('L1', 'CheckOut')
-            ->setCellValue('M1', 'Time Visit')
-            ->setCellValue('N1', 'Reason')
-            ->setCellValue('O1', 'Description')
-            ->setCellValue('P1', 'Flag');
-
         $datavisit = $this->report_productivity->getVisit_salesman($params);
-        $i = 1;
-        $row = 2;
-        foreach ($datavisit as $valuevisit) {
-            $sheetVisit->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
-                ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
-                ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
-                ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
-                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
-                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
-                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
-                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
-                ->setCellValue('K'.$row, $valuevisit['check_in'] ?? '')
-                ->setCellValue('L'.$row, $valuevisit['check_out'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['alasan'] ?? '')
-                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '')
-                ->setCellValue('P'.$row, $valuevisit['flag'] ?? '');
-			$i++;
-            $row++;
+
+        $datavisit_planned = [];
+        $datavisit_unplanned = [];
+        foreach ($datavisit as $v) {
+            if (!empty($v['is_planned']) || ($v['flag'] ?? '') !== 'Extra Call') {
+                $datavisit_planned[] = $v;
+            } else {
+                $datavisit_unplanned[] = $v;
+            }
         }
+
+        $fillSheetVisit = function($sheet, $title, $dataList) {
+            $sheet->setTitle($title);
+            $sheet->setCellValue('A1', 'No')
+                ->setCellValue('B1', 'Period')
+                ->setCellValue('C1', 'MEDREP')
+                ->setCellValue('D1', 'MEDREP Name')
+                ->setCellValue('E1', 'MEDREP ID Outlet')
+                ->setCellValue('F1', 'MEDREP Nama Outlet')
+                ->setCellValue('G1', 'Channel')
+                ->setCellValue('H1', 'Regional')
+                ->setCellValue('I1', 'Area')
+                ->setCellValue('J1', 'Sub Area')
+                ->setCellValue('K1', 'CheckIn')
+                ->setCellValue('L1', 'CheckOut')
+                ->setCellValue('M1', 'Time Visit')
+                ->setCellValue('N1', 'Reason')
+                ->setCellValue('O1', 'Description')
+                ->setCellValue('P1', 'Flag');
+
+            $i = 1;
+            $row = 2;
+            foreach ($dataList as $valuevisit) {
+                $sheet->setCellValue('A'.$row, $i)
+                    ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
+                    ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
+                    ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
+                    ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
+                    ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
+                    ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
+                    ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
+                    ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
+                    ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
+                    ->setCellValue('K'.$row, $valuevisit['check_in'] ?? '')
+                    ->setCellValue('L'.$row, $valuevisit['check_out'] ?? '')
+                    ->setCellValue('M'.$row, $valuevisit['lama_kunjungan'] ?? '')
+                    ->setCellValue('N'.$row, $valuevisit['alasan'] ?? '')
+                    ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '')
+                    ->setCellValue('P'.$row, $valuevisit['flag'] ?? '');
+                $i++;
+                $row++;
+            }
+        };
+
+        // Visit MEDREP Planned (Sheet 2)
+        $sheetVisit = $spreadsheet->createSheet();
+        $fillSheetVisit($sheetVisit, 'Visit MEDREP Planned', $datavisit_planned);
+
+        // Visit MEDREP Unplanned (Sheet 3)
+        $sheetVisitUnplanned = $spreadsheet->createSheet();
+        $fillSheetVisit($sheetVisitUnplanned, 'Visit MEDREP Unplanned', $datavisit_unplanned);
 		
         // Order MEDREP (Sheet 3)
         $sheetOrder = $spreadsheet->createSheet();
@@ -522,47 +544,66 @@ class Rep_productivity extends BaseController
             $row++;
         }
 
-        // Detailing (Sheet 4)
-        $sheetDetailing = $spreadsheet->createSheet();
-		$sheetDetailing->setTitle('Detailing');
-        $sheetDetailing->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'Period')
-            ->setCellValue('C1', 'MEDREP')
-            ->setCellValue('D1', 'MEDREP Name')
-            ->setCellValue('E1', 'MEDREP ID Outlet')
-            ->setCellValue('F1', 'MEDREP Nama Outlet')
-            ->setCellValue('G1', 'Channel')
-            ->setCellValue('H1', 'Regional')
-            ->setCellValue('I1', 'Area')
-            ->setCellValue('J1', 'Sub Area')
-            ->setCellValue('K1', 'Specialist')
-            ->setCellValue('L1', 'Spesialisasi')
-            ->setCellValue('M1', 'Product Detailing')
-            ->setCellValue('N1', 'Reason')
-            ->setCellValue('O1', 'Description');
-
+        // Detailing
         $datavisit = $this->report_productivity->get_detailing_parma($params);
-        $i = 1;
-        $row = 2;
-        foreach ($datavisit as $valuevisit) {
-            $sheetDetailing->setCellValue('A'.$row, $i)
-                ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
-                ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
-                ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
-                ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
-                ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
-                ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
-                ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
-                ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
-                ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
-                ->setCellValue('K'.$row, $valuevisit['professional_name'] ?? '')
-                ->setCellValue('L'.$row, $valuevisit['spesialisasi'] ?? '')
-                ->setCellValue('M'.$row, $valuevisit['products'] ?? '')
-                ->setCellValue('N'.$row, $valuevisit['reason'] ?? '')
-                ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '');
-			$i++;
-            $row++;
+        $datadetailing_planned = [];
+        $datadetailing_unplanned = [];
+        foreach ($datavisit as $item) {
+            if (!empty($item['is_planned'])) {
+                $datadetailing_planned[] = $item;
+            } else {
+                $datadetailing_unplanned[] = $item;
+            }
         }
+
+        $fillSheetDetailing = function($sheet, $title, $data) {
+            $sheet->setTitle($title);
+            $sheet->setCellValue('A1', 'No')
+                ->setCellValue('B1', 'Period')
+                ->setCellValue('C1', 'MEDREP')
+                ->setCellValue('D1', 'MEDREP Name')
+                ->setCellValue('E1', 'MEDREP ID Outlet')
+                ->setCellValue('F1', 'MEDREP Nama Outlet')
+                ->setCellValue('G1', 'Channel')
+                ->setCellValue('H1', 'Regional')
+                ->setCellValue('I1', 'Area')
+                ->setCellValue('J1', 'Sub Area')
+                ->setCellValue('K1', 'Specialist')
+                ->setCellValue('L1', 'Spesialisasi')
+                ->setCellValue('M1', 'Product Detailing')
+                ->setCellValue('N1', 'Reason')
+                ->setCellValue('O1', 'Description');
+
+            $i = 1;
+            $row = 2;
+            foreach ($data as $valuevisit) {
+                $sheet->setCellValue('A'.$row, $i)
+                    ->setCellValue('B'.$row, $valuevisit['periode'] ?? '')
+                    ->setCellValue('C'.$row, $valuevisit['salesmanid'] ?? '')
+                    ->setCellValue('D'.$row, $valuevisit['nama_salesman'] ?? '')
+                    ->setCellValue('E'.$row, $valuevisit['customerid'] ?? '')
+                    ->setCellValue('F'.$row, $valuevisit['nama_customer'] ?? '')
+                    ->setCellValue('G'.$row, $valuevisit['typeid'] ?? '')
+                    ->setCellValue('H'.$row, $valuevisit['nama_regional'] ?? '')
+                    ->setCellValue('I'.$row, $valuevisit['nama_area'] ?? '')
+                    ->setCellValue('J'.$row, $valuevisit['nama_subarea'] ?? '')
+                    ->setCellValue('K'.$row, $valuevisit['professional_name'] ?? '')
+                    ->setCellValue('L'.$row, $valuevisit['spesialisasi'] ?? '')
+                    ->setCellValue('M'.$row, $valuevisit['products'] ?? '')
+                    ->setCellValue('N'.$row, $valuevisit['reason'] ?? '')
+                    ->setCellValue('O'.$row, $valuevisit['keterangan'] ?? '');
+                $i++;
+                $row++;
+            }
+        };
+
+        // Detailing Planned (Sheet 4)
+        $sheetDetailingPlanned = $spreadsheet->createSheet();
+        $fillSheetDetailing($sheetDetailingPlanned, 'Detailing Planned', $datadetailing_planned);
+
+        // Detailing Unplanned (Sheet 5)
+        $sheetDetailingUnplanned = $spreadsheet->createSheet();
+        $fillSheetDetailing($sheetDetailingUnplanned, 'Detailing Unplanned', $datadetailing_unplanned);
         
         // Progress Listing (Sheet 5)
         $sheetProgressListing = $spreadsheet->createSheet();
