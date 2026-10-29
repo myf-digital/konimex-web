@@ -136,9 +136,9 @@ class Scheduler_model extends CI_Model
 				'array_product' => null,
 				'target_dub' => (int)$sm['target_dub'],
 				'target_hk' => (int)$sm['target_hk'],
-				'target_call_dub' => (int)$sm['target_call_dub'] * (int)$sm['target_dub'],
+				'target_call_dub' => (float)$sm['target_call_dub'] * (int)$sm['target_dub'],
 				'target_call_visit' => (int)$sm['target_call_visit'],
-				'target_rerata_call' => (int)$sm['target_rerata_call'],
+				'target_rerata_call' => (float)$sm['target_rerata_call'],
 				'target_join_activity' => (int)$sm['target_join_activity'],
 				'actual_call_planned' => 0,
 				'actual_call_visit' => 0,
@@ -166,8 +166,12 @@ class Scheduler_model extends CI_Model
 					'target_hk' => 0,
 					'target_call_dub' => 0,
 					'target_call_visit' => 0,
+					'target_rerata_call' => 0,
+					'target_join_activity' => 0,
 					'actual_call_planned' => (int)$v['is_planned'],
-					'actual_call_visit' => 1
+					'actual_call_visit' => 1,
+					'actual_rerata_call' => 0,
+					'actual_join_activity' => 0
 				];
 				$this->db->replace('rekap_dub_visit', $visitRow);
 			}
