@@ -612,3 +612,51 @@ background: linear-gradient(to right, rgb(91,178,58,1), rgba(75,160,117, 1))
  .pointer {
     cursor: pointer;
 }
+
+/* Reusable Grid Checkbox & Bulk Delete Styles */
+.grid-checkbox,
+.chk-row-user,
+.chk-row-outlet,
+.chk-row-spec,
+#chk-all-user,
+#chk-all-outlet,
+#chk-all-spec {
+    cursor: pointer;
+    margin: 0 !important;
+    vertical-align: middle;
+}
+
+.btn-bulk-delete {
+    height: 25px;
+    display: none;
+}
+
+.btn-bulk-delete i {
+    padding-top: 5px;
+}
+
+.action-grid-flex {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.bulk-delete-box {
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+}
+
+.bulk-delete-list {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+
+.bulk-delete-list li {
+    margin-bottom: 4px;
+}

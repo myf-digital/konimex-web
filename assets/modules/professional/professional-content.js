@@ -7,6 +7,7 @@
   // ui components
   let uiTbl = $("#tbl-professional");
   let paramsession = common.getCookie("session");
+  let selectedUsers = {};
 
   initializeGrid();
   initialize();
@@ -26,6 +27,35 @@
     $("#btn-upload").click(function () {
       common.direct("ref_customer/form_upload?ref=professional");
     });
+    $(document)
+      .off("click", "#btn-delete-selected")
+      .on("click", "#btn-delete-selected", function (e) {
+        e.preventDefault();
+        deleteSelectedRows();
+      });
+  }
+
+  function updateBulkDeleteButton() {
+    const count = Object.keys(selectedUsers).length;
+    const $btn = $("#btn-delete-selected");
+    if (count > 0) {
+      $btn
+        .html(`<i class="fa fa-trash"></i> Hapus Terpilih (${count})`)
+        .show();
+    } else {
+      $btn.hide();
+    }
+  }
+
+  function syncCheckAllState() {
+    const panel = uiTbl.datagrid("getPanel");
+    const $rowChks = panel.find(".chk-row-user");
+    const $chkAll = panel.find("#chk-all-user");
+    if ($rowChks.length > 0 && $rowChks.filter(":checked").length === $rowChks.length) {
+      $chkAll.prop("checked", true);
+    } else {
+      $chkAll.prop("checked", false);
+    }
   }
 
   function initializeGrid() {
@@ -43,9 +73,18 @@
       frozenColumns: [
         [
           {
+            field: "chk_user",
+            title:
+              '<input type="checkbox" id="chk-all-user" class="grid-checkbox" title="Pilih Semua">',
+            width: 35,
+            halign: "center",
+            align: "center",
+            formatter: formatterCheckbox,
+          },
+          {
             field: "options",
             title: "Action",
-            width: 150,
+            width: 100,
             halign: "center",
             align: "center",
             formatter: formatterButton,
@@ -128,15 +167,62 @@
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
         $(this).datagrid("autoSizeColumn", "customer_list");
+        syncCheckAllState();
+        updateBulkDeleteButton();
       },
     };
     let gridOptions = commonGrid.optionValue(option);
     gridOptions.fitColumns = false;
+    gridOptions.selectOnCheck = false;
+    gridOptions.checkOnSelect = false;
     uiTbl.datagrid(gridOptions);
     uiTbl.datagrid("enableFilter");
-    common.removeFilter(["options"]);
+    common.removeFilter(["chk_user", "options"]);
 
     const panel = uiTbl.datagrid("getPanel");
+    panel.find("#chk-all-user").unbind(".datagrid");
+
+    panel.off("change", "#chk-all-user").on("change", "#chk-all-user", function (e) {
+      e.stopPropagation();
+      const isChecked = $(this).is(":checked");
+      const rows = uiTbl.datagrid("getRows");
+      panel.find(".chk-row-user").prop("checked", isChecked);
+      rows.forEach(function (row) {
+        if (!row || !row.id) return;
+        if (isChecked) {
+          selectedUsers[row.id] = row;
+        } else {
+          delete selectedUsers[row.id];
+        }
+      });
+      updateBulkDeleteButton();
+    });
+
+    panel.off("click", ".chk-row-user").on("click", ".chk-row-user", function (e) {
+      e.stopPropagation();
+    });
+
+    panel.off("change", ".chk-row-user").on("change", ".chk-row-user", function (e) {
+      e.stopPropagation();
+      const tr = $(this).closest("tr.datagrid-row");
+      const index = parseInt(tr.attr("datagrid-row-index"));
+      const rows = uiTbl.datagrid("getRows");
+      const row = !isNaN(index) && rows[index] ? rows[index] : null;
+      const id = row ? row.id : $(this).data("id");
+
+      if (id) {
+        if ($(this).is(":checked")) {
+          selectedUsers[id] = row || {
+            id: id,
+            professional: $(this).data("name"),
+          };
+        } else {
+          delete selectedUsers[id];
+        }
+      }
+      syncCheckAllState();
+      updateBulkDeleteButton();
+    });
 
     panel.off("click", ".action-grid a.btn-warning, .action-grid #btn-viem").on("click", ".action-grid a.btn-warning, .action-grid #btn-viem", function (e) {
       e.preventDefault();
@@ -208,13 +294,25 @@
       "fa fa-upload",
       " Upload",
     );
+    const btnDeleteSelected =
+      '<a id="btn-delete-selected" href="javascript:void(0)" class="btn btn-danger btn-xs btn-bulk-delete"><i class="fa fa-trash"></i> Hapus Terpilih</a>';
     return (
       '<div class="action-grid-toolbar">' +
       btnCreate +
       btnDownload +
       btnUpload +
+      btnDeleteSelected +
       "</div>"
     );
+  }
+
+  function formatterCheckbox(val, row, index) {
+    if (!row || !row.id) return "";
+    const isChecked = selectedUsers[row.id] ? "checked" : "";
+    const userName = (row.professional || row.nama_professional || row.id)
+      .toString()
+      .replace(/"/g, "&quot;");
+    return `<input type="checkbox" class="chk-row-user grid-checkbox" data-id="${row.id}" data-name="${userName}" ${isChecked}>`;
   }
 
   function formatterButton(val, row, index) {
@@ -248,7 +346,7 @@
       "fa fa-trash",
     );
     return (
-      '<div class="action-grid" style="display: flex; gap: 4px; align-items: center; justify-content: center;">' +
+      '<div class="action-grid action-grid-flex">' +
       btnEdit +
       btnDelete +
       btnApproval +
@@ -308,15 +406,82 @@
   }
 
   function deleteRow(val) {
-    common.dialogDelete(function () {
-      $.post("professional/delete", { id: val.id }, function (data, status) {
-        if (200 === data.code) {
-          $.alert("Delete success!");
-          uiTbl.datagrid("reload");
-        } else {
-          $.alert("Delete failed!");
-        }
-      });
+    const userLabel = val.professional || val.nama_professional || val.id;
+    $.confirm({
+      title: "Confirmation!",
+      content: `Apakah Anda yakin ingin menghapus User <b>${userLabel}</b>?`,
+      buttons: {
+        confirm: {
+          btnClass: "btn-red",
+          action: function () {
+            $.post("professional/delete", { id: val.id }, function (data, status) {
+              if (200 === data.code) {
+                delete selectedUsers[val.id];
+                updateBulkDeleteButton();
+                $.alert("Delete success!");
+                uiTbl.datagrid("reload");
+              } else {
+                $.alert("Delete failed!");
+              }
+            });
+          },
+        },
+        cancel: function () {},
+      },
+    });
+  }
+
+  function deleteSelectedRows() {
+    const ids = Object.keys(selectedUsers);
+    if (ids.length === 0) return;
+
+    const listItems = ids
+      .map(function (id) {
+        const u = selectedUsers[id];
+        const label = u.professional || u.nama_professional || id;
+        return `<li><b>${label}</b></li>`;
+      })
+      .join("");
+
+    $.confirm({
+      title: "Konfirmasi Hapus Terpilih!",
+      content: `
+        <div>Apakah Anda yakin ingin menghapus <b>${ids.length}</b> User berikut?</div>
+        <div class="bulk-delete-box">
+          <ol class="bulk-delete-list">${listItems}</ol>
+        </div>
+      `,
+      buttons: {
+        confirm: {
+          text: "Hapus",
+          btnClass: "btn-red",
+          action: function () {
+            common.loading();
+            $.post(
+              "professional/delete",
+              { ids: ids },
+              function (data) {
+                common.loadingClose();
+                if (data && 200 === data.code) {
+                  selectedUsers = {};
+                  updateBulkDeleteButton();
+                  $.alert("Delete success!");
+                  uiTbl.datagrid("reload");
+                } else {
+                  $.alert((data && data.message) || "Delete failed!");
+                }
+              },
+            ).fail(function () {
+              common.loadingClose();
+              $.alert("Delete failed!");
+            });
+          },
+        },
+        cancel: {
+          text: "Batal",
+          action: function () {},
+        },
+      },
     });
   }
 

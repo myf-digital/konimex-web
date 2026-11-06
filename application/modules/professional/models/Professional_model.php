@@ -565,7 +565,7 @@ class Professional_model extends CI_Model
 
     public function delete($data)
     {
-        if (empty($data['id'])) {
+        if (empty($data['id']) && empty($data['ids'])) {
             return [
                 'code' => 400,
                 'message' => 'ID wajib diisi.',
@@ -573,10 +573,22 @@ class Professional_model extends CI_Model
             ];
         }
 
-        $id = $data['id'];
+        $ids = !empty($data['ids'])
+            ? (is_array($data['ids']) ? $data['ids'] : explode(',', $data['ids']))
+            : (is_array($data['id']) ? $data['id'] : [$data['id']]);
+
+        $ids = array_values(array_filter(array_map('trim', $ids)));
+        if (empty($ids)) {
+            return [
+                'code' => 400,
+                'message' => 'ID tidak valid.',
+                'result' => false
+            ];
+        }
+
         $this->db->trans_start();
-        $this->db->where('id_professional', $id)->delete('ref_professional_mapping');
-        $this->db->where('id', $id)->delete('ref_professional');
+        $this->db->where_in('id_professional', $ids)->delete('ref_professional_mapping');
+        $this->db->where_in('id', $ids)->delete('ref_professional');
         $this->db->trans_complete();
 
         return [

@@ -187,13 +187,43 @@ class Customer_model extends CI_Model
     {
         $deleted_by = !empty($data["usersession"]) ? $data["usersession"] : ($this->session->userdata('username') ?? 'admin');
         $data["deleted_by"] = $deleted_by;
-        
+
         $customer_fields = $this->db->list_fields('m_customer');
         $delete_fields = $this->db->list_fields('m_customer_delete');
-        
+
         $common_fields = array_intersect($customer_fields, $delete_fields);
         $common_fields = array_diff($common_fields, ['deleted_by', 'deleted_date']);
-        
+
+        if (!empty($data['customerids'])) {
+            $ids = is_array($data['customerids']) ? $data['customerids'] : explode(',', $data['customerids']);
+            $ids = array_values(array_filter(array_map('trim', $ids)));
+            if (empty($ids)) {
+                return false;
+            }
+
+            $escaped_ids = array_map(function ($id) {
+                return "'" . $this->db->escape_str($id) . "'";
+            }, $ids);
+            $ids_in = implode(',', $escaped_ids);
+
+            $this->db->trans_start();
+            if (!empty($common_fields)) {
+                $fields_str = implode(', ', $common_fields);
+                $this->db->query("insert into m_customer_delete ($fields_str, deleted_by, deleted_date) 
+                                  select $fields_str, '" . $this->db->escape_str($deleted_by) . "' deleted_by, now() deleted_date 
+                                  from m_customer where customerid in ($ids_in)");
+            }
+            $this->db->where_in('customerid', $ids)->delete('m_customer_ob');
+            $this->db->where_in('customerid', $ids)->delete('ref_professional_mapping');
+            $this->db->where_in('customerid', $ids)->delete('m_customer');
+            $this->db->query("delete from t_sales_rrk where customerid in ($ids_in) and periode=(select tanggal from m_setup_site)");
+            $this->db->query("Update app_data_version set version=version+1, modified_date=now(), modified_by='Delete Outlet'");
+            $this->db->where_in('customerid', $ids)->delete('t_sales_setup_rrk');
+            $this->db->trans_complete();
+
+            return $this->db->trans_status();
+        }
+
         if (!empty($common_fields)) {
             $fields_str = implode(', ', $common_fields);
             $this->db->query("insert into m_customer_delete ($fields_str, deleted_by, deleted_date) 
@@ -202,6 +232,8 @@ class Customer_model extends CI_Model
         }
         $this->db->where('customerid', $data['customerid']);
         $this->db->delete('m_customer_ob');
+        $this->db->where('customerid', $data['customerid']);
+        $this->db->delete('ref_professional_mapping');
 
         if (!empty($data['siteid'])) {
             $this->db->where('siteid', $data['siteid']);

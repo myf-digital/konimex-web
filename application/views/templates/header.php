@@ -19,7 +19,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/bootstrap/css/bootstrap.min.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/skins/skin-blue.min.css'); ?>"/>
-<link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/app.cise.css'); ?>"/>
+<link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/app.cise.css?v=1.0'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/adminlte.font.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/adminlte/css/adminlte.min.css'); ?>"/>
 <link rel="stylesheet" href="<?php echo base_url('assets/frameworks/font-awesome/css/font-awesome.min.css'); ?>"/>

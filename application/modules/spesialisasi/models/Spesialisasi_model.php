@@ -76,4 +76,38 @@ class Spesialisasi_model extends CI_Model
             ";
 		return $this->db->query($sql)->result_array();
     }
+
+    public function delete($data)
+    {
+        if (empty($data['id']) && empty($data['ids'])) {
+            return [
+                'code' => 400,
+                'message' => 'ID wajib diisi.',
+                'result' => false
+            ];
+        }
+
+        $ids = !empty($data['ids'])
+            ? (is_array($data['ids']) ? $data['ids'] : explode(',', $data['ids']))
+            : (is_array($data['id']) ? $data['id'] : [$data['id']]);
+
+        $ids = array_values(array_filter(array_map('trim', $ids)));
+        if (empty($ids)) {
+            return [
+                'code' => 400,
+                'message' => 'ID tidak valid.',
+                'result' => false
+            ];
+        }
+
+        $this->db->trans_start();
+        $this->db->where_in('id', $ids)->delete('ref_spesialisasi');
+        $this->db->trans_complete();
+
+        return [
+            'code' => 200,
+            'message' => 'Delete success!',
+            'result' => $this->db->trans_status()
+        ];
+    }
 }

@@ -7,6 +7,7 @@
   // ui components
   let uiTbl = $("#tbl-customer");
   let paramsession = common.getCookie("session");
+  let selectedOutlets = {};
 
   initializeGrid();
   initialize();
@@ -28,6 +29,39 @@
     $("#btn-upload").click(function () {
       common.direct("ref_customer/form_upload");
     });
+
+    $(document)
+      .off("click", "#btn-delete-selected")
+      .on("click", "#btn-delete-selected", function (e) {
+        e.preventDefault();
+        deleteSelectedRows();
+      });
+  }
+
+  function updateBulkDeleteButton() {
+    const count = Object.keys(selectedOutlets).length;
+    const $btn = $("#btn-delete-selected");
+    if (count > 0) {
+      $btn
+        .html(`<i class="fa fa-trash"></i> Hapus Terpilih (${count})`)
+        .show();
+    } else {
+      $btn.hide();
+    }
+  }
+
+  function syncCheckAllState() {
+    const panel = uiTbl.datagrid("getPanel");
+    const $rowChks = panel.find(".chk-row-outlet");
+    const $chkAll = panel.find("#chk-all-outlet");
+    if (
+      $rowChks.length > 0 &&
+      $rowChks.filter(":checked").length === $rowChks.length
+    ) {
+      $chkAll.prop("checked", true);
+    } else {
+      $chkAll.prop("checked", false);
+    }
   }
 
   function toolbar() {
@@ -49,6 +83,8 @@
       "fa fa-upload",
       " Upload Outlet",
     );
+    const btnDeleteSelected =
+      '<a id="btn-delete-selected" href="javascript:void(0)" class="btn btn-danger btn-xs btn-bulk-delete"><i class="fa fa-trash"></i> Hapus Terpilih</a>';
     return (
       '<div class="action-grid-toolbar">' +
       btnCreate +
@@ -56,6 +92,8 @@
       btnDownload +
       "&nbsp;" +
       btnUpload +
+      "&nbsp;" +
+      btnDeleteSelected +
       "</div>"
     );
   }
@@ -77,9 +115,18 @@
       frozenColumns: [
         [
           {
+            field: "chk_outlet",
+            title:
+              '<input type="checkbox" id="chk-all-outlet" class="grid-checkbox" title="Pilih Semua">',
+            width: 35,
+            halign: "center",
+            align: "center",
+            formatter: formatterCheckbox,
+          },
+          {
             field: "options",
             title: "ACTION",
-            width: 175,
+            width: 125,
             halign: "center",
             align: "center",
             formatter: formatterButton,
@@ -168,17 +215,70 @@
       onLoadSuccess: function (data) {
         $(this).datagrid("resize");
         $(this).datagrid("autoSizeColumn", "list_professional");
+        syncCheckAllState();
+        updateBulkDeleteButton();
       },
     };
 
     let gridOptions = commonGrid.optionValue(option);
     gridOptions.fitColumns = false;
+    gridOptions.selectOnCheck = false;
+    gridOptions.checkOnSelect = false;
     uiTbl.datagrid(gridOptions);
     uiTbl.datagrid("enableFilter");
-    common.removeFilter(["options"]);
+    common.removeFilter(["chk_outlet", "options"]);
     common.removeFilter(["detail"]);
 
     const panel = uiTbl.datagrid("getPanel");
+    panel.find("#chk-all-outlet").unbind(".datagrid");
+
+    panel
+      .off("change", "#chk-all-outlet")
+      .on("change", "#chk-all-outlet", function (e) {
+        e.stopPropagation();
+        const isChecked = $(this).is(":checked");
+        const rows = uiTbl.datagrid("getRows");
+        panel.find(".chk-row-outlet").prop("checked", isChecked);
+        rows.forEach(function (row) {
+          if (!row || !row.customerid) return;
+          if (isChecked) {
+            selectedOutlets[row.customerid] = row;
+          } else {
+            delete selectedOutlets[row.customerid];
+          }
+        });
+        updateBulkDeleteButton();
+      });
+
+    panel
+      .off("click", ".chk-row-outlet")
+      .on("click", ".chk-row-outlet", function (e) {
+        e.stopPropagation();
+      });
+
+    panel
+      .off("change", ".chk-row-outlet")
+      .on("change", ".chk-row-outlet", function (e) {
+        e.stopPropagation();
+        const tr = $(this).closest("tr.datagrid-row");
+        const index = parseInt(tr.attr("datagrid-row-index"));
+        const rows = uiTbl.datagrid("getRows");
+        const row = !isNaN(index) && rows[index] ? rows[index] : null;
+        const id = row ? row.customerid : $(this).data("id");
+
+        if (id) {
+          if ($(this).is(":checked")) {
+            selectedOutlets[id] = row || {
+              customerid: id,
+              nama_customer: $(this).data("name"),
+            };
+          } else {
+            delete selectedOutlets[id];
+          }
+        }
+        syncCheckAllState();
+        updateBulkDeleteButton();
+      });
 
     panel.off("click", ".action-grid a.btn-success").on("click", ".action-grid a.btn-success", function (e) {
       e.preventDefault();
@@ -278,6 +378,19 @@
   /*
    * action button generator
    */
+  function formatterCheckbox(val, row, index) {
+    if (!row || !row.customerid) return "";
+    const isChecked = selectedOutlets[row.customerid] ? "checked" : "";
+    const outletLabel = (
+      row.nama_customer
+        ? `${row.customerid} - ${row.nama_customer}`
+        : row.customerid
+    )
+      .toString()
+      .replace(/"/g, "&quot;");
+    return `<input type="checkbox" class="chk-row-outlet grid-checkbox" data-id="${row.customerid}" data-name="${outletLabel}" ${isChecked}>`;
+  }
+
   function formatterButton(val, row, index) {
     const btnUpdate = commonGrid.btnBuilderText(
       "btn-update",
@@ -327,15 +440,92 @@
     if (paramsession && paramsession.username) {
       val.usersession = paramsession.username;
     }
-    common.dialogDelete(function () {
-      $.post("ref_customer/delete", val, function (data, status) {
-        if (200 == data.code) {
-          $.alert("Delete success!");
-          uiTbl.datagrid("reload");
-        } else {
-          $.alert(status);
-        }
-      });
+    const outletLabel = val.nama_customer
+      ? `${val.customerid} - ${val.nama_customer}`
+      : val.customerid;
+    $.confirm({
+      title: "Confirmation!",
+      content: `Apakah Anda yakin ingin menghapus Outlet <b>${outletLabel}</b>?`,
+      buttons: {
+        confirm: {
+          btnClass: "btn-red",
+          action: function () {
+            $.post("ref_customer/delete", val, function (data, status) {
+              if (200 == data.code) {
+                delete selectedOutlets[val.customerid];
+                updateBulkDeleteButton();
+                $.alert("Delete success!");
+                uiTbl.datagrid("reload");
+              } else {
+                $.alert(status);
+              }
+            });
+          },
+        },
+        cancel: function () {},
+      },
+    });
+  }
+
+  function deleteSelectedRows() {
+    const ids = Object.keys(selectedOutlets);
+    if (ids.length === 0) return;
+
+    const listItems = ids
+      .map(function (id) {
+        const o = selectedOutlets[id];
+        const label = o.nama_customer
+          ? `${o.customerid} - ${o.nama_customer}`
+          : id;
+        return `<li><b>${label}</b></li>`;
+      })
+      .join("");
+
+    $.confirm({
+      title: "Konfirmasi Hapus Terpilih!",
+      content: `
+        <div>Apakah Anda yakin ingin menghapus <b>${ids.length}</b> Outlet berikut?</div>
+        <div class="bulk-delete-box">
+          <ol class="bulk-delete-list">${listItems}</ol>
+        </div>
+      `,
+      buttons: {
+        confirm: {
+          text: "Hapus",
+          btnClass: "btn-red",
+          action: function () {
+            common.loading();
+            $.post(
+              "ref_customer/delete",
+              {
+                customerids: ids,
+                usersession:
+                  paramsession && paramsession.username
+                    ? paramsession.username
+                    : "",
+              },
+              function (data, status) {
+                common.loadingClose();
+                if (data && 200 == data.code) {
+                  selectedOutlets = {};
+                  updateBulkDeleteButton();
+                  $.alert("Delete success!");
+                  uiTbl.datagrid("reload");
+                } else {
+                  $.alert((data && data.message) || status || "Delete failed!");
+                }
+              },
+            ).fail(function () {
+              common.loadingClose();
+              $.alert("Delete failed!");
+            });
+          },
+        },
+        cancel: {
+          text: "Batal",
+          action: function () {},
+        },
+      },
     });
   }
 

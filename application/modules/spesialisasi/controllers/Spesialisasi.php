@@ -44,6 +44,12 @@ class Spesialisasi extends BaseController
         responseJSON($this->spesialisasi->update($data));
     }
 
+    public function delete()
+    {
+        $data = param_input();
+        responseJSON($this->spesialisasi->delete($data));
+    }
+
     public function savetoxlsx()
     {
 		ini_set('memory_limit', '1024M');
