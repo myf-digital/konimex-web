@@ -64,35 +64,66 @@ class Rep_gffaktif extends BaseController
 	}
 
 	function load_data_att() {
-	
 		$periode = $this->input->post("start");	
 		$until = $this->input->post("end");
         $idjabatan = $this->input->post("idjabatan");
         $position = $this->input->post("position");
 		$usersession = $this->input->post("usersession");
 		$restrictlevel = $this->input->post("restrict_level");
-		$qexecabsensi = $this->db->query("replace into t_sales_absensi (periode, salesmanid, status, checkin, checkout, keterangan, pjp, `call`, extra_call, crc, promo, competitor, `order`, sos)
-										select a.date, a.salesman_id, 
-												case when a.type='IST' then 'S' 
-												when a.type='ICT' then 'C' 
-												when a.type='AHR' then 'H' 
-												else 'HF' end tipe, check_in checkin, check_out checkout, 
-												concat(a.description_in,'-', a.description_out) keterangan, 0 _pjp, 0 _call, 0 _extra_call, 0 _crc, 0 _promo, 0 _competitor, 0 _order, 0 _sos  
-										from s_absensi a 
-										where a.date between DATE_ADD((select tanggal from m_setup_site), INTERVAL -2 DAY) and DATE_ADD((select tanggal from m_setup_site), INTERVAL -1 DAY)
-										union
-										select a.periode,a.salesmanid,'H' status, min(a.check_in) checkin, max(a.check_out) checkout, '' keterangan, 
-										(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) _pjp, 
-										(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
-										(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
-										(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
-										(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
-										(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
-										(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and order_time is not null) _order,
-										(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos
-										from t_sales_rrk_trans a where a.periode between DATE_ADD((select tanggal from m_setup_site), INTERVAL -2 DAY) and DATE_ADD((select tanggal from m_setup_site), INTERVAL -1 DAY)
-										group by a.periode,a.salesmanid
-										;");
+
+		$regionalid = $this->input->post("regionalid");
+        $areaid = $this->input->post("areaid");
+        $subareaid = $this->input->post("subareaid");
+
+		$qexecabsensi = $this->db->query("
+			replace into t_sales_absensi
+			(periode, salesmanid, status, checkin, checkout, keterangan, pjp, `call`, extra_call, crc, promo, competitor, `order`, sos)
+			select
+				a.date,
+				a.salesman_id, 
+				case
+					when a.type='IST' then 'S' 
+					when a.type='ICT' then 'C' 
+					when a.type='AHR' then 'H' 
+					else 'HF'
+				end tipe,
+				check_in checkin,
+				check_out checkout, 
+				concat(a.description_in,'-', a.description_out) keterangan,
+				0 _pjp,
+				0 _call,
+				0 _extra_call,
+				0 _crc,
+				0 _promo,
+				0 _competitor,
+				0 _order,
+				0 _sos  
+			from s_absensi a 
+			where a.date between DATE_ADD((select tanggal from m_setup_site), INTERVAL -2 DAY)
+			and DATE_ADD((select tanggal from m_setup_site), INTERVAL -1 DAY)
+
+			union
+
+			select
+				a.periode,
+				a.salesmanid,
+				'H' status,
+				min(a.check_in) checkin,
+				max(a.check_out) checkout,
+				'' keterangan,
+				(select count(1) from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) _pjp, 
+				(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid)) _call,
+				(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and customerid not in (select customerid from t_sales_rrk where periode=a.periode and salesmanid=a.salesmanid) ) _extra_call,
+				(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and crc_time is not null) _crc,
+				(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and promo_time is not null) _promo,
+				(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and competitor_time is not null) _competitor,
+				(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and order_time is not null) _order,
+				(select count(1) from t_sales_rrk_trans where periode=a.periode and salesmanid=a.salesmanid and sos_time is not null) _sos
+			from t_sales_rrk_trans a
+			where a.periode between DATE_ADD((select tanggal from m_setup_site), INTERVAL -2 DAY)	
+			and DATE_ADD((select tanggal from m_setup_site), INTERVAL -1 DAY)
+			group by a.periode,a.salesmanid
+		;");
 
 		$html = '<div class="box-body">';
 		$html .= '<div class="container-table">';
@@ -100,13 +131,11 @@ class Rep_gffaktif extends BaseController
 		$html .= '<table id="activity_table" border="1" class="table table-bordered table-condensed fixed-table">';
 		$html .= '<tbody>';
 		$html .= '<tr>';
-		$html .='<th rowspan="2" style="text-align:center;width: 80px">No.</th>';
-		$html .='<th rowspan="2" style="text-align:center;width: 200px">TPE</th>';
-		$html .='<th rowspan="2" style="text-align:left;width: 300px">Nama TPE</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Position</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Regional</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">Area FC</th>';
-        $html .='<th rowspan="2" style="text-align:left;width: 200px">City</th>';
+		$html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 80px">No.</th>';
+		$html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 200px">MEDREP</th>';
+		$html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 300px">Nama MEDREP</th>';
+        $html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 200px">Position</th>';
+        $html .='<th rowspan="2" style="text-align:center;vertical-align: middle;width: 200px">Area</th>';
 
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -120,7 +149,7 @@ class Rep_gffaktif extends BaseController
 			}
 			$start->modify('+1 day');
 		}
-		$html .='<th colspan="4" style="text-align:center;width: 200px">Total</th>';
+		$html .='<th colspan="4" style="text-align:center;width: 215px">Total</th>';
 		$html .= '</tr><tr>';
 		$start = date_create($periode);
 		$end = date_create($until);
@@ -135,10 +164,10 @@ class Rep_gffaktif extends BaseController
 			$start->modify('+1 day');
 		}
 
-		$html .= '	<th style="text-align:left;width: 50px">H</th>
-					<th style="text-align:left;width: 50px">HF</th>
-					<th style="text-align:left;width: 50px">S</th>
-					<th style="text-align:left;width: 50px">C</th>
+		$html .= '	<th style="text-align:center;width: 50px">H</th>
+					<th style="text-align:center;width: 50px">HF</th>
+					<th style="text-align:center;width: 50px">S</th>
+					<th style="text-align:center;width: 65px">C</th>
 					</tr>
 					</tbody></table></div>';
 
@@ -147,7 +176,7 @@ class Rep_gffaktif extends BaseController
         $html .= '<tbody>';
 
 		/*Close Header*/
-		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel);
+		$get_salesman = $this->report_gffaktif->get_salesman($periode,$until,$position,$idjabatan,$usersession,$restrictlevel, $regionalid, $areaid, $subareaid);
         $no = 1;
 						
 		foreach ($get_salesman as $v_salesman) {
@@ -157,9 +186,7 @@ class Rep_gffaktif extends BaseController
 			$html .='<td style="text-align:center;width: 200px">'.$v_salesman['salesmanid'].'</td>';
 			$html .='<td style="text-align:left;width: 300px">'.$v_salesman['nama_salesman'].'</td>';
 			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['tipe_sales'].'</td>';
-			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_regional'].'</td>';
-			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['nama_area'].'</td>';
-			$html .='<td style="text-align:left;width: 200px">'.$v_salesman['city'].'</td>';
+			$html .='<td style="text-align:left;width: 200px">'.($v_salesman['nama_subarea'] ?? $v_salesman['nama_area']).'</td>';
 			
 			/******************/
 			$start = date_create($periode);
@@ -171,20 +198,31 @@ class Rep_gffaktif extends BaseController
 				$get_salesman_aktif = $this->report_gffaktif->get_salesman_aktif($vsalesmanid,$vdate);
 				if (!empty($get_salesman_aktif)){
 					foreach ($get_salesman_aktif as $val_aktif) {
-						$namahari=date_format($start,"D");
-						if ($namahari=='Sun'){
-						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">'.$val_aktif['status'].'</td>';
-						}else{
-						$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_aktif['status'].'</td>';
-                        }
+						$namahari = date_format($start,"D");
+						$status = !empty($val_aktif['status']) ? ($val_aktif['status'] == 'HF' ? 'I' : $val_aktif['status']) : '';
+						
+						$has_image = !empty($val_aktif['image']);
+						if ($has_image) {
+							$img_raw = trim($val_aktif['image']);
+							if (strpos($img_raw, 'http://') === 0 || strpos($img_raw, 'https://') === 0) {
+								$img_url = $img_raw;
+							} else {
+								$img_url = URL_IMAGE . 'absence/' . ltrim($img_raw, '/');
+							}
+							$ket = !empty($val_aktif['keterangan']) ? $val_aktif['keterangan'] : '-';
+							$sales_info = $v_salesman['salesmanid'] . ' - ' . $v_salesman['nama_salesman'];
+							$status_title = 'Status: ' . $status . ' | Klik untuk melihat foto & keterangan';
+							
+							$html .='<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red;' : '').'">';
+							$html .='<a href="javascript:void(0)" class="btn-preview-absensi" data-sales="'.htmlspecialchars($sales_info, ENT_QUOTES).'" data-date="'.htmlspecialchars($vdate, ENT_QUOTES).'" data-img="'.htmlspecialchars($img_url, ENT_QUOTES).'" data-ket="'.htmlspecialchars($ket, ENT_QUOTES).'" data-status="'.htmlspecialchars($status, ENT_QUOTES).'" title="'.htmlspecialchars($status_title, ENT_QUOTES).'" style="cursor:pointer;font-weight:bold;text-decoration:underline;'.($namahari == 'Sun' ? 'color:red;' : 'color:#337ab7;').'">'.$status.' <i class="fa fa-file-o" style="font-size:9px;"></i></a>';
+							$html .='</td>';
+						} else {
+							$html .='<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">'.$status.'</td>';
+						}
 					}
-				}else{
-					$namahari=date_format($start,"D");
-					if ($namahari=='Sun'){
-					$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">-</td>';
-					}else{
-					$html .='<td style="text-align:center;font-size:11px;width: 50px">-</td>';
-					}
+				} else {
+					$namahari = date_format($start,"D");
+					$html .= '<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">-</td>';
 				}
 
 				$start->modify('+1 day');
@@ -198,7 +236,7 @@ class Rep_gffaktif extends BaseController
 					$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sums'].'</td>';
 					$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sumc'].'</td>';
 				}
-			}else{
+			} else {
 				$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
 				$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
 				$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
@@ -210,7 +248,7 @@ class Rep_gffaktif extends BaseController
 		}
 		$html .='</tr>';
 		$html .='<tr>';
-		$html .='<td colspan="7" style="text-align:right;font-size:13px;">TOTAL</td>';
+		$html .='<td colspan="5" style="text-align:right;font-size:13px;">TOTAL</td>';
 				$start = date_create($periode);
 				$end = date_create($until);
 				while($start <= $end)
@@ -219,12 +257,8 @@ class Rep_gffaktif extends BaseController
 					$get_salesman_aktif = $this->report_gffaktif->get_salesman_sum_daily($vdate,$position,$restrictlevel,$usersession);
 					if (!empty($get_salesman_aktif)){
 						foreach ($get_salesman_aktif as $val_aktif) {
-							$namahari=date_format($start,"D");
-							if ($namahari=='Sun'){
-								$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">'.$val_aktif['sumaktif'].'</td>';
-							}else{
-								$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_aktif['sumaktif'].'</td>';
-							}
+							$namahari = date_format($start,"D");
+							$html .= '<td style="text-align:center;font-size:11px;width: 50px;'.($namahari == 'Sun' ? 'color:red' : '').'">'.$val_aktif['sumaktif'].'</td>';
 						}
 					}
 
@@ -238,11 +272,11 @@ class Rep_gffaktif extends BaseController
 						$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sums'].'</td>';
 						$html .='<td style="text-align:center;font-size:11px;width: 50px">'.$val_sumaktif['sumc'].'</td>';
 					}
-				}else{
-						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
-						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
-						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
-						$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
+				} else {
+					$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
+					$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
+					$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
+					$html .='<td style="text-align:center;color:red;font-size:11px;width: 50px">0</td>';
 				}
 		$html .='</tr>';
 		
