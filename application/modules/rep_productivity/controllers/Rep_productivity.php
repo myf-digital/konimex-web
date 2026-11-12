@@ -95,16 +95,17 @@ class Rep_productivity extends BaseController
 		$html .= '<th rowspan="2" style="vertical-align : middle;text-align:center;width: 150px;">Position</th>';
 		$html .= '<th colspan="13" style="vertical-align : middle;text-align:center;width: 2600px;">Kuantitatif</th>';
 		$html .= '</tr><tr>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">HK</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Absensi</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">%Kehadiran</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Keterangan Absensi</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Call DUB</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Target DUB</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Efektif Call</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Call Visit</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Target Visit</th>';
-		$html .= '<th style="vertical-align : middle;text-align:center;">Rata-Rata Visit</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">HK</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Absensi</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">%Kehadiran</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Keterangan Absensi</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Call DUB</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Target DUB</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">% Pencapaian DUB</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Efektif Call</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Call Visit</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Target Visit</th>';
+		$html .= '<th style="vertical-align : middle;text-align:center;width: 200px;">Rata-Rata Visit</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Keterangan</th>';
 		$html .= '<th style="vertical-align : middle;text-align:center; width: 200px;">Detailing</th>';
 		$html .= '</tr>';
@@ -129,12 +130,13 @@ class Rep_productivity extends BaseController
 			$kehadiran_pct = $value['TPE Aktif'] > 0 ? ($value['TPE Hadir'] / $value['TPE Aktif'] * 100) : 0;
 			$html .= '<td style="text-align:center;width: 200px">'.number_format($kehadiran_pct, 2, '.', ',').' %</td>';
 			$html .= '<td style="text-align:center;width: 200px">Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').') </td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['call_dub'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['target_dub'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['efektif_dub'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['call_visit'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['target_visit'], 0, '.', ',').'</td>';
-			$html .= '<td style="white-space: nowrap;text-align:center;text-align:center;width: 200px;">'.number_format($value['rata_rata_visit'], 2, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;width: 200px;">'.number_format(($value['call_dub'] ?? 0), 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;width: 200px;">'.number_format(($value['target_dub'] ?? 0), 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;width: 200px;">'.number_format(($value['pencapaian_dub'] ?? 0), 2, '.', ',').' %</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;width: 200px;">'.number_format(($value['efektif_dub'] ?? 0), 2, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;width: 200px;">'.number_format(($value['call_visit'] ?? 0), 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;width: 200px;">'.number_format(($value['target_visit'] ?? 0), 0, '.', ',').'</td>';
+			$html .= '<td style="white-space: nowrap;text-align:center;width: 200px;">'.number_format(($value['rata_rata_visit'] ?? 0), 2, '.', ',').'</td>';
 			$html .= '<td style="text-align:right; width: 200px;">'.$value['rrk_keterangan'].'</td>';
 			$html .= '<td style="text-align:right; width: 200px;">'.$value['rrk_detailing'].'</td>';
 			$html .= '</tr>';
@@ -188,11 +190,11 @@ class Rep_productivity extends BaseController
 
         $spreadsheet = new Spreadsheet();
 
-        $header = ['No', 'Area', 'ID TPE', 'Nama TPE', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan Absensi', 'Call DUB', 'Target DUB', 'Efektif Call', 'Call Visi', 'Target Visit', 'Rata-Rata Visit', 'Keterangan', 'Detailing'];
+        $header = ['No', 'Area', 'ID TPE', 'Nama TPE', 'Position', 'HK', 'Absensi', '%Kehadiran', 'Keterangan Absensi', 'Call DUB', 'Target DUB', '% Pencapaian DUB', 'Efektif Call', 'Call Visit', 'Target Visit', 'Rata-Rata Visit', 'Keterangan', 'Detailing'];
 
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue('F1', 'Kuantitatif')->mergeCells('F1:Q1');
+        $sheet->setCellValue('F1', 'Kuantitatif')->mergeCells('F1:R1');
 
         $sheet->fromArray($header,NULL,'A2');
 
@@ -212,7 +214,8 @@ class Rep_productivity extends BaseController
 				'Cuti('.number_format($value['cuti'] ?? 0, 0, '.', ',').'), Sakit('.number_format($value['sakit'] ?? 0, 0, '.', ',').')',
 				number_format($value['call_dub'] ?? 0, 0, '.', ','),
 				number_format($value['target_dub'] ?? 0, 0, '.', ','),
-				number_format($value['efektif_dub'] ?? 0, 0, '.', ','),
+				number_format($value['pencapaian_dub'] ?? 0, 2, '.', ',') . ' %',
+				number_format($value['efektif_dub'] ?? 0, 2, '.', ','),
 				number_format($value['call_visit'] ?? 0, 0, '.', ','),
 				number_format($value['target_visit'] ?? 0, 0, '.', ','),
 				number_format($value['rata_rata_visit'] ?? 0, 2, '.', ','),
@@ -401,14 +404,15 @@ class Rep_productivity extends BaseController
             ->setCellValue('I1', 'Keterangan Absensi')
             ->setCellValue('J1', 'Call DUB')
             ->setCellValue('K1', 'Target DUB')
-            ->setCellValue('L1', 'Efektif Call')
-            ->setCellValue('M1', 'Call Visit')
-            ->setCellValue('N1', 'Target Visit')
-            ->setCellValue('O1', 'Rata-Rata Visit')
-            ->setCellValue('P1', 'Outlet Order')
-            ->setCellValue('Q1', 'Total Order')
-            ->setCellValue('R1', 'Keterangan')
-            ->setCellValue('S1', 'Detailing');
+            ->setCellValue('L1', '% Pencapaian DUB')
+            ->setCellValue('M1', 'Efektif Call')
+            ->setCellValue('N1', 'Call Visit')
+            ->setCellValue('O1', 'Target Visit')
+            ->setCellValue('P1', 'Rata-Rata Visit')
+            ->setCellValue('Q1', 'Outlet Order')
+            ->setCellValue('R1', 'Total Order')
+            ->setCellValue('S1', 'Keterangan')
+            ->setCellValue('T1', 'Detailing');
 		
         $data = $this->report_productivity->getProductivity($params);
         $i = 1;
@@ -425,17 +429,19 @@ class Rep_productivity extends BaseController
                 ->setCellValue('I'.$row, 'Cuti('.number_format($value['cuti'], 0, '.', ',').'), Sakit('.number_format($value['sakit'], 0, '.', ',').')')
                 ->setCellValue('J'.$row, $value['call_dub'] ?? '')
                 ->setCellValue('K'.$row, $value['target_dub'] ?? '')
-                ->setCellValue('L'.$row, $value['efektif_dub'] ?? '')
-                ->setCellValue('M'.$row, $value['call_visit'] ?? '')
-                ->setCellValue('N'.$row, $value['target_visit'] ?? '')
-                ->setCellValue('O'.$row, $value['rata_rata_visit'] ?? '')
-                ->setCellValue('P'.$row, $value['jumlah_customer'] ?? '')
-                ->setCellValue('Q'.$row, $value['total_penjualan'] ?? '')
-                ->setCellValue('R'.$row, $value['rrk_keterangan'] ?? '')
-                ->setCellValue('S'.$row, $value['rrk_detailing'] ?? '');
+                ->setCellValue('L'.$row, ((float)($value['pencapaian_dub'] ?? 0)) / 100)
+                ->setCellValue('M'.$row, $value['efektif_dub'] ?? '')
+                ->setCellValue('N'.$row, $value['call_visit'] ?? '')
+                ->setCellValue('O'.$row, $value['target_visit'] ?? '')
+                ->setCellValue('P'.$row, $value['rata_rata_visit'] ?? '')
+                ->setCellValue('Q'.$row, $value['jumlah_customer'] ?? '')
+                ->setCellValue('R'.$row, $value['total_penjualan'] ?? '')
+                ->setCellValue('S'.$row, $value['rrk_keterangan'] ?? '')
+                ->setCellValue('T'.$row, $value['rrk_detailing'] ?? '');
 			
 			$sheetProductivity->getStyle('H'.$row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE);
-			$sheetProductivity->getStyle('Q'.$row)->getNumberFormat()->setFormatCode('"Rp. "#,##0.00');
+			$sheetProductivity->getStyle('L'.$row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+			$sheetProductivity->getStyle('R'.$row)->getNumberFormat()->setFormatCode('"Rp. "#,##0.00');
 			$i++;
             $row++;
         }

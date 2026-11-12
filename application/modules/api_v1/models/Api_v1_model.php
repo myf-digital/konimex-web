@@ -1140,25 +1140,34 @@ class Api_v1_model extends CI_Model
     {
 		$sql = "
 			select
-				a.req_no,
-				a.salesmanid,
-				a.periode,
-				a.customerid,
-				a.user_id,
+				p.req_no,
+				p.salesmanid,
+				p.periode,
+				p.customerid,
+				p.user_id,
 				b.nama_salesman,
 				c.nama_customer,
 				c.typeid,
 				d.nama_professional,
 				e.name as spesialisasi
-			from req_pjp_daily_detail a
-			left join m_sales_salesman b on b.salesmanid = a.salesmanid
-			left join m_customer c on c.customerid = a.customerid
-			left join ref_professional d on d.id = a.user_id
+			from (
+				select req_no, salesmanid, periode, customerid, user_id
+				from req_pjp_daily_detail
+				where salesmanid = ?
+				union
+				select rjvd.req_no, rjvd.salesmanid, rjvd.periode, rjvd.customerid, rjvd.user_id
+				from req_join_visit_detail rjvd
+				join req_join_visit rjv on rjv.req_no = rjvd.req_no and rjv.status = 3
+				where rjvd.salesmanid = ?
+			) p
+			left join m_sales_salesman b on b.salesmanid = p.salesmanid
+			left join m_customer c on c.customerid = p.customerid
+			left join ref_professional d on d.id = p.user_id
 			left join ref_spesialisasi e on e.id = d.spesialisasi_id
-			where  d.nama_professional is not null and a.salesmanid = ?
-			order by a.periode asc
+			where d.nama_professional is not null
+			order by p.periode asc
 		";
-		$res = $this->db->query($sql, [$data['salesmanid']]);
+		$res = $this->db->query($sql, [$data['salesmanid'], $data['salesmanid']]);
 
 		$sqlDub = "
 			select

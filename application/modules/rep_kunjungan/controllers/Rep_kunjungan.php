@@ -139,6 +139,16 @@ class Rep_kunjungan extends BaseController
                     SELECT DISTINCT periode, salesmanid, customerid, user_id
                     FROM t_sales_rrk_user
                     WHERE periode BETWEEN '$start' AND '$end'
+                    UNION
+                    SELECT DISTINCT rpdd.periode, rpdd.salesmanid, rpdd.customerid, rpdd.user_id
+                    FROM req_pjp_daily_detail rpdd
+                    JOIN req_pjp_daily rpd ON rpd.req_no = rpdd.req_no AND rpd.status = 3
+                    WHERE rpdd.periode BETWEEN '$start' AND '$end'
+                    UNION
+                    SELECT DISTINCT rjvd.periode, rjvd.salesmanid, rjvd.customerid, rjvd.user_id
+                    FROM req_join_visit_detail rjvd
+                    JOIN req_join_visit rjv ON rjv.req_no = rjvd.req_no AND rjv.status = 3
+                    WHERE rjvd.periode BETWEEN '$start' AND '$end'
                 ) rrk ON t.periode = rrk.periode 
                      AND t.salesmanid = rrk.salesmanid 
                      AND t.customerid = rrk.customerid 
@@ -505,6 +515,16 @@ class Rep_kunjungan extends BaseController
                     SELECT DISTINCT periode, salesmanid, customerid, user_id
                     FROM t_sales_rrk_user
                     WHERE periode BETWEEN '$start' AND '$end'
+                    UNION
+                    SELECT DISTINCT rpdd.periode, rpdd.salesmanid, rpdd.customerid, rpdd.user_id
+                    FROM req_pjp_daily_detail rpdd
+                    JOIN req_pjp_daily rpd ON rpd.req_no = rpdd.req_no AND rpd.status = 3
+                    WHERE rpdd.periode BETWEEN '$start' AND '$end'
+                    UNION
+                    SELECT DISTINCT rjvd.periode, rjvd.salesmanid, rjvd.customerid, rjvd.user_id
+                    FROM req_join_visit_detail rjvd
+                    JOIN req_join_visit rjv ON rjv.req_no = rjvd.req_no AND rjv.status = 3
+                    WHERE rjvd.periode BETWEEN '$start' AND '$end'
                 ) rrk ON t.periode = rrk.periode 
                      AND t.salesmanid = rrk.salesmanid 
                      AND t.customerid = rrk.customerid 

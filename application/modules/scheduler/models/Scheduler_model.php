@@ -89,7 +89,14 @@ class Scheduler_model extends CI_Model
 				tsrt.check_out,
 				tsrt.keterangan,
 				tvd.array_product,
-				CASE WHEN mco.customerid IS NOT NULL THEN 1 ELSE 0 END AS is_planned
+				CASE
+					WHEN mco.customerid IS NOT NULL
+						OR tvd.req_type = 'join_visit'
+						OR tsru.jenis = 'join_visit'
+						OR rjvd_plan.salesmanid IS NOT NULL
+					THEN 1
+					ELSE 0
+				END AS is_planned
 			FROM trx_visit_detailing tvd
 			JOIN t_sales_rrk_trans tsrt ON tsrt.salesmanid = tvd.salesmanid
 				AND tsrt.customerid = tvd.customerid
@@ -100,6 +107,18 @@ class Scheduler_model extends CI_Model
 			LEFT JOIN m_customer_ob mco ON mco.salesmanid = tsrt.salesmanid
 				AND mco.customerid = tsrt.customerid
 				AND mco.user_id = tvd.user_id
+			LEFT JOIN t_sales_rrk_user tsru ON tsru.salesmanid = tvd.salesmanid
+				AND tsru.customerid = tvd.customerid
+				AND tsru.periode = tvd.periode
+				AND tsru.user_id = tvd.user_id
+			LEFT JOIN (
+				SELECT DISTINCT rjvd.salesmanid, rjvd.customerid, rjvd.periode, rjvd.user_id
+				FROM req_join_visit_detail rjvd
+				JOIN req_join_visit rjv ON rjv.req_no = rjvd.req_no AND rjv.status = 3
+			) rjvd_plan ON rjvd_plan.salesmanid = tvd.salesmanid
+				AND rjvd_plan.customerid = tvd.customerid
+				AND rjvd_plan.periode = tvd.periode
+				AND rjvd_plan.user_id = tvd.user_id
 			WHERE DATE(tsrt.check_in) = ?
 		";
 		$visits = $this->db->query($sqlVisits, [$date])->result_array();

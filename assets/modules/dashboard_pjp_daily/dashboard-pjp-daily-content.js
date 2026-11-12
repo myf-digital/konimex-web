@@ -153,6 +153,8 @@ $(function () {
   function apiCallReq(salesmanid) {
     var fd = new FormData();
     fd.append("salesmanid", salesmanid);
+    fd.append("start_date", $("#start_date").val());
+    fd.append("end_date", $("#end_date").val());
     return $.ajax({
       url: API_URL_REQ,
       method: "POST",

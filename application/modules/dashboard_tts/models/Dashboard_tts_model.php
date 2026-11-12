@@ -125,6 +125,11 @@ class Dashboard_tts_model extends CI_Model
                 SELECT DISTINCT customerid, salesmanid, periode
                 FROM req_pjp_daily_detail
                 WHERE periode BETWEEN ? AND ?
+                UNION
+                SELECT DISTINCT rjvd.customerid, rjvd.salesmanid, rjvd.periode
+                FROM req_join_visit_detail rjvd
+                JOIN req_join_visit rjv ON rjv.req_no = rjvd.req_no AND rjv.status = 3
+                WHERE rjvd.periode BETWEEN ? AND ?
             ) rpdd
                 ON rpdd.salesmanid = tsrt.salesmanid
                 AND rpdd.customerid = tsrt.customerid
@@ -139,7 +144,8 @@ class Dashboard_tts_model extends CI_Model
         ";
         $res_call = $this->db->query($sql_call, [
             $start_date, $end_date, // tsrt
-            $start_date, $end_date, // rpdd
+            $start_date, $end_date, // rpdd (pjp_daily)
+            $start_date, $end_date, // rpdd (join_visit)
             $start_date, $end_date  // tvd
         ])->row_array();
 
@@ -1106,7 +1112,12 @@ class Dashboard_tts_model extends CI_Model
                 LEFT JOIN (
                     SELECT DISTINCT customerid, salesmanid, periode
                     FROM req_pjp_daily_detail
-                    WHERE periode BETWEEN '{$start_date}' AND '{$end_date}'
+                    WHERE periode BETWEEN ? AND ?
+                    UNION
+                    SELECT DISTINCT rjvd.customerid, rjvd.salesmanid, rjvd.periode
+                    FROM req_join_visit_detail rjvd
+                    JOIN req_join_visit rjv ON rjv.req_no = rjvd.req_no AND rjv.status = 3
+                    WHERE rjvd.periode BETWEEN ? AND ?
                 ) rpdd
                     ON rpdd.salesmanid = tsrt.salesmanid
                     AND rpdd.customerid = tsrt.customerid
@@ -1115,8 +1126,8 @@ class Dashboard_tts_model extends CI_Model
                     ON tvd.salesmanid = tsrt.salesmanid
                     AND tvd.customerid = tsrt.customerid
                     AND tvd.periode = tsrt.periode
-                    AND tvd.periode BETWEEN '{$start_date}' AND '{$end_date}'
-                WHERE tsrt.periode BETWEEN '{$start_date}' AND '{$end_date}'
+                    AND tvd.periode BETWEEN ? AND ?
+                WHERE tsrt.periode BETWEEN ? AND ?
                 GROUP BY tsrt.salesmanid
             ) cl ON cl.salesmanid = s.salesmanid
             LEFT JOIN (
@@ -1125,7 +1136,7 @@ class Dashboard_tts_model extends CI_Model
                     SUM(rmt.target_call_visit) AS target_call
                 FROM role_mapping_target rmt
                 JOIN app_role ar ON ar.role_id = rmt.role_id
-                WHERE CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) = '{$year}-{$month}'
+                WHERE CONCAT(rmt.tahun, '-', LPAD(rmt.bulan, 2, '0')) = ?
                 GROUP BY ar.role_name
             ) cl_tgt ON cl_tgt.role_name = s.tipe_sales
             WHERE s.aktif = 1
@@ -1133,7 +1144,13 @@ class Dashboard_tts_model extends CI_Model
             ORDER BY s.nama_salesman ASC
         ";
 
-        return $this->db->query($sql)->result_array();
+        return $this->db->query($sql, [
+            $start_date, $end_date,
+            $start_date, $end_date,
+            $start_date, $end_date,
+            $start_date, $end_date,
+            "{$year}-{$month}"
+        ])->result_array();
     }
 
     public function load_breakdown_kategori($data)

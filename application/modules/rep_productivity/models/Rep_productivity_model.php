@@ -415,34 +415,8 @@ class Rep_productivity_model extends CI_Model
                     ) * 100,
                     2
                 ) AS '%Kehadiran',
-                (
-                    SELECT COUNT(DISTINCT CONCAT(tsrt.customerid, '-', tsrt.periode))
-                    FROM t_sales_rrk_trans tsrt
-                    JOIN trx_visit_detailing tvd
-                        ON tvd.salesmanid = tsrt.salesmanid
-                        AND tvd.customerid = tsrt.customerid
-                        AND tvd.periode = tsrt.periode
-                    JOIN m_customer_ob mco
-                        ON mco.salesmanid = tsrt.salesmanid
-                        AND mco.customerid = tsrt.customerid
-                        AND mco.user_id = tvd.user_id
-                    WHERE tsrt.salesmanid = a.salesmanid
-                      AND tsrt.periode BETWEEN '$start' AND '$end'
-                ) AS call_dub,
-                (
-                    SELECT COUNT(DISTINCT CONCAT(tsrt.customerid, '-', tsrt.periode))
-                    FROM t_sales_rrk_trans tsrt
-                    JOIN trx_visit_detailing tvd
-                        ON tvd.salesmanid = tsrt.salesmanid
-                        AND tvd.customerid = tsrt.customerid
-                        AND tvd.periode = tsrt.periode
-                    JOIN m_customer_ob mco
-                        ON mco.salesmanid = tsrt.salesmanid
-                        AND mco.customerid = tsrt.customerid
-                        AND mco.user_id = tvd.user_id
-                    WHERE tsrt.salesmanid = a.salesmanid
-                      AND tsrt.periode BETWEEN '$start' AND '$end'
-                ) AS efektif_dub,
+                0 AS call_dub,
+                0 AS efektif_dub,
                 (
                     SELECT COUNT(DISTINCT CONCAT(tsrt.customerid, '-', tsrt.periode))
                     FROM t_sales_rrk_trans tsrt
@@ -555,22 +529,254 @@ class Rep_productivity_model extends CI_Model
                     $target_visit = $target_rerata_call_val * $target_hk_val;
                 }
 
+                $effectiveTargetCallVisit = $target_call_visit_val > 0 ? $target_call_visit_val : $target_visit;
+                $dubMetrics = $this->calculate_salesman_dub_metrics(
+                    $row['salesmanid'],
+                    $target_dub_val,
+                    $effectiveTargetCallVisit,
+                    $start,
+                    $end
+                );
+                $call_dub = (int)$dubMetrics['call_dub'];
+
+                $result[$k]['call_dub'] = $call_dub;
                 $result[$k]['target_dub'] = $target_planned;
+                $result[$k]['percentage_dub'] = $dubMetrics['percentage_dub'];
+                $result[$k]['pencapaian_dub'] = $dubMetrics['pencapaian_dub'];
                 $result[$k]['target_visit'] = $target_visit;
 
-                $result[$k]['efektif_dub'] = $target_dub_val > 0 ? round($row['call_dub'] / $target_dub_val, 2) : 0;
+                $result[$k]['efektif_dub'] = $target_dub_val > 0 ? round($call_dub / $target_dub_val, 2) : 0;
                 $result[$k]['rata_rata_visit'] = $target_hk_val > 0 ? round($row['call_visit'] / $target_hk_val, 2) : 0;
                 $result[$k]['target_join_activity'] = $target_join_activity_val;
             } else {
-				$result[$k]['target_dub'] = 0;
-				$result[$k]['target_visit'] = 0;
-				$result[$k]['efektif_dub'] = 0;
-				$result[$k]['rata_rata_visit'] = 0;
+                $dubMetrics = $this->calculate_salesman_dub_metrics(
+                    $row['salesmanid'],
+                    0,
+                    0,
+                    $start,
+                    $end
+                );
+                $result[$k]['call_dub'] = (int)$dubMetrics['call_dub'];
+                $result[$k]['target_dub'] = 0;
+                $result[$k]['percentage_dub'] = 0;
+                $result[$k]['pencapaian_dub'] = 0;
+                $result[$k]['target_visit'] = 0;
+                $result[$k]['efektif_dub'] = 0;
+                $result[$k]['rata_rata_visit'] = 0;
                 $result[$k]['target_join_activity'] = 0;
             }
         }
 
         return $result;
+    }
+
+    private function calculate_salesman_dub_metrics($salesmanId, $targetDub, $targetCallVisit, $startDate, $endDate)
+    {
+        if (empty($salesmanId)) {
+            return [
+                'call_dub'       => 0,
+                'percentage_dub' => 0,
+                'pencapaian_dub' => 0,
+            ];
+        }
+
+        $obMeta = $this->db->query(
+            "SELECT COUNT(*) AS cnt, DATE_FORMAT(MAX(created_date), '%Y-%m-%d') AS max_dt
+             FROM m_customer_ob
+             WHERE salesmanid = ? AND user_id > 0",
+            [$salesmanId]
+        )->row_array();
+
+        $obCount = (int)($obMeta['cnt'] ?? 0);
+        $obMaxDt = $obMeta['max_dt'] ?? null;
+
+        $useCustomerOb = ($obCount > 0 && ($obMaxDt === null || $obMaxDt <= $endDate));
+        $latestReqNo = null;
+
+        if (!$useCustomerOb) {
+            $sqlLatestReq = "
+                SELECT rd.req_no
+                FROM req_dub rd
+                WHERE rd.status = 3
+                    AND (
+                        rd.salesmanid = ?
+                        OR EXISTS (
+                            SELECT 1
+                            FROM req_dub_detail rdd_chk
+                            WHERE rdd_chk.req_no = rd.req_no
+                                AND rdd_chk.salesmanid = ?
+                                AND rdd_chk.user_id > 0
+                        )
+                    )
+                    AND COALESCE(DATE(rd.modified_date), rd.periode, DATE(rd.created_date)) <= ?
+                ORDER BY COALESCE(rd.modified_date, rd.created_date) DESC, rd.req_no DESC
+                LIMIT 1
+            ";
+            $latestReq = $this->db->query($sqlLatestReq, [$salesmanId, $salesmanId, $endDate])->row_array();
+
+            if (!empty($latestReq['req_no'])) {
+                $latestReqNo = (int)$latestReq['req_no'];
+            } elseif ($obCount > 0) {
+                $useCustomerOb = true;
+            }
+        }
+
+        if ($latestReqNo !== null) {
+            $dubSubquery = "
+                SELECT DISTINCT customerid, user_id
+                FROM req_dub_detail
+                WHERE req_no = " . $latestReqNo . "
+                  AND salesmanid = ?
+                  AND user_id > 0
+            ";
+        } else {
+            $dubSubquery = "
+                SELECT DISTINCT customerid, user_id
+                FROM m_customer_ob
+                WHERE salesmanid = ?
+                  AND user_id > 0
+            ";
+        }
+
+        $sqlCallDub = "
+            SELECT COUNT(DISTINCT CONCAT(tsrt.customerid, '-', tsrt.periode)) AS cnt
+            FROM t_sales_rrk_trans tsrt
+            JOIN trx_visit_detailing tvd
+                ON tvd.salesmanid = tsrt.salesmanid
+                AND tvd.customerid = tsrt.customerid
+                AND tvd.periode = tsrt.periode
+            LEFT JOIN t_sales_rrk_user tsru
+                ON tsru.salesmanid = tvd.salesmanid
+                AND tsru.customerid = tvd.customerid
+                AND tsru.periode = tvd.periode
+                AND tsru.user_id = tvd.user_id
+            LEFT JOIN (
+                SELECT DISTINCT rpdd.salesmanid, rpdd.customerid, rpdd.periode, rpdd.user_id
+                FROM req_pjp_daily_detail rpdd
+                JOIN req_pjp_daily rpd ON rpd.req_no = rpdd.req_no AND rpd.status = 3
+                WHERE rpdd.salesmanid = ? AND rpdd.periode BETWEEN ? AND ?
+            ) pjp_plan
+                ON pjp_plan.salesmanid = tvd.salesmanid
+                AND pjp_plan.customerid = tvd.customerid
+                AND pjp_plan.periode = tvd.periode
+                AND pjp_plan.user_id = tvd.user_id
+            LEFT JOIN (
+                SELECT DISTINCT rjvd.salesmanid, rjvd.customerid, rjvd.periode, rjvd.user_id
+                FROM req_join_visit_detail rjvd
+                JOIN req_join_visit rjv ON rjv.req_no = rjvd.req_no AND rjv.status = 3
+                WHERE rjvd.salesmanid = ? AND rjvd.periode BETWEEN ? AND ?
+            ) jv_plan
+                ON jv_plan.salesmanid = tvd.salesmanid
+                AND jv_plan.customerid = tvd.customerid
+                AND jv_plan.periode = tvd.periode
+                AND jv_plan.user_id = tvd.user_id
+            LEFT JOIN (
+                {$dubSubquery}
+            ) dub_doc
+                ON dub_doc.customerid = tvd.customerid
+                AND dub_doc.user_id = tvd.user_id
+            WHERE tsrt.salesmanid = ?
+              AND tsrt.periode BETWEEN ? AND ?
+              AND (
+                  tsru.salesmanid IS NOT NULL
+                  OR pjp_plan.salesmanid IS NOT NULL
+                  OR jv_plan.salesmanid IS NOT NULL
+                  OR tvd.req_type = 'join_visit'
+              )
+              AND (
+                  dub_doc.user_id IS NOT NULL
+                  OR tvd.req_type = 'join_visit'
+                  OR tsru.jenis = 'join_visit'
+                  OR jv_plan.salesmanid IS NOT NULL
+              )
+        ";
+        $callDubRow = $this->db->query($sqlCallDub, [
+            $salesmanId, $startDate, $endDate,
+            $salesmanId, $startDate, $endDate,
+            $salesmanId,
+            $salesmanId, $startDate, $endDate,
+        ])->row_array();
+        $callDubCount = (int)($callDubRow['cnt'] ?? 0);
+
+        $limit = max(0, (int)round((float)$targetDub));
+        $percentageDub = 0;
+        $pencapaianDub = 0;
+
+        if ($limit > 0) {
+            $dubRows = [];
+            if ($latestReqNo !== null) {
+                $sqlReqDubDetail = "
+                    SELECT
+                        rdd.customerid,
+                        rdd.user_id,
+                        COALESCE(MAX(tvd_cnt.actual_call), 0) AS actual_call
+                    FROM req_dub_detail rdd
+                    JOIN req_dub rd ON rd.req_no = rdd.req_no
+                    LEFT JOIN (
+                        SELECT customerid, user_id, COUNT(*) AS actual_call
+                        FROM trx_visit_detailing
+                        WHERE salesmanid = ? AND periode BETWEEN ? AND ?
+                        GROUP BY customerid, user_id
+                    ) tvd_cnt ON tvd_cnt.customerid = rdd.customerid AND tvd_cnt.user_id = rdd.user_id
+                    WHERE rdd.req_no = ? AND rdd.salesmanid = ? AND rdd.user_id > 0
+                    GROUP BY rdd.customerid, rdd.user_id
+                    ORDER BY MAX(COALESCE(rdd.created_date, rd.modified_date, rd.created_date)) DESC,
+                        rdd.customerid ASC,
+                        rdd.user_id ASC
+                    LIMIT {$limit}
+                ";
+                $dubRows = $this->db->query($sqlReqDubDetail, [
+                    $salesmanId,
+                    $startDate,
+                    $endDate,
+                    $latestReqNo,
+                    $salesmanId,
+                ])->result_array();
+            } elseif ($useCustomerOb) {
+                $sqlCustomerOb = "
+                    SELECT
+                        mco.customerid,
+                        mco.user_id,
+                        COALESCE(tvd_cnt.actual_call, 0) AS actual_call
+                    FROM m_customer_ob mco
+                    LEFT JOIN (
+                        SELECT customerid, user_id, COUNT(*) AS actual_call
+                        FROM trx_visit_detailing
+                        WHERE salesmanid = ? AND periode BETWEEN ? AND ?
+                        GROUP BY customerid, user_id
+                    ) tvd_cnt ON tvd_cnt.customerid = mco.customerid AND tvd_cnt.user_id = mco.user_id
+                    WHERE mco.salesmanid = ? AND mco.user_id > 0
+                    ORDER BY mco.created_date DESC, mco.customerid ASC, mco.user_id ASC
+                    LIMIT {$limit}
+                ";
+                $dubRows = $this->db->query($sqlCustomerOb, [
+                    $salesmanId,
+                    $startDate,
+                    $endDate,
+                    $salesmanId,
+                ])->result_array();
+            }
+
+            $targetPerDokter = ($targetDub > 0 && $targetCallVisit > 0)
+                ? ((float)$targetCallVisit / (float)$targetDub)
+                : 0.0;
+
+            $sumCappedRatio = 0.0;
+            foreach ($dubRows as $dRow) {
+                $actualCall = (int)($dRow['actual_call'] ?? 0);
+                $cappedRatio = $targetPerDokter > 0 ? min(1.0, $actualCall / $targetPerDokter) : 0.0;
+                $sumCappedRatio += $cappedRatio;
+            }
+
+            $percentageDub = $targetDub > 0 ? round($sumCappedRatio / (float)$targetDub, 2) : 0;
+            $pencapaianDub = $targetDub > 0 ? min(100, round(($sumCappedRatio / (float)$targetDub) * 100, 2)) : 0;
+        }
+
+        return [
+            'call_dub'       => $callDubCount,
+            'percentage_dub' => $percentageDub,
+            'pencapaian_dub' => $pencapaianDub,
+        ];
     }
 
     function getOrder_salesman($data)

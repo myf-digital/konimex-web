@@ -74,7 +74,20 @@ $(function () {
       <div class="dashboard-progress">
         <div class="dashboard-progress-fill" style="width: ${barPct}%;"></div>
         <div class="dashboard-progress-text">
-          ${actual} / ${target} (${pct})
+          ${actual} / ${target} (${pct}%)
+        </div>
+      </div>
+    `;
+  }
+
+  function makeDubPercentageBar(ratio) {
+    let num = parseFloat(ratio) || 0;
+    let pct = Math.min(100, Math.max(0, Math.round(num * 100)));
+    return `
+      <div class="dashboard-progress">
+        <div class="dashboard-progress-fill" style="width: ${pct}%;"></div>
+        <div class="dashboard-progress-text">
+          ${pct}%
         </div>
       </div>
     `;
@@ -670,6 +683,7 @@ $(function () {
       "Area",
       "DUB (Actual)",
       "DUB (Target)",
+      "Pencapaian DUB (%)",
       "Visit (Actual)",
       "Visit (Target)",
     ];
@@ -781,6 +795,7 @@ $(function () {
           let area = r.nama_subarea || "";
           if (r.nama_area) area += ", " + r.nama_area;
           if (r.nama_regional) area += ", " + r.nama_regional;
+          let dubPct = Math.min(100, Math.max(0, Math.round((parseFloat(r.percentage_dub) || 0) * 100)));
           return [
             r.salesmanid,
             r.nama_salesman,
@@ -789,6 +804,7 @@ $(function () {
             area,
             r.call_planned,
             r.target_planned,
+            dubPct + "%",
             r.call_visit,
             r.target_visit,
           ];
@@ -802,6 +818,7 @@ $(function () {
       "TPE ID",
       "Customer ID",
       "Nama Customer",
+      "Tipe Kunjungan",
       "Check In",
       "Check Out",
       "Duration",
@@ -820,15 +837,20 @@ $(function () {
     let planRows = [hdrVisit];
     let unplanRows = [hdrVisit];
 
-    function visitRowsWithDetail(visits) {
+    function visitRowsWithDetail(visits, defaultTypeLabel) {
       let result = [];
       (visits || []).forEach(function (r) {
+        let visitTypeLabel =
+          r.req_type === "join_visit"
+            ? "Join Visit" + (r.req_no ? " #" + r.req_no : "")
+            : defaultTypeLabel || (r.is_planned == 1 ? "Planned" : "Unplanned");
         let parentData = [
           r.periode,
           r.nama_salesman,
           r.salesmanid,
           r.customerid,
           r.nama_customer,
+          visitTypeLabel,
           formatDateTime(r.check_in, 19, ""),
           formatDateTime(r.check_out, 19, ""),
           calculateDuration(r.check_in, r.check_out),
@@ -838,8 +860,12 @@ $(function () {
 
         if (r.detail_user && r.detail_user.length > 0) {
           r.detail_user.forEach(function (d) {
+            let rowData = parentData.slice();
+            if (d.req_type === "join_visit") {
+              rowData[5] = "Join Visit" + (d.req_no ? " #" + d.req_no : "");
+            }
             result.push(
-              parentData.concat([
+              rowData.concat([
                 d.tipe_pic || "",
                 d.professional_name || "",
                 d.products
@@ -876,6 +902,10 @@ $(function () {
           salesmanName = firstVisit.nama_salesman || "";
           periodVal = firstVisit.periode || periodVal;
         }
+        if (!salesmanId && salesmanObj.salesmanid) {
+          salesmanId = salesmanObj.salesmanid;
+          salesmanName = salesmanObj.nama_salesman || "";
+        }
         if (!salesmanId && exportData.visits.label) {
           let label = exportData.visits.label;
           let match = label.match(/^(.*)\s*\((.*)\)$/);
@@ -886,13 +916,54 @@ $(function () {
         }
 
         planRows = planRows.concat(
-          visitRowsWithDetail(salesmanObj.planned || salesmanObj.plan_outlet),
+          visitRowsWithDetail(salesmanObj.planned || salesmanObj.plan_outlet, "Planned"),
         );
         unplanRows = unplanRows.concat(
           visitRowsWithDetail(
             salesmanObj.unplanned || salesmanObj.unplan_outlet,
+            "Unplanned",
           ),
         );
+      }
+    }
+
+    let hdrDub = [
+      "Periode",
+      "TPE ID",
+      "Nama TPE",
+      "Customer ID",
+      "Nama Customer",
+      "User ID",
+      "Nama Professional",
+      "Target Call",
+      "Realisasi Call",
+      "Pencapaian (%)",
+    ];
+    let dubRows = [hdrDub];
+
+    if (exportData.visits) {
+      let vData = exportData.visits.data;
+      if (vData && vData.length > 0) {
+        let salesmanObj = vData[0];
+        let dataDub = salesmanObj.data_dub || [];
+        dataDub.forEach(function (d) {
+          let pctCall = Math.min(
+            100,
+            Math.max(0, Math.round((parseFloat(d.percentage_call) || 0) * 100)),
+          );
+          dubRows.push([
+            periodVal,
+            salesmanId,
+            salesmanName,
+            d.customerid || "",
+            d.nama_customer || "",
+            d.user_id || "",
+            d.nama_professional || "",
+            parseFloat(d.target_call) || 0,
+            parseInt(d.actual_call) || 0,
+            pctCall + "%",
+          ]);
+        });
       }
     }
 
@@ -1006,6 +1077,7 @@ $(function () {
     let wsSummary = XLSX.utils.aoa_to_sheet(rows);
     let wsPlan = XLSX.utils.aoa_to_sheet(planRows);
     let wsUnplan = XLSX.utils.aoa_to_sheet(unplanRows);
+    let wsDub = XLSX.utils.aoa_to_sheet(dubRows);
     let wsSpesialisasi = XLSX.utils.aoa_to_sheet(spesialisasiRows);
     let wsProduk = XLSX.utils.aoa_to_sheet(produkRows);
     let wsSales = XLSX.utils.aoa_to_sheet(salesRows);
@@ -1014,6 +1086,7 @@ $(function () {
     XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
     XLSX.utils.book_append_sheet(wb, wsPlan, "Planned");
     XLSX.utils.book_append_sheet(wb, wsUnplan, "Unplanned");
+    XLSX.utils.book_append_sheet(wb, wsDub, "Data DUB");
     XLSX.utils.book_append_sheet(wb, wsSpesialisasi, "Target Spesialisasi");
     XLSX.utils.book_append_sheet(wb, wsProduk, "Target Produk");
     XLSX.utils.book_append_sheet(wb, wsSales, "Target Sales");
@@ -1041,6 +1114,7 @@ $(function () {
             <td>${val(r.jabatan)}</td>
             <td>${val(area)}</td>
             <td>${makeProgressBar(r.call_planned, r.target_planned)}</td>
+            <td>${makeDubPercentageBar(r.percentage_dub)}</td>
             <td>${makeProgressBar(r.call_visit, r.target_visit)}</td>
           </tr>
         `;
@@ -1060,11 +1134,12 @@ $(function () {
                   <th>Jabatan</th>
                   <th>Area</th>
                   <th class="th-planned">DUB</th>
+                  <th class="th-planned">Pencapaian DUB</th>
                   <th class="th-visit">Visit</th>
                 </tr>
               </thead>
               <tbody>
-                ${rows || '<tr><td colspan="7" class="text-center">Tidak ada data</td></tr>'}
+                ${rows || '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -1301,6 +1376,91 @@ $(function () {
 
     let visitStore = {};
 
+    function buildDubTargetHtml(dataDub, percentageDub) {
+      let overallPct = Math.min(
+        100,
+        Math.max(0, Math.round((parseFloat(percentageDub) || 0) * 100)),
+      );
+      let badgeClass =
+        overallPct >= 80
+          ? "label-success"
+          : overallPct >= 50
+            ? "label-warning"
+            : "label-danger";
+
+      if (!dataDub || dataDub.length === 0) {
+        return `
+          <div class="dashboard-card mt-16">
+            <h4 class="card-header-custom">
+              Target DUB (Daftar User Binaan)
+              <span class="label ${badgeClass}" style="margin-left:8px; font-size:12px;">${overallPct}%</span>
+            </h4>
+            <p class="text-muted text-center dashboard-loading">Tidak ada data DUB</p>
+          </div>
+        `;
+      }
+
+      let rowsHtml = "";
+      dataDub.forEach(function (d, idx) {
+        let targetVal = parseFloat(d.target_call) || 0;
+        let actualVal = parseInt(d.actual_call) || 0;
+        let pct = Math.min(
+          100,
+          Math.max(0, Math.round((parseFloat(d.percentage_call) || 0) * 100)),
+        );
+        let remainingPct = Math.max(0, 100 - pct);
+
+        rowsHtml += `
+          <tr>
+            <td class="text-center">${idx + 1}</td>
+            <td>
+              <strong>${val(d.nama_customer)}</strong><br>
+              <small class="text-muted">${val(d.customerid)}</small>
+            </td>
+            <td>
+              <strong>${val(d.nama_professional)}</strong><br>
+              <small class="text-muted">ID: ${val(d.user_id)}</small>
+            </td>
+            <td class="text-center">${targetVal}</td>
+            <td class="text-center">${actualVal}</td>
+            <td>
+              <div class="table-progress-bar" title="Realisasi: ${actualVal} / Target: ${targetVal} (${pct}% - maks 100%)">
+                ${pct > 0 ? `<div class="achievement-chart-bar-actual" style="width: ${pct}%;"></div>` : ""}
+                ${remainingPct > 0 ? `<div class="achievement-chart-bar-remaining" style="width: ${remainingPct}%;"></div>` : ""}
+                <div class="table-progress-bar-text">${pct}%</div>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      return `
+        <div class="dashboard-card mt-16">
+          <h4 class="card-header-custom">
+            Target DUB (Daftar User Binaan) — ${dataDub.length} User
+            <span class="label ${badgeClass}" style="margin-left:8px; font-size:12px;">Pencapaian: ${overallPct}%</span>
+          </h4>
+          <div class="table-responsive">
+            <table id="tbl-data-dub" class="table table-bordered table-striped table-hover table-target" style="width:100%;">
+              <thead>
+                <tr>
+                  <th class="th-w-50">#</th>
+                  <th>Customer / Outlet</th>
+                  <th>Professional</th>
+                  <th class="th-w-100-center">Target Call</th>
+                  <th class="th-w-100-center">Realisasi</th>
+                  <th class="th-w-graph">Grafik Pencapaian (Cap 100%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
     function buildVisitTable(visits, label, isPlanned) {
       let rowsHtml = "";
       let prefix = isPlanned ? "planned" : "unplanned";
@@ -1313,7 +1473,11 @@ $(function () {
           let checkIn = formatDateTime(v.check_in, 16, "-");
           let checkOut = formatDateTime(v.check_out, 16, "-");
           let duration = calculateDuration(v.check_in, v.check_out);
-          let customerStr = `<strong>${val(v.nama_customer)}</strong><br><small class="text-muted">${val(v.customerid)}</small>`;
+          let joinBadge =
+            v.req_type === "join_visit"
+              ? ` <span class="label label-info" style="font-size:10px;"><i class="fa fa-users"></i> Join Visit${v.req_no ? " #" + v.req_no : ""}</span>`
+              : "";
+          let customerStr = `<strong>${val(v.nama_customer)}</strong>${joinBadge}<br><small class="text-muted">${val(v.customerid)} &bull; ${val(v.periode)}</small>`;
           let btnDetail = `<button class="btn btn-xs btn-primary btn-visit-detail" type="button" data-key="${key}"><i class="fa fa-info-circle"></i> Detail</button>`;
 
           rowsHtml += `
@@ -1374,11 +1538,15 @@ $(function () {
     let $unplannedContainer = $(unplannedHtml);
 
     $colDetailSalesman.append(buildSalesTargetHtml(r.sales_target));
+    $colDetailSalesman.append(buildDubTargetHtml(r.data_dub, r.percentage_dub));
     $colDetailSalesman.append(buildSpesialisTargetHtml(r.spesialis_target));
     $colDetailSalesman.append(buildProdukTargetHtml(r.produk_target));
     $colDetailSalesman.append($plannedContainer);
     $colDetailSalesman.append($unplannedContainer);
 
+    if (r.data_dub && r.data_dub.length > 0) {
+      initDataTable("#tbl-data-dub");
+    }
     if (r.planned && r.planned.length > 0) {
       initDataTable("#tbl-planned-visit");
     }
@@ -1399,12 +1567,20 @@ $(function () {
   }
 
   function showVisitModal(r) {
+    let visitTypeHtml =
+      r.req_type === "join_visit"
+        ? `<span class="label label-info"><i class="fa fa-users"></i> Join Visit${r.req_no ? " #" + r.req_no : ""}</span>`
+        : r.is_planned == 1
+          ? `<span class="label label-success">Planned</span>`
+          : `<span class="label label-warning">Unplanned</span>`;
+
     let infoRows = [
       [
         "Customer",
         `${val(r.nama_customer)} <small class="text-muted">(${val(r.customerid)})</small>`,
       ],
       ["Periode", val(r.periode)],
+      ["Tipe Kunjungan", visitTypeHtml],
       [
         "TPE",
         `${val(r.nama_salesman)} <small class="text-muted">(${val(r.salesmanid)})</small>`,
@@ -1446,11 +1622,16 @@ $(function () {
             `;
           }
 
+          let profBadge =
+            d.req_type === "join_visit"
+              ? `<br><span class="label label-info" style="font-size:10px;"><i class="fa fa-users"></i> Join Visit${d.req_no ? " #" + d.req_no : ""}</span>`
+              : "";
+
           return `
             <tr>
               <td>${i + 1}</td>
               <td>${val(d.tipe_pic)}</td>
-              <td>${val(d.professional_name)}</td>
+              <td>${val(d.professional_name)}${profBadge}</td>
               <td>${productsHtml}</td>
               <td>${formatDateTime(d.start_detailing, 16, "-")}</td>
               <td>${formatDateTime(d.end_detailing, 16, "-")}</td>
