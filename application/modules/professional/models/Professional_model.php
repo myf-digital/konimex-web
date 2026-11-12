@@ -227,6 +227,7 @@ class Professional_model extends CI_Model
                 'created_by' => $data['usersession'] ?? null,
                 'created_date' => date('Y-m-d H:i:s'),
                 'status' => 3,
+                'customerid_approval' => null,
             ]);
             $professionalId = $this->db->insert_id();
         } else {
@@ -241,6 +242,7 @@ class Professional_model extends CI_Model
                 'modified_by' => $data['usersession'],
                 'modified_date' => date('Y-m-d H:i:s'),
                 'status' => 3,
+                'customerid_approval' => null,
             ]);
         }
 
@@ -312,7 +314,8 @@ class Professional_model extends CI_Model
             'status' => $status,
             'reason' => $reason,
             'modified_by' => $user,
-            'modified_date' => $now
+            'modified_date' => $now,
+            'customerid_approval' => ($status == 3 ? null : $req_data['customerid_approval']),
         ]);
 
         if ($this->db->trans_status() === FALSE) {
