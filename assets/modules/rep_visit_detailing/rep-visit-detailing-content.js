@@ -338,33 +338,33 @@
         "&salesmanid=" +
         data.salesmanid +
         "&customerid=" +
-        data.customerid,
+        data.customerid +
+        "&user_id=" +
+        data.user_id,
       success: function (res) {
         response = res;
         if (response && response.length > 0) {
           $("#myModalSurvei").html(`
-                        Hasil Survei: <b>${data.nama_salesman}</b> <br>
-                        <small>Outlet: ${data.nama_customer}</small> <br>
-                        <small>User: ${response[0].nama_professional || "-"}</small>
-                    `);
+              Hasil Survei: <b>${data.nama_salesman}</b> <br>
+              <small>Outlet: ${data.nama_customer}</small> <br>
+              <small>User: ${response[0].nama_professional || "-"}</small>
+          `);
           $("#show-survei").html(`
-                        <div class="row">
-                            <div class="col-md-12">
-                                ${response
-                                  .map(
-                                    (item) => `
-                                    <ol class="text-left">
-                                        <li>
-                                            <h5><b>${item.question}</b></h5>
-                                            <p>Jawaban: ${item.answer}</p>
-                                        </li>
-                                    </ol>
-                                `,
-                                  )
-                                  .join("")}
-                            </div>
-                        </div>
-                    `);
+              <div class="row">
+                  <div class="col-md-12">
+                      <ol class="text-left">
+                      ${response
+                        .map(
+                          (item) => `
+                            <li>
+                                <h5><b>${item.question}</b></h5>
+                                <p>Jawaban: ${item.answer}</p>
+                            </li>
+                        `).join("")}
+                      </ol>
+                  </div>
+              </div>
+          `);
           $("#modal_survei").modal("show");
         } else {
           alert("Tidak ada hasil survei untuk data ini.");

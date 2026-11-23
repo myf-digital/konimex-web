@@ -20,6 +20,7 @@ class Rep_visit_detailing_model extends CI_Model
                 a.salesmanid,
                 a.salesman_name,
                 a.customerid,
+                a.user_id,
                 a.professional_name,
                 a.array_product,
                 a.keterangan,
@@ -32,7 +33,7 @@ class Rep_visit_detailing_model extends CI_Model
                 IF(a.url_img_detailing IS NOT NULL AND a.url_img_detailing <> '', concat('".URL_IMAGE."', a.url_img_detailing), NULL) as url_img_detailing,
                 IF(a.url_file_signature IS NOT NULL AND a.url_file_signature <> '', concat('".URL_IMAGE."', a.url_file_signature), NULL) as url_file_signature,
                 IF(a.url_file_serahterima IS NOT NULL AND a.url_file_serahterima <> '', concat('".URL_IMAGE."', a.url_file_serahterima), NULL) as url_file_serahterima,
-                (SELECT COUNT(1) FROM trx_visit_detailing_survei s WHERE s.siteid = a.siteid AND s.periode = a.periode AND s.salesmanid = a.salesmanid AND s.customerid = a.customerid) as has_survei,
+                (SELECT COUNT(1) FROM trx_visit_detailing_survei s WHERE s.siteid = a.siteid AND s.periode = a.periode AND s.salesmanid = a.salesmanid AND s.customerid = a.customerid AND s.user_id = a.user_id) as has_survei,
                 b.nama_salesman,
                 c.nama_customer,
                 CASE
@@ -189,7 +190,7 @@ class Rep_visit_detailing_model extends CI_Model
             from trx_visit_detailing_survei a
             left join ref_professional b on a.user_id=b.id
             left join ref_spesialisasi rs on rs.id = b.spesialisasi_id
-            where a.siteid = '".$data["siteid"]."' and a.periode = '".$data["periode"]."' and a.salesmanid = '".$data["salesmanid"]."' and a.customerid = '".$data["customerid"]."'		
+            where a.siteid = '".$data["siteid"]."' and a.periode = '".$data["periode"]."' and a.salesmanid = '".$data["salesmanid"]."' and a.customerid = '".$data["customerid"]." and a.user_id = '".$data["user_id"]."'		
         ");
         return $q->result_array();
     }
