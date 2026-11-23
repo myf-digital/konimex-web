@@ -182,6 +182,30 @@ class Rep_visit_detailing_model extends CI_Model
 
     function get_survei($data)
     {
+        $params = [];
+        $where = "";
+
+        if (!empty($data['siteid'])) {
+            $where .= " and a.siteid = ? ";
+            $params[] = $data['siteid'];
+        }
+        if (!empty($data['periode'])) {
+            $where .= " and a.periode = ? ";
+            $params[] = $data['periode'];
+        }
+        if (!empty($data['salesmanid'])) {
+            $where .= " and a.salesmanid = ? ";
+            $params[] = $data['salesmanid'];
+        }
+        if (!empty($data['customerid'])) {
+            $where .= " and a.customerid = ? ";
+            $params[] = $data['customerid'];
+        }
+        if (!empty($data['user_id'])) {
+            $where .= " and a.user_id = ? ";
+            $params[] = $data['user_id'];
+        }
+
         $q = $this->db->query(" 
             select
                 a.*,
@@ -190,8 +214,8 @@ class Rep_visit_detailing_model extends CI_Model
             from trx_visit_detailing_survei a
             left join ref_professional b on a.user_id=b.id
             left join ref_spesialisasi rs on rs.id = b.spesialisasi_id
-            where a.siteid = '".$data["siteid"]."' and a.periode = '".$data["periode"]."' and a.salesmanid = '".$data["salesmanid"]."' and a.customerid = '".$data["customerid"]." and a.user_id = '".$data["user_id"]."'		
-        ");
+            where 1=1 $where		
+        ", $params);
         return $q->result_array();
     }
 }
