@@ -71,4 +71,4 @@
 
 
 <!-- JS content -->
-<script src="<?php echo base_url() . 'assets/modules/rep_visit_detailing/rep-visit-detailing-content.js' ?>"></script>
+<script src="<?php echo base_url() . 'assets/modules/rep_visit_detailing/rep-visit-detailing-content.js' ?>?v=1.0"></script>

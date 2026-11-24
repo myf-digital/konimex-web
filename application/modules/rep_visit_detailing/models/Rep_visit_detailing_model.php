@@ -12,6 +12,7 @@ class Rep_visit_detailing_model extends CI_Model
                 a.salesmanid,
                 a.salesman_name,
                 a.customerid,
+                a.user_id,
                 a.professional_name,
                 a.array_product,
                 a.keterangan,
@@ -24,6 +25,15 @@ class Rep_visit_detailing_model extends CI_Model
                 concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
                 concat('".URL_IMAGE."', a.url_file_signature) as url_file_signature,
                 concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
+                (
+                    SELECT COUNT(1)
+                    FROM trx_visit_detailing_survei s
+                    WHERE s.siteid = a.siteid
+                        AND s.periode = a.periode
+                        AND s.salesmanid = a.salesmanid
+                        AND s.customerid = a.customerid
+                        AND s.user_id = a.user_id
+                ) as has_survei,
                 b.nama_salesman,
                 c.nama_customer,
                 CASE
@@ -57,8 +67,12 @@ class Rep_visit_detailing_model extends CI_Model
 	}
 
 	function get_tracking($sid, $periode) {
+        $params = [$periode];
         $where = "";
-        if ($sid) $where = " and a.salesmanid = '" . $sid . "'";
+        if (!empty($sid)) {
+            $where = " and a.salesmanid = ?";
+            $params[] = $sid;
+        }
 		$q = $this->db->query(" 
             select
                 a.periode,
@@ -73,9 +87,21 @@ class Rep_visit_detailing_model extends CI_Model
                 (select nama_class from m_customer_class where classid=c.classid) account,
                 ifnull(a.latitude_cell,0) latitude_cell,
                 ifnull(a.longitude_cell,0) longitude_cell,
-                concat('".URL_IMAGE."', a.url_img_detailing) as url_img_detailing,
-                concat('".URL_IMAGE."', a.url_file_signature) as url_file_signature,
-                concat('".URL_IMAGE."', a.url_file_serahterima) as url_file_serahterima,
+                CASE
+                    WHEN a.url_img_detailing IS NOT NULL AND a.url_img_detailing != ''
+                    THEN concat('" . URL_IMAGE . "', a.url_img_detailing)
+                    ELSE ''
+                END as url_img_detailing,
+                CASE
+                    WHEN a.url_file_signature IS NOT NULL AND a.url_file_signature != ''
+                    THEN concat('" . URL_IMAGE . "', a.url_file_signature)
+                    ELSE ''
+                END as url_file_signature,
+                CASE
+                    WHEN a.url_file_serahterima IS NOT NULL AND a.url_file_serahterima != ''
+                    THEN concat('" . URL_IMAGE . "', a.url_file_serahterima)
+                    ELSE ''
+                END as url_file_serahterima,
                 DATE_FORMAT(a.start_detailing,'%H:%i') start_detailing,
                 DATE_FORMAT(a.end_detailing,'%H:%i') end_detailing,
                 timediff(a.end_detailing,a.start_detailing) lamakunjungan,
@@ -101,9 +127,9 @@ class Rep_visit_detailing_model extends CI_Model
                 from ref_professional a
                 left join ref_spesialisasi b on b.id = a.spesialisasi_id
             ) as rp on rp.id = a.user_id
-            where a.periode = '".$periode."'" . $where . "
+            where a.periode = ? " . $where . "
             order by a.start_detailing asc		
-        ");
+        ", $params);
 		return $q->result_array();
 	}
 
@@ -162,6 +188,30 @@ class Rep_visit_detailing_model extends CI_Model
 
     function get_survei($data)
     {
+        $params = [];
+        $where = "";
+
+        if (!empty($data['siteid'])) {
+            $where .= " and a.siteid = ? ";
+            $params[] = $data['siteid'];
+        }
+        if (!empty($data['periode'])) {
+            $where .= " and a.periode = ? ";
+            $params[] = $data['periode'];
+        }
+        if (!empty($data['salesmanid'])) {
+            $where .= " and a.salesmanid = ? ";
+            $params[] = $data['salesmanid'];
+        }
+        if (!empty($data['customerid'])) {
+            $where .= " and a.customerid = ? ";
+            $params[] = $data['customerid'];
+        }
+        if (!empty($data['user_id'])) {
+            $where .= " and a.user_id = ? ";
+            $params[] = $data['user_id'];
+        }
+
         $q = $this->db->query(" 
             select
                 a.*,
@@ -170,8 +220,8 @@ class Rep_visit_detailing_model extends CI_Model
             from trx_visit_detailing_survei a
             left join ref_professional b on a.user_id=b.id
             left join ref_spesialisasi rs on rs.id = b.spesialisasi_id
-            where a.siteid = '".$data["siteid"]."' and a.periode = '".$data["periode"]."' and a.salesmanid = '".$data["salesmanid"]."' and a.customerid = '".$data["customerid"]."'		
-        ");
+            where 1=1 $where		
+        ", $params);
         return $q->result_array();
     }
 }

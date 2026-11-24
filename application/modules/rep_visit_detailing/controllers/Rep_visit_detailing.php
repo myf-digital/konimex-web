@@ -136,132 +136,102 @@ class Rep_visit_detailing extends BaseController
 		$numtrans = 0;
 
 		$numpos = 0;
-		$d_posisisales = $this->visit_detailing->get_tracking($sid,$periode);
+		$jsJsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT;
+		$escHtml = function ($val) {
+			return htmlspecialchars((string) $val, ENT_QUOTES, 'UTF-8');
+		};
+		$iconJs = json_encode(base_url() . 'assets/mapIcon/tracking.png', $jsJsonFlags);
+
+		$d_posisisales = $this->visit_detailing->get_tracking($sid, $periode);
 		foreach ($d_posisisales as $d_position) {
 			$latpos = $d_position['latitude_cell'];
 			$longpos = $d_position['longitude_cell'];
 			$waktu = $d_position['lamakunjungan'];
-			$start_detailing = $d_position['start_detailing'];
-			$end_detailing = $d_position['end_detailing'];
-			$outletid = $d_position['customerid'];
-			$name = $d_position['nama_customer'];
-			$add = $d_position['alamat'];
-			$account = $d_position['account'];
-			$pic = $d_position['professional_name'];
-			$spesialisasi = $d_position['spesialisasi'];
-			$keterangan = $d_position['keterangan'];
-			$reason = $d_position['reason'];
+			$outletid = $d_position['customerid'] ?? '';
+			$name = $d_position['nama_customer'] ?? '';
+			$add = $d_position['alamat'] ?? '';
+			$account = $d_position['account'] ?? '';
+			$pic = $d_position['professional_name'] ?? '';
+			$spesialisasi = $d_position['spesialisasi'] ?? '';
+			$keterangan = $d_position['keterangan'] ?? '';
+			$reason = $d_position['reason'] ?? '';
+
 			$img = '';
-			if ($d_position['url_img_detailing']) {
-				$img = '<br/><img src="'.$d_position['url_img_detailing'].'" alt="foto" width="100">';
+			if (!empty($d_position['url_img_detailing'])) {
+				$img = '<br/><img src="' . $escHtml($d_position['url_img_detailing']) . '" alt="foto" width="100">';
 			}
-			$products = "";
+
+			$products = '';
 			if (!empty($d_position['products'])) {
-				$p = explode('||',$d_position['products']);
+				$p = explode('||', $d_position['products']);
 				foreach ($p as $k => $pr) {
-					$products .= ($k+1).'. '.$pr.'<br/>';
+					$products .= ($k + 1) . '. ' . $escHtml($pr) . '<br/>';
 				}
 			}
-			if ($d_position['tipe_pic']) $pic .= ' ('.$d_position['tipe_pic'].')';
-			$icon = base_url().'assets/mapIcon/tracking.png';
-			
-			if (($latpos) and ($longpos !="0")) {
-			$marker .=' var latlng = new google.maps.LatLng('.$latpos.','.$longpos.');
-						var markerOptions = {  
-							map: map,  
-							position: new google.maps.LatLng('.$latpos.','.$longpos.'),
-							icon: {
-								url: \''.$icon.'\',
-								labelOrigin: { x: 17, y: 40}
-							  },
-							  title: \''.@$name.'\',
-							  label: {
-								text: \''.@$name.'\',
-								color: "#222222",
-								fontSize: "10px"
-							  }
-						};
 
-						var contentString_'.$numpos.' = \'<div id="content" style="max-width:1000px;">\'+
-						\'<div style="z-index: -1;" id="siteNotice"><h3 style="margin-top: 0px;">Outlet</h3>'.$img.'\'+
-						\'<table cellspacing="1" cellpadding="1">\'+
-						\'<tbody>\'+
-							\'<tr>\'+									
-									\'<td>\'+
-										\'<div class="well bg-info" style="min-width:355px; border: none !important;">\'+
-											\'<table cellspacing="1" cellpadding="1" >\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">OutletId</td>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$outletid.'</td>\'+	
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Nama Outlet</td>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$name.' ('.@$account.')</td>\'+
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Alamat</td>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted">'.@$add.'</td>\'+	
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">User</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$pic.'</td>\'+
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Spesialisasi</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$spesialisasi.'</td>\'+
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;vertical-align: top;">Produk</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;vertical-align: top;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$products.'</td>\'+
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Keterangan</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$keterangan.'</td>\'+
-												\'</tr>\'+
-												\'<tr>\'+
-													\'<td class="text-muted" style="white-space: nowrap;">Reason</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td>\'+	
-													\'<td class="text-muted" style="white-space: nowrap;">'.@$reason.'</td>\'+
-												\'</tr>\'+
-											\'</table>\'+
-										\'</div>\'+											
-									\'</td>\'+							
-								\'</tr>\'+														
-							\'</tbody>\'+
-							\'</table>\'+
-							\'</div>\'+
-						  \'</div>\';
-						  
-					  var infowindow_'.$numpos.' = new google.maps.InfoWindow({
-						content: contentString_'.$numpos.'
-					  });
-					  
-						marker_'.$numpos.' = new google.maps.Marker(markerOptions);
-					  
-						marker_'.$numpos.'.addListener(\'click\', function() {
-						infowindow_'.$numpos.'.open(map, marker_'.$numpos.');
-					   });
-
-
-					  //customTxt_'.$numpos.' = "<div>'.$waktu.'</div>";
-					  //txt = new TxtOverlay(latlng, customTxt_'.$numpos.', "customBox2", map);
-					  
-					  ';
+			if (!empty($d_position['tipe_pic'])) {
+				$pic .= ' (' . $d_position['tipe_pic'] . ')';
 			}
-			
+
+			if (is_numeric($latpos) && is_numeric($longpos) && (float) $latpos != 0.0 && (float) $longpos != 0.0) {
+				$latNum = (float) $latpos;
+				$longNum = (float) $longpos;
+				$nameJs = json_encode((string) $name, $jsJsonFlags);
+				$outletLabel = $escHtml($name) . ($account !== '' ? ' (' . $escHtml($account) . ')' : '');
+
+				$contentHtml = '<div id="content" style="max-width:1000px;">'
+					. '<div style="z-index: -1;" id="siteNotice"><h3 style="margin-top: 0px;">Outlet</h3>' . $img
+					. '<table cellspacing="1" cellpadding="1"><tbody><tr><td>'
+					. '<div class="well bg-info" style="min-width:355px; border: none !important;">'
+					. '<table cellspacing="1" cellpadding="1">'
+					. '<tr><td class="text-muted" style="white-space: nowrap;">OutletId</td><td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td><td class="text-muted" style="white-space: nowrap;">' . $escHtml($outletid) . '</td></tr>'
+					. '<tr><td class="text-muted" style="white-space: nowrap;">Nama Outlet</td><td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td><td class="text-muted" style="white-space: nowrap;">' . $outletLabel . '</td></tr>'
+					. '<tr><td class="text-muted" style="white-space: nowrap;">Alamat</td><td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td><td class="text-muted">' . nl2br($escHtml($add)) . '</td></tr>'
+					. '<tr><td class="text-muted" style="white-space: nowrap;">User</td><td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td><td class="text-muted" style="white-space: nowrap;">' . $escHtml($pic) . '</td></tr>'
+					. '<tr><td class="text-muted" style="white-space: nowrap;">Spesialisasi</td><td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td><td class="text-muted" style="white-space: nowrap;">' . $escHtml($spesialisasi) . '</td></tr>'
+					. '<tr><td class="text-muted" style="white-space: nowrap;vertical-align: top;">Produk</td><td class="text-muted" style="white-space: nowrap;vertical-align: top;">&nbsp;:&nbsp;</td><td class="text-muted" style="white-space: nowrap;">' . $products . '</td></tr>'
+					. '<tr><td class="text-muted" style="white-space: nowrap;">Keterangan</td><td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td><td class="text-muted">' . nl2br($escHtml($keterangan)) . '</td></tr>'
+					. '<tr><td class="text-muted" style="white-space: nowrap;">Reason</td><td class="text-muted" style="white-space: nowrap;">&nbsp;:&nbsp;</td><td class="text-muted">' . nl2br($escHtml($reason)) . '</td></tr>'
+					. '</table></div></td></tr></tbody></table></div></div>';
+
+				$contentJs = json_encode($contentHtml, $jsJsonFlags);
+
+				$marker .= '
+					var latlng = new google.maps.LatLng(' . $latNum . ', ' . $longNum . ');
+					var markerOptions = {
+						map: map,
+						position: latlng,
+						icon: {
+							url: ' . $iconJs . ',
+							labelOrigin: { x: 17, y: 40 }
+						},
+						title: ' . $nameJs . ',
+						label: {
+							text: ' . $nameJs . ',
+							color: "#222222",
+							fontSize: "10px"
+						}
+					};
+					var contentString_' . $numpos . ' = ' . $contentJs . ';
+					var infowindow_' . $numpos . ' = new google.maps.InfoWindow({
+						content: contentString_' . $numpos . '
+					});
+					var marker_' . $numpos . ' = new google.maps.Marker(markerOptions);
+					marker_' . $numpos . '.addListener("click", function() {
+						infowindow_' . $numpos . '.open(map, marker_' . $numpos . ');
+					});
+				';
+			}
+
 			$numpos++;
 		}
 
 		$get_latlong = $this->visit_detailing->get_lat_long();
-		$html .='<script type="text/javascript">
-					var directionDisplay;
+		$centerLat = (isset($get_latlong->latitude) && is_numeric($get_latlong->latitude)) ? (float) $get_latlong->latitude : -6.200000;
+		$centerLng = (isset($get_latlong->longitude) && is_numeric($get_latlong->longitude)) ? (float) $get_latlong->longitude : 106.816666;
+
+		$html .= '<script type="text/javascript">
+					var directionsDisplay;
 					var directionsService = new google.maps.DirectionsService();
 					var map;
 					function initialize() {
@@ -271,56 +241,54 @@ class Rep_visit_detailing extends BaseController
 
 					  var myOptions = {
 						zoom: 7,
-						center: new google.maps.LatLng('.$get_latlong->latitude.','.$get_latlong->longitude.'),  
+						center: new google.maps.LatLng(' . $centerLat . ', ' . $centerLng . '),
 						mapTypeId: google.maps.MapTypeId.ROADMAP,
 						zoomControl: true,
-					  }
+					  };
 
+					  map = new google.maps.Map(document.getElementById("maps"), myOptions);
+					  ' . $marker . '
 
-						map = new google.maps.Map(document.getElementById("maps"), myOptions);
-						'.$marker.'
+					  directionsDisplay.setMap(map);
 
-						directionsDisplay.setMap(map);
-							
-						calcRoute();
+					  calcRoute();
 					}
-					
 
 					function calcRoute() {
-
-						var waypts=[];
-						var start="";
-						var end=""
+						var waypts = [];
+						var start = "";
+						var end = "";
 						';
-						
-						$vstart="";
-						$vstop="";
-						$i=1;
-						$numtrans=0;
-						foreach ($d_posisisales as $map) {
-							$lat = $map['latitude_cell'];
-							$long = $map['longitude_cell'];
-							$waktu = $map['waktu'];
+
+						$vstart = "";
+						$vstop = "";
+						$numtrans = 0;
+						foreach ($d_posisisales as $mapRow) {
+							$lat = $mapRow['latitude_cell'];
+							$long = $mapRow['longitude_cell'];
+							if (is_numeric($lat) && is_numeric($long) && (float) $lat != 0.0 && (float) $long != 0.0) {
+								$latNum = (float) $lat;
+								$longNum = (float) $long;
 								$numtrans++;
-								if (($lat != "0") and ($long !="0")) {
-									
-									if ($vstart== "")
-									{
-									$vstart=$lat.','.$long;
-									$html .='start = new google.maps.LatLng('.$lat.','.$long.');';
-									}
-									
-									if ($numtrans>=2 && $numtrans<=10){
-									$html .='waypts.push({ location: \''.$lat.','.$long.'\',stopover: true});';
-									}
-									
-								$vstop=$lat.','.$long;
+
+								if ($vstart === "") {
+									$vstart = $latNum . ',' . $longNum;
+									$html .= 'start = new google.maps.LatLng(' . $latNum . ', ' . $longNum . ');';
+								}
+
+								if ($numtrans >= 2 && $numtrans <= 10) {
+									$html .= 'waypts.push({ location: ' . json_encode($latNum . ',' . $longNum, $jsJsonFlags) . ', stopover: true });';
+								}
+
+								$vstop = $latNum . ',' . $longNum;
 							}
-							$i++;
 						}
-					$html .='end = new google.maps.LatLng('.$vstop.');';
-					$html .='
-					if(start!=""){	
+
+					if ($vstop !== "") {
+						$html .= 'end = new google.maps.LatLng(' . $vstop . ');';
+					}
+					$html .= '
+					if (start !== "" && end !== "") {
 						  var request = {
 							  origin: start,
 							  destination: end,
@@ -328,17 +296,15 @@ class Rep_visit_detailing extends BaseController
 							  optimizeWaypoints: true,
 							  travelMode: google.maps.DirectionsTravelMode.DRIVING
 						  };
-						  
+
 						  directionsService.route(request, function(response, status) {
 							  if (status == google.maps.DirectionsStatus.OK) {
 								  directionsDisplay.setDirections(response);
-								  var route = response.routes[0];
-
 							  }
 						  });
 						}
 					}
-					initialize();					
+					initialize();
 			</script>';
 		echo $html;
 	}
